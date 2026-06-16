@@ -1,0 +1,34 @@
+{
+  "id": "CONFLICT-C02-BOUNDED-WORK-PACKAGE-REQUEST",
+  "title": "Bounded work-package request avoids atomicity and priority noise",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: conflict fixture と coverage summary を修正計画の Stage 1 作業パッケージとして実装する。成果物: evaluation.py、tests、docs。順序: coverage を先に実装し、fixture を後で追加する。受入基準: unittest と evaluate-fixtures が通る。検証方法: unittest と代表 CLI 実行。証拠: コマンド結果。対象外: C10。未確定: なし。",
+  "strict": true,
+  "rationale": "A multi-deliverable implementation request can be one bounded work package when priority/order, scope boundary, and verification are explicit.",
+  "labels": {
+    "forbidden_findings": [
+      {
+        "category": "atomicity"
+      },
+      {
+        "category": "priority"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "excludes": [
+        "atomicity",
+        "priority"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "priority"
+      ]
+    }
+  }
+}

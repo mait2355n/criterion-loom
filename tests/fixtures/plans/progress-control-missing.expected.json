@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-PROGRESS-CONTROL-MISSING-001",
+  "title": "Multi-step plan without progress checkpoint is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: fixture corpus を増やす。対象外: 公開 release はしない。成果物: request fixtures、plan fixtures、diff fixtures。作業分解: fixture 種別ごとに作業パッケージを分ける。手順: 調査、実装、検証、文書化。順序: 調査後に実装し、検証後に文書化する。依存: 既存 evaluation.py。資源: Codex が一作業単位で実施し追加依存なし。リスク: 警告が増えすぎる。対策: forbidden finding を併置する。検証: unittest。妥当性: 利用者が目的に合うか確認する。判断主体: 利用者。基準線: evaluate-fixtures 通過を判定基準にする。戻し方: 差分を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "A multi-step plan should have progress checkpoints or an explicit reason they are unnecessary.",
+  "labels": {
+    "expected_rules": [
+      "plan.control.progress_control_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "control",
+        "rule_id": "plan.control.progress_control_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "control"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "progress_control"
+      ]
+    }
+  }
+}

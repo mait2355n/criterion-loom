@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/schemas/request-exploration-review.schema.json",
+  "title": "semantic-guard request exploration review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "exploration_status",
+    "extracted_information",
+    "audience_hypotheses",
+    "material_ambiguities",
+    "questions",
+    "spec_outline",
+    "non_decisions",
+    "limits"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "request-exploration-review/v1"
+    },
+    "exploration_status": {
+      "type": "string",
+      "enum": ["complete", "blocked_by_missing_context"]
+    },
+    "extracted_information": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/extracted_information"
+      }
+    },
+    "audience_hypotheses": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/audience_hypothesis"
+      }
+    },
+    "material_ambiguities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/material_ambiguity"
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "spec_outline": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/spec_section"
+      }
+    },
+    "non_decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "extracted_information": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "content", "source", "status", "confidence"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["fact", "inference", "hypothesis", "unknown", "pending_decision"]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+    "audience_hypothesis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "evidence", "scope_implications", "confidence"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "scope_implications": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    },
+    "material_ambiguity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "severity",
+        "known_information",
+        "missing_information",
+        "why_material",
+        "affects",
+        "evidence",
+        "question",
+        "answer_shape"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["blocker", "major", "minor", "info"]
+        },
+        "known_information": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_information": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "why_material": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answer_shape": {
+          "type": "string"
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "question", "why", "affects", "answer_shape", "priority"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "answer_shape": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["must_ask", "ask_if_time", "defer"]
+        }
+      }
+    },
+    "spec_section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "known", "missing", "required"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "known": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

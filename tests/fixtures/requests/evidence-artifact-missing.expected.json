@@ -1,0 +1,45 @@
+{
+  "id": "REQ-EVIDENCE-ARTIFACT-MISSING-001",
+  "title": "Verification method without retained evidence artifact is logically derived",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: 検索結果を改善する。受入基準: 検索できることを確認。検証方法: pytest。対象外: UI刷新。未確定: なし。",
+  "strict": true,
+  "rationale": "Verification or acceptance being in scope requires an evidence artifact when the request is audited as a requirement.",
+  "labels": {
+    "expected_rules": [
+      "req.evidence.artifact_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "req.evidence.artifact_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "evidence"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "evidence_artifact"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.evidence.artifact_missing",
+    "derivation_missing_obligation": "obl.req.evidence.artifact",
+    "derivation_countercondition": "ctr.req.evidence.verification_not_in_scope",
+    "derivation_fact": "text.has_evidence_artifact",
+    "logical_trace_summary_rule": {
+      "rule_id": "req.evidence.artifact_missing",
+      "status": "derived",
+      "finding_count": 1,
+      "missing_obligation_count": 1
+    }
+  }
+}

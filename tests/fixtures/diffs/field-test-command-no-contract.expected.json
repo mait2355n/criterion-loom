@@ -1,0 +1,35 @@
+{
+  "id": "FIELD-NW-TEST-COMMAND-001",
+  "title": "Field corpus test command wording remains quiet",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "+ self.assertEqual(command.name, 'audit-request')",
+  "intent": "試験内で command object の値を検査する。",
+  "strict": true,
+  "rationale": "Accepted field-corpus example NW-TEST-COMMAND-001 should not treat test-only command wording as a public contract change.",
+  "labels": {
+    "forbidden_rules": [
+      "diff.implementation.public_contract_change"
+    ],
+    "forbidden_findings": [
+      {
+        "category": "compatibility",
+        "rule_id": "diff.implementation.public_contract_change"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "compatibility"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "intent"
+      ]
+    }
+  }
+}

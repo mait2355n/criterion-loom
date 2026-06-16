@@ -1,0 +1,41 @@
+{
+  "id": "FINISH-NO-EVIDENCE-001",
+  "title": "Completion claim without verification evidence",
+  "phase": "finish_check",
+  "input": "no-evidence.md",
+  "strict": true,
+  "rationale": "Completion must not be accepted from assertion alone; tests, acceptance evidence, and residual risk have to be recorded.",
+  "labels": {
+    "expected_rules": [
+      "finish.evidence.tests_missing",
+      "finish.validation.acceptance_evidence_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "finish.evidence.tests_missing"
+      },
+      {
+        "category": "validation",
+        "rule_id": "finish.validation.acceptance_evidence_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "evidence",
+        "validation",
+        "risk"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "tests_ran_or_reason",
+        "acceptance_evidence"
+      ]
+    }
+  }
+}

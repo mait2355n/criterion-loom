@@ -1,0 +1,46 @@
+{
+  "id": "FINISH-PUBLIC-BEHAVIOR-MISSING-001",
+  "title": "Public CLI completion with unit tests but no representative execution is flagged",
+  "phase": "finish_check",
+  "text": "完了要約: JSON output schema を返す CLI command を実装した。完了条件: CLI が JSON を返す。公開挙動: CLI command と JSON output schema が利用者に見える。残リスク: なし。",
+  "evidence": "受入証拠: pytest passed。要求との対応: unit tests で schema field を確認。",
+  "strict": true,
+  "rationale": "Unit tests are verification evidence, but public CLI behavior also needs representative execution or an explicit not-run reason.",
+  "labels": {
+    "expected_rules": [
+      "finish.implementation.behavior_evidence_missing"
+    ],
+    "forbidden_rules": [
+      "finish.evidence.tests_missing",
+      "finish.validation.acceptance_evidence_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "behavior",
+        "rule_id": "finish.implementation.behavior_evidence_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "behavior"
+      ],
+      "excludes": [
+        "evidence",
+        "validation"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "behavior_evidence"
+      ],
+      "excludes": [
+        "tests_ran_or_reason",
+        "acceptance_evidence"
+      ]
+    }
+  }
+}
