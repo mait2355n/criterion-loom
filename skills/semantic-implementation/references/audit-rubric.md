@@ -17,7 +17,7 @@ certification, or release readiness.
 
 The rubric should keep audits inspectable and lightweight. When a task needs a
 formal standard-specific review, legal review, safety review, or security
-assessment, use the appropriate specialist process outside this prototype.
+assessment, use the appropriate specialist process outside this tool.
 
 ## Quick Check
 

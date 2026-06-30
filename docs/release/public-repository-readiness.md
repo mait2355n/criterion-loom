@@ -86,7 +86,7 @@ uv run --python 3.13 --project . semantic-guard audit-request --kind document --
 
 ## Claim Boundary
 
-The public repository may claim a working prototype, CLI, MCP server, schemas,
+The public repository may claim a working v0.1 tool, CLI, MCP server, schemas,
 fixtures, docs, and companion Codex skill. It should not claim broad
 natural-language accuracy, formal requirements verification, security scanning,
 legal review, release approval, or replacement of final human judgment.

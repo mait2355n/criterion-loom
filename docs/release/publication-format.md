@@ -84,7 +84,7 @@ The public repository should be explicit about these boundaries:
 - `doctor` is a project-shape diagnostic, not a security or release authority;
 - LLM reviewer output is supplemental evidence, not final acceptance;
 - final human decision remains outside the tool;
-- this is a research prototype, not a completed requirements-engineering engine.
+- this is a publishable v0.1 tool, not a completed requirements-engineering engine.
 
 ## Verification
 

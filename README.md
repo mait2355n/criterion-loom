@@ -65,7 +65,16 @@ The implementation still exposes additional support commands such as `explore-re
 
 ## Status
 
-This is a research prototype, not a finished requirements engineering product.
+Criterion Loom has its publishable v0.1 initial-release surface in place: the
+CLI, MCP server, companion Codex skill, JSON Schema, fixtures, `doctor` command,
+and public documentation are present.
+
+Ongoing work focuses on audit performance, audit coverage, false-positive and
+false-negative reduction, fixture and corpus expansion, and tighter
+agent-side revision-loop use.
+
+It is not a general-purpose requirements engineering product or a production
+approval gate.
 
 The current implementation uses vocabulary rules and lightweight structural
 checks. It does not fully understand natural language, and fixture evaluation is
@@ -595,7 +604,7 @@ MIT. See `LICENSE`.
 ## Limitations
 
 - The current checks are heuristic and vocabulary-driven.
-- Japanese heading and synonym recognition is broader than the first prototype, but still lexical.
+- Japanese heading and synonym recognition is broader than the first implementation, but still lexical.
 - The score is a rough signal, not a formal quality measure.
 - It can over-warn when context is obvious to a person but not stated in text.
 - It can under-warn when the text sounds complete but the real project context contradicts it.

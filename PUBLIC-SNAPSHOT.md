@@ -26,8 +26,8 @@ staging snapshot. It keeps the package implementation, tests, fixtures, schemas,
 the companion Codex skill, repository hygiene files, and public-facing
 documentation.
 
-It is not a production-readiness claim. Criterion Loom remains a local research
-prototype with deterministic heuristics, local fixture calibration, optional LLM
+It is not a production-readiness claim. Criterion Loom is a publishable v0.1
+tool with deterministic heuristics, local fixture calibration, optional LLM
 review helpers, and a final human-decision boundary.
 
 ## Included
