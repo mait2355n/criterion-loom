@@ -18,6 +18,7 @@ Use the lightest audit that protects the task.
 - For ordinary code changes, at least identify meaning, intent, non-goals, risk, and verification before editing.
 - For small obvious edits, keep the audit implicit and do not perform ritual paperwork.
 - If the `semantic-guard` MCP server is available, prefer it for structured audits.
+- Feed audit findings back into the current Codex work: revise the request framing, plan, diff explanation, tests, or finish claim before presenting final material.
 - If the MCP server is unavailable but a `semantic-guard` checkout is available, run the CLI from the checkout root with `uv run --python 3.13 --project . semantic-guard ...`, or set `SG_PROJECT=/absolute/path/to/semantic-guard` and use `--project "$SG_PROJECT"`.
 - Before relying on a fresh checkout or publication snapshot as the audit source, run `semantic-guard doctor`.
 - When auditing prose rather than a requirement statement, pass `--kind document` or MCP `kind="document"` to avoid requirement-only warnings.

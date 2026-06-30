@@ -8,9 +8,11 @@ explanations, and completion claims into JSON audit results. The public project
 name is Criterion Loom; the package, CLI, and MCP server name is
 `semantic-guard`.
 
-It does not approve AI output as correct. It surfaces review points, missing
-evidence, and undecided items before a human chooses `accept`,
-`request_revision`, or `defer`.
+It does not approve AI output as correct. Its audit output is meant to feed an
+agentic revision loop: Codex or another AI agent can use findings to revise
+request framing, plans, change explanations, and completion claims before
+presenting them again. The same output also gives humans material for final
+`accept`, `request_revision`, or `defer` decisions.
 
 ## At A Glance
 
@@ -32,7 +34,7 @@ It externalizes checks that otherwise stay implicit in an agent's reasoning:
 - `finish-check`: execution evidence, residual risk, and human confirmation points
 - `audit-decision-state`: undecided, unknown, hypothetical, inferred, value-judgment, and evidence-gap statements
 - JSON output, JSON Schema, fixtures, unit tests, and `doctor` checks for local verification
-- a companion Codex skill that routes Codex work through the same audit flow
+- a companion Codex skill that routes Codex work through the same audit-and-revision flow
 
 ## Quick Start
 
@@ -72,7 +74,10 @@ general documents. It is useful for dogfooding Codex workflows and making missin
 assumptions visible, but it should not be treated as an authoritative
 requirements, safety, or release gate.
 
-Human final decision is required. The tool can prepare audit output, reviewer supplements, and acceptance-review bundles, but `final_human_decision.status` stays `pending` until a person chooses `accept`, `request_revision`, or `defer`.
+Human final decision is still required. The tool can drive agent-side revision
+and prepare audit output, reviewer supplements, and acceptance-review bundles,
+but `final_human_decision.status` stays `pending` until a person chooses
+`accept`, `request_revision`, or `defer`.
 
 For the naming map, see `docs/naming.md` or the Japanese version at `docs/ja/naming.md`.
 
@@ -87,6 +92,7 @@ For repository contribution, security-reporting, change-log, and publication hyg
 Use Criterion Loom when a task can be harmed by misunderstanding meaning, intent, scope, or verification:
 
 - non-trivial implementation plans
+- agentic work loops where Codex should revise its own plan, diff explanation, or finish claim after explicit audit feedback
 - feature or requirements clarification
 - documentation that explains a system's purpose or limits
 - refactors, migrations, and behavior changes

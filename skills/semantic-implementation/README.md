@@ -12,6 +12,10 @@ understanding, request audit, plan audit, diff audit, finish evidence, public
 I/O convention audit, optional LLM reviewer material, and final human-review
 bundles.
 
+Audit output is meant to return to the Codex work loop. Codex should use the
+findings to revise request framing, plans, change explanations, verification,
+and finish claims before producing final review material.
+
 It is an orchestration layer. The deterministic audit core stays in
 `semantic-guard`; the skill only decides when and how Codex should call the MCP
 tools or CLI fallback.
