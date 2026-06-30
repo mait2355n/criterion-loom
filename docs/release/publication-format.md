@@ -86,6 +86,8 @@ The public repository should be explicit about these boundaries:
 - final human decision remains outside the tool;
 - this is a publishable v0.1 tool, not a completed requirements-engineering engine.
 
+For concrete wording rules, see `docs/release/public-writing-guidelines.md`.
+
 ## Verification
 
 Run from the repository root:

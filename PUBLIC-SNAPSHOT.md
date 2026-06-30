@@ -59,6 +59,7 @@ review helpers, and a final human-decision boundary.
   - `docs/calibration-report-2026-06-05.md`
   - `docs/release/github-publication-checklist.md`
   - `docs/release/ci-workflow-template.yml`
+  - `docs/release/public-writing-guidelines.md`
   - `docs/release/publication-format.md`
   - `docs/release/public-repository-readiness.md`
 

@@ -43,6 +43,7 @@ or comparison material:
 - `../SUPPORT.md`: support routing and issue-quality expectations.
 - `../SECURITY.md`: security-reporting policy and scope limits.
 - `../CHANGELOG.md`: public snapshot and future change log.
+- `release/public-writing-guidelines.md`: public wording and claim-boundary rules.
 - `ja/README.md`: Japanese documentation map.
 - `ja/naming.md`: Japanese public names and technical-name mapping.
 - `ja/quickstart.md`: Japanese quickstart and demonstration commands.
