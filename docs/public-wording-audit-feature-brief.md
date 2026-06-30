@@ -97,6 +97,45 @@ Reasons:
   `rule_id`, compact evidence excerpt, missing operation or boundary,
   suggested fix, and repair target.
 
+## Applied README.ja.md Review Indicators
+
+The current `README.ja.md` rewrite used these practical indicators. They are
+the first candidate examples for the proposed detector.
+
+| Indicator | What Was Checked | README.ja.md Direction |
+| --- | --- | --- |
+| Product identity is concrete | The opening claim names the actual surface rather than a broad research theme. | `Codex 作業向けの意味先行監査 CLI / MCP server / companion skill` |
+| Input and output are explicit | The text names the audited inputs and the machine-readable result. | requests, plans, change explanations, completion claims, and JSON audit results |
+| Agent loop and human decision are separated | The text does not say the tool approves AI output. It separates agent-side revision from human final decision. | AI agents use findings to revise work; humans choose `accept`, `request_revision`, or `defer`. |
+| Finished-state claim is scoped | `完成済み` is limited to the public v0.1 repository surface. | CLI, MCP server, companion skill, schemas, fixtures, doctor, tests, and public docs are present; broader performance continues to improve. |
+| Authority claims are limited | The text does not imply general natural-language understanding, requirements proof, safety certification, or release approval. | vocabulary rules, lightweight structural checks, and local fixture regression are named as limits. |
+| Improvement has a mechanism | Improvement claims name the artifact or loop that changes next. | rules, detectors, fixtures, corpus, output contracts, documents, and companion-skill routing. |
+| Findings are revision targets | The text explains why Codex can act on output instead of receiving a vague critique. | `category`, `evidence`, `missing`, `rule_id`, `next_actions`, and `repair` are named. |
+| Diagnostics explain uncertainty | The text names why a warning was emitted, suppressed, or treated as uncertain. | `non_emitted_rules`, `nearest_candidates`, `logical_trace_summary`, and claim/evidence/limitation diagnostics. |
+| Public pillars stay stable | Support commands are not presented as separate public pillars. | Loom Guide, Need Thread, Plan Warp, and Change Weft remain the primary public shape. |
+| Local evidence is not generalized | Fixture and corpus results are presented as local regression evidence. | They do not claim general precision, recall, semantic proof, or final acceptance. |
+
+Observed wording changes used as seed examples:
+
+| Before Pattern | After Pattern | Reason |
+| --- | --- | --- |
+| `JSON の監査結果として外へ取り出す` | `曖昧さや不足を抽出し、JSON の監査結果として返す` | Names extraction and JSON return rather than vague externalization. |
+| `監査結果は ... 戻せる` | `AI エージェントは、監査結果を ... 作業ループへ戻す` | Names the actor and revision loop. |
+| `人間が ... 判断するための材料にもなる` | `人間は同じ出力を ... 判断材料として使う` | Names the human use without making the tool the decision authority. |
+| `見える場所へ出し` | `監査結果として分離し` | Names the output boundary. |
+| `試験できる材料として外へ出す` | `退行検査できる材料として抽出する` | Ties the claim to regression checking. |
+| `分けて直せる` | `どこが弱いかを切り分けられる` | Names diagnosis before repair. |
+| `修正できる` | `指定された弱点に基づいて修正する` | Names the revision basis. |
+| `追える` | `確認できる` / `対応づけられる` | Uses inspectable relation language. |
+| `賢そうな判断を自動化すること` | `判断を自動承認すること` | Avoids rhetorical phrasing and names the forbidden authority claim. |
+
+These indicators were checked with:
+
+- `semantic-guard audit-request --kind document --file README.ja.md`
+- public wording search for vague externalization, proof, finished-state, and
+  improvement phrases
+- review against `docs/release/public-writing-guidelines.md`
+
 ### Quality Requirements
 
 - **REQ-PWA-011 Deterministic first**: The initial feature must use deterministic
