@@ -88,6 +88,30 @@ and prepare audit output, reviewer supplements, and acceptance-review bundles,
 but `final_human_decision.status` stays `pending` until a person chooses
 `accept`, `request_revision`, or `defer`.
 
+## Why It Can Improve
+
+Criterion Loom can improve incrementally because its audit behavior is exposed
+as structured, testable material rather than hidden prose.
+
+- Phase-specific commands keep correction targets small: request framing, plan,
+  diff explanation, finish evidence, and decision state are audited separately.
+- Findings carry categories, evidence snippets, missing fields, `rule_id`
+  values, `next_actions`, and structured `repair` hints, so Codex can revise the
+  specific weak part instead of guessing from a general critique.
+- The rule catalog and `rule-detector-map` connect each public rule to its
+  current detector path, which makes it visible when a rule exists only as
+  wording, lacks fixture coverage, or needs a detector change.
+- Fixture and corpus records turn observed false positives, false negatives,
+  over-blocking, and useful warnings into executable regression checks. That
+  lets behavior change deliberately without freezing the whole JSON output.
+- Diagnostics such as `non_emitted_rules`, `nearest_candidates`,
+  `logical_trace_summary`, and claim/evidence/limitation triples show why a
+  warning was emitted, suppressed, or treated as uncertain.
+
+This is not a claim of general natural-language accuracy. It gives maintainers
+a concrete feedback path for improving local audit behavior while keeping the
+limits visible.
+
 For the naming map, see `docs/naming.md` or the Japanese version at `docs/ja/naming.md`.
 
 For public positioning against MCP servers, security scanners, and agent skills, see `docs/public-comparison-2026-06-02.md` or the Japanese version at `docs/public-comparison-2026-06-02.ja.md`.
