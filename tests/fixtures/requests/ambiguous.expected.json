@@ -1,0 +1,68 @@
+{
+  "id": "REQ-AMBIGUOUS-001",
+  "title": "Ambiguous speed request without purpose or acceptance route",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "input": "ambiguous.md",
+  "strict": true,
+  "rationale": "A vague request must keep blocking until the desired quality, purpose, and verification route are stated.",
+  "labels": {
+    "expected_rules": [
+      "req.verifiability.acceptance_missing",
+      "req.scope.non_goals_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "verifiability",
+        "finding_contains": "達成確認方法"
+      },
+      {
+        "category": "necessity",
+        "finding_contains": "上位目的"
+      },
+      {
+        "category": "scope",
+        "rule_id": "req.scope.non_goals_missing"
+      }
+    ],
+    "forbidden_findings": [
+      {
+        "category": "interface"
+      },
+      {
+        "category": "security"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "clarity",
+        "necessity",
+        "verifiability"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "purpose_trace",
+        "verification_or_acceptance"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.verifiability.acceptance_missing",
+    "derivation_missing_obligation": "obl.req.verifiability.verification_or_acceptance",
+    "derivation_countercondition": "ctr.req.verifiability.input_kind_not_requirement",
+    "derivation_fact": "text.has_verification_language",
+    "logical_trace_rule": {
+      "rule_id": "req.verifiability.acceptance_missing",
+      "status": "derived"
+    },
+    "logical_trace_summary_rule": {
+      "rule_id": "req.verifiability.acceptance_missing",
+      "status": "derived",
+      "finding_count": 1
+    }
+  }
+}

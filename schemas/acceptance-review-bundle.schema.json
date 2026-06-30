@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/schemas/acceptance-review-bundle.schema.json",
+  "title": "AcceptanceReviewBundle",
+  "description": "Structured final-review bundle for a human acceptance decision. It gathers the request, artifact, deterministic audits, LLM reviewer material, adopted and rejected supplements, evidence, residual risks, and human review questions. It must not let an LLM make the final acceptance decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "original_request",
+    "final_artifact",
+    "deterministic_audits",
+    "llm_reviews",
+    "adopted_supplements",
+    "rejected_supplements",
+    "deferred_supplements",
+    "execution_evidence",
+    "residual_risks",
+    "human_review_points",
+    "final_human_decision"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "acceptance-review-bundle/v1"
+    },
+    "original_request": {
+      "type": "string",
+      "minLength": 1
+    },
+    "final_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reference",
+        "summary"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "deterministic_audits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "phase",
+          "status",
+          "summary",
+          "findings"
+        ],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pass",
+              "warn",
+              "block"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "llm_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "valid",
+          "review_status",
+          "missing_aspects",
+          "supplement_proposals",
+          "rule_item_reviews",
+          "human_decision_needed"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "valid": {
+            "type": "boolean"
+          },
+          "review_status": {
+            "type": "string",
+            "enum": [
+              "no_supplement_needed",
+              "needs_supplement",
+              "blocked_by_missing_context"
+            ]
+          },
+          "missing_aspects": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "supplement_proposals": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "rule_item_reviews": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "human_decision_needed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "adopted_supplements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/supplement_decision"
+      }
+    },
+    "rejected_supplements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/supplement_decision"
+      }
+    },
+    "deferred_supplements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/deferred_supplement"
+      }
+    },
+    "execution_evidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/evidence"
+      }
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residual_risk"
+      }
+    },
+    "human_review_points": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/human_review_point"
+      }
+    },
+    "final_human_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "decided_by",
+        "decided_at",
+        "rationale"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "accept",
+            "request_revision",
+            "defer"
+          ]
+        },
+        "decided_by": {
+          "type": "string"
+        },
+        "decided_at": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "supplement_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "target",
+        "supplement",
+        "reason",
+        "evidence"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supplement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "deferred_supplement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "target",
+        "supplement",
+        "reason",
+        "decision_needed"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supplement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_needed": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "command_or_reference",
+        "result",
+        "passed"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "command_or_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1
+        },
+        "passed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "residual_risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk",
+        "severity",
+        "mitigation",
+        "owner"
+      ],
+      "properties": {
+        "risk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "blocker",
+            "major",
+            "minor",
+            "info"
+          ]
+        },
+        "mitigation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
+    },
+    "human_review_point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question",
+        "why_it_matters",
+        "options"
+      ],
+      "properties": {
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

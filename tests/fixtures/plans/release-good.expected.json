@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-RELEASE-GOOD-001",
+  "title": "Release/configuration plan with planning controls passes",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 設定を公開する。対象外: UI は作らない。成果物: config と README。作業分解: config と README を作業パッケージに分ける。手順: 調査、実装、検証、公開。順序: 調査後に実装し、検証後に公開する。依存: 既存 config。資源: Codex が一作業単位で実施し追加依存なし。リスク: 既存運用が壊れる。対策: backup へ退避し、失敗時は再検証する。検証: unittest。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後と公開前に進捗確認。基準線: 既存 config と unittest 通過を判定基準にする。変更統制: 追加要求は後続化する。決定点: 公開前に利用者が go/no-go を判断する。戻し方: backup を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "A high-impact release/configuration plan with decomposition, sequencing, risk response, baseline, change control, and decision gate should pass.",
+  "labels": {
+    "forbidden_rules": [
+      "plan.risk.response_missing",
+      "plan.control.change_control_missing",
+      "plan.governance.decision_gate_missing"
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "risk",
+        "control",
+        "governance"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "risk_response",
+        "change_control",
+        "decision_gate"
+      ]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+name: Documentation issue
+description: Report unclear public documentation, examples, or non-claims.
+title: "[docs]: "
+labels: ["documentation"]
+body:
+  - type: input
+    id: document
+    attributes:
+      label: Document
+      description: Which file or section is unclear?
+      placeholder: README.md
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is misleading, missing, or too strong?
+    validations:
+      required: true
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested change
+      description: Optional proposed wording.
+    validations:
+      required: false

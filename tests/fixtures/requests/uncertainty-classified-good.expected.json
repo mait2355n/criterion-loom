@@ -1,0 +1,34 @@
+{
+  "id": "REQ-UNCERTAINTY-CLASSIFIED-GOOD-001",
+  "title": "Explicit hypothesis classification suppresses uncertainty warning",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: import 処理の失敗を扱う。理由: 既存連携が CLI と JSON を使うため。要求: 古い JSON を読み込めるようにする。仮説: おそらく旧形式は field 名だけが違う。シナリオ: 保守者が import CLI を実行する場合。期待結果: import 成功 status が返る。受入基準: 代表 JSON で成功を確認。検証方法: pytest。証拠: 試験結果。不合格条件: 旧形式の範囲外なら保留する。対象外: schema migration。優先度: 必須。未確定: 旧形式の完全範囲は判断待ち。",
+  "strict": true,
+  "rationale": "Uncertainty is acceptable when it is separated from the confirmed requirement.",
+  "labels": {
+    "forbidden_rules": [
+      "req.uncertainty.unclassified_uncertainty"
+    ],
+    "forbidden_findings": [
+      {
+        "category": "unknowns",
+        "rule_id": "req.uncertainty.unclassified_uncertainty"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "unknowns"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "uncertainty_classification"
+      ]
+    }
+  }
+}

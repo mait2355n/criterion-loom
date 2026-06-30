@@ -1,0 +1,33 @@
+{
+  "id": "DIFF-IDENTITY-BOUNDARY-CHANGE-001",
+  "title": "Identifier and display-name change surfaces semantic boundary caution",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/models.py b/src/semantic_guard/models.py\n--- a/src/semantic_guard/models.py\n+++ b/src/semantic_guard/models.py\n@@\n-class ProjectRecord:\n-    id: str\n-    title: str\n+class ProjectRecord:\n+    name: str\n+    display_name: str\n+    storage_path: str\n",
+  "intent": "ProjectRecord の表示名と保存先を整理する。",
+  "strict": true,
+  "rationale": "Renaming identifiers and storage fields can mix identity, display label, and persistence semantics.",
+  "labels": {
+    "expected_rules": [
+      "diff.meaning.identity_boundary_change"
+    ],
+    "expected_findings": [
+      {
+        "category": "meaning",
+        "rule_id": "diff.meaning.identity_boundary_change"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "meaning"
+      ]
+    },
+    "details": {
+      "changed_file_count": 1
+    }
+  }
+}

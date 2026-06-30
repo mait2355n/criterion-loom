@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-VALIDATION-OWNER-MISSING-001",
+  "title": "Validation statement without decision owner is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 警告品質を改善する。対象外: UI は作らない。成果物: core.py と fixtures。手順: 調査、実装、検証。依存: 既存 CLI。リスク: 過剰警告。対策: 禁止警告 fixture を足す。検証: unittest。妥当性: 要求に合うことを確認する。確認点: 実装後に状態報告する。基準線: fixture 通過を判定基準にする。戻し方: 差分を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "A validation plan has to state who makes the acceptance or revision decision.",
+  "labels": {
+    "expected_rules": [
+      "plan.validation.owner_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "validation",
+        "rule_id": "plan.validation.owner_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "validation"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "validation_owner"
+      ]
+    }
+  }
+}

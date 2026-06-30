@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible semantic-guard problem.
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What behaved incorrectly?
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command or input
+      description: Include the command, input shape, or fixture path. Redact sensitive text.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should semantic-guard have reported?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include status, findings, missing fields, or traceback.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: Mention whether tests, fixture evaluation, or document audit were run.
+      render: shell
+    validations:
+      required: false

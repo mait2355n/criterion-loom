@@ -1,0 +1,26 @@
+{
+  "id": "CONFLICT-C07-DOCS-ONLY-EVIDENCE-DIFF",
+  "title": "Docs-only evidence wording is not a semantic evidence mutation",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "*** Update File: docs/example.md\n+ 検証証拠: audit-request --kind document を実行し、status pass を確認。\n+ 受入基準: 文書の usage と limitations が読める。",
+  "intent": "docs に検証証拠を追記する。",
+  "strict": true,
+  "rationale": "Document-only evidence wording should be classified as a document-only boundary, not a meaning warning.",
+  "labels": {
+    "forbidden_findings": [
+      {
+        "category": "meaning"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "meaning"
+      ]
+    }
+  }
+}

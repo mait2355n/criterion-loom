@@ -1,0 +1,28 @@
+{
+  "id": "PLAN-HAZARD-TRANSFER-GOOD-001",
+  "title": "Plan with transfer and side-effect analysis does not trigger hazard-transfer warning",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: API import が止まる問題を解決する。対象外: UI は作らない。成果物: import 設定と tests。作業分解: import 設定と tests を作業パッケージに分ける。手順: 調査、実装、検証。順序: 調査後に実装し、検証後に文書化する。依存: 既存 API。資源: Codex が一作業単位で実施する。リスク: 下流 API 負荷と費用が増える。対策: 下流影響と費用を測定し、閾値超過時は保留する。解決策: retry 回数を増やす。副作用確認: 下流 API 負荷、費用、回帰影響を測定する。検証: pytest。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後に進捗確認。基準線: import 成功と下流 API 負荷を判定基準にする。決定点: 下流影響が許容外なら利用者へ回す。戻し方: 設定を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "Side effects, downstream load, cost, rollback, and decision gate are explicit.",
+  "labels": {
+    "forbidden_rules": [
+      "plan.risk.hazard_transfer_analysis_missing"
+    ],
+    "forbidden_findings": [
+      {
+        "rule_id": "plan.risk.hazard_transfer_analysis_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "pass",
+    "missing": {
+      "excludes": [
+        "hazard_transfer_analysis"
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "DOC-GOOD-001",
+  "title": "Well scoped document with runnable example and limits",
+  "phase": "audit_request",
+  "kind": "document",
+  "input": "readme-good.md",
+  "strict": true,
+  "rationale": "A complete explanatory document should pass without requirement-only warnings while still exposing claim/evidence/limitation triples.",
+  "expect": {
+    "phase": "audit_request",
+    "status": "pass",
+    "score": {
+      "min": 0.8
+    },
+    "categories": {
+      "excludes": [
+        "documentation",
+        "evidence",
+        "clarity",
+        "atomicity",
+        "solution_bias"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "executable_example",
+        "output_contract_terms",
+        "limitations_or_non_goals"
+      ]
+    },
+    "details": {
+      "input_kind": "document",
+      "claim_triples": {
+        "min_count": 2,
+        "any": [
+          {
+            "support": "supported"
+          },
+          {
+            "support": "limited"
+          }
+        ]
+      }
+    }
+  }
+}

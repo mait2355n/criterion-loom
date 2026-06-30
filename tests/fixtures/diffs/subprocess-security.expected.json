@@ -1,0 +1,40 @@
+{
+  "id": "DIFF-SUBPROCESS-SECURITY-001",
+  "title": "Subprocess shell execution diff is a security-sensitive change",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "input": "subprocess-security.diff",
+  "intent": "CLI command 実行を追加する。",
+  "strict": true,
+  "rationale": "Subprocess and shell execution should surface security review needs and source-change test obligations.",
+  "labels": {
+    "expected_rules": [
+      "diff.security.sensitive_surface_change"
+    ],
+    "expected_findings": [
+      {
+        "category": "security",
+        "rule_id": "diff.security.sensitive_surface_change"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "security",
+        "quality"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "test_obligation"
+      ]
+    },
+    "details": {
+      "input_kind": "diff-summary",
+      "changed_file_count": 1
+    }
+  }
+}

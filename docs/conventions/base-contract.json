@@ -1,0 +1,165 @@
+{
+  "schema_version": "semantic-guard-conventions/v1",
+  "id": "base-contract",
+  "status": "draft",
+  "source": "docs/conventions/base-contract.md",
+  "purpose": "Define structure-first cross-repository public I/O, error, CLI, record, uncertainty, and profile conventions without forcing internal architecture uniformity.",
+  "surfaces": [
+    {
+      "id": "structured_output",
+      "name": "Structured output",
+      "terms": ["json", "yaml", "jsonl", "csv", "schema", "schema_version", "$schema", "field", "fields", "type", "output", "result", "payload", "入出力", "出力", "結果", "構造化", "項目", "型"]
+    },
+    {
+      "id": "cli",
+      "name": "CLI",
+      "terms": ["cli", "command", "stdout", "stderr", "exit code", "コマンド", "標準出力", "標準誤出力", "終了符号"]
+    },
+    {
+      "id": "mcp",
+      "name": "MCP",
+      "terms": ["mcp", "tool", "tools/call", "server", "サーバ", "道具"]
+    },
+    {
+      "id": "api",
+      "name": "API",
+      "terms": ["api", "http", "webhook", "endpoint", "request", "response", "レスポンス"]
+    },
+    {
+      "id": "record",
+      "name": "Durable record",
+      "terms": ["log", "jsonl", "ledger", "record", "record_surface", "audit", "evidence", "memory", "記録", "台帳", "監査", "証拠", "ログ"]
+    },
+    {
+      "id": "global_policy",
+      "name": "Global policy",
+      "terms": ["convention", "coding standard", "global", "profile", "規約", "統一", "全体", "基本形", "構造化"]
+    }
+  ],
+  "rules": [
+    {
+      "id": "conv.structure.versioned_shape",
+      "category": "io_contract",
+      "severity": "major",
+      "applies_to": ["structured_output", "mcp", "api", "record"],
+      "requires_any_surface": true,
+      "required_groups": [
+        ["schema_version", "$schema", "schema", "version", "版"],
+        ["field", "fields", "property", "properties", "項目", "欄"],
+        ["type", "typed", "enum", "boolean", "string", "number", "型", "列挙"]
+      ],
+      "finding": "Structured public surface is mentioned without a versioned field/type contract.",
+      "suggested_fix": "Declare schema_version or schema source, named fields, and value types or enums before relying on prose."
+    },
+    {
+      "id": "conv.output.envelope",
+      "category": "io_contract",
+      "severity": "major",
+      "applies_to": ["structured_output", "mcp", "api"],
+      "requires_any_surface": true,
+      "required_groups": [
+        ["schema_version", "$schema", "schema", "version"],
+        ["ok", "success", "status", "valid"],
+        ["data", "result", "payload", "findings"],
+        ["error", "errors", "failure"],
+        ["meta", "details", "schema_version"]
+      ],
+      "finding": "Machine-readable output is mentioned without a clear outcome envelope or equivalent result shape.",
+      "suggested_fix": "State the success shape, failure shape, payload field, and metadata or details field."
+    },
+    {
+      "id": "conv.error.shape",
+      "category": "io_contract",
+      "severity": "major",
+      "applies_to": ["structured_output", "cli", "mcp", "api"],
+      "requires_failure_terms": true,
+      "required_groups": [
+        ["code", "error_code", "failure_kind", "終了符号"],
+        ["message", "reason", "原因"],
+        ["detail", "details", "stderr", "stdout"],
+        ["hint", "next_actions", "remediation", "対処"]
+      ],
+      "finding": "Failure handling is mentioned without a stable public error shape.",
+      "suggested_fix": "Define code, message, structured details, and next-action hint for public failures."
+    },
+    {
+      "id": "conv.cli.streams",
+      "category": "io_contract",
+      "severity": "major",
+      "applies_to": ["cli"],
+      "required_groups": [
+        ["stdout", "標準出力"],
+        ["stderr", "標準誤出力"],
+        ["exit", "終了符号", "終了コード"]
+      ],
+      "finding": "CLI behavior is mentioned without stdout, stderr, and exit-code roles.",
+      "suggested_fix": "State what goes to stdout, what goes to stderr, and which exit codes represent success, audited-material failure, usage failure, and dependency failure."
+    },
+    {
+      "id": "conv.record.uncertainty",
+      "category": "evidence",
+      "severity": "major",
+      "applies_to": ["record"],
+      "required_groups": [
+        ["iso 8601", "timezone", "時区", "タイムゾーン"],
+        ["fact", "事実", "evidence", "証拠"],
+        ["inference", "推測", "inferred"],
+        ["pending", "保留", "未確定", "判断待ち"]
+      ],
+      "finding": "Durable record or audit evidence is mentioned without time, source, and uncertainty separation.",
+      "suggested_fix": "Declare timestamp format, evidence source, inferred status, and pending-decision markers."
+    },
+    {
+      "id": "conv.record.shallow_context_surface",
+      "category": "evidence",
+      "severity": "major",
+      "applies_to": ["record"],
+      "required_groups": [
+        ["context", "context_summary", "record_surface", "文脈", "対象"],
+        ["current_state", "state", "status", "現在状態", "状態"],
+        ["next_action", "action", "次行動", "次に"],
+        ["detail_refs", "evidence", "source", "証拠", "参照"]
+      ],
+      "finding": "Durable record is mentioned without a shallow context surface for later recovery.",
+      "suggested_fix": "Expose context, current state, next action, and detail references as named fields instead of burying them in prose."
+    },
+    {
+      "id": "conv.profile.boundary",
+      "category": "governance",
+      "severity": "minor",
+      "applies_to": ["global_policy"],
+      "required_groups": [
+        ["schema_version", "$schema", "schema", "version"],
+        ["profile", "repository", "repo", "プロファイル"],
+        ["public_surfaces", "surface", "surfaces", "公開面"],
+        ["commands", "formatter", "linter", "test", "試験"],
+        ["exception", "non-goal", "対象外", "例外"],
+        ["internal", "domain", "内部", "個別"]
+      ],
+      "finding": "Global convention is mentioned without a structured repository-profile shape and exception boundaries.",
+      "suggested_fix": "State profile schema_version, repository id, public surfaces, commands, output shapes, exceptions, and non-goals."
+    },
+    {
+      "id": "conv.verification.public_surface",
+      "category": "validation",
+      "severity": "major",
+      "applies_to": ["structured_output", "cli", "mcp", "api"],
+      "required_groups": [
+        ["test", "unittest", "fixture", "smoke", "検証", "試験"],
+        ["representative", "代表", "example", "実行例"],
+        ["output", "json", "schema", "出力", "契約"]
+      ],
+      "finding": "Public I/O surface is mentioned without representative output-contract verification.",
+      "suggested_fix": "Add a representative CLI/API/MCP execution, fixture, schema check, or explicit reason it is not applicable."
+    }
+  ],
+  "promotion": {
+    "draft_default": "warn",
+    "requires_user_confirmation": [
+      "ok envelope requirement for all new structured outputs",
+      "exit code mapping strictness",
+      "top-level schema_version requirement scope",
+      "release-profile blocker thresholds"
+    ]
+  }
+}

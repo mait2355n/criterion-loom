@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-ROLLBACK-MISSING-001",
+  "title": "Implementation plan without rollback path is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 監査 CLI の出力を改善する。対象外: MCP 契約変更はしない。成果物: cli.py と tests。手順: 調査、実装、検証。依存: 既存 CLI。リスク: 出力互換が崩れる。対策: 代表 CLI を再検証する。検証: unittest。妥当性: 利用者が目的に合うか確認する。判断主体: 利用者。確認点: 実装後に状態報告する。基準線: 既存 fixture 通過を判定基準にする。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "Implementation plans that change executable behavior need recovery or rollback handling.",
+  "labels": {
+    "expected_rules": [
+      "plan.risk.rollback_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "risk",
+        "rule_id": "plan.risk.rollback_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "risk"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "rollback_or_recovery"
+      ]
+    }
+  }
+}

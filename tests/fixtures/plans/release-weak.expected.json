@@ -1,0 +1,55 @@
+{
+  "id": "PLAN-RELEASE-WEAK-001",
+  "title": "Release/configuration plan without planning controls is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 設定を公開する。対象外: UI は作らない。成果物: config と README。手順: 調査、実装、検証。依存: 既存 config。リスク: 既存運用が壊れる。検証: unittest。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後に進捗確認。戻し方: backup を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "High-impact release/configuration plans need decomposition, sequence, resource basis, risk response, baseline, change control, and decision gates.",
+  "labels": {
+    "expected_rules": [
+      "plan.structure.work_package_decomposition_missing",
+      "plan.schedule.dependency_sequence_missing",
+      "plan.resource.estimate_or_capacity_missing",
+      "plan.risk.response_missing",
+      "plan.control.baseline_or_metric_missing",
+      "plan.control.change_control_missing",
+      "plan.governance.decision_gate_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "risk",
+        "rule_id": "plan.risk.response_missing"
+      },
+      {
+        "category": "governance",
+        "rule_id": "plan.governance.decision_gate_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "planning",
+        "schedule",
+        "resource",
+        "risk",
+        "control",
+        "governance"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "work_package_decomposition",
+        "dependency_sequence",
+        "estimation_or_resource_basis",
+        "risk_response",
+        "control_baseline",
+        "change_control",
+        "decision_gate"
+      ]
+    }
+  }
+}

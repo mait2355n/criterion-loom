@@ -1,0 +1,35 @@
+{
+  "id": "DIFF-SOURCE-WITHOUT-TESTS-001",
+  "title": "Source change without test change is flagged as test obligation",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/scoring.py b/src/semantic_guard/scoring.py\n--- a/src/semantic_guard/scoring.py\n+++ b/src/semantic_guard/scoring.py\n@@\n+def normalize_score(raw: float) -> float:\n+    return max(0.0, min(1.0, raw))\n",
+  "intent": "score normalization helper を追加する。",
+  "strict": true,
+  "rationale": "Executable source changes need test changes or an explicit verification reason.",
+  "labels": {
+    "expected_rules": [
+      "diff.test_obligation.source_without_tests"
+    ],
+    "expected_findings": [
+      {
+        "category": "quality",
+        "rule_id": "diff.test_obligation.source_without_tests"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "quality"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "test_obligation"
+      ]
+    }
+  }
+}
