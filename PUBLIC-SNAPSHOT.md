@@ -50,6 +50,7 @@ review helpers, and a final human-decision boundary.
   - `docs/public-comparison-2026-06-02.ja.md`
   - `docs/llm-reviewer.md`
   - `docs/ambiguity-confidence-design.md`
+  - `docs/public-wording-audit-feature-brief.md`
   - `docs/acceptance-review-bundle.md`
   - `docs/conventions/`
   - `docs/rule-model.md`

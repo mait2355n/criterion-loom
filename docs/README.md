@@ -51,6 +51,7 @@ or comparison material:
 - `public-comparison-2026-06-02.ja.md`: Japanese public positioning and non-claims.
 - `llm-reviewer.md`: LLM reviewer role boundary.
 - `ambiguity-confidence-design.md`: deterministic ambiguity, confidence, and review-routing-pressure boundary.
+- `public-wording-audit-feature-brief.md`: requirements and implementation brief for public wording precision audit.
 - `acceptance-review-bundle.md`: final human-review bundle contract.
 - `conventions/README.md`: cross-repository coding and I/O convention source of truth.
 - `rule-model.md`: rule catalog model.
