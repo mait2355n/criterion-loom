@@ -1,8 +1,16 @@
 # Criterion Loom
 
-Criterion Loom is a meaning-first audit system for Codex work.
+Criterion Loom is a meaning-first audit CLI, MCP server, and companion Codex
+skill for Codex work.
 
-Package, CLI, and MCP server name: `semantic-guard`.
+It turns ambiguity and missing information in requests, plans, change
+explanations, and completion claims into JSON audit results. The public project
+name is Criterion Loom; the package, CLI, and MCP server name is
+`semantic-guard`.
+
+It does not approve AI output as correct. It surfaces review points, missing
+evidence, and undecided items before a human chooses `accept`,
+`request_revision`, or `defer`.
 
 ## At A Glance
 
@@ -17,14 +25,14 @@ Package, CLI, and MCP server name: `semantic-guard`.
 
 It externalizes checks that otherwise stay implicit in an agent's reasoning:
 
-- whether an open-ended idea has material ambiguities that should be asked before a spec exists
-- whether an LLM exploration pass can extract all visible information before asking every material missing question
-- whether the target is understood before requirements are refined
-- whether a request separates need, stakeholder/source, solution, scope, non-goals, measurable quality, priority, uncertainty, and verification
-- whether decided, undecided, hypothetical, inferred, value-judgment, and evidence-gap statements are explicitly separated
-- whether an implementation plan covers risk, validation owner, progress control, change control, rollback, minimality, and evidence
-- whether a diff may break meaning, quality, security, tests, documentation, or implementation minimality
-- whether completion claims have evidence rather than just confidence
+- `explore-request`: target users, material ambiguities, and questions to ask before a spec exists
+- `audit-request`: purpose, scope, non-goals, verification conditions, and uncertainty
+- `audit-plan`: work breakdown, order, risk, verification, rollback, and completion evidence
+- `audit-diff`: meaning, public contracts, failure handling, tests, documentation, and minimality
+- `finish-check`: execution evidence, residual risk, and human confirmation points
+- `audit-decision-state`: undecided, unknown, hypothetical, inferred, value-judgment, and evidence-gap statements
+- JSON output, JSON Schema, fixtures, unit tests, and `doctor` checks for local verification
+- a companion Codex skill that routes Codex work through the same audit flow
 
 ## Quick Start
 
@@ -55,9 +63,14 @@ The implementation still exposes additional support commands such as `explore-re
 
 ## Status
 
-This is a local research prototype, not a finished requirements engineering engine.
+This is a research prototype, not a finished requirements engineering product.
 
-The current implementation is intentionally small and heuristic. It is useful for dogfooding Codex workflows and making missing assumptions visible, but it should not be treated as an authoritative requirements, safety, or release gate.
+The current implementation uses vocabulary rules and lightweight structural
+checks. It does not fully understand natural language, and fixture evaluation is
+local regression coverage rather than a precision or recall measurement for
+general documents. It is useful for dogfooding Codex workflows and making missing
+assumptions visible, but it should not be treated as an authoritative
+requirements, safety, or release gate.
 
 Human final decision is required. The tool can prepare audit output, reviewer supplements, and acceptance-review bundles, but `final_human_decision.status` stays `pending` until a person chooses `accept`, `request_revision`, or `defer`.
 
