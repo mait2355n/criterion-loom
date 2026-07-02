@@ -111,9 +111,19 @@ or when `SG_PROJECT` points at one.
 - Use `llm_explore_request_start_tool` plus `llm_exploration_status_tool` when
   LLM exploration should expose running/completed/failed/timed-out state instead
   of blocking until the command returns.
+- Use `audit-decision-state` or `audit_decision_state_tool` when the task needs
+  decided, undecided, inferred, hypothetical, value-judgment, and evidence-gap
+  statements separated before a handoff or control-plane record.
 - Use `audit-conventions` or `audit_conventions_tool` when public I/O, CLI,
   MCP, API, durable-record, error-shape, output-schema, or repository-wide
   convention behavior is introduced or changed.
+- Use `audit-conventions --kind document` for README, release notes, handoffs,
+  public positioning, and skill instructions. Inspect `doc.expression.*` and
+  `details.expression_precision.referent_resolutions` for document-expression
+  diagnostics; do not treat the top-level `status` alone as a rule-specific
+  pass/fail result.
+- Use `trace-report` or `trace_report_tool` when request, plan, diff, finish
+  evidence, or domain vocabulary need one compact traceability view.
 - Treat `review-if-needed` pressure as review routing pressure, not correctness
   probability.
 - Use `review_context.independent_review_requested` or `fresh_eyes_requested`
@@ -135,5 +145,7 @@ or when `SG_PROJECT` points at one.
 - This skill is not a release gate.
 - It does not certify requirements, safety, correctness, or security.
 - It does not make final acceptance decisions.
+- It does not treat document-expression findings as style lint or proof of
+  natural-language correctness.
 - It should not absorb companion evidence-processing tools into the
   deterministic audit core.

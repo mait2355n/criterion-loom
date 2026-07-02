@@ -1,12 +1,12 @@
 interface:
-  display_name: "Semantic Implementation"
-  short_description: "Meaning-first requirements, implementation, LLM reviewer, and final human-review audit"
-  default_prompt: "Use $semantic-implementation to clarify meaning, intent, requirements, plan risks, verification, intermediate LLM review when useful, and final human-review evidence."
+  display_name: "Loom Guide"
+  short_description: "Meaning-first audit routing for Codex work"
+  default_prompt: "Use $semantic-implementation to route non-trivial Codex work through meaning-first audits, document-expression checks, verification evidence, and final human-review boundaries."
 dependencies:
   tools:
     - type: "mcp"
       value: "semantic_guard"
-      description: "Local semantic-guard MCP server for requirement, plan, diff, finish, LLM reviewer, and acceptance bundle audits"
+      description: "Local semantic-guard MCP server for meaning-first audit, convention checks, trace reports, reviewer material, and acceptance bundles"
       transport: "stdio"
 policy:
   allow_implicit_invocation: true

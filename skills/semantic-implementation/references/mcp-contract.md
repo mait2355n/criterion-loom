@@ -6,8 +6,8 @@ The MCP server and CLI share the same audit phases and JSON shape.
 
 This contract is for Codex runs that use the `semantic-implementation` skill and for maintainers extending `semantic-guard`.
 
-Use the deterministic audit tools throughout the work. Use deterministic exploration as fast preflight before turning an open-ended idea into a spec, and use LLM exploration when the work needs all visible information extracted before every material missing question is asked. Then use the normal audit phases once requirements or plans exist. Use LLM reviewer tools as optional intermediate audit support when rule item coverage, missing supplements, counter-conditions, or fresh-eyes review value need a second pass. Use acceptance bundle tools only when preparing a final artifact for human evaluation.
-Use `doctor`, `audit-result-schema`, `request-exploration-review-schema`, `rule-detector-map`, `audit-conventions`, and `conventions-catalog` as support tools for checkout health, output-contract integration, convention checks, and catalog maintenance.
+Use the deterministic audit tools throughout the work. Use deterministic exploration as fast preflight before turning an open-ended idea into a spec, and use LLM exploration when the work needs an isolated reviewer to extract visible facts from the supplied request/context, return schema-valid exploration JSON, and list material questions without claiming completeness. Then use the normal audit phases once requirements or plans exist. Use decision-state audit when the work needs explicit separation of decided, undecided, inferred, hypothetical, value-judgment, and evidence-gap statements. Use LLM reviewer tools as optional intermediate audit support when rule item coverage, missing supplements, counter-conditions, or fresh-eyes review value need a second pass. Use acceptance bundle tools only when preparing a final artifact for human evaluation.
+Use `doctor`, `audit-result-schema`, `request-exploration-review-schema`, `rule-detector-map`, `audit-conventions`, `conventions-catalog`, `trace-report`, and `evaluate-fixtures` as support tools for checkout health, output-contract integration, convention checks, traceability, calibration, and catalog maintenance.
 
 ## Contract Scope
 
@@ -17,7 +17,7 @@ Public surfaces: CLI commands, MCP tools, JSON audit-result output, JSON helper 
 Commands and output shapes are listed below; normal text-audit commands use the shared audit-result envelope with `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, and `details`.
 Exception and non-goal boundaries: the contract does not define internal Python APIs, UI behavior, formal requirements proof, release approval, security certification, or final human acceptance.
 Representative verification: run `python -m unittest tests.test_cli tests.test_mcp_tools`, a CLI smoke command for the changed surface, `audit-result-schema`, and `doctor` when the public surface changes.
-Durable evidence records should include ISO 8601 timestamp with timezone, source command or reviewer source, fact versus inference versus hypothesis versus unknown status, pending decision markers, and decision owner when known.
+Durable evidence records should include a shallow recovery surface with named `context`, `current_state`, `action` or `next_action`, and `detail_refs` fields, plus ISO 8601 timestamp with timezone, source command or reviewer source, fact versus inference versus hypothesis versus unknown status, pending decision markers, and decision owner when known.
 
 ## Phases
 
@@ -27,6 +27,8 @@ Durable evidence records should include ISO 8601 timestamp with timezone, source
 - `audit_plan`
 - `audit_diff`
 - `finish_check`
+
+Support commands such as `audit_decision_state`, `audit_conventions`, `trace_report`, `evaluate_fixtures`, `doctor`, schema commands, and LLM reviewer helpers use the same audit evidence discipline, but they are not separate public pillars.
 
 ## Tools
 
@@ -89,7 +91,7 @@ CLI: none. These are MCP-process-local state tools for callers that need progres
 
 Inputs:
 
-- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`; the normal successful path creates a background execution record.
+- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`, but it always starts a background execution.
 - status: `job_id`, plus optional `include_result` and `include_prompt`.
 
 Output:
@@ -145,6 +147,33 @@ Output:
 - requirement classifications.
 - findings for ambiguity, solution bias, unverifiable requirements, conflict, and traceability gaps.
 - for `kind=document`, document coverage findings instead of requirement-only wording findings.
+
+### audit_decision_state
+
+MCP tool: `audit_decision_state_tool`
+
+CLI:
+
+```sh
+semantic-guard audit-decision-state --text "..."
+semantic-guard audit-decision-state --kind document --file handoff.md
+```
+
+Inputs:
+
+- `text`: requirement, plan, document, diff summary, handoff, or decision note.
+- `context`: optional surrounding context.
+- `kind`: input shape. Use `document` for handoffs and explanatory prose.
+- `profile`: severity profile.
+- `strict`: whether severe decision-state gaps should block.
+
+Output:
+
+- normal audit-result shape with `phase="audit_decision_state"`.
+- pending decisions, unknowns, hypotheses, inferences, one-sided observations, time-dependent claims, value judgments, and evidence gaps.
+- `details.decision_state_report.management_handoff_items` for possible control-plane or durable-record transfer.
+
+Use this when the important question is "what has or has not been decided?" rather than "is this requirement well written?". It does not resolve uncertainty or decide final acceptance.
 
 ### audit_plan
 
@@ -270,8 +299,11 @@ Output:
 - normal audit-result shape with `phase="audit_conventions"`.
 - detected public surfaces under `details.surfaces`.
 - missing convention rule ids such as `conv.output.envelope`, `conv.error.shape`, `conv.cli.streams`, `conv.record.uncertainty`, `conv.profile.boundary`, and `conv.verification.public_surface`.
+- document-expression rule ids such as `doc.expression.target_blurred`, `doc.expression.operation_blurred`, `doc.expression.output_form_missing`, `doc.expression.utility_blurred`, `doc.expression.decision_actor_missing`, `doc.expression.demonstrative_reference_blurred`, `doc.expression.capability_contract_missing`, and `doc.expression.mapping_contract_missing` when `kind=document`.
+- `details.expression_precision.referent_resolutions` for demonstrative-reference diagnostics. Status values include `supported`, `ambiguous`, `no_candidate`, and `weak_only`.
 
 Use this when work introduces or changes public I/O, CLI behavior, MCP tools, API responses, durable records, error handling, output schemas, or repository-wide coding conventions.
+Also use it for public documentation and skill instructions that make capability, mapping, output-form, utility, or decision-actor claims. These findings are recall-oriented document diagnostics, not style lint or publication approval.
 
 ### conventions_catalog
 
@@ -289,6 +321,51 @@ Output:
 - convention status, surfaces, rules, and promotion confirmation points.
 
 Use this when integrating convention checks into tools, skills, or external runners.
+
+### evaluate_fixtures
+
+MCP tool: `evaluate_fixtures_tool`
+
+CLI:
+
+```sh
+semantic-guard evaluate-fixtures
+semantic-guard evaluate-fixtures --include-passed
+```
+
+Inputs:
+
+- `path`: optional fixture root containing `*.expected.json` files.
+- `include_passed`: whether passed fixture rows should be included in output.
+
+Output:
+
+- fixture totals, pass/fail status, pass rate, phase counts, expected versus actual status counts, label metrics, category hits, missing-field hits, rule hits, catalog coverage, status confusion, and failing rows.
+
+Use this for local calibration and regression evidence. It is not statistical proof for arbitrary natural-language inputs.
+
+### trace_report
+
+MCP tool: `trace_report_tool`
+
+CLI:
+
+```sh
+semantic-guard trace-report --file trace-input.json
+```
+
+Inputs:
+
+- JSON object containing any of `request`, `plan`, `diff`, `finish`, `evidence`, `context`, `strict`, `profile`, optional per-segment `tags`, and optional `vocabulary_profile`.
+
+Output:
+
+- segment audit summaries.
+- vocabulary-overlap links between request, plan, diff, and finish.
+- normalized trace tags such as acceptance, evidence, verification, output contract, risk, and rollback.
+- missing segments, blocked segment audits, weak trace links, unresolved domain terms, suggested trace tags, and a trace summary.
+
+Use this when a handoff or final explanation needs a compact traceability view across request, plan, diff, and evidence. It does not replace the underlying audits.
 
 ### llm_review_command
 
@@ -494,6 +571,7 @@ Strict validation requires at least one deterministic audit, one execution evide
 
 ```sh
 semantic-guard audit-result-schema
+semantic-guard request-exploration-review-schema
 semantic-guard llm-review-schema
 semantic-guard acceptance-bundle-schema
 ```
