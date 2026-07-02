@@ -1,5 +1,7 @@
 # Conventions
 
+## Purpose
+
 This directory is the source of truth for cross-repository coding and I/O
 conventions used by `semantic-guard`.
 
@@ -54,14 +56,24 @@ only place where a caller must find status, type, identity, evidence,
 uncertainty, or next-action semantics.
 
 Expression-precision checks use `doc.expression.*` rule ids inside
-`audit-conventions --kind document`. They are not copy-editing rules. They warn
-when wording such as "怪しい場所を試験できる内容として外に出す" leaves the
-target, operation, output form, or decision actor unclear.
+`audit-conventions --kind document`. They are not copy-editing rules.
 
-They also warn when demonstratives such as "それを外部へ出す" do not expose a
-nearby referent. "未決定事項を抽出し、その一覧を JSON の findings として返す"
-is acceptable for expression precision because the referent is recoverable in
-the same sentence.
+Bad examples:
+
+```text
+怪しい場所を試験できる内容として外に出す
+それを外部へ出す
+```
+
+Acceptable example:
+
+```text
+未決定事項を抽出し、その一覧を JSON の findings として返す
+```
+
+The bad examples leave the target, operation, output form, decision actor, or
+referent unclear. The acceptable example keeps the referent recoverable in the
+same sentence.
 
 For durable records, keep a short top-level recovery surface: context, current
 state, next action, and detail references. Put raw history and long rationale

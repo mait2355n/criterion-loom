@@ -2,9 +2,8 @@
 
 ## Purpose
 
-Criterion Loom is a small research prototype about meaning-first audits for
-Codex work. Discussion should stay useful, specific, and careful about public
-claims.
+Criterion Loom is a publishable v0.1 tool for meaning-first audits in Codex
+work. Discussion should stay useful, specific, and careful about public claims.
 
 ## Audience And Use
 

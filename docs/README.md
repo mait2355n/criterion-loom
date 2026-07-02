@@ -86,7 +86,7 @@ but they are secondary material for a new reader.
 - `expression-precision-audit-handoff-2026-06-30.md`: restart note for the planned expression-precision audit feature. Read it after repository reconciliation and before implementing `doc.expression.*` rules.
 - `agent-revision-loop-positioning-2026-06-30.md`: earlier positioning note for the agent-side revision loop and outward wording.
 - `prototypes/origin-requirement.md`: origin requirement for future prototype work and concept-drift checks.
-- `ja/company-evidence.md`: legacy Japanese positioning work record; not a public README substitute.
+- `ja/public-positioning-note.md`: Japanese claim-boundary note for public positioning; not a public README substitute.
 - `release/repository-update-plan-2026-06-30.md`: repository-side update plan for the public v0.1 completion stance and audit-performance work.
 - `release/repository-update-handoff-2026-06-30.md`: compact handoff for whoever applies the repository update.
 

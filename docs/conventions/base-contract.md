@@ -239,11 +239,19 @@ surface, MCP surface, or output schema.
 
 These points require user confirmation before promotion from `draft`:
 
+They are open policy questions, not current behavior claims:
+
+Evidence source for this section: the current CLI behavior, tests, and
+`doctor` command keep `1` as audited-material failure for the present
+`semantic-guard` commands. The question below is about whether that convention
+must bind every future support tool.
+
 - whether every new machine-readable output must use an explicit `ok` envelope,
   or whether established audit-result shapes remain first-class without
   wrapping.
-- whether exit code `1` should always mean audited-material failure, or whether
-  some tools may use it for generic command failure.
+- exit code `1` policy: current `semantic-guard` commands use it for
+  audited-material failure. Future support tools need an explicit documented
+  exception before using it for generic command failure.
 - whether top-level `schema_version` is required on all new structured outputs,
   or whether documented schema source plus `details.schema_version` is enough
   for some support outputs.

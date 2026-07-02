@@ -26,7 +26,7 @@
 - `../calibration-report-2026-06-05.md`: fixture 評価の現時点 snapshot。
 - `../public-comparison-2026-06-02.ja.md`: MCP server、security scanner、agent skill などとの比較。
 
-補助記録として `company-evidence.md` がある。これは過去の位置付け検討メモであり、公開 README や利用者向け取説の代わりではない。
+補助記録として `public-positioning-note.md` がある。これは公開説明の claim boundary を確認するためのメモであり、公開 README や利用者向け取説の代わりではない。
 
 ## 実行例
 
@@ -49,7 +49,7 @@ uv run --python 3.13 --project . semantic-guard doctor
 文書監査の主要な返却項目は、`status`、`score`、`findings`、`missing`、`next_actions`、`details` である。
 
 - `status`: 現在の規則で止めるかどうか。
-- `findings`: 不足や警告の内容。
+- `findings`: 監査で検出した不足や警告の一覧。
 - `missing`: 文書から見えなかった構造項目。
 - `next_actions`: 次に直すべきこと。
 - `details`: claim/evidence/limitation や診断情報。

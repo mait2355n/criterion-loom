@@ -10,7 +10,7 @@
 
 ## When To Use
 
-この記録形式は、監査規則を変更する開発者、fixture を追加する保守者、監査結果の変化を読む利用者のために使う。実地利用で見つけた誤警告、警告漏れ、過剰な blocking を、再発させたくない局所整合性として固定する時に使う。
+fixture record は、監査規則を変更する開発者、fixture を追加する保守者、監査結果の変化を読む利用者のために使う。実地利用で見つけた誤警告、警告漏れ、過剰な blocking を、再発させたくない局所整合性として固定する時に使う。
 
 ## Record Pair
 
@@ -41,7 +41,7 @@
 - `findings[].category` の include / exclude。
 - `missing` の include / exclude。
 - `details` の必要項目。
-- `details.claim_triples` の部分一致。
+- `details.claim_triples` 配列の各 record に含まれる claim / evidence / limitation の substring match。
 - `score` の上下限。
 - `labels.expected_findings` / `labels.forbidden_findings` による局所 true positive / false positive 検査。
 - `labels.expected_rules` / `labels.forbidden_rules` による rule id 単位の局所検査。
@@ -50,7 +50,7 @@
 検査器は finding 数、全文、score の丸ごと一致を既定では見ない。これらは監査規則の改善で自然に変わるため、退行検出の軸として弱い。
 `warning_class`、`nearest_candidates`、`semantic_boundaries` は通常の単体試験側で固定する。fixture では、複数の局所整合性を一つの期待値へ詰めすぎない。
 
-`evaluate-fixtures` は `rule_catalog_coverage` も返す。これは rule catalog と fixture label の局所対応表であり、`unhit_rule_ids` は fixture rule label がまだ触れていない規則を示す。これは統計的な網羅率ではなく、fixture 追加の作業台である。
+`evaluate-fixtures` は `rule_catalog_coverage` も返す。`rule_catalog_coverage` は rule catalog と fixture label の局所対応表であり、`unhit_rule_ids` は fixture rule label がまだ触れていない規則を示す。`rule_catalog_coverage` は統計的な網羅率ではなく、fixture 追加の作業台である。
 
 derivation 系の期待値も同じく局所退行検査である。`derivation_rule_hits`, `derivation_status_hits`, `logical_trace_rule_hits`, `logical_trace_summary_rule_hits` は fixture 行で見えた値の件数であり、任意の入力に対する統計的な精度、再現率、証明能力を表さない。
 

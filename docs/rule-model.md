@@ -71,9 +71,9 @@ Rule(
 - Secure-development guidance: NIST SSDF, OWASP, CWE。
 - Semantic preservation: semantic-implementation と保守設計上の名前、識別子、保管、所属の区別。
 
-ここでの参照は、規格や手引きの処理全体を実装するという意味ではない。`semantic-guard` の小さな監査規則が、どの考え方に支えられているかを示すための根拠である。
+ここでの参照は、規格や手引きの処理全体を実装するという意味ではない。`semantic-guard` の小さな監査規則が、どの考え方に支えられているかを示すための設計根拠である。
 
-「実装工学」という独立した標準名は置かない。ここでは SWEBOK の software construction / testing / operations、ISO/IEC/IEEE 12207 の software life-cycle processes、ISO/IEC 25010 の品質特性、NIST SSDF の secure-development practices を、実装時に見落としやすい失敗様式へ圧縮して扱う。
+「実装工学」という独立した標準名は置かない。`semantic-guard` は、SWEBOK、ISO/IEC/IEEE 12207、ISO/IEC 25010、NIST SSDF から着想した観点を、実装時に見落としやすい失敗様式へ圧縮して扱う。この圧縮は規格適合性の主張ではなく、`src/semantic_guard/rules.py` の rule category の由来を説明するための保守用分類である。
 
 ## Reverse Conditions
 
@@ -108,7 +108,7 @@ Rule(
 uv run --python 3.13 --project . semantic-guard rule-detector-map
 ```
 
-各 entry は次を返す。
+`rule-detector-map` の各 JSON entry は次の field を返す。
 
 - `rule_id`: catalog 上の規則 ID。
 - `phase`: 監査段階。
@@ -117,7 +117,7 @@ uv run --python 3.13 --project . semantic-guard rule-detector-map
 - `source`: 現時点の主な code path。
 - `notes`: 対応上の注意。
 
-これは意味理解の証明ではない。目的は、規則本文だけが育ち、検出器側の対応が人間の記憶へ落ちる状態を避けることにある。新しい規則を足した時に `rule-detector-map` が欠けるなら、その規則はまだ保守可能な公開 catalog とは言いにくい。
+`rule-detector-map` は意味理解の証明ではない。目的は、規則本文だけが育ち、検出器側の対応が人間の記憶へ落ちる状態を避けることにある。新しい規則を足した時に `rule-detector-map` が欠けるなら、その規則はまだ保守可能な公開 catalog とは言いにくい。
 
 ## Current Coverage
 
@@ -128,7 +128,7 @@ uv run --python 3.13 --project . semantic-guard rule-detector-map
 - 要求の達成条件、合格条件、完了条件。
 - 要求の検証方法の具体性。
 - 要求の達成確認に使う証拠成果物。
-- 安全、権限、移行、公開、運用などの不合格/差し戻し条件。
+- 安全、権限、移行、公開、運用などの不合格/差し戻し条件。例: 権限変更は人間承認なしでは進めない。この例は acceptance rule の記述材料であり、外部組織の承認手続きまでは定義しない。
 - 利用者操作や入力出力を含む要求の利用場面、入力条件、期待出力。
 - 改善、対応、サポート止まりの要求に対する観測可能な振る舞い。
 - 利用者操作や公開面を持つ要求の前提条件または発火条件。

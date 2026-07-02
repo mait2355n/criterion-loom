@@ -5,7 +5,7 @@
 ## 前提
 
 - Python 3.11 以上を使う。以下の例は公開 snapshot の検証用に Python 3.13 で統一する。
-- `uv` が使える。
+- `uv` command を実行できる。
 - command は repository または snapshot の root で実行する。
 
 動作確認だけなら、仮想環境を手で作る必要はない。`uv run --python 3.13 --project . ...` で実行する。
@@ -31,7 +31,7 @@ uv run --python 3.13 --project . semantic-guard explore-request --text \
   "割り勘アプリを作りたい"
 ```
 
-`explore-request` は、まだ要求文として監査できない案から、対象利用者の仮説、重大な曖昧点、聞くべき質問、仕様書の輪郭を返す軽量 preflight である。実装計画ではない。
+`explore-request` は、まだ要求文として監査できない案から、対象利用者の仮説、重大な曖昧点、聞くべき質問、仕様書の輪郭を JSON の `details` と `findings` に返す軽量 preflight である。実装計画ではない。
 
 網羅的に問いただす必要がある場合は LLM 版を使う。
 
@@ -64,7 +64,7 @@ uv run --python 3.13 --project . semantic-guard audit-request \
 
 ```sh
 uv run --python 3.13 --project . semantic-guard audit-plan --text \
-  "目的: README の日本語取説を整える。作業分解: 入口、操作例、実績証明文書を追加する。検証: 文書監査と単体試験を実行する。撤回: 追加文書だけを戻す。"
+  "目的: README の日本語取説を整える。作業分解: 入口、操作例、公開上の制限説明を追加する。検証: 文書監査と単体試験を実行する。撤回: 追加文書だけを戻す。"
 ```
 
 計画監査では、作業分解、依存順序、資源見積、リスク対応、進捗制御、変更統制、検証責任、撤回手段、新規依存や抽象化に対する最小性根拠を見る。

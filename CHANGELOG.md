@@ -47,7 +47,7 @@ uv run --python 3.13 --project . semantic-guard doctor
 ## 2026-06-04 Public Snapshot
 
 - Publish a runnable `semantic-guard` snapshot with CLI, MCP server, tests, fixtures, schemas, public documentation, and the companion `semantic-implementation` skill.
-- Include Japanese usage, quickstart, and company-facing evidence documents.
+- Include Japanese usage and quickstart documents.
 - Expand local calibration fixtures to 36 deterministic fixture expectations.
 - Add a 30-entry field corpus for good warnings, noisy warnings, and likely misses.
 - Keep explicit non-claims: not a security scanner, not a release gate, not a formal requirements verifier, and not a replacement for human final acceptance.

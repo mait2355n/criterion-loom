@@ -1,6 +1,6 @@
 # Contributing
 
-Criterion Loom's `semantic-guard` package is a small research prototype for meaning-first audits of Codex work. Contributions should preserve the public boundary: this is not a general natural-language understanding engine, a security scanner, or a replacement for human acceptance.
+Criterion Loom's `semantic-guard` package is a publishable v0.1 deterministic heuristic tool for meaning-first audits of Codex work. Contributions should preserve the public boundary: this is not a general natural-language understanding engine, a security scanner, or a replacement for human acceptance.
 
 ## Purpose
 

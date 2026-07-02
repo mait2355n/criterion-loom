@@ -30,7 +30,7 @@ uv run --python 3.13 --project . semantic-guard audit-request --kind document --
 - 編集前: 計画監査。
 - 編集後: 差分監査。
 - 完了主張前: 完了確認。
-- 作業束全体: trace report と人間向け受入判断材料。
+- 要求、計画、差分、完了証拠を結ぶ作業束: trace report と人間向け受入判断材料。
 
 `semantic-guard` は、主として文脈提供器でも実行器でもない。目的、範囲、検証、証拠、追跡可能性、人間の最終判断境界を扱う構造化監査面である。
 
@@ -38,7 +38,7 @@ uv run --python 3.13 --project . semantic-guard audit-request --kind document --
 
 分類比較には不要である。
 
-公平な公開比較は、公開されている機能、出力契約、公式文書から行える。たとえば filesystem MCP、GitHub MCP、Context7、Snyk MCP、Semgrep MCP、Skills は、それぞれの用途と境界を比較できるだけの公開情報を持っている。
+公平な公開比較は、公開されている機能、出力契約、公式文書から行える。filesystem MCP、GitHub MCP、Context7、Snyk MCP、Semgrep MCP、Skills は、各公開実装の用途と境界を比較できるだけの公開情報を持っている。
 
 実際の軌道が役に立つのは別の主張、つまり「`semantic-guard` が実地で役に立ったか」を示す時である。
 
@@ -140,7 +140,7 @@ Skills は、反復可能な workflow を定義する点で近い。
 - LLM reviewer を中途材料に留める設計。
 - 決定論出力の外側に置かれた人間の最終受入。
 
-上の公開 MCP 分類の中に、この束そのものを主対象にしているものは見えない。個別の要素は skills、保安走査、思考補助、文書 MCP と重なるが、統合点が違う。
+上の公開 MCP 分類の中に、要求、計画、差分、完了証拠を結ぶ監査束を主対象にしているものは見えない。個別の要素は skills、保安走査、思考補助、文書 MCP と重なるが、統合点が違う。
 
 ## 弱点と正直な境界 / Weaknesses And Honest Boundaries
 
@@ -155,7 +155,7 @@ Skills は、反復可能な workflow を定義する点で近い。
 - 領域固有語彙では過警告も過少警告も起こり得る。
 - 人間の受入判断はなお必要である。
 
-これらの境界は飾りではない。`semantic-guard` の信頼模型そのものに含まれる。
+人間判断、非保安走査、非 release gate、局所校正という四つの境界は飾りではない。`semantic-guard` の信頼模型の中核に含まれる。
 
 ## 公開時の呼び方 / Publication Recommendation
 

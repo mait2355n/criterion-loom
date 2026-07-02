@@ -18,8 +18,8 @@ staging files. The fuller task plan is
 
 Update repository-facing material so Criterion Loom is presented as:
 
-- ready as a publishable public v0.1,
-- still a research prototype rather than a finished requirements engineering product,
+- a public v0.1 snapshot with the required repository components in place,
+- not a finished requirements engineering product or general natural-language understanding system,
 - improving audit performance, coverage, and agent-side revision-loop use,
 - returning audit findings to Codex or another AI agent for correction before
   final human review.
@@ -29,15 +29,22 @@ Update repository-facing material so Criterion Loom is presented as:
 Adopt this Japanese short wording:
 
 ```text
-公開可能な初版としては完成済みです。現在は、監査性能、適用範囲、AIエージェントの修正ループへの接続を継続的に改善しています。
+公開対象の v0.1 snapshot として必要な構成を同梱しています。現在は、監査性能、適用範囲、AIエージェントの修正ループへの接続を継続的に改善しています。
 ```
 
 Use this longer wording when more context is needed:
 
 ```text
-Criterion Loom は、Codex 等の AI エージェント作業に対し、依頼、計画、変更説明、完了主張の曖昧さや不足を JSON の監査結果として返す、公開可能な初版として完成しています。
+Criterion Loom は、Codex 等の AI エージェント作業に対し、依頼、計画、変更説明、完了主張の曖昧さや不足を JSON の監査結果として返す、公開対象の v0.1 snapshot です。
 
-現在は、実働する CLI / MCP server / companion skill、JSON Schema、fixture、doctor command、公開文書を備えた状態です。一方で、一般文書を完全に理解する完成済み要求工学製品ではなく、語彙規則と軽量な構造検査に基づく研究試作です。
+確認対象の構成:
+- CLI / MCP server / companion skill
+- JSON Schema / fixture / doctor command
+- README と docs の公開文書
+
+制限:
+- 任意文書を網羅的に処理する要求工学製品ではありません。
+- 判定は語彙規則と軽量な構造検査に基づきます。
 
 今後は、監査性能の改善、過警告や見逃しの低減、fixture / corpus の拡充、AI エージェントの修正ループへの戻し方の改善を進めています。
 ```
@@ -91,7 +98,7 @@ P0 files:
 
 P1 files and directories:
 
-- `docs/ja/company-evidence.md`
+- `docs/ja/public-positioning-note.md`
 - `docs/ja/quickstart.md`
 - `docs/release/`
 - `STAGING-NOTES.md` in CORE staging

@@ -16,7 +16,7 @@
 
 ## Scope
 
-bundle に含めるもの。
+acceptance review bundle に含める項目。
 
 - 元要求。
 - 最終成果物の種類、参照、要約。
@@ -31,7 +31,7 @@ bundle に含めるもの。
 - 人が見るべき最終判断点。
 - 人の最終判断欄。
 
-bundle に含めないもの。
+acceptance review bundle に含めない項目。
 
 - LLM による最終承認。
 - LLM 出力の自動採用。
@@ -90,7 +90,7 @@ MCP server には次を追加する。
 
 LLM reviewer 側も MCP から呼べる。
 
-- `llm_review_command_tool`: prompt、schema path、`codex exec` command を返すだけで実行しない。
+- `llm_review_command_tool`: prompt、schema path、`codex exec` command を JSON object に返すだけで実行しない。
 - `llm_review_run_tool`: 既定は dry-run。`execute=true` の時だけ `codex exec` を起動する。
 
 MCP tool では任意の `codex_binary` は受け取らない。実行入口を増やす以上、ここを開けると監査機構が雑な実行器になる。馬鹿げているのでやらない。

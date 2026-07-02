@@ -9,6 +9,13 @@ It is a maintenance handoff, not a release announcement. The public rule is
 defined in `docs/conventions/base-contract.json` as
 `doc.expression.demonstrative_reference_blurred`.
 
+## Audience And Use
+
+This note is for maintainers changing the expression-precision detector,
+fixtures, or convention catalog. Use it to preserve the default heuristic
+boundary before adding optional NLP dependencies, LLM review, or broader
+reference resolution.
+
 ## Decision
 
 Use a standard-library reference heuristic as the default implementation.
@@ -66,8 +73,8 @@ Candidate strength:
 - `strong`: code spans, ASCII identifiers, schema fields, manifest fields, and
   explicit field-like terms;
 - `medium`: one recoverable Japanese noun phrase or support term;
-- `weak`: broad carrier nouns such as `内容`, `もの`, `部分`, `場所`, `箇所`,
-  `材料`, `対象`, `結果`, `値`.
+- `weak` candidate label: broad carrier noun tokens, for example Japanese
+  terms meaning content, thing, part, place, material, target, result, or value.
 
 Decision:
 
@@ -82,7 +89,7 @@ Decision:
 
 Expected local value:
 
-- high recall for short unclear references such as bare `それ` and `これ`;
+- high recall for short unclear Japanese demonstrative-reference tokens;
 - lower false positives for same-sentence anchored phrases such as `その一覧`;
 - better review evidence because candidate extraction is reported under
   `details.expression_precision.referent_resolutions`.
@@ -125,4 +132,3 @@ uv run --python 3.13 --project . semantic-guard audit-conventions --kind documen
 uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧を JSON の findings として返す。"
 uv run --python 3.13 --project . semantic-guard finish-check --text "tests_ran: ..."
 ```
-

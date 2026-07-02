@@ -61,7 +61,7 @@ Out of scope:
 
 The design inherits these contracts from the current system:
 
-- `semantic-guard` remains a local research prototype and meaning-first audit layer, not an authoritative requirements engine, release gate, security scanner, MCP competitor, AI safety engine, or autonomous acceptance system.
+- `semantic-guard` remains a local deterministic meaning-first audit layer, not an authoritative requirements engine, release gate, security scanner, MCP competitor, AI safety engine, or autonomous acceptance system.
 - Existing phase output remains `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, and `details`.
 - New logical output is optional and additive.
 - Existing diagnostics remain valid, including `warning_class`, `match_status`, `confidence`, `candidate_matches`, `details.non_emitted_rules`, `details.diagnostics`, and `details.severity_profile`.

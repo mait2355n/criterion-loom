@@ -69,7 +69,7 @@ Limitation:
 
 | Legacy contract | Old source | Current inheritance result |
 | --- | --- | --- |
-| Local research prototype, not an authoritative requirements, safety, or release gate. | `README.md` Status and Limitations | Preserved by unchanged README and reinforced in the integration plan public-positioning boundary. |
+| Local deterministic audit layer, not an authoritative requirements, safety, or release gate. | `README.md` Status and Limitations | Preserved by unchanged README and reinforced in the integration plan public-positioning boundary. |
 | Use the tool only where meaning, intent, scope, or verification can be harmed. Avoid fake rigor for trivial edits. | `README.md` When To Use | Mechanically preserved by unchanged README. WP1 design should avoid making derivation output a default ritual for trivial work. |
 | Stable phase output shape: `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, `details`. | `README.md` Output Shape | Preserved by integration-plan Output Compatibility. |
 | New diagnostic fields must be optional and must not change the meaning of `status` or `score`. | `README.md` Output Shape and `docs/ambiguity-confidence-design.md` | Preserved. The plan adds optional `finding.derivation` and `details.logical_trace` and keeps derivation out of score semantics. |

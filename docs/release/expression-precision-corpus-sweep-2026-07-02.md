@@ -2,7 +2,19 @@
 
 ## Purpose
 
-手元の文書 corpus に `audit_conventions(input_kind="document")` を一括適用し、`doc.expression.*` と `referent_resolutions` の分布を取る。これは精度保証ではなく、閾値設計と fixture 追加の材料である。
+This file records one local expression-precision corpus sweep.
+
+Evidence source: `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json`.
+
+Limit: the tables below are not accuracy, precision, or recall claims. Use them
+only as maintenance material for threshold design and fixture additions.
+
+## Audience And Use
+
+This note is for maintainers tuning expression-precision thresholds, adding
+fixtures, or reviewing false positives and false negatives. The representative
+finding tables quote audit findings as calibration evidence; those quoted rows
+are not maintained prose that must pass the expression-precision detector.
 
 ## Scope
 
@@ -14,6 +26,16 @@
 - Raw data: `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json`
 - Run timestamp: `2026-07-02T08:06:53+09:00`
 - Decision basis: `primary`; `.backups` is supplemental only.
+
+## Reproduction Command
+
+Run the corpus sweep from the repository root after dependencies are available:
+
+```sh
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --file README.ja.md
+uv run --python 3.13 --project . semantic-guard evaluate-fixtures
+uv run --python 3.13 --project . python -m json.tool docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json
+```
 
 ## Aggregate By Scope
 
@@ -85,7 +107,7 @@
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `README.ja.md` | 140 | `doc.expression.target_blurred` | ## 実績証明として見せる場所 |
+| `README.ja.md` | 140 | `doc.expression.target_blurred` | archived public-heading wording from an older README |
 | `README.ja.md` | 153 | `doc.expression.target_blurred` | ## GitHub 公開時に見る場所 |
 | `docs/acceptance-review-bundle.md` | 19 | `doc.expression.target_blurred` | bundle に含めるもの。 |
 | `docs/acceptance-review-bundle.md` | 34 | `doc.expression.target_blurred` | bundle に含めないもの。 |
@@ -169,7 +191,7 @@
 ## Calibration Observations
 
 - `docs/conventions/README.md` の行分割された引用例は、例示文脈として抑制しきれていない。引用符内の前後行結合か、直前行の `such as` を見た抑制が要る。
-- `README.ja.md` の `## 実績証明として見せる場所`、`## GitHub 公開時に見る場所` は見出し単体では薄いが、文書構造上は読める。Markdown 見出しでは重大度を下げる余地がある。
+- 古い `README.ja.md` の一部見出しは、見出し単体では対象語が薄いが、文書構造上は読める。Markdown 見出しでは重大度を下げる余地がある。
 - `docs/ja/quickstart.md` の `uv が使える。` は要件・前提条件の箇条書きであり、効用語の曖昧さとして扱う価値は低い。前提条件 section では `utility_blurred` を弱めるべき。
 - `no_candidate` は 2 件だけだが、どちらも読み手が戻って探す必要があるため、現状の警告維持は妥当である。
 - `supported` は 50 件あり、指示語を全て警告する実装にしなかった判断は妥当である。ここを崩すと過警告が一気に増える。

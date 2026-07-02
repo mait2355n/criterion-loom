@@ -2,7 +2,7 @@
 
 ## 目的
 
-この文書は、Criterion Loom の公開名と、既存の package / CLI / MCP / skill 名の対応を固定するためのものだ。
+Criterion Loom 命名表は、公開名と、既存の package / CLI / MCP / skill 名の対応を固定する文書だ。
 
 ## 対象読者と用途
 
@@ -31,15 +31,15 @@ skill directory は Codex の読み込み名として `semantic-implementation` 
 
 ## 契約と範囲
 
-これは命名契約であり、CLI の JSON 形状を変えるものではない。
+Criterion Loom 命名表は命名契約を示す文書であり、CLI の JSON 形状を変えない。
 
 Criterion Loom の各 command は、引き続き `semantic-guard` の監査欄である
 `phase`、`status`、`score`、`findings`、`missing`、`next_actions`、
 `details` を返す。名前対応は、それぞれの command 群を公開説明でどう呼ぶかを示すだけである。
 
 技術上の根拠は repository layout に置く。package と command 名は
-`pyproject.toml`、公開概要は `README.md`、Codex skill は
-`skills/semantic-implementation/` が対応する。
+`pyproject.toml`、公開概要は `README.md`、Loom Guide の skill 本文は
+`skills/semantic-implementation/` に置く。
 
 ## 支援面
 

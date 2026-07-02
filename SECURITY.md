@@ -31,7 +31,7 @@ A useful report names the affected component, expected boundary, observed behavi
 
 ## Supported Versions
 
-This public snapshot is a research prototype. Until versioned releases exist, security fixes and sensitive-boundary corrections are handled on the current public branch.
+This public snapshot is a publishable v0.1 deterministic heuristic tool. Until versioned releases exist, security fixes and sensitive-boundary corrections are handled on the current public branch.
 
 ## Scope
 
