@@ -34,6 +34,9 @@ release approval.
 - Tie improvement claims to a mechanism: phase separation, structured findings,
   rule catalog, detector mapping, fixture / corpus records, diagnostics, or
   human review boundaries.
+- In Japanese prose, do not put a half-width space between ASCII alphanumeric
+  terms and Japanese text. Write `AIエージェント`, `JSONの監査結果`, and
+  `Python 3.13で` as joined forms.
 - Use `publishable v0.1` or `公開可能な初版` only for the repository surface:
   CLI, MCP server, companion skill, schemas, fixtures, doctor, and public docs.
 - Do not imply broad natural-language accuracy, formal requirements proof,
@@ -49,7 +52,7 @@ Avoid vague helper phrases when a concrete operation is available.
 
 | Avoid | Prefer |
 | --- | --- |
-| 外へ出す | JSON として返す / 監査結果として抽出する / 診断として露出する |
+| 外へ出す | JSONとして返す / 監査結果として抽出する / 診断として露出する |
 | 試験できる材料 | 退行検査できる材料 / 検証可能な材料 |
 | 直せる | 修正対象を切り分ける / 指摘に基づいて修正する |
 | 見つけやすい | 特定しやすい / 検出できる |
@@ -60,7 +63,7 @@ Avoid vague helper phrases when a concrete operation is available.
 Prefer direct public-document sentences:
 
 ```text
-Criterion Loom は、監査の挙動を曖昧な総評ではなく、構造化され、退行検査できる材料として抽出する。
+Criterion Loomは、監査の挙動を曖昧な総評ではなく、構造化され、退行検査できる材料として抽出する。
 ```
 
 Avoid softer process prose when it hides the operation:

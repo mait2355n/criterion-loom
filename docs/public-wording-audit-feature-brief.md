@@ -104,7 +104,7 @@ the first candidate examples for the proposed detector.
 
 | Indicator | What Was Checked | README.ja.md Direction |
 | --- | --- | --- |
-| Product identity is concrete | The opening claim names the actual surface rather than a broad research theme. | `Codex 作業向けの意味先行監査 CLI / MCP server / companion skill` |
+| Product identity is concrete | The opening claim names the actual surface rather than a broad research theme. | `Codex作業向けの意味先行監査CLI / MCP server / companion skill` |
 | Input and output are explicit | The text names the audited inputs and the machine-readable result. | requests, plans, change explanations, completion claims, and JSON audit results |
 | Agent loop and human decision are separated | The text does not say the tool approves AI output. It separates agent-side revision from human final decision. | AI agents use findings to revise work; humans choose `accept`, `request_revision`, or `defer`. |
 | Finished-state claim is scoped | `完成済み` is limited to the public v0.1 repository surface. | CLI, MCP server, companion skill, schemas, fixtures, doctor, tests, and public docs are present; broader performance continues to improve. |
@@ -119,8 +119,8 @@ Observed wording changes used as seed examples:
 
 | Before Pattern | After Pattern | Reason |
 | --- | --- | --- |
-| `JSON の監査結果として外へ取り出す` | `曖昧さや不足を抽出し、JSON の監査結果として返す` | Names extraction and JSON return rather than vague externalization. |
-| `監査結果は ... 戻せる` | `AI エージェントは、監査結果を ... 作業ループへ戻す` | Names the actor and revision loop. |
+| `JSONの監査結果として外へ取り出す` | `曖昧さや不足を抽出し、JSONの監査結果として返す` | Names extraction and JSON return rather than vague externalization. |
+| `監査結果は ... 戻せる` | `AIエージェントは、監査結果を ... 作業ループへ戻す` | Names the actor and revision loop. |
 | `人間が ... 判断するための材料にもなる` | `人間は同じ出力を ... 判断材料として使う` | Names the human use without making the tool the decision authority. |
 | `見える場所へ出し` | `監査結果として分離し` | Names the output boundary. |
 | `試験できる材料として外へ出す` | `退行検査できる材料として抽出する` | Ties the claim to regression checking. |

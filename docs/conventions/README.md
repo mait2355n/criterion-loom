@@ -68,7 +68,7 @@ Bad examples:
 Acceptable example:
 
 ```text
-未決定事項を抽出し、その一覧を JSON の findings として返す
+未決定事項を抽出し、その一覧をJSONのfindingsとして返す
 ```
 
 The bad examples leave the target, operation, output form, decision actor, or

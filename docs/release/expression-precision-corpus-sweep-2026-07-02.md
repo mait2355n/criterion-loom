@@ -96,11 +96,11 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 222 | `doc.expression.demonstrative_reference_blurred` | これなら人間判断境界を保ったまま、Spec Kit の gate 運用を横に置ける。既存の acceptance bundle や finish check へ自動注入しない。 |
+| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 222 | `doc.expression.demonstrative_reference_blurred` | これなら人間判断境界を保ったまま、Spec Kitのgate運用を横に置ける。既存のacceptance bundleやfinish checkへ自動注入しない。 |
 | `docs/conventions/README.md` | 61 | `doc.expression.demonstrative_reference_blurred` | They also warn when demonstratives such as "それを外部へ出す" do not expose a |
-| `docs/conventions/README.md` | 62 | `doc.expression.demonstrative_reference_blurred` | nearby referent. "未決定事項を抽出し、その一覧を JSON の findings として返す" |
+| `docs/conventions/README.md` | 62 | `doc.expression.demonstrative_reference_blurred` | nearby referent. "未決定事項を抽出し、その一覧をJSONのfindingsとして返す" |
 | `docs/expression-precision-audit-handoff-2026-06-30.md` | 29 | `doc.expression.demonstrative_reference_blurred` | 短く言えば、これは「表現精度監査」である。 |
-| `docs/fixture-record-design.md` | 13 | `doc.expression.demonstrative_reference_blurred` | この記録形式は、監査規則を変更する開発者、fixture を追加する保守者、監査結果の変化を読む利用者のために使う。実地利用で見つけた誤警告、警告漏れ、過剰な blocking を、再発させたくない局所整合性として固定する時に使う。 |
+| `docs/fixture-record-design.md` | 13 | `doc.expression.demonstrative_reference_blurred` | この記録形式は、監査規則を変更する開発者、fixtureを追加する保守者、監査結果の変化を読む利用者のために使う。実地利用で見つけた誤警告、警告漏れ、過剰なblockingを、再発させたくない局所整合性として固定する時に使う。 |
 | `docs/llm-reviewer.md` | 143 | `doc.expression.demonstrative_reference_blurred` | これは別室の査読者であって、親Codexの内部判断を直接呼ぶものではない。 |
 
 ### `doc.expression.target_blurred`
@@ -108,19 +108,19 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
 | `README.ja.md` | 140 | `doc.expression.target_blurred` | archived public-heading wording from an older README |
-| `README.ja.md` | 153 | `doc.expression.target_blurred` | ## GitHub 公開時に見る場所 |
-| `docs/acceptance-review-bundle.md` | 19 | `doc.expression.target_blurred` | bundle に含めるもの。 |
-| `docs/acceptance-review-bundle.md` | 34 | `doc.expression.target_blurred` | bundle に含めないもの。 |
+| `README.ja.md` | 153 | `doc.expression.target_blurred` | ## GitHub公開時に見る場所 |
+| `docs/acceptance-review-bundle.md` | 19 | `doc.expression.target_blurred` | bundleに含めるもの。 |
+| `docs/acceptance-review-bundle.md` | 34 | `doc.expression.target_blurred` | bundleに含めないもの。 |
 | `docs/agent-revision-loop-positioning-2026-06-30.md` | 52 | `doc.expression.target_blurred` | - 価値は、価値判断や完了根拠を見える場所へ出し、その結果をAIエージェントの修正、追加検証、再提示にも戻すことにある。 |
-| `docs/codex-exec-reviewer-plan.md` | 122 | `doc.expression.target_blurred` | LLM reviewer の出力は、この判断の材料であり、判断そのものではない。 |
+| `docs/codex-exec-reviewer-plan.md` | 122 | `doc.expression.target_blurred` | LLM reviewerの出力は、この判断の材料であり、判断そのものではない。 |
 
 ### `doc.expression.operation_blurred`
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 178 | `doc.expression.operation_blurred` | これにより、上位 workflow や人間 reviewer は「証拠がある」という語だけでなく、何の証拠か、どの対象か、どの制限かを読める。既存の `finish-check` や `trace-report` は、この schema を自動解釈しない。必要なら利用者が ev… |
-| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 294 | `doc.expression.operation_blurred` | `semantic-guard` は「止める権限」ではなく、「止まるべき理由を見える化する道具」でよい。 |
-| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 392 | `doc.expression.operation_blurred` | \| 6 \| adversarial scenario pack \| LLM reviewer に渡す前の材料を増やせる \| |
+| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 178 | `doc.expression.operation_blurred` | これにより、上位workflowや人間reviewerは「証拠がある」という語だけでなく、何の証拠か、どの対象か、どの制限かを読める。既存の`finish-check`や`trace-report`は、このschemaを自動解釈しない。必要なら利用者がev… |
+| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 294 | `doc.expression.operation_blurred` | `semantic-guard`は「止める権限」ではなく、「止まるべき理由を見える化する道具」でよい。 |
+| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 392 | `doc.expression.operation_blurred` | \| 6 \| adversarial scenario pack \| LLM reviewerに渡す前の材料を増やせる \| |
 | `docs/conventions/README.md` | 58 | `doc.expression.operation_blurred` | when wording such as "怪しい場所を試験できる内容として外に出す" leaves the |
 | `docs/expression-precision-audit-handoff-2026-06-30.md` | 42 | `doc.expression.operation_blurred` | - どこへ「外に出す」のか。 |
 | `docs/llm-reviewer.md` | 66 | `doc.expression.operation_blurred` | 入力bundleはJSONで渡す。 |
@@ -129,10 +129,10 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `docs/acceptance-review-bundle.md` | 93 | `doc.expression.output_form_missing` | - `llm_review_command_tool`: prompt、schema path、`codex exec` command を返すだけで実行しない。 |
-| `docs/codex-exec-reviewer-plan.md` | 35 | `doc.expression.output_form_missing` | 6. dry-run では prompt、schema path、組み立てた `codex exec` command だけを返す。 |
-| `docs/codex-exec-reviewer-plan.md` | 40 | `doc.expression.output_form_missing` | 11. 最終成果物ができた時点で `acceptance_review_bundle` を作り、人が評価できる形にする。 |
-| `docs/codex-exec-reviewer-plan.md` | 91 | `doc.expression.output_form_missing` | 失敗は deterministic audit を壊さず、別枠で返す。 |
+| `docs/acceptance-review-bundle.md` | 93 | `doc.expression.output_form_missing` | - `llm_review_command_tool`: prompt、schema path、`codex exec` commandを返すだけで実行しない。 |
+| `docs/codex-exec-reviewer-plan.md` | 35 | `doc.expression.output_form_missing` | 6. dry-runではprompt、schema path、組み立てた`codex exec` commandだけを返す。 |
+| `docs/codex-exec-reviewer-plan.md` | 40 | `doc.expression.output_form_missing` | 11.最終成果物ができた時点で`acceptance_review_bundle`を作り、人が評価できる形にする。 |
+| `docs/codex-exec-reviewer-plan.md` | 91 | `doc.expression.output_form_missing` | 失敗はdeterministic auditを壊さず、別枠で返す。 |
 | `docs/conventions/README.md` | 58 | `doc.expression.output_form_missing` | when wording such as "怪しい場所を試験できる内容として外に出す" leaves the |
 | `docs/expression-precision-audit-handoff-2026-06-30.md` | 41 | `doc.expression.output_form_missing` | - 「内容」とは何の形式なのか。 |
 
@@ -140,16 +140,16 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 5 | `doc.expression.utility_blurred` | この文書は、公開状態で確認できる同系統の MCP サーバ、agent skill、仕様監査・保安走査系の実装を `semantic-guard` と比較し、次を切り分ける。 |
+| `docs/comparative-advantage-and-adoption-2026-06-03.ja.md` | 5 | `doc.expression.utility_blurred` | この文書は、公開状態で確認できる同系統のMCPサーバ、agent skill、仕様監査・保安走査系の実装を`semantic-guard`と比較し、次を切り分ける。 |
 | `docs/conventions/README.md` | 58 | `doc.expression.utility_blurred` | when wording such as "怪しい場所を試験できる内容として外に出す" leaves the |
 | `docs/expression-precision-audit-handoff-2026-06-30.md` | 40 | `doc.expression.utility_blurred` | - 何を「試験できる」のか。 |
-| `docs/ja/quickstart.md` | 8 | `doc.expression.utility_blurred` | - `uv` が使える。 |
+| `docs/ja/quickstart.md` | 8 | `doc.expression.utility_blurred` | - `uv`が使える。 |
 
 ### `doc.expression.decision_actor_missing`
 
 | Path | Line | Rule | Evidence |
 | --- | ---: | --- | --- |
-| `docs/codex-exec-reviewer-plan.md` | 40 | `doc.expression.decision_actor_missing` | 11. 最終成果物ができた時点で `acceptance_review_bundle` を作り、人が評価できる形にする。 |
+| `docs/codex-exec-reviewer-plan.md` | 40 | `doc.expression.decision_actor_missing` | 11.最終成果物ができた時点で`acceptance_review_bundle`を作り、人が評価できる形にする。 |
 | `docs/conventions/README.md` | 58 | `doc.expression.decision_actor_missing` | when wording such as "怪しい場所を試験できる内容として外に出す" leaves the |
 | `docs/expression-precision-audit-handoff-2026-06-30.md` | 40 | `doc.expression.decision_actor_missing` | - 何を「試験できる」のか。 |
 
@@ -186,40 +186,40 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 
 ## Backup Check
 
-`.backups` だけで見ると、古い査読・比較文書が `target_blurred` と `output_form_missing` を多く出している。現行閾値の根拠には混ぜず、過去文書にも同じ傾向が出るかを見る補助材料に留める。
+`.backups`だけで見ると、古い査読・比較文書が`target_blurred`と`output_form_missing`を多く出している。現行閾値の根拠には混ぜず、過去文書にも同じ傾向が出るかを見る補助材料に留める。
 
 ## Calibration Observations
 
-- `docs/conventions/README.md` の行分割された引用例は、例示文脈として抑制しきれていない。引用符内の前後行結合か、直前行の `such as` を見た抑制が要る。
-- 古い `README.ja.md` の一部見出しは、見出し単体では対象語が薄いが、文書構造上は読める。Markdown 見出しでは重大度を下げる余地がある。
-- `docs/ja/quickstart.md` の `uv が使える。` は要件・前提条件の箇条書きであり、効用語の曖昧さとして扱う価値は低い。前提条件 section では `utility_blurred` を弱めるべき。
-- `no_candidate` は 2 件だけだが、どちらも読み手が戻って探す必要があるため、現状の警告維持は妥当である。
-- `supported` は 50 件あり、指示語を全て警告する実装にしなかった判断は妥当である。ここを崩すと過警告が一気に増える。
-- この要約文書自体を `audit_conventions(input_kind="document")` にかけると、表内の `返す`、`もの`、`材料` などから 62 件の `doc.expression.*` が出る。統計表、監査報告、引用 evidence は通常散文より弱く扱う抑制が必要である。
+- `docs/conventions/README.md`の行分割された引用例は、例示文脈として抑制しきれていない。引用符内の前後行結合か、直前行の`such as`を見た抑制が要る。
+- 古い`README.ja.md`の一部見出しは、見出し単体では対象語が薄いが、文書構造上は読める。Markdown見出しでは重大度を下げる余地がある。
+- `docs/ja/quickstart.md`の`uvが使える。`は要件・前提条件の箇条書きであり、効用語の曖昧さとして扱う価値は低い。前提条件sectionでは`utility_blurred`を弱めるべき。
+- `no_candidate`は2件だけだが、どちらも読み手が戻って探す必要があるため、現状の警告維持は妥当である。
+- `supported`は50件あり、指示語を全て警告する実装にしなかった判断は妥当である。ここを崩すと過警告が一気に増える。
+- この要約文書自体を`audit_conventions(input_kind="document")`にかけると、表内の `返す`、`もの`、`材料` などから62件の`doc.expression.*`が出る。統計表、監査報告、引用evidenceは通常散文より弱く扱う抑制が必要である。
 
 ## Threshold Notes
 
-- 閾値判断の主対象は `primary`。`.backups` は表現揺れと重複確認用の補助 corpus として扱う。
-- 指示代名詞は `no_candidate` と `ambiguous` を警告維持、`supported` を抑制維持する。
-- `weak_only` は今回観測されなかったため、次の corpus 追加まで閾値を動かさない。
-- 非指示代名詞の `target_blurred`、`operation_blurred`、`utility_blurred` は単独 blocking にせず、同一文で対象、操作、出力形式、判断主体が二つ以上欠ける場合に強警告へ寄せる。
+- 閾値判断の主対象は`primary`。`.backups`は表現揺れと重複確認用の補助corpusとして扱う。
+- 指示代名詞は`no_candidate`と`ambiguous`を警告維持、`supported`を抑制維持する。
+- `weak_only`は今回観測されなかったため、次のcorpus追加まで閾値を動かさない。
+- 非指示代名詞の`target_blurred`、`operation_blurred`、`utility_blurred`は単独blockingにせず、同一文で対象、操作、出力形式、判断主体が二つ以上欠ける場合に強警告へ寄せる。
 - 文書内に「不明点」「未決定」「判断主体」「出力形式」などの支援語が明示される場合は、同じ語が近傍候補に出るかを優先して過警告を抑える。
 
 ## Survival Bias Check
 
 - この結果は検出器が発火した箇所の分布であり、発火しなかった曖昧表現の不存在証明ではない。
 - 次段階では、警告あり文だけでなく警告なし文を無作為抽出し、手動で「指示対象が読めるか」「書き換える価値があるか」を付ける必要がある。
-- 特に「これ」「それ」「この」「その」を含むのに `supported` となった文、または指示語を含まないが対象・操作が薄い文を負例として見る。
+- 特に「これ」「それ」「この」「その」を含むのに`supported`となった文、または指示語を含まないが対象・操作が薄い文を負例として見る。
 
 ## Morphological Analysis Decision
 
 - 今回の実測だけなら形態素解析を必須依存にする根拠はまだ弱い。
 - 現在の危険は、名詞境界の取り違えよりも「検出語に寄った表面一致」と「未検出文の生存バイアス」にある。
-- 導入するなら、標準経路ではなく任意の calibration 補助として、曖昧候補が多い文だけに限定するのが妥当。
+- 導入するなら、標準経路ではなく任意のcalibration補助として、曖昧候補が多い文だけに限定するのが妥当。
 
 ## Next Corpus Work
 
-- 生データから `primary` の `doc.expression.*` 発火文を 20 件程度、人手で `true_positive`、`false_positive`、`useful_but_low_priority` に分類する。
-- 警告なし文から `matched_phrases` を含むものと含まないものをそれぞれ抽出し、見逃しを確認する。
-- 追加 fixture は JSON 全体ではなく、`rule_id`、`referent_resolutions.status`、代表 evidence を対象に固定する。
+- 生データから`primary`の`doc.expression.*`発火文を20件程度、人手で`true_positive`、`false_positive`、`useful_but_low_priority`に分類する。
+- 警告なし文から`matched_phrases`を含むものと含まないものをそれぞれ抽出し、見逃しを確認する。
+- 追加fixtureはJSON全体ではなく、`rule_id`、`referent_resolutions.status`、代表evidenceを対象に固定する。
 - 形態素解析は、この手動分類で「候補抽出の境界誤り」が主要因だと分かるまで既定依存へ入れない。

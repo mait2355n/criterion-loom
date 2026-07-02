@@ -49,8 +49,8 @@ Examples that should warn:
 Examples that should pass expression precision:
 
 ```text
-未決定事項を抽出し、その一覧を JSON の findings として返す。
-schema_version と status を読み、その値を diagnostics.result に保存する。
+未決定事項を抽出し、その一覧をJSONのfindingsとして返す。
+schema_versionとstatusを読み、その値をdiagnostics.resultに保存する。
 要求文を受け取る。
 その文書から未決定事項を抽出する。
 ```
@@ -62,7 +62,7 @@ The default detector uses nearby text only:
 - same-line text before the demonstrative;
 - up to two previous non-empty lines;
 - nearest heading or list parent in local context;
-- immediate definition clauses such as `これは X である`;
+- immediate definition clauses such as `これはXである`;
 - code spans and ASCII identifiers;
 - Japanese noun phrases around particles such as `を`, `は`, `が`, `に`,
   `として`;
@@ -129,6 +129,6 @@ uv run --python 3.13 --project . python -m unittest tests.test_conventions -v
 uv run --python 3.13 --project . python -m unittest discover -s tests -v
 uv run --python 3.13 --project . semantic-guard evaluate-fixtures
 uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "それを外部へ出す。"
-uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧を JSON の findings として返す。"
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧をJSONのfindingsとして返す。"
 uv run --python 3.13 --project . semantic-guard finish-check --text "tests_ran: ..."
 ```

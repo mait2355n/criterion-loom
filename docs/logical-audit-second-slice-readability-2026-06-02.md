@@ -74,7 +74,7 @@ Commands run:
 ```sh
 uv run --python 3.13 --project . semantic-guard audit-request --text '目的: 速度改善をしたい。'
 uv run --python 3.13 --project . semantic-guard audit-request --text '利用者: 読者。目的: 検索結果の表示を確認する。シナリオ: 読者が検索語を入力する場合、検索結果が表示される。受入基準: 検索結果が表示されることを確認。検証: 動作確認する。証拠: 確認記録。対象外: UI刷新。未確定: なし。'
-uv run --python 3.13 --project . semantic-guard audit-request --text '利用者: 運用者。目的: 検索を速くする。シナリオ: 運用者が検索語を入力した場合、結果一覧が返る。受入基準: p95 500ms 以下。検証方法: ベンチマーク測定。証拠: コマンド結果を保存する。不合格条件: p95 が 500ms を超えたら差し戻し。対象外: UI刷新。未確定: なし。'
+uv run --python 3.13 --project . semantic-guard audit-request --text '利用者: 運用者。目的: 検索を速くする。シナリオ: 運用者が検索語を入力した場合、結果一覧が返る。受入基準: p95 500ms以下。検証方法: ベンチマーク測定。証拠: コマンド結果を保存する。不合格条件: p95が500msを超えたら差し戻し。対象外: UI刷新。未確定: なし。'
 uv run --python 3.13 --project . semantic-guard audit-request --kind document --text 'これは説明文書である。検証方法の話題を扱うが、要求ではない。'
 uv run --python 3.13 --project . python -m unittest tests.test_logic tests.test_core -v
 ```

@@ -164,7 +164,7 @@ expression processing:
 - same-line text before the demonstrative;
 - up to two previous non-empty lines;
 - the nearest heading or list parent within local context;
-- an immediate definition clause such as `これは X である`;
+- an immediate definition clause such as `これはXである`;
 - code spans, ASCII field names, schema fields, and Japanese noun phrases
   around particles such as `を`, `は`, `が`, `に`, `として`.
 
@@ -197,7 +197,7 @@ This should pass the expression-precision check because target, operation,
 output form, and use are recoverable.
 
 ```text
-未決定事項を抽出し、その一覧を JSON の findings として返す。
+未決定事項を抽出し、その一覧をJSONのfindingsとして返す。
 ```
 
 This should pass expression-precision because `その一覧` points back to the
@@ -228,7 +228,7 @@ Representative checks for this convention layer:
 uv run --python 3.13 --project . semantic-guard conventions-catalog
 uv run --python 3.13 --project . semantic-guard audit-conventions --file docs/conventions/base-contract.md
 uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "それを外部へ出す。"
-uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧を JSON の findings として返す。"
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧をJSONのfindingsとして返す。"
 uv run --python 3.13 --project . python -m unittest tests.test_conventions tests.test_cli tests.test_mcp_tools
 ```
 

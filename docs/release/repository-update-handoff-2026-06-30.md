@@ -29,24 +29,24 @@ Update repository-facing material so Criterion Loom is presented as:
 Adopt this Japanese short wording:
 
 ```text
-公開対象の v0.1 snapshot として必要な構成を同梱しています。現在は、監査性能、適用範囲、AIエージェントの修正ループへの接続を継続的に改善しています。
+公開対象のv0.1 snapshotとして必要な構成を同梱しています。現在は、監査性能、適用範囲、AIエージェントの修正ループへの接続を継続的に改善しています。
 ```
 
 Use this longer wording when more context is needed:
 
 ```text
-Criterion Loom は、Codex 等の AI エージェント作業に対し、依頼、計画、変更説明、完了主張の曖昧さや不足を JSON の監査結果として返す、公開対象の v0.1 snapshot です。
+Criterion Loomは、Codex等のAIエージェント作業に対し、依頼、計画、変更説明、完了主張の曖昧さや不足をJSONの監査結果として返す、公開対象のv0.1 snapshotです。
 
 確認対象の構成:
 - CLI / MCP server / companion skill
 - JSON Schema / fixture / doctor command
-- README と docs の公開文書
+- READMEとdocsの公開文書
 
 制限:
 - 任意文書を網羅的に処理する要求工学製品ではありません。
 - 判定は語彙規則と軽量な構造検査に基づきます。
 
-今後は、監査性能の改善、過警告や見逃しの低減、fixture / corpus の拡充、AI エージェントの修正ループへの戻し方の改善を進めています。
+今後は、監査性能の改善、過警告や見逃しの低減、fixture / corpusの拡充、AIエージェントの修正ループへの戻し方の改善を進めています。
 ```
 
 ## Evidence To Carry Forward
