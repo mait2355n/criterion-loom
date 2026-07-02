@@ -140,6 +140,69 @@ Keep long rationale, raw logs, transcripts, and historical explanation behind
 `detail_refs`. The top-level record should recover context and action; it should
 not become the archive itself.
 
+## Expression Precision
+
+Document wording that carries work, judgment, verification, publication, or
+handoff semantics should expose enough operational shape for a later reader.
+
+The first deterministic rule group is `doc.expression.*`. It checks whether a
+sentence names the target, operation, output form, decision actor, and revision
+target when it uses broad expressions such as vague places, material, utility,
+visibility, improvement wording, or demonstrative references.
+
+This is not a style lint. It does not judge literary quality, grammar, tone,
+legal sufficiency, security review, publication approval, or final acceptance.
+It only warns when prose leaves the reader unable to recover what is being
+acted on, what operation occurs, what artifact is returned, who judges it, or
+what changes next.
+
+For demonstratives such as `これ`, `それ`, `この内容`, or `その一覧`, the check
+does not ban the demonstrative. It asks whether the referent is recoverable from
+nearby text. The default detector uses only standard-library string and regular
+expression processing:
+
+- same-line text before the demonstrative;
+- up to two previous non-empty lines;
+- the nearest heading or list parent within local context;
+- an immediate definition clause such as `これは X である`;
+- code spans, ASCII field names, schema fields, and Japanese noun phrases
+  around particles such as `を`, `は`, `が`, `に`, `として`.
+
+Morphological analysis is intentionally not a required dependency. It may
+improve noun phrase boundaries later, but it does not solve referent identity by
+itself. It should remain an optional tuning path until corpus evidence shows the
+standard-library detector causes too much false positive or false negative
+noise.
+
+Representative examples:
+
+```text
+怪しい場所を試験できる内容として外に出す。
+```
+
+This should warn because target, operation, output form, and decision actor are
+blurred.
+
+```text
+それを外部へ出す。
+```
+
+This should warn because the referent of `それ` is not recoverable.
+
+```text
+不明点を抽出し、外部での判断に使える一覧として返す。
+```
+
+This should pass the expression-precision check because target, operation,
+output form, and use are recoverable.
+
+```text
+未決定事項を抽出し、その一覧を JSON の findings として返す。
+```
+
+This should pass expression-precision because `その一覧` points back to the
+named target `未決定事項`.
+
 ## Repository Profile
 
 Each repository may have a profile that specializes this base contract.
@@ -164,6 +227,8 @@ Representative checks for this convention layer:
 ```sh
 uv run --python 3.13 --project . semantic-guard conventions-catalog
 uv run --python 3.13 --project . semantic-guard audit-conventions --file docs/conventions/base-contract.md
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "それを外部へ出す。"
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧を JSON の findings として返す。"
 uv run --python 3.13 --project . python -m unittest tests.test_conventions tests.test_cli tests.test_mcp_tools
 ```
 

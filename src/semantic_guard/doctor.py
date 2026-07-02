@@ -162,37 +162,14 @@ def _check_rule_detector_mapping() -> DoctorCheck:
 
 def _check_ci_workflow(root: Path) -> DoctorCheck:
     workflow = root / ".github" / "workflows" / "ci.yml"
-    template = root / "docs" / "release" / "ci-workflow-template.yml"
-    workflow_path = workflow if workflow.exists() else template if template.exists() else None
-    if workflow_path is None:
-        return DoctorCheck(
-            "ci_workflow",
-            "warn",
-            ".github/workflows/ci.yml is not present in this checkout and no CI workflow template was found.",
-        )
-    text = workflow_path.read_text(encoding="utf-8")
+    if not workflow.exists():
+        return DoctorCheck("ci_workflow", "warn", ".github/workflows/ci.yml is not present in this checkout.")
+    text = workflow.read_text(encoding="utf-8")
     required_terms = ["compileall", "unittest discover", "evaluate-fixtures"]
     missing_terms = [term for term in required_terms if term not in text]
     if missing_terms:
-        return DoctorCheck(
-            "ci_workflow",
-            "warn",
-            "CI workflow content is present but missing expected verification commands.",
-            {"path": str(workflow_path), "missing_terms": missing_terms},
-        )
-    if workflow.exists():
-        return DoctorCheck(
-            "ci_workflow",
-            "pass",
-            "CI workflow includes compile, unit test, and fixture evaluation steps.",
-            {"path": str(workflow)},
-        )
-    return DoctorCheck(
-        "ci_workflow",
-        "warn",
-        "CI workflow template includes compile, unit test, and fixture evaluation steps, but the active GitHub workflow is not restored.",
-        {"path": str(template), "restore_to": ".github/workflows/ci.yml"},
-    )
+        return DoctorCheck("ci_workflow", "warn", "CI workflow is present but missing expected verification commands.", {"missing_terms": missing_terms})
+    return DoctorCheck("ci_workflow", "pass", "CI workflow includes compile, unit test, and fixture evaluation steps.")
 
 
 def _check_fixtures(root: Path) -> DoctorCheck:

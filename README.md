@@ -1,54 +1,25 @@
 # Criterion Loom
 
 Criterion Loom is a meaning-first audit CLI, MCP server, and companion Codex
-skill for Codex work.
-
-It turns ambiguity and missing information in requests, plans, change
-explanations, and completion claims into JSON audit results. The public project
-name is Criterion Loom; the package, CLI, and MCP server name is
+skill for Codex work. The implementation, package, CLI, and MCP server name is
 `semantic-guard`.
 
-It does not approve AI output as correct. Its audit output is meant to feed an
-agentic revision loop: Codex or another AI agent can use findings to revise
-request framing, plans, change explanations, and completion claims before
-presenting them again. The same output also gives humans material for final
-`accept`, `request_revision`, or `defer` decisions.
-
-## At A Glance
-
-| Need | Start Here |
-| --- | --- |
-| Try the CLI | `uv run --python 3.13 --project . semantic-guard --help` |
-| Understand the public model | `docs/naming.md` |
-| Use the Codex companion skill | `skills/semantic-implementation/` |
-| Read Japanese guidance | `README.ja.md` and `docs/ja/` |
-| Check repository readiness | `docs/release/public-repository-readiness.md` |
-| Report sensitive issues | `SECURITY.md` |
+It extracts ambiguity and missing information in requests, plans, change
+explanations, completion claims, and public documentation into structured JSON
+audit results. The output is meant to feed an agent-side revision loop and to
+give humans material for final `accept`, `request_revision`, or `defer`
+decisions. It does not approve AI output as correct.
 
 It externalizes checks that otherwise stay implicit in an agent's reasoning:
 
-- `explore-request`: target users, material ambiguities, and questions to ask before a spec exists
-- `audit-request`: purpose, scope, non-goals, verification conditions, and uncertainty
-- `audit-plan`: work breakdown, order, risk, verification, rollback, and completion evidence
-- `audit-diff`: meaning, public contracts, failure handling, tests, documentation, and minimality
-- `finish-check`: execution evidence, residual risk, and human confirmation points
-- `audit-decision-state`: undecided, unknown, hypothetical, inferred, value-judgment, and evidence-gap statements
-- JSON output, JSON Schema, fixtures, unit tests, and `doctor` checks for local verification
-- a companion Codex skill that routes Codex work through the same audit-and-revision flow
-
-## Quick Start
-
-Run from a checkout root:
-
-```sh
-uv run --python 3.13 --project . semantic-guard explore-request --text "Build a split-bill app"
-uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.md
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures
-uv run --python 3.13 --project . semantic-guard doctor
-```
-
-The commands return JSON. A `pass` means the current deterministic checks did
-not stop the input; it is not a human acceptance decision.
+- whether an open-ended idea has material ambiguities that should be asked before a spec exists
+- whether an LLM exploration pass can extract all visible information before asking every material missing question
+- whether the target is understood before requirements are refined
+- whether a request separates need, stakeholder/source, solution, scope, non-goals, measurable quality, priority, uncertainty, and verification
+- whether decided, undecided, hypothetical, inferred, value-judgment, and evidence-gap statements are explicitly separated
+- whether an implementation plan covers risk, validation owner, progress control, change control, rollback, minimality, and evidence
+- whether a diff may break meaning, quality, security, tests, documentation, or implementation minimality
+- whether completion claims have evidence rather than just confidence
 
 ## Public Naming
 
@@ -67,59 +38,21 @@ The implementation still exposes additional support commands such as `explore-re
 
 Criterion Loom has its publishable v0.1 initial-release surface in place: the
 CLI, MCP server, companion Codex skill, JSON Schema, fixtures, `doctor` command,
-and public documentation are present.
+CI workflow template, and public documentation are present.
 
-Ongoing work focuses on audit performance, audit coverage, false-positive and
-false-negative reduction, fixture and corpus expansion, and tighter
-agent-side revision-loop use.
-
-It is not a general-purpose requirements engineering product or a production
-approval gate.
-
-The current implementation uses vocabulary rules and lightweight structural
-checks. It does not fully understand natural language, and fixture evaluation is
-local regression coverage rather than a precision or recall measurement for
-general documents. It is useful for dogfooding Codex workflows and making missing
-assumptions visible, but it should not be treated as an authoritative
+The current implementation is intentionally small and heuristic. Ongoing work
+focuses on audit performance, expression precision, coverage, false-positive
+and false-negative reduction, fixture and corpus expansion, and tighter
+agent-side revision-loop use. It should not be treated as an authoritative
 requirements, safety, or release gate.
 
-Human final decision is still required. The tool can drive agent-side revision
-and prepare audit output, reviewer supplements, and acceptance-review bundles,
-but `final_human_decision.status` stays `pending` until a person chooses
-`accept`, `request_revision`, or `defer`.
-
-## Why Improvement Is Practical
-
-Criterion Loom exposes audit behavior as structured, regression-checkable
-material rather than hidden prose. When a warning is too broad, too weak, or
-missing, maintainers can trace the issue back to rule wording, detector code,
-fixture expectations, corpus records, output contracts, documentation, or
-companion-skill routing.
-
-- Phase-specific commands keep correction targets small: request framing, plan,
-  diff explanation, finish evidence, and decision state are audited separately.
-- Findings carry categories, evidence snippets, missing fields, `rule_id`
-  values, `next_actions`, and structured `repair` hints, so Codex revises the
-  specified weak part instead of guessing from a general critique.
-- The rule catalog and `rule-detector-map` connect each public rule to its
-  current detector path, which makes it visible when a rule exists only as
-  wording, lacks fixture coverage, or needs a detector change.
-- Fixture and corpus records turn observed false positives, false negatives,
-  over-blocking, and useful warnings into executable regression checks. That
-  lets behavior change deliberately without freezing the whole JSON output.
-- Diagnostics such as `non_emitted_rules`, `nearest_candidates`,
-  `logical_trace_summary`, and claim/evidence/limitation triples show why a
-  warning was emitted, suppressed, or treated as uncertain.
-
-This is not a claim of general natural-language accuracy. It gives maintainers
-a concrete feedback path for revising local audit behavior while keeping the
-limits visible.
+Human final decision is required. The tool can prepare audit output, reviewer supplements, and acceptance-review bundles, but `final_human_decision.status` stays `pending` until a person chooses `accept`, `request_revision`, or `defer`.
 
 For the naming map, see `docs/naming.md` or the Japanese version at `docs/ja/naming.md`.
 
 For public positioning against MCP servers, security scanners, and agent skills, see `docs/public-comparison-2026-06-02.md` or the Japanese version at `docs/public-comparison-2026-06-02.ja.md`.
 
-For Japanese usage notes and demonstration commands, see `README.ja.md` and `docs/ja/`.
+For Japanese usage and operation notes, see `README.ja.md` and `docs/ja/`.
 
 For repository contribution, security-reporting, change-log, and publication hygiene, see `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, and `docs/release/github-publication-checklist.md`.
 
@@ -128,7 +61,6 @@ For repository contribution, security-reporting, change-log, and publication hyg
 Use Criterion Loom when a task can be harmed by misunderstanding meaning, intent, scope, or verification:
 
 - non-trivial implementation plans
-- agentic work loops where Codex should revise its own plan, diff explanation, or finish claim after explicit audit feedback
 - feature or requirements clarification
 - documentation that explains a system's purpose or limits
 - refactors, migrations, and behavior changes
@@ -142,7 +74,7 @@ Do not use it for obvious typo fixes, one-line shell commands, or purely mechani
 Clone the repository and run commands from the checkout root:
 
 ```sh
-git clone https://github.com/mait2355n/criterion-loom.git criterion-loom
+git clone <repository-url> criterion-loom
 cd criterion-loom
 uv run --python 3.13 --project . semantic-guard --help
 ```
@@ -186,6 +118,7 @@ uv run --python 3.13 --project . semantic-guard audit-plan --profile release --f
 git diff | uv run --python 3.13 --project . semantic-guard audit-diff --intent "..."
 uv run --python 3.13 --project . semantic-guard finish-check --text "..." --evidence "..."
 uv run --python 3.13 --project . semantic-guard audit-conventions --text "MCP tool returns JSON output."
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "それを外部へ出す。"
 uv run --python 3.13 --project . semantic-guard evaluate-fixtures
 uv run --python 3.13 --project . semantic-guard doctor
 uv run --python 3.13 --project . semantic-guard audit-result-schema
@@ -213,7 +146,7 @@ Use `doctor` to check the local project shape, Python version, schemas, MCP depe
 
 Use `audit-result-schema` to print the common JSON Schema for normal audit results. Use `rule-detector-map` to inspect the current mapping from catalog rule ids to detector functions, predicate ids, and source paths.
 
-Use `audit-conventions` to check whether a plan, diff summary, document, or coding note mentions public I/O without the baseline output envelope, versioned field/type shape, error shape, CLI stream roles, durable-record uncertainty markers, repository profile boundary, or representative output-contract verification. The baseline source lives under `docs/conventions/`; use `conventions-catalog` to print the machine-readable catalog.
+Use `audit-conventions` to check whether a plan, diff summary, document, or coding note mentions public I/O without the baseline output envelope, versioned field/type shape, error shape, CLI stream roles, durable-record uncertainty markers, repository profile boundary, or representative output-contract verification. With `--kind document`, it also emits `doc.expression.*` findings for public prose whose target, operation, output form, decision actor, revision target, or demonstrative referent is not recoverable nearby. The baseline source lives under `docs/conventions/`; use `conventions-catalog` to print the machine-readable catalog.
 
 Use `--profile default|dogfood|exploratory|release|safety` on text audit commands when the same finding should be weighted differently by situation. For example, `release` upgrades release/configuration control and governance findings, while `exploratory` prevents exploration notes from becoming blocker-heavy.
 
@@ -591,9 +524,9 @@ uv run --python 3.13 --project . semantic-guard doctor
 ```
 
 A GitHub Actions CI template is available at `docs/release/ci-workflow-template.yml`.
-Restore it as `.github/workflows/ci.yml` when the publishing credential has GitHub
-`workflow` scope. It runs compile, unit tests, fixture evaluation, and `doctor`
-on Python 3.11 and 3.13.
+Restore it as `.github/workflows/ci.yml` when the publishing credential has
+GitHub `workflow` scope. It runs compile, unit tests, fixture evaluation, and
+`doctor` on Python 3.11 and 3.13.
 
 Fixture regression records live under `tests/fixtures`.
 
@@ -631,7 +564,7 @@ MIT. See `LICENSE`.
 ## Limitations
 
 - The current checks are heuristic and vocabulary-driven.
-- Japanese heading and synonym recognition is broader than the first implementation, but still lexical.
+- Japanese heading and synonym recognition is broader than the first prototype, but still lexical.
 - The score is a rough signal, not a formal quality measure.
 - It can over-warn when context is obvious to a person but not stated in text.
 - It can under-warn when the text sounds complete but the real project context contradicts it.

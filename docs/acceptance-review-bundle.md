@@ -4,9 +4,9 @@
 
 ## Purpose
 
-中途監査は不足を見つけ、まず Codex 側の修正、追加検証、再提示へ戻すためにある。最終判断は人が行う。そのため、最後に必要なのは「LLMの承認」ではなく、人が `accept`、`request_revision`、`defer` を選べるだけの材料である。
+中途監査は不足を見つけるためにある。最終判断は人が行う。そのため、最後に必要なのは「LLMの承認」ではなく、人が `accept`、`request_revision`、`defer` を選べるだけの材料である。
 
-`acceptance_review_bundle` は、監査結果を Codex の作業ループへ戻した後の最終評価点を作る。Codex は bundle を生成し、採用した補填、採用しなかった補填、証拠、残リスク、人が見るべき判断点を分離する。人が判断するまでは `final_human_decision.status` は `pending` のままにする。
+`acceptance_review_bundle` はこの最終評価点を作る。Codex は bundle を生成し、証拠と残リスクを埋め、人が見るべき判断点を分離する。人が判断するまでは `final_human_decision.status` は `pending` のままにする。
 
 ## Audience And Use
 

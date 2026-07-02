@@ -50,7 +50,11 @@ Use these as the first layer of public documentation:
 - `README.ja.md`: Japanese main entry point with practical usage and evidence boundaries.
 - `docs/README.md`: documentation map.
 - `docs/public-comparison-2026-06-02.md`: comparison against adjacent tools and what this project is not.
+- `docs/conventions/README.md`: baseline convention and expression-precision audit map.
+- `docs/public-wording-audit-feature-brief.md`: public wording precision requirements and README.ja.md review indicators.
 - `docs/release/github-publication-checklist.md`: pre-push checklist.
+- `docs/release/expression-precision-reference-heuristic-2026-07-01.md`: demonstrative-reference heuristic boundary.
+- `docs/release/expression-precision-corpus-sweep-2026-07-02.md`: corpus sweep summary for expression-precision threshold design.
 - `PUBLIC-SNAPSHOT.md`: included/excluded publication contract.
 
 ## Publication Sequence

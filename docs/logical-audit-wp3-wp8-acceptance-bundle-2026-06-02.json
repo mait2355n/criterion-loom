@@ -1,0 +1,138 @@
+{
+  "schema_version": "acceptance-review-bundle/v1",
+  "original_request": "WP3 から WP8 まで、後工程への影響が出たら再計画しながら論理監査機能を一貫して実装する。旧版劣化を隅まで監査する。",
+  "final_artifact": {
+    "kind": "code+documentation",
+    "reference": "src/semantic_guard/logic.py; src/semantic_guard/core.py; src/semantic_guard/models.py; src/semantic_guard/evaluation.py; README.md; docs/logical-audit-wp8-decision-2026-06-02.md",
+    "summary": "First logical-audit slice for req.verifiability.acceptance_missing with scoped derivation output, fixture support, documentation, WP8 pause decision, and human-review bundle."
+  },
+  "deterministic_audits": [
+    {
+      "phase": "audit_plan",
+      "status": "pass",
+      "summary": "docs/logical-audit-integration-plan-2026-06-02.md passed plan audit after WP3-WP8 status and evidence updates.",
+      "findings": []
+    },
+    {
+      "phase": "audit_request",
+      "status": "pass",
+      "summary": "README.md, docs/llm-reviewer.md, docs/acceptance-review-bundle.md, docs/fixture-record-design.md, docs/logical-audit-integration-plan-2026-06-02.md, and docs/logical-audit-wp8-decision-2026-06-02.md passed document audit.",
+      "findings": []
+    },
+    {
+      "phase": "audit_diff",
+      "status": "warn",
+      "summary": "Diff audit reports one expected evidence-boundary caution because the change intentionally adds derivation and trace evidence surfaces.",
+      "findings": [
+        {
+          "severity": "minor",
+          "category": "meaning",
+          "finding": "差分が意味境界 `evidence` に触れる可能性がある。",
+          "warning_class": "generic caution"
+        }
+      ]
+    },
+    {
+      "phase": "finish_check",
+      "status": "pass",
+      "summary": "Implementation evidence covers unit tests, fixture evaluation, compileall, representative CLI output, document audits, and WP8 decision recording.",
+      "findings": []
+    }
+  ],
+  "llm_reviews": [],
+  "adopted_supplements": [],
+  "rejected_supplements": [],
+  "deferred_supplements": [
+    {
+      "source": "WP8 decision",
+      "target": "second rule family migration",
+      "supplement": "Add the next logical-audit rule family, recommended candidate req.verification.method_detail_missing.",
+      "reason": "The first derivation surface is new public output and should be read in real use before expansion.",
+      "decision_needed": "Maintainer confirms finding.derivation and details.logical_trace are readable and not misleading."
+    }
+  ],
+  "execution_evidence": [
+    {
+      "kind": "test",
+      "command_or_reference": "uv run --python 3.13 --project . python -m unittest discover -s tests -v",
+      "result": "124 tests OK",
+      "passed": true
+    },
+    {
+      "kind": "fixture-evaluation",
+      "command_or_reference": "uv run --python 3.13 --project . semantic-guard evaluate-fixtures --include-passed",
+      "result": "15 total, 15 passed, pass rate 1.0; derivation_rule_hits includes req.verifiability.acceptance_missing; logical_trace_rule_hits includes req.verifiability.acceptance_missing.",
+      "passed": true
+    },
+    {
+      "kind": "compile",
+      "command_or_reference": "uv run --python 3.13 --project . python -m compileall src/semantic_guard tests",
+      "result": "OK",
+      "passed": true
+    },
+    {
+      "kind": "cli-smoke",
+      "command_or_reference": "uv run --python 3.13 --project . semantic-guard audit-request --text '目的: 速度改善をしたい。'",
+      "result": "Output included logical-derivation/v1, logical-trace/v1, rule req.verifiability.acceptance_missing, derivation status derived, and the derivation scope wording.",
+      "passed": true
+    },
+    {
+      "kind": "document-audit",
+      "command_or_reference": "semantic-guard audit-request --kind document on README.md and updated WP7/WP8 documents",
+      "result": "Updated documentation audits passed.",
+      "passed": true
+    },
+    {
+      "kind": "mcp-test",
+      "command_or_reference": "tests.test_mcp_tools within python -m unittest discover -s tests -v",
+      "result": "MCP tool tests passed.",
+      "passed": true
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk": "The new derivation surface may still be read as stronger than intended.",
+      "severity": "minor",
+      "mitigation": "Every derivation record carries derivation_scope, README and boundary docs state that it does not prove natural-language truth or final acceptance, and WP8 pauses second-rule migration.",
+      "owner": "maintainer"
+    },
+    {
+      "risk": "The fact extractor is lexical and can miss valid human wording.",
+      "severity": "minor",
+      "mitigation": "Facts are scoped to extracted text only, candidate or unknown facts do not satisfy obligations, and fixture tests cover current behavior.",
+      "owner": "maintainer"
+    },
+    {
+      "risk": "Only one rule has an executable predicate, so the logical layer is not general.",
+      "severity": "info",
+      "mitigation": "WP8 records pause decision and defers second-rule migration until the first slice is reviewed in real use.",
+      "owner": "maintainer"
+    }
+  ],
+  "human_review_points": [
+    {
+      "question": "Is the current finding.derivation shape readable enough to keep as public diagnostic output?",
+      "why_it_matters": "WP8 intentionally pauses expansion until the first derivation surface is confirmed not misleading.",
+      "options": [
+        "accept",
+        "request_revision",
+        "defer"
+      ]
+    },
+    {
+      "question": "Should the next logical-audit candidate be req.verification.method_detail_missing?",
+      "why_it_matters": "It reuses existing request-profile facts, but expanding too early could amplify derivation wording mistakes.",
+      "options": [
+        "accept",
+        "request_revision",
+        "defer"
+      ]
+    }
+  ],
+  "final_human_decision": {
+    "status": "pending",
+    "decided_by": "",
+    "decided_at": "",
+    "rationale": ""
+  }
+}

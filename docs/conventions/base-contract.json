@@ -151,6 +151,62 @@
       ],
       "finding": "Public I/O surface is mentioned without representative output-contract verification.",
       "suggested_fix": "Add a representative CLI/API/MCP execution, fixture, schema check, or explicit reason it is not applicable."
+    },
+    {
+      "id": "doc.expression.target_blurred",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording uses a blurred target noun without enough nearby target support.",
+      "suggested_fix": "Name the target being extracted, classified, diagnosed, revised, or judged."
+    },
+    {
+      "id": "doc.expression.demonstrative_reference_blurred",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording uses a demonstrative reference whose referent is not recoverable nearby.",
+      "suggested_fix": "Replace the demonstrative with the referenced field, artifact, record, actor, condition, or output form."
+    },
+    {
+      "id": "doc.expression.operation_blurred",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording uses a blurred operation without naming the concrete action.",
+      "suggested_fix": "Replace broad operation wording with an explicit operation such as extract, return, record, classify, enumerate, or detect."
+    },
+    {
+      "id": "doc.expression.utility_blurred",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording claims utility without enough operation, output, or decision support.",
+      "suggested_fix": "State what the wording lets a reader, tool, or human do, and which artifact carries that utility."
+    },
+    {
+      "id": "doc.expression.output_form_missing",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording exposes material outward without naming the output form.",
+      "suggested_fix": "Name the output form, such as JSON, list, table, findings, diagnostics, fixture, record, or report."
+    },
+    {
+      "id": "doc.expression.decision_actor_missing",
+      "category": "expression_precision",
+      "severity": "minor",
+      "detector": "expression_precision",
+      "finding": "Document wording mentions judgment or testing without naming who performs the judgment.",
+      "suggested_fix": "Name the decision actor, such as a human reviewer, maintainer, external reviewer, or final human decision."
+    },
+    {
+      "id": "doc.expression.revision_target_missing",
+      "category": "expression_precision",
+      "severity": "minor",
+      "detector": "expression_precision",
+      "finding": "Document wording claims improvement or repair without naming what changes next.",
+      "suggested_fix": "Name the revision target, such as rule wording, detector code, fixture expectations, corpus records, documentation, or output contracts."
     }
   ],
   "promotion": {

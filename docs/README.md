@@ -1,21 +1,31 @@
 # Documentation Map
 
-This directory contains the public-facing documentation set for Criterion Loom.
+This directory contains the public-facing documentation set and secondary
+working records for Criterion Loom.
 
 The technical package, CLI, and MCP server names remain `semantic-guard`.
 
 ## Purpose
 
-This map gives a new reader the intended public entry points without requiring
-them to read dated work notes or private development history.
+This map helps a new reader find the current publication surface before reading
+dated work notes.
+
+The repository has dogfood records and implementation notes. They are useful
+history, but the recommended public entry points are the README, current name
+map, positioning documents, expression-precision notes, reviewer-boundary
+documents, rule model, fixture format, audit-result schema, doctor command, and
+calibration snapshot listed below.
+
+Japanese manuals for Criterion Loom usage are available under `docs/ja/`, with
+the top-level Japanese entry point at `../README.ja.md`.
 
 ## Usage
 
 Start from the repository root:
 
 ```sh
-uv run --python 3.13 --project . semantic-guard explore-request --text "split-bill app"
-uv run --python 3.13 --project . semantic-guard llm-explore-request --text "split-bill app" --dry-run
+uv run --python 3.13 --project . semantic-guard explore-request --text "割り勘アプリを作りたい"
+uv run --python 3.13 --project . semantic-guard llm-explore-request --text "割り勘アプリを作りたい" --dry-run
 uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.md
 uv run --python 3.13 --project . semantic-guard audit-request --kind document --file docs/calibration-report-2026-06-05.md
 uv run --python 3.13 --project . semantic-guard evaluate-fixtures
@@ -39,11 +49,9 @@ or comparison material:
 - `../README.ja.md`: Japanese usage guide, boundaries, commands, and output reading notes.
 - `naming.md`: public names and technical-name mapping.
 - `../CONTRIBUTING.md`: contribution and verification rules.
-- `../CODE_OF_CONDUCT.md`: public discussion and conduct boundary.
-- `../SUPPORT.md`: support routing and issue-quality expectations.
 - `../SECURITY.md`: security-reporting policy and scope limits.
+- `../SUPPORT.md`: support routing and issue-quality expectations.
 - `../CHANGELOG.md`: public snapshot and future change log.
-- `release/public-writing-guidelines.md`: public wording and claim-boundary rules.
 - `ja/README.md`: Japanese documentation map.
 - `ja/naming.md`: Japanese public names and technical-name mapping.
 - `ja/quickstart.md`: Japanese quickstart and demonstration commands.
@@ -51,7 +59,7 @@ or comparison material:
 - `public-comparison-2026-06-02.ja.md`: Japanese public positioning and non-claims.
 - `llm-reviewer.md`: LLM reviewer role boundary.
 - `ambiguity-confidence-design.md`: deterministic ambiguity, confidence, and review-routing-pressure boundary.
-- `public-wording-audit-feature-brief.md`: requirements and implementation brief for public wording precision audit.
+- `public-wording-audit-feature-brief.md`: requirements and applied README.ja.md indicators for public wording precision audit.
 - `acceptance-review-bundle.md`: final human-review bundle contract.
 - `conventions/README.md`: cross-repository coding and I/O convention source of truth.
 - `rule-model.md`: rule catalog model.
@@ -60,18 +68,28 @@ or comparison material:
 - `calibration-report-2026-06-05.md`: current calibration snapshot.
 - `../schemas/audit-result.schema.json`: common audit-result JSON Schema.
 - `release/github-publication-checklist.md`: GitHub publication checklist.
+- `release/github-publication-summary-2026-07-02.md`: publication handoff for the current publishable v0.1 snapshot with expression-precision audit.
+- `release/expression-precision-reference-heuristic-2026-07-01.md`: implementation boundary for unclear demonstrative-reference detection.
+- `release/expression-precision-corpus-sweep-2026-07-02.md`: local corpus sweep summary for expression-precision threshold design.
+- `release/public-writing-guidelines.md`: public wording and claim-boundary rules.
 - `release/publication-format.md`: recommended repository shape and publication sequence.
 - `release/public-repository-readiness.md`: public health file and presentation review.
 - `../skills/semantic-implementation/README.md`: companion Codex skill install and sync contract.
 - `../skills/semantic-implementation/SKILL.md`: companion Codex skill routing.
 
-## Archival Material
+## Working Records
 
 Dated design notes, dogfood records, conflict audits, implementation plans, and
-acceptance-bundle work records are intentionally excluded from this public
-candidate. They may remain useful in private history, but they should not be the
-first surface a public reader sees.
+acceptance bundles are working records. They may explain why a decision exists,
+but they are secondary material for a new reader.
 
-If an archival record is later promoted into the public repository, rewrite it
-as current documentation first: name its audience, status, maintained claims,
-non-goals, and verification evidence.
+- `expression-precision-audit-handoff-2026-06-30.md`: restart note for the planned expression-precision audit feature. Read it after repository reconciliation and before implementing `doc.expression.*` rules.
+- `agent-revision-loop-positioning-2026-06-30.md`: earlier positioning note for the agent-side revision loop and outward wording.
+- `prototypes/origin-requirement.md`: origin requirement for future prototype work and concept-drift checks.
+- `ja/company-evidence.md`: legacy Japanese positioning work record; not a public README substitute.
+- `release/repository-update-plan-2026-06-30.md`: repository-side update plan for the public v0.1 completion stance and audit-performance work.
+- `release/repository-update-handoff-2026-06-30.md`: compact handoff for whoever applies the repository update.
+
+When a working record conflicts with the README or the public-facing set above,
+treat the README and current public-facing documents as the publication surface,
+then inspect the dated record only for history.

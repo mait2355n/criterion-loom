@@ -14,26 +14,26 @@ Use this file when preparing a GitHub repository, reviewing a publication snapsh
 
 The expected output is a reviewed publication tree plus recorded command results for compile, unit tests, fixture evaluation, and public document audit.
 
+For the 2026-07-02 expression-precision snapshot, start with
+`docs/release/github-publication-summary-2026-07-02.md`.
+
 ## Repository Shape
 
 - [ ] `README.md` explains status, install, CLI, MCP, output shape, and limits.
-- [ ] `README.ja.md` and `docs/ja/` are present for Japanese usage and quickstart guidance.
+- [ ] `README.ja.md` and `docs/ja/` are present for Japanese usage, public positioning, and operation notes.
 - [ ] `LICENSE` is present.
 - [ ] `CONTRIBUTING.md` is present.
-- [ ] `CODE_OF_CONDUCT.md` is present.
-- [ ] `SUPPORT.md` is present.
 - [ ] `SECURITY.md` is present and does not promise security-scanner coverage.
 - [ ] `CHANGELOG.md` is present.
-- [ ] `docs/release/ci-workflow-template.yml` is present; restore it as `.github/workflows/ci.yml` when the publishing credential has GitHub `workflow` scope.
-- [ ] `.github/dependabot.yml` is present for dependency-update visibility.
+- [ ] `docs/release/ci-workflow-template.yml` is present. Restore it as `.github/workflows/ci.yml` only when the publishing credential has GitHub `workflow` scope.
 - [ ] Issue and pull request templates are present.
 
 ## Hygiene
 
 - [ ] No local absolute paths such as `/Users/...` or `/Volumes/...`.
 - [ ] No `.venv/`, `.backups/`, `__pycache__/`, `*.pyc`, `.DS_Store`, or local generated output.
-- [ ] No local `dist/` wheel or source-distribution artifacts are committed to the source repository.
 - [ ] Internal work records, dated dogfood notes, conflict audits, and local acceptance-bundle work records are excluded.
+- [ ] `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json` is either intentionally included as local calibration evidence or excluded from the public snapshot.
 
 ## Verification
 
@@ -53,11 +53,16 @@ Run document audit for the public entry points:
 ```sh
 uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.md
 uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.ja.md
+uv run --python 3.13 --project . semantic-guard audit-request --kind document --file docs/README.md
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --file README.md
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --file README.ja.md
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --file docs/public-wording-audit-feature-brief.md
 ```
 
 ## Publication Notes
 
 - Do not describe fixture pass rate as general accuracy.
+- Do not describe corpus-sweep counts as general document-audit accuracy.
 - Do not describe LLM reviewer output as final human acceptance.
 - Do not describe this project as a production requirements-engineering engine.
 - If repository URLs, badges, or package links are added later, verify that they point to the actual public repository.
