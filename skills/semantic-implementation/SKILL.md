@@ -43,7 +43,7 @@ Use the lightest audit that protects the task.
 Use this before requirements exist, especially for product ideas, feature sketches, broad documentation requests, creative canon organization, or any task where asking the wrong questions would quietly fix the wrong scope.
 
 - Generate plausible audience or stakeholder hypotheses and state how each would change scope.
-- For exhaustive elicitation, use the LLM exploration path so the reviewer extracts visible facts, inferences, hypotheses, unknowns, and pending decisions before questioning gaps.
+- For deeper elicitation, use the LLM exploration path so the reviewer classifies visible facts, inferences, hypotheses, unknowns, and pending decisions from the supplied request/context before questioning gaps. Treat the result as schema-valid elicitation material, not complete extraction.
 - Extract only material ambiguities: scope, data shape, identity, privacy, payment, permissions, external authority, acceptance evidence, unresolved human decisions.
 - Ask only questions whose answers would change the artifact or audit path.
 - Keep taste, wording, and implementation-preference questions out unless they affect scope, public contracts, evidence, or risk.
@@ -74,7 +74,7 @@ Separate need from solution.
 - Mark undecided points as unknown, hypothesis, pending decision, one-sided observation, or time-dependent fact.
 - Do not turn examples, implementation ideas, or storage layout into requirements unless the user or artifact makes them binding.
 
-Use `audit-decision-state` beside request audit when decisions, ownership, evidence gaps, or uncertainty state matter more than requirement wording. Treat its management handoff items as record material, not as the decision itself.
+Use `audit-decision-state` beside request audit when decisions, ownership, evidence gaps, or uncertainty state matter more than requirement wording. Treat its management handoff items as record material, not as the decision itself. When those items are carried forward, preserve known owner, needed-for context, blocking status, next action, review timing, and whether the source is fact, inference, hypothesis, unknown, or pending decision.
 
 ### 3. Audit Plan
 

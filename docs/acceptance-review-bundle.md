@@ -6,7 +6,7 @@
 
 中途監査は不足を見つけるためにある。最終判断は人が行う。そのため、最後に必要なのは「LLMの承認」ではなく、人が`accept`、`request_revision`、`defer`を選べるだけの材料である。
 
-`acceptance_review_bundle`はこの最終評価点を作る。Codexはbundleを生成し、証拠と残リスクを埋め、人が見るべき判断点を分離する。人が判断するまでは`final_human_decision.status`は`pending`のままにする。
+`acceptance_review_bundle`はこの最終評価点に使うJSON束を作る。Codexはbundleを生成し、証拠、残リスク、人間判断点を別fieldへ入れる。人が判断するまでは`final_human_decision.status`は`pending`のままにする。
 
 ## Audience And Use
 
@@ -47,14 +47,14 @@ schemaは`schemas/acceptance-review-bundle.schema.json`に置く。
 
 `final_human_decision.status`は次のいずれか。
 
-- `pending`: まだ人が判断していない。
+- `pending`: `decided_by`、`decided_at`、`rationale`がまだ空で、人が最終判断を記録していない状態。
 - `accept`: 現成果物を受け入れる。
 - `request_revision`: 修正を求める。
 - `defer`: 判断を保留する。
 
 `accept`、`request_revision`、`defer`を入れる場合は、`decided_by`、`decided_at`、`rationale`を空にしない。`pending`の間は空文字でよい。
 
-`finding.derivation`と`details.logical_trace`はdeterministic audit materialとして扱う。これらは、抽出factと規則述語からfindingがどう導かれたかを説明するだけである。自然言語本文の真偽、成果物の危険有無、受入済み状態、人間が`accept`すべきかどうかは示さない。
+`finding.derivation`と`details.logical_trace`はdeterministic audit materialとしてbundleへ入れる。これらは、抽出factと規則述語からfindingがどう導かれたかを説明するだけである。自然言語本文の真偽、成果物の危険有無、受入済み状態、人間が`accept`すべきかどうかは示さない。
 
 ## CLI
 

@@ -10,6 +10,12 @@
 
 動作確認だけなら、仮想環境を手で作る必要はない。`uv run --python 3.13 --project . ...`で実行する。
 
+## 出力契約
+
+通常の監査commandはstdoutへJSONを返す。中心fieldは`phase`、`status`、`score`、`findings`、`missing`、`next_actions`、`details`である。CLI使用法の誤りはstderrへargparseのmessageを出し、exit code 2で終わる。監査対象の警告やblockerはstdoutのJSON `status`として返る。
+
+schemaは`schemas/`配下に置く。`audit-result-schema`は通常監査結果のJSON Schemaを返す。LLM探索の有効出力は`schema_version: "request-exploration-review/v1"`を持つ。未決定事項を永続記録へ写す場合は、ISO 8601のtimezone付き時刻、source command、fact / inference / hypothesis / unknown / pending decisionの区別、分かる範囲のdecision ownerを記録する。
+
 ## Helpを見る
 
 ```sh
@@ -22,7 +28,7 @@ uv run --python 3.13 --project . semantic-guard --help
 uv run --python 3.13 --project . semantic-guard doctor
 ```
 
-`doctor`はPython版、project file、schema、MCP依存、任意の`codex` binary、rule-detector対応、CI workflow、fixture評価を確認する。`status`が`pass`なら、このsnapshot内の導入前提は揃っている。
+`doctor`はPython版、project file、schema、MCP依存、任意の`codex` binary、rule-detector対応、CI workflow、fixture評価を検査し、結果をdoctor JSONで返す。`status`が`pass`なら、このsnapshot内の導入前提は現在の検査項目では揃っている。
 
 ## 初期案を探索する
 
@@ -33,14 +39,14 @@ uv run --python 3.13 --project . semantic-guard explore-request --text \
 
 `explore-request`は、まだ要求文として監査できない案から、対象利用者の仮説、重大な曖昧点、聞くべき質問、仕様書の輪郭をJSONの`details`と`findings`に返す軽量preflightである。実装計画ではない。
 
-網羅的に問いただす必要がある場合はLLM版を使う。
+仕様化前の抜けを別文脈で広めに拾いたい場合はLLM版を使う。
 
 ```sh
 uv run --python 3.13 --project . semantic-guard llm-explore-request --text \
   "割り勘アプリを作りたい" --execute
 ```
 
-`llm-explore-request`は、入力とcontextから取れるfact / inference / hypothesis / unknown / pending decisionを拾い、そのうえで欠けている重要情報を質問にする。既定はdry-runなので、実行する時だけ`--execute`を付ける。範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変える質問だけを残す。
+`llm-explore-request`は、入力とcontextから読み取れるfact / inference / hypothesis / unknown / pending decisionの候補を分類し、そのうえで欠けている重要情報を質問にする。既定はdry-runなので、実行する時だけ`--execute`を付ける。範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変える質問だけを残す。
 
 ## 要求を監査する
 
@@ -49,7 +55,7 @@ uv run --python 3.13 --project . semantic-guard audit-request --text \
   "利用者: 開発者。目的: CLIの監査結果をJSONで確認する。受入基準: statusとfindingsが出力される。検証: commandを実行する。証拠: 実行結果を記録する。対象外: UI実装。"
 ```
 
-要求監査では、受入基準、検証方法、証拠、非目標、利害関係者、品質制約、優先順位、不確実性などの欠落を見る。
+要求監査では、受入基準、検証方法、証拠、非目標、利害関係者、品質制約、優先順位、不確実性などの欠落を`findings`と`missing`へ出す。
 
 ## 文書を監査する
 
@@ -58,7 +64,7 @@ uv run --python 3.13 --project . semantic-guard audit-request \
   --kind document --file README.ja.md
 ```
 
-`--kind document`を付けると、要求文ではなく説明文書として見る。目的、読み手、使い方、出力契約、限界、根拠のある主張を検査する。
+`--kind document`を付けると、要求文用規則ではなく説明文書用規則で検査する。目的、読み手、使い方、出力契約、限界、根拠のある主張を`findings`、`missing`、`details`へ出す。
 
 ## 計画を監査する
 
@@ -78,7 +84,7 @@ git diff | uv run --python 3.13 --project . semantic-guard audit-diff \
 
 `audit-diff`は、公共契約、失敗処理、運用観測、依存関係、試験義務、意味境界、複雑性増加の変化を拾う。Git repositoryでない場合は、差分要約を`--text`や標準入力で渡してもよい。
 
-## 完了を確認する
+## finish-checkを実行する
 
 ```sh
 uv run --python 3.13 --project . semantic-guard finish-check \
@@ -86,7 +92,7 @@ uv run --python 3.13 --project . semantic-guard finish-check \
   --evidence "audit-request --kind document、evaluate-fixtures、unittestを実行した。"
 ```
 
-`finish-check`は、完了と言ってよいだけの証拠があるかを確認する。単に「実装した」と書いただけでは弱い。
+`finish-check`は、完了主張、実行証拠、残リスク、人間確認点を検査し、完了と言うために不足している証拠を`findings`と`next_actions`へ出す。単に「実装した」と書いただけでは弱い。
 
 ## fixture評価を実行する
 

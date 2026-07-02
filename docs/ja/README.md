@@ -37,12 +37,18 @@ uv run --python 3.13 --project . semantic-guard audit-request --kind document --
 uv run --python 3.13 --project . semantic-guard llm-explore-request --text "割り勘アプリを作りたい" --dry-run
 ```
 
-fixture評価は次で確認する。
+fixture評価と導入状態は次のcommandでJSONとして確認する。
 
 ```sh
 uv run --python 3.13 --project . semantic-guard evaluate-fixtures
 uv run --python 3.13 --project . semantic-guard doctor
 ```
+
+## 公開契約の読み場所
+
+この入口文書は契約そのものを再定義しない。CLI、MCP、schema、失敗形、標準出力と標準誤出力、終了符号、永続証拠の未確定表示は、rootの`README.ja.md`と`../conventions/README.md`、`../conventions/base-contract.md`、`../../skills/semantic-implementation/references/mcp-contract.md`で確認する。
+
+通常の監査commandはstdoutへJSONを返し、中心fieldは`phase`、`status`、`score`、`findings`、`missing`、`next_actions`、`details`である。使用法の誤りはstderrへargparseのmessageを出し、exit code 2で終わる。監査対象の警告やblockerはstdoutのJSON `status`に残る。
 
 ## 出力項目
 

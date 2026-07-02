@@ -46,6 +46,13 @@ and false-negative reduction, fixture and corpus expansion, and tighter
 agent-side revision-loop use. It should not be treated as an authoritative
 requirements, safety, or release gate.
 
+The evidence boundary is explicit: local fixtures, unit tests, `doctor`,
+schema commands, and public examples show the current checked surface. They are
+not statistical proof over arbitrary prose. When an audit exposes an unknown,
+hypothesis, evidence gap, or pending decision, the machine-readable handoff
+item should carry owner when known, needed-for context, blocking status, next
+action, and review timing instead of resolving the decision inside the tool.
+
 Human final decision is required. The tool can prepare audit output, reviewer supplements, and acceptance-review bundles, but `final_human_decision.status` stays `pending` until a person chooses `accept`, `request_revision`, or `defer`.
 
 For the naming map, see `docs/naming.md` or the Japanese version at `docs/ja/naming.md`.
@@ -103,6 +110,14 @@ uv run --python 3.13 --project "$SG_PROJECT" semantic-guard --help
 | **Change Weft** | `audit-diff` | What could this change break in meaning, quality, security, tests, docs, operations, or minimality? |
 | **Change Weft** | `finish-check` | Is there enough evidence to claim completion, and what risk remains? |
 
+Normal audit commands return JSON with `phase`, `status`, `score`,
+`findings`, `missing`, `next_actions`, and `details`. Usage errors keep the
+argparse message on stderr and exit code 2; audited-material warnings and
+blockers stay in stdout JSON. `audit-decision-state` records pending decision
+handoff items under `details.decision_state_report.management_handoff_items`
+with owner, needed-for context, blocking status, next action, and review timing
+when those values are known.
+
 ## CLI
 
 Run the CLI with `uv` from the checkout root:
@@ -152,7 +167,7 @@ Use `--profile default|dogfood|exploratory|release|safety` on text audit command
 
 Use `explore-request` as a deterministic preflight for early ideas that are not ready to be audited as requirements. It returns the common audit-result JSON envelope to stdout with `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, and `details`. `details.schema_version` is `request-exploration/v1`; typed detail fields include `audience_hypotheses`, `material_ambiguities`, `questions`, `question_policy`, `spec_outline`, and `non_decisions`. It adds no custom failure shape: CLI usage errors keep the existing argparse message on stderr and exit code 2, while audited-material warnings or blockers remain JSON `status` values on stdout. The command records hypotheses, inferred unknowns, and pending decisions as such; it does not turn them into requirements.
 
-Use `llm-explore-request` when exhaustive pre-spec elicitation is needed. It builds an isolated `codex exec` exploration reviewer prompt from the original text, optional context, and deterministic preflight output, then asks the LLM to classify visible facts, inferences, hypotheses, unknowns, and pending human decisions before generating material missing questions. Dry-run is the default; use `--execute` to run Codex and validate JSON output against `schemas/request-exploration-review.schema.json`. A valid result uses `schema_version: "request-exploration-review/v1"` and includes `extracted_information`, `audience_hypotheses`, `material_ambiguities`, `questions`, `spec_outline`, `non_decisions`, and `limits`. This is still not approval, implementation planning, or final acceptance.
+Use `llm-explore-request` when pre-spec elicitation needs a broader isolated pass. It builds an isolated `codex exec` exploration reviewer prompt from the original text, optional context, and deterministic preflight output, then asks the LLM to classify visible facts, inferences, hypotheses, unknowns, and pending human decisions before generating material missing questions. Dry-run is the default; use `--execute` to run Codex and validate JSON output against `schemas/request-exploration-review.schema.json`. A valid result uses `schema_version: "request-exploration-review/v1"` and includes `extracted_information`, `audience_hypotheses`, `material_ambiguities`, `questions`, `spec_outline`, `non_decisions`, and `limits`. This is not completeness proof, approval, implementation planning, or final acceptance.
 
 MCP callers that need progress visibility for LLM exploration can use `llm_explore_request_start_tool` and then poll `llm_exploration_status_tool`. Exploration jobs are process-local and report `state`, `running`, `process_finished`, `exploration_received`, `response_state`, `valid`, `timed_out`, and `errors`.
 

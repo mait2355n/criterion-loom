@@ -106,8 +106,10 @@ or when `SG_PROJECT` points at one.
   audit tool source.
 - Use `explore-request` or `explore_request_tool` for fast pre-spec preflight.
 - Use `llm-explore-request --execute` or `llm_explore_request_tool(execute=true)`
-  when the task needs the LLM to extract all visible information before asking
-  every material missing question.
+  when the task needs an isolated LLM to classify visible facts, inferences,
+  hypotheses, unknowns, and pending decisions from the supplied input, then
+  return schema-valid exploration JSON with material questions and explicit
+  limits. This is not a completeness guarantee.
 - Use `llm_explore_request_start_tool` plus `llm_exploration_status_tool` when
   LLM exploration should expose running/completed/failed/timed-out state instead
   of blocking until the command returns.
@@ -139,6 +141,11 @@ or when `SG_PROJECT` points at one.
 - Treat LLM reviewer output as supplement material only.
 - Keep `final_human_decision.status` as `pending` until a human chooses
   `accept`, `request_revision`, or `defer`.
+
+The detailed CLI/MCP output contract is not redefined in this README. See
+`references/mcp-contract.md` for schema versions, normal stdout JSON envelope,
+stderr and exit-code roles for usage errors, durable-evidence uncertainty
+markers, and decision-state handoff fields.
 
 ## Non-Goals
 

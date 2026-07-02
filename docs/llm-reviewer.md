@@ -4,9 +4,9 @@
 
 ## Purpose
 
-`core.py`とrule catalogは再現性のある監査を担う。一方で、文脈上の不足、反適用条件、薄い前提、補うべき証拠は語彙照合だけでは拾いにくい。
+`core.py`とrule catalogは再現性のある監査を担う。一方で、文脈上の不足、反適用条件、薄い前提、追加証拠の候補は語彙照合だけでは拾いにくい。
 
-LLM reviewerはその弱点を補う。ただし、最終合否を決める裁判官ではない。候補案、元要求、決定的監査結果、関連ruleを読み、不足、疑わしい前提、反適用条件の可能性、補填案、人間判断点を返す。
+LLM reviewerは、候補案、元要求、決定的監査結果、関連ruleを入力として読み、不足を`missing_aspects`、疑わしい前提を`questionable_assumptions`、反適用条件候補を`possible_counter_conditions`、補填案を`supplement_proposals`、人間判断点を`human_decision_needed`へ返す。ただし、最終合否を決める裁判官ではない。
 
 また、LLM reviewerは中途監査として起動される。人が最終成果物を評価する前に、要求監査、計画監査、差分監査、完了確認の各段階で不足と補填候補を整理する。
 
@@ -30,7 +30,7 @@ LLM reviewerがしてよいこと。
 - 曖昧な前提や危険な仮定を挙げる。
 - deterministic監査の警告が反適用条件に当たる可能性を示す。
 - 関連ruleの`concern`, `applies_when`, `does_not_apply_when`, `evidence_required`, `severity_policy`, `finding`, `remediation`を項目ごとに点検する。
-- 補うべき受入条件、検証方法、対象外、証拠、計画項目を提案する。
+- 受入条件、検証方法、対象外、証拠、計画項目の追加候補を`supplement_proposals`へ返す。
 - 人間判断が必要な点を分離する。
 
 LLM reviewerがしてはいけないこと。
@@ -232,7 +232,7 @@ uv run --python 3.13 --project . \
 
 論理監査の`finding.derivation`と`details.logical_trace`は、決定的抽出器が受け入れたfactとexecutable predicateの導出記録である。
 
-LLM reviewerは、そこへ足せるかもしれない候補fact、候補countercondition、質問、補填案を返してよい。しかし、その出力は`candidate`止まりである。決定的証拠または明示的な人間判断なしに、LLM出力を`present` fact、derivation step、finding、受入判断へ昇格してはいけない。
+LLM reviewerは、論理監査へ追加できるかもしれない候補fact、候補countercondition、質問、補填案を、`missing_aspects`、`possible_counter_conditions`、`supplement_proposals`などの候補fieldへ返してよい。親側が採用する場合だけ、source field、採用理由、対応する要求またはrule、保持する証拠を記録してから、計画、文書、証拠、fixture候補へ移す。しかし、その出力は`candidate`止まりである。決定的証拠または明示的な人間判断なしに、LLM出力を`present` fact、derivation step、finding、受入判断へ昇格してはいけない。
 
 ## Limits
 

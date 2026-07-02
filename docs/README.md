@@ -16,6 +16,11 @@ map, positioning documents, expression-precision notes, reviewer-boundary
 documents, rule model, fixture format, audit-result schema, doctor command, and
 calibration snapshot listed below.
 
+Dated working records may still contain wording that the current
+`audit-conventions --kind document` rules would flag. Treat those findings as
+history and calibration material unless the same wording appears in the README,
+current maps, quickstarts, skill contract, or release-facing publication notes.
+
 Japanese manuals for Criterion Loom usage are available under `docs/ja/`, with
 the top-level Japanese entry point at `../README.ja.md`.
 
@@ -39,6 +44,11 @@ uv run --python 3.13 --project . semantic-guard conventions-catalog
 
 Use this file as a navigation aid, not as a replacement for the linked
 documents.
+
+Normal audit commands write JSON to stdout with `phase`, `status`, `score`,
+`findings`, `missing`, `next_actions`, and `details`. CLI usage errors write
+argparse messages to stderr and exit with code 2. The detailed CLI/MCP contract
+lives in `../skills/semantic-implementation/references/mcp-contract.md`.
 
 ## Public-Facing Set
 

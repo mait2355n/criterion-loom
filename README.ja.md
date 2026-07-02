@@ -28,6 +28,12 @@ Criterion Loomは、監査の挙動を曖昧な総評ではなく、構造化さ
 
 これは任意文書に対する一般精度の証明ではない。監査挙動を偶然任せにせず、使って見つけた弱点ごとに規則、検出器、fixture、文書を変更する改善循環である。
 
+## 未決定管理と証拠境界
+
+`audit-decision-state`が露出する未決定、不明、仮説、推測、価値判断、根拠不足は、そこで解決済みにしない。JSONの`details.decision_state_report.management_handoff_items`へ管理対象として出し、分かる範囲で`owner`、`needed_for`、`blocking_status`、`next_action`、`review_at`を付ける。ownerが不明なら不明として残し、人間または上位の作業管理側で決める。
+
+fixture評価、単体試験、`doctor`、schema出力、公開例は、このsnapshotで確認した監査面の証拠である。任意の自然文に対する一般精度保証ではない。価値判断や最終受入は、人間が証拠と残リスクを読んで`accept`、`request_revision`、`defer`から選ぶ。
+
 ## 監査できること
 
 - `explore-request`: 初期案に対し、対象利用者、重大な曖昧点、仕様化前に聞くべき質問を抽出する。
@@ -58,7 +64,7 @@ Criterion Loomの公開上の柱は次の四つである。
 - 仕様や要求がまだ曖昧な開発作業の事前点検。
 - AIエージェントが監査結果を受け取り、計画、差分説明、完了報告を直してから再提示する作業ループ。
 - まだ仕様化できない初期案から、対象利用者、重大な曖昧点、聞くべき質問だけを切り出す探索。
-- LLMに、入力と文脈から取れるfact / inference / hypothesis / unknown / pending decisionを分類させた上で、欠けている重要情報を質問として返させる探索。
+- LLMに、入力と文脈から読み取れるfact / inference / hypothesis / unknown / pending decisionの候補を分類させた上で、欠けている重要情報を質問として返させる探索。
 - 決定済み、未決定、仮説、推測、片側観測、時点依存、価値判断、根拠不足を同じ本文から分けて抽出する確認。
 - 実装計画が、やることの列挙だけになっていないかの確認。
 - 新規依存、抽象、層、schemaを足す計画に、既存機能や最小案で足りない理由があるかの確認。
@@ -151,7 +157,7 @@ rsync -a --delete "$SKILL_SRC/" "$CODEX_HOME/skills/semantic-implementation/"
 
 `explore-request`は、まだ要求文として監査できない初期案に使う軽量な決定論preflightである。共通のJSON包みをstdoutに返し、`details.schema_version`は`request-exploration/v1`になる。`details.audience_hypotheses`、`details.material_ambiguities`、`details.questions`、`details.spec_outline`を返すが、これは実装計画ではない。CLI usage errorは既存通りargparseのmessageをstderrに出してexit code 2で終わり、監査対象の警告やblockerはstdoutのJSON `status`として返る。
 
-`llm-explore-request`は、網羅的な仕様化前探索に使うLLM版である。元の入力、任意のcontext、決定論preflight出力を隔離`codex exec` reviewerへ渡し、取れるfact / inference / hypothesis / unknown / pending decisionを分類した上で、欠けている重要情報を質問として返す。既定はdry-runで、`--execute`を付けた時だけCodexを実行し、`schemas/request-exploration-review.schema.json`でJSONを検証する。有効な出力は`schema_version: "request-exploration-review/v1"`を持ち、`extracted_information`、`audience_hypotheses`、`material_ambiguities`、`questions`、`spec_outline`、`non_decisions`、`limits`を含む。質問は、範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変えるものだけに絞る。これも承認、実装計画、最終受入ではない。
+`llm-explore-request`は、仕様化前探索に使うLLM版である。元の入力、任意のcontext、決定論preflight出力を隔離`codex exec` reviewerへ渡し、本文から読み取れるfact / inference / hypothesis / unknown / pending decisionの候補を分類した上で、欠けている重要情報を質問として返す。既定はdry-runで、`--execute`を付けた時だけCodexを実行し、`schemas/request-exploration-review.schema.json`でJSONを検証する。有効な出力は`schema_version: "request-exploration-review/v1"`を持ち、`extracted_information`、`audience_hypotheses`、`material_ambiguities`、`questions`、`spec_outline`、`non_decisions`、`limits`を含む。質問は、範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変えるものだけに絞る。網羅性や正しさの証明ではなく、承認、実装計画、最終受入でもない。
 
 MCPで長くなりそうなLLM探索を走らせる場合は、`llm_explore_request_start_tool`で開始し、`llm_exploration_status_tool`で`running` / `completed` / `failed` / `timed_out`を見る。`exploration_received=true`はschema-validな探索JSONがあるという意味で、最終受入ではない。
 

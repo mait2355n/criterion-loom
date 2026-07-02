@@ -17,7 +17,7 @@ Public surfaces: CLI commands, MCP tools, JSON audit-result output, JSON helper 
 Commands and output shapes are listed below; normal text-audit commands use the shared audit-result envelope with `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, and `details`.
 Exception and non-goal boundaries: the contract does not define internal Python APIs, UI behavior, formal requirements proof, release approval, security certification, or final human acceptance.
 Representative verification: run `python -m unittest tests.test_cli tests.test_mcp_tools`, a CLI smoke command for the changed surface, `audit-result-schema`, and `doctor` when the public surface changes.
-Durable evidence records should include a shallow recovery surface with named `context`, `current_state`, `action` or `next_action`, and `detail_refs` fields, plus ISO 8601 timestamp with timezone, source command or reviewer source, fact versus inference versus hypothesis versus unknown status, pending decision markers, and decision owner when known.
+Durable evidence records must include a shallow recovery surface with named `context`, `current_state`, `action` or `next_action`, and `detail_refs` fields, plus ISO 8601 timestamp with timezone, source command or reviewer source, fact versus inference versus hypothesis versus unknown status, pending decision markers, and decision owner when known. If the owner, review time, or blocking status is unknown, record that state explicitly instead of omitting the field.
 
 ## Phases
 
@@ -91,7 +91,7 @@ CLI: none. These are MCP-process-local state tools for callers that need progres
 
 Inputs:
 
-- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`, but it always starts a background execution.
+- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`; after input validation succeeds, it starts a background execution.
 - status: `job_id`, plus optional `include_result` and `include_prompt`.
 
 Output:
@@ -173,7 +173,7 @@ Output:
 - pending decisions, unknowns, hypotheses, inferences, one-sided observations, time-dependent claims, value judgments, and evidence gaps.
 - `details.decision_state_report.management_handoff_items` for possible control-plane or durable-record transfer.
 
-Use this when the important question is "what has or has not been decided?" rather than "is this requirement well written?". It does not resolve uncertainty or decide final acceptance.
+Use this when the important question is "what has or has not been decided?" rather than "is this requirement well written?". It does not resolve uncertainty or decide final acceptance. When a caller stores handoff items, preserve `suggested_owner`, `needed_for`, `blocking_status`, `next_action`, and `review_at`; use explicit unknown values when the source text did not supply them.
 
 ### audit_plan
 

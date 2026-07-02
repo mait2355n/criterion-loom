@@ -71,7 +71,7 @@ uv run --python 3.13 --project . semantic-guard audit-request --kind document --
 
 | 分類 | 公開例 | 主用途 | 強い点 | `semantic-guard`との差 |
 | --- | --- | --- | --- | --- |
-| 参照・utility MCPサーバ | Model Context ProtocolのFilesystem、Git、Memory、Sequential Thinking、Fetch、GitHubなど | 助手を道具、file、memory、repository、思考補助へ接続する | 広い道具接続、再利用可能なMCP pattern、具体操作 | `semantic-guard`は主として操作面ではない。道具利用の周辺にある意味と完了証拠を監査する。 |
+| 参照・utility MCPサーバ | Model Context ProtocolのFilesystem、Git、Memory、Sequential Thinking、Fetch、GitHubなど | 助手を道具、file、memory、repository、思考補助へ接続する | 広い道具接続、再利用可能なMCP pattern、具体操作 | `semantic-guard`は道具操作そのものではなく、依頼、計画、差分、完了主張を入力にして、意味境界、検証条件、完了証拠の不足をJSON監査結果として返す。 |
 | repository platform MCP | GitHub MCP Server | repository、issue、pull request、Actions、code securityなどGitHub APIへの接続 | 直接的な平台統合、toolset、権限範囲 | repository事実や操作を露出できるが、要求、計画、差分、完了主張が意味を保っているかはそれ自体では見ない。 |
 | 文書grounding MCP | Context7 | 現行かつversion-specificな文書と例をcoding promptへ入れる | 古いAPI知識や幻覚文書の危険を減らす | 情報の新しさを補強する。`semantic-guard`は、作業が範囲づけられ、検証可能で、追跡可能で、完了主張が正直かを見る。 |
 | 保安走査MCP | Snyk MCP、Semgrep MCP | code、dependency、container、IaC、SBOM、静的保安走査 | 保安規則と脆弱性文脈に強い | `semantic-guard`は脆弱性走査器として競うべきではない。保安は広い要求・計画・完了監査の一項目に留まる。 |
