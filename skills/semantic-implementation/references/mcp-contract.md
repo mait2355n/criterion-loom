@@ -89,7 +89,7 @@ CLI: none. These are MCP-process-local state tools for callers that need progres
 
 Inputs:
 
-- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`, but it always starts a background execution.
+- start: same exploration text, context, model, timeout, working directory, and schema options as `llm_explore_request_tool`; the normal successful path creates a background execution record.
 - status: `job_id`, plus optional `include_result` and `include_prompt`.
 
 Output:
