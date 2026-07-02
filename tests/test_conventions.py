@@ -129,11 +129,184 @@ class ConventionTests(unittest.TestCase):
         self.assertEqual(result["status"], "warn")
         self.assertIn("doc.expression.operation_blurred", result["missing"])
 
+    def test_expression_precision_detects_as_view_operation_blurred(self) -> None:
+        result = audit_conventions("曖昧な箇所を判断材料として見る。", input_kind="document")
+
+        self.assertEqual(result["status"], "warn")
+        self.assertIn("doc.expression.as_view_operation_blurred", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        self.assertTrue(expression_details["operation_contracts"])
+        operation_finding = next(
+            finding for finding in result["findings"] if finding["rule_id"] == "doc.expression.as_view_operation_blurred"
+        )
+        repair = operation_finding["repair"]
+        self.assertTrue(repair["needs_human_decision"])
+        self.assertIn("rewrite_candidates", repair)
+
+    def test_expression_precision_detects_inspection_contract_missing(self) -> None:
+        result = audit_conventions("対象を検査する。", input_kind="document")
+
+        self.assertEqual(result["status"], "warn")
+        self.assertIn("doc.expression.inspection_contract_missing", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.inspection_contract_missing"
+        )
+        self.assertEqual(contract["status"], "under_specified")
+        self.assertIn("criterion", contract["missing_slots"])
+
+    def test_expression_precision_accepts_inspection_with_contract(self) -> None:
+        result = audit_conventions("差分を基準に照らして検査し、違反箇所を findings として返す。", input_kind="document")
+
+        expression_missing = [rule_id for rule_id in result["missing"] if rule_id.startswith("doc.expression.")]
+        self.assertEqual(expression_missing, [])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.inspection_contract_missing"
+        )
+        self.assertEqual(contract["status"], "supported")
+
+    def test_expression_precision_detects_capability_contract_missing(self) -> None:
+        result = audit_conventions("資源全体を見渡し、次に何を扱うべきかを決める。", input_kind="document")
+
+        self.assertIn("doc.expression.capability_contract_missing", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.capability_contract_missing"
+        )
+        self.assertEqual(contract["status"], "under_specified")
+        self.assertIn("input_boundary", contract["missing_slots"])
+        self.assertIn("limit_or_non_guarantee", contract["missing_slots"])
+
+    def test_expression_precision_detects_all_information_overclaim(self) -> None:
+        result = audit_conventions("入力から取れる情報をすべて拾わせる。", input_kind="document")
+
+        self.assertIn("doc.expression.capability_contract_missing", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.capability_contract_missing"
+        )
+        self.assertEqual(contract["status"], "under_specified")
+        self.assertIn("limit_or_non_guarantee", contract["missing_slots"])
+
+    def test_expression_precision_accepts_bounded_capability_contract(self) -> None:
+        result = audit_conventions(
+            "指定された入力から現在の規則で検出できた候補を JSON findings として返し、網羅性は保証しない。",
+            input_kind="document",
+        )
+
+        expression_missing = [rule_id for rule_id in result["missing"] if rule_id.startswith("doc.expression.")]
+        self.assertEqual(expression_missing, [])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.capability_contract_missing"
+        )
+        self.assertEqual(contract["status"], "supported")
+
+    def test_expression_precision_does_not_flag_plain_english_every(self) -> None:
+        result = audit_conventions(
+            "Do not use it to force one internal architecture onto every repository.",
+            input_kind="document",
+        )
+
+        expression_missing = [rule_id for rule_id in result["missing"] if rule_id.startswith("doc.expression.")]
+        self.assertEqual(expression_missing, [])
+
+    def test_expression_precision_does_not_flag_capability_compound_or_negated_scope(self) -> None:
+        cases = [
+            "形式手法や網羅的な要求検証は担当しない。",
+            "全体図は有用だが、図だけでは管理できない。",
+            "現在の状態。履歴全体ではない。",
+        ]
+
+        for text in cases:
+            with self.subTest(text=text):
+                result = audit_conventions(text, input_kind="document")
+                expression_missing = [
+                    rule_id
+                    for rule_id in result["missing"]
+                    if rule_id == "doc.expression.capability_contract_missing"
+                ]
+                self.assertEqual(expression_missing, [])
+
+    def test_expression_precision_detects_mapping_contract_missing(self) -> None:
+        result = audit_conventions("監査結果を資源状態、危険、次行動へ写像する。", input_kind="document")
+
+        self.assertIn("doc.expression.mapping_contract_missing", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.mapping_contract_missing"
+        )
+        self.assertEqual(contract["status"], "under_specified")
+        self.assertIn("rule_or_condition", contract["missing_slots"])
+        self.assertIn("evidence_preservation", contract["missing_slots"])
+
+    def test_expression_precision_detects_handoff_enrichment_contract_missing(self) -> None:
+        result = audit_conventions(
+            "handoff item に owner と next_action を補って管理対象へ昇格させる。",
+            input_kind="document",
+        )
+
+        self.assertIn("doc.expression.mapping_contract_missing", result["missing"])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.mapping_contract_missing"
+        )
+        self.assertEqual(contract["status"], "under_specified")
+        self.assertIn("rule_or_condition", contract["missing_slots"])
+
+    def test_expression_precision_accepts_field_mapping_contract(self) -> None:
+        result = audit_conventions(
+            "findings と evidence を audit_record.fields に写し、source_audit_id を保持する。",
+            input_kind="document",
+        )
+
+        expression_missing = [rule_id for rule_id in result["missing"] if rule_id.startswith("doc.expression.")]
+        self.assertEqual(expression_missing, [])
+        expression_details = result["details"]["expression_precision"]
+        contract = next(
+            item
+            for item in expression_details["operation_contracts"]
+            if item["rule_id"] == "doc.expression.mapping_contract_missing"
+        )
+        self.assertEqual(contract["status"], "supported")
+
+    def test_expression_precision_does_not_treat_closed_loop_as_mapping(self) -> None:
+        result = audit_conventions(
+            "観測、監査、判断、行動を閉じた制御環として扱う。",
+            input_kind="document",
+        )
+
+        expression_missing = [
+            rule_id for rule_id in result["missing"] if rule_id == "doc.expression.mapping_contract_missing"
+        ]
+        self.assertEqual(expression_missing, [])
+
     def test_expression_precision_accepts_classified_findings(self) -> None:
         result = audit_conventions("問題点を分類し、指摘一覧として返す。", input_kind="document")
 
         self.assertEqual(result["status"], "pass")
         self.assertEqual(result["missing"], [])
+
+    def test_expression_precision_does_not_treat_compound_material_as_target(self) -> None:
+        result = audit_conventions("未決定事項を判断材料として提示する。", input_kind="document")
+
+        expression_missing = [rule_id for rule_id in result["missing"] if rule_id.startswith("doc.expression.")]
+        self.assertEqual(expression_missing, [])
 
     def test_expression_precision_suppresses_negative_examples(self) -> None:
         result = audit_conventions("悪い例: 怪しい場所を試験できる内容として外に出す。", input_kind="document")
@@ -188,9 +361,20 @@ class ConventionTests(unittest.TestCase):
             ("warn", "問題を対応できるようにする。"),
             ("warn", "弱いところを外部に共有する。"),
             ("warn", "これを判断できる形にする。"),
+            ("warn", "曖昧な箇所を判断材料として見る。"),
+            ("warn", "対象を検査する。"),
+            ("warn", "資源全体を見渡し、次に何を扱うべきかを決める。"),
+            ("warn", "入力から取れる情報をすべて拾わせる。"),
+            ("warn", "監査結果を資源状態、危険、次行動へ写像する。"),
+            ("warn", "handoff item に owner と next_action を補って管理対象へ昇格させる。"),
             ("pass", "判断が必要な箇所を一覧として返す。"),
             ("pass", "修正対象を検出し、該当規則ごとの指摘一覧として返す。"),
             ("pass", "要求文を受け取り、その文書から未決定事項を抽出する。"),
+            ("pass", "差分を基準に照らして検査し、違反箇所を findings として返す。"),
+            ("pass", "指定された入力から現在の規則で検出できた候補を JSON findings として返し、網羅性は保証しない。"),
+            ("pass", "findings と evidence を audit_record.fields に写し、source_audit_id を保持する。"),
+            ("pass", "形式手法や網羅的な要求検証は担当しない。"),
+            ("pass", "全体図は有用だが、図だけでは管理できない。"),
         ]
 
         for expected, text in cases:

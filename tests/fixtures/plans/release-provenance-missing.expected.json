@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-RELEASE-PROVENANCE-MISSING-001",
+  "title": "Public package plan without release provenance is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: パッケージを公開する。対象外: UI は作らない。成果物: package と README。作業分解: package と README を作業パッケージに分ける。手順: 調査、実装、検証、公開。順序: 調査後に実装し、検証後に公開する。依存: 既存 packaging。資源: Codex が一作業単位で実施する。リスク: 既存利用者が壊れる。対策: 代表実行で確認する。検証: unittest と CLI。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後と公開前に進捗確認。基準線: unittest 通過を判定基準にする。変更統制: 追加要求は後続化する。決定点: 公開前に利用者が go/no-go を判断する。戻し方: 公開前なら差分を戻し、公開後は後続修正と告知を行う。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "Release plans need version, history, artifact provenance, or a reproducible release procedure.",
+  "labels": {
+    "expected_rules": [
+      "plan.release.provenance_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "release",
+        "rule_id": "plan.release.provenance_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "release"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "release_provenance"
+      ]
+    }
+  }
+}

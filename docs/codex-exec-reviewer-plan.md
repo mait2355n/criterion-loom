@@ -79,7 +79,7 @@ semantic-guard llm-review-run --file review-input.json --execute
 - sessionはephemeralにする。
 - user / project rulesは読ませない。
 - 出力はschemaで縛る。
-- `codex exec --output-schema`の制約に合わせ、schema内objectの`properties`は全項目`required`に含める。該当なしは空配列または `なし` 相当の文字列で表す。
+- `codex exec --output-schema`の制約に合わせ、schema内objectの`properties`は全項目`required`に含める。該当なしは空配列または`なし`相当の文字列で表す。
 - timeoutを持つ。
 - stderrとexit codeを結果に残す。
 - schema不一致は失敗として扱う。

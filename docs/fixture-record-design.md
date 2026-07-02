@@ -72,7 +72,7 @@ derivation系の期待値も同じく局所退行検査である。`derivation_r
 - `audit-diff`の意味境界evidenceが、単語や文の途中で不自然に始まる断片へ退化しないこと。
 - 長い文書evidence snippetが、壊れたコード柵や不自然な固定長断片へ退化しないこと。
 - 完了主張だけでは完了扱いにしないこと。
-- boundedな `監査全体を確認する` 計画が、作業分解、対象外、順序、検証、変更統制を持つ場合にbroad-scope警告へ落ちないこと。
+- boundedな`監査全体を確認する`計画が、作業分解、対象外、順序、検証、変更統制を持つ場合にbroad-scope警告へ落ちないこと。
 - bounded work-package requestがatomicity / priorityの過剰警告へ落ちないこと。
 - docs-onlyの証拠追記diffがsemantic evidence mutationとして扱われないこと。
 - 日本語の同義見出し、欠落候補、警告分類、意味境界名は単体試験で固定している。

@@ -33,7 +33,10 @@ uv run --python 3.13 --project . semantic-guard doctor
 ## Unreleased
 
 - Add the Criterion Loom public naming map: Loom Guide, Need Thread, Plan Warp, and Change Weft, while keeping `semantic-guard` as the package, CLI, and MCP server name.
-- Add GitHub repository support files: CI workflow, issue templates, pull request template, contributing guide, security policy, and release checklist.
+- Add GitHub repository support files: CI workflow template, issue templates, pull request template, contributing guide, security policy, and release checklist.
+- Split the audit implementation into smaller phase modules while preserving the public CLI and MCP command surface.
+- Expand `audit-conventions --kind document` with expression-contract findings for viewpoint wording, inspection wording, broad capability claims, and mapping contracts.
+- Add fixtures, convention catalog entries, and release notes for the new `doc.expression.*` rules.
 
 ## 2026-06-05 Public Maturity Pass
 

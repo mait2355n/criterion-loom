@@ -1,0 +1,38 @@
+{
+  "id": "DIFF-FILENAME-SCOPE-UNDERSPECIFIED-001",
+  "title": "Broad new filename without scope management is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "*** Add File: src/shop/manager.py\n+def create_invoice(user):\n+    return Invoice(user)\n",
+  "intent": "shop manager を追加する。",
+  "strict": true,
+  "rationale": "A newly named manager file is likely to become a catch-all unless the name is tightened first or, for a deliberately generic name, its scope-management boundary is declared.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.filename_scope_underspecified"
+    ],
+    "expected_findings": [
+      {
+        "category": "scope",
+        "rule_id": "diff.implementation.filename_scope_underspecified"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "scope"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "filename_scope_management"
+      ]
+    },
+    "details": {
+      "changed_file_count": 1
+    }
+  }
+}

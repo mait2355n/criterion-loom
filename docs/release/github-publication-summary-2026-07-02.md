@@ -65,15 +65,17 @@ repository functionality:
 - `audit-conventions --kind document` can emit `doc.expression.*` findings.
 - The public convention catalog includes document-expression rules for vague
   targets, operations, output forms, utility claims, decision actors, revision
-  targets, and unclear demonstrative references.
+  targets, unclear demonstrative references, viewpoint wording, inspection
+  contracts, broad capability claims, and mapping contracts.
 - Demonstrative references such as bare `それ` or `これ` are checked with a
   standard-library local-context heuristic.
 - `details.expression_precision.referent_resolutions` reports whether nearby
   referents were `supported`, `ambiguous`, `no_candidate`, or `weak_only`.
 - Morphological analysis, external NLP packages, and LLM review are not
   required for the default path.
-- Corpus sweep data has been collected to guide threshold design and fixture
-  expansion.
+- Corpus sweep and LLM document-audit summaries remain as reviewed Markdown to
+  guide threshold design and fixture expansion. Raw JSON logs are excluded from
+  the public tree.
 
 ## Files To Carry Forward
 
@@ -105,16 +107,15 @@ Expression-precision files:
 - `docs/release/public-writing-guidelines.md`
 - `docs/release/expression-precision-reference-heuristic-2026-07-01.md`
 - `docs/release/expression-precision-corpus-sweep-2026-07-02.md`
+- `docs/release/expression-contract-family-implementation-2026-07-02.md`
+- `docs/release/expression-operation-ambiguity-scan-2026-07-02.md`
+- `docs/release/llm-document-expression-audit-2026-07-02.md`
+- `docs/release/llm-document-expression-audit-triage-2026-07-02.md`
 - `docs/release/github-publication-summary-2026-07-02.md`
 
-Optional local evidence:
-
-- `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json`
-
-The raw corpus JSON is useful for local calibration. For a public snapshot,
-include it only if the repository maintainer accepts dated corpus evidence with
-historical backup-path labels. Otherwise keep the summary Markdown and exclude
-the raw JSON.
+Raw expression-audit JSON is excluded from the public tree. Keep reviewed
+summary Markdown only; raw logs are local calibration material because they can
+contain historical draft excerpts and machine-local scan details.
 
 ## Do Not Carry Forward
 
@@ -132,61 +133,64 @@ Exclude local or generated material:
 - local acceptance-bundle drafts
 - private or machine-specific work records
 
-## Current Publication Gaps
+## Publication Notes
 
-The current local tree is suitable as a source for a cleaned publication
-snapshot, but it is not itself the final GitHub push tree.
-
-Open publication gaps:
+The current tree is the intended GitHub push tree for this snapshot.
 
 - Existing dated handoff documents, dogfood records, conflict-audit notes, and
-  implementation plans are still present as secondary working records. Decide
-  whether to archive, exclude, or rewrite them before the final GitHub push.
-- The corpus raw JSON should be treated as optional evidence, not mandatory
-  public documentation.
-- Re-run the full `uv` verification commands in the final publish environment
-  after deciding how to handle secondary working records and the raw corpus JSON.
+  implementation plans remain as secondary working records. `README.md`,
+  `README.ja.md`, `docs/README.md`, schemas, and maintained release notes are
+  the publication surface when records disagree.
+- Raw expression-audit JSON is intentionally excluded. Do not re-add it without
+  a separate publication review.
+- `.github/workflows/ci.yml` is intentionally absent because the current
+  publishing credential may not have GitHub `workflow` scope. Keep
+  `docs/release/ci-workflow-template.yml` as the checked template until that
+  scope is available.
 
 ## Verification Evidence
 
-Latest local verification: `2026-07-02T08:18:53+09:00`.
+Latest local verification: `2026-07-02T23:08:52+09:00`.
 
 Commands run from the repository root:
 
 ```sh
-uv run --python 3.13 --project . python -m compileall src/semantic_guard tests
-uv run --python 3.13 --project . python -m unittest discover -s tests -v
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures
-uv run --python 3.13 --project . semantic-guard doctor
-uv run --python 3.13 --project . semantic-guard audit-result-schema
-uv run --python 3.13 --project . semantic-guard rule-detector-map
-uv run --python 3.13 --project . python -m json.tool docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json
+.venv/bin/python -m compileall src/semantic_guard tests
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/semantic-guard evaluate-fixtures
+.venv/bin/semantic-guard doctor --no-fixtures
+.venv/bin/semantic-guard audit-result-schema
+.venv/bin/semantic-guard rule-detector-map
 ```
 
 Observed results:
 
 - compileall completed.
-- unit tests: 217 tests passed.
-- fixture evaluation: 45/45 passed.
-- doctor: 9 checks passed, 0 warnings, 0 blockers.
+- unit tests: 241 tests passed.
+- fixture evaluation: 49/49 passed.
+- doctor --no-fixtures: 7 checks passed, 1 warning, 0 blockers. The warning is
+  the intentionally absent active `.github/workflows/ci.yml`.
 - audit-result schema command completed.
 - rule-detector-map command completed.
-- corpus sweep raw JSON parsed successfully.
 
 Post-cleanup local checks after the public wording updates:
 
-- Python AST parse over `src/` and `tests`: 44 files parsed.
-- JSON parse completed for the convention catalog, audit-result schema,
-  request-exploration-review schema, and raw expression-precision corpus JSON.
-- `semantic-guard evaluate-fixtures`: 45/45 passed.
-- `audit-request --kind document` passed for `README.md`, `README.ja.md`, and
-  `docs/README.md`.
+- Python compile over `src/semantic_guard` and `tests` completed.
+- JSON parse completed for the convention catalog, audit-result schema, and
+  request-exploration-review schema.
+- `audit-request --kind document` passed for `README.md`, `README.ja.md`,
+  `docs/README.md`, `docs/conventions/README.md`,
+  `docs/conventions/base-contract.md`, `docs/public-wording-audit-feature-brief.md`,
+  `docs/release/public-writing-guidelines.md`, and
+  `docs/release/github-publication-summary-2026-07-02.md`.
 - `audit-conventions --kind document` passed for `README.md`, `README.ja.md`,
-  and `docs/public-wording-audit-feature-brief.md`.
-- `doctor --no-fixtures` could not pass in this local environment because
-  `mcp.server.fastmcp` was not installed. Treat the earlier full verification as
-  implementation evidence and rerun final verification in the dependency-backed
-  publish environment.
+  `docs/conventions/base-contract.md`,
+  `docs/public-wording-audit-feature-brief.md`, and
+  `docs/release/github-publication-summary-2026-07-02.md`.
+- `audit-conventions --kind document` produced only non-expression convention
+  warnings for `docs/README.md`, `docs/conventions/README.md`, and
+  `docs/release/public-writing-guidelines.md`; `doc.expression.*` findings were
+  0 for the checked public entry points.
 
 ## Suggested GitHub Summary
 
@@ -204,19 +208,22 @@ tool and adds document expression-precision auditing.
 
 Highlights:
 - Adds doc.expression.* convention findings for vague document wording.
+- Adds viewpoint, inspection, broad capability, and mapping-contract expression
+  findings.
 - Adds deterministic demonstrative-reference diagnostics under
   details.expression_precision.referent_resolutions.
 - Keeps the default implementation free of required morphological-analysis,
   external NLP, or LLM dependencies.
-- Records corpus-sweep evidence for threshold design and future fixture work.
+- Records reviewed corpus-sweep and LLM document-audit summaries for threshold
+  design and future fixture work while excluding raw JSON logs.
 - Preserves the non-approval boundary: audit output informs agent revision and
   human review, but does not decide final acceptance.
 
 Verification:
 - compileall completed.
-- 217 unit tests passed.
-- 45/45 fixtures passed.
-- doctor passed 9 checks.
+- 241 unit tests passed.
+- 49/49 fixtures passed.
+- doctor --no-fixtures passed 7 checks with 1 known CI-template warning.
 
 Limits:
 - This is not a general natural-language understanding proof.
@@ -227,6 +234,5 @@ Limits:
 
 ## Recommended Next Action
 
-Decide how to handle the remaining secondary working records, decide whether to
-keep the raw corpus JSON in the public repository, then rerun the verification
-commands inside the cleaned snapshot before pushing to GitHub.
+Push this snapshot to GitHub, then add the active CI workflow later when the
+publishing credential has GitHub `workflow` scope.

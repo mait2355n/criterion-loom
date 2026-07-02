@@ -877,6 +877,125 @@ class CoreAuditTests(unittest.TestCase):
         self.assertNotIn("hazard_transfer_analysis", result["missing"])
         self.assertNotIn("hazard_transfer_analysis", result["details"]["planning_signals"])
 
+    def test_audit_plan_flags_missing_idempotency_for_retrying_side_effect(self) -> None:
+        plan = """
+        目的: 同期ジョブの失敗を復旧しやすくする。
+        対象外: UI は作らない。
+        成果物: 同期ジョブ設定と tests。
+        作業分解: 同期ジョブ設定と tests を作業パッケージに分ける。
+        手順: 調査、実装、検証。
+        順序: 調査後に実装し、実装後に検証する。
+        依存: 既存 API。
+        資源: Codex が一作業単位で実施する。
+        リスク: 下流 API 負荷が増える。対策: retry 回数を制限し、負荷を測定する。
+        処理: 失敗時は同じ同期処理を再実行する。二重作成や重複送信はあとで見る。
+        副作用確認: 下流 API 負荷と失敗様式を測定する。
+        検証: unittest と代表実行。
+        妥当性: 利用者が受入判断する。
+        判断主体: 利用者。
+        確認点: 実装後に進捗確認。
+        基準線: 同期成功と下流 API 負荷を判定基準にする。
+        決定点: 重複影響が許容外なら利用者へ回す。
+        戻し方: 設定を戻す。
+        証拠: コマンド結果。
+        未確定: なし。
+        """
+        result = audit_plan(plan, strict=True)
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertIn("plan.system.idempotency_missing", rule_ids)
+        self.assertIn("idempotency", result["missing"])
+        self.assertIn("idempotency", result["details"]["planning_signals"])
+
+    def test_audit_plan_accepts_retry_plan_with_idempotency_controls(self) -> None:
+        plan = """
+        目的: 同期ジョブの失敗を復旧しやすくする。
+        対象外: UI は作らない。
+        成果物: 同期ジョブ設定と tests。
+        作業分解: 同期ジョブ設定と tests を作業パッケージに分ける。
+        手順: 調査、実装、検証。
+        順序: 調査後に実装し、実装後に検証する。
+        依存: 既存 API。
+        資源: Codex が一作業単位で実施する。
+        リスク: 下流 API 負荷が増える。対策: retry 回数を制限し、負荷を測定する。
+        処理: 失敗時は同じ同期処理を再実行する。冪等キーと一意制約で二重作成を防止し、再実行しても一度だけ送信されることを検証する。
+        副作用確認: 下流 API 負荷と失敗様式を測定する。
+        検証: unittest と代表実行。
+        妥当性: 利用者が受入判断する。
+        判断主体: 利用者。
+        確認点: 実装後に進捗確認。
+        基準線: 同期成功、重複なし、下流 API 負荷を判定基準にする。
+        決定点: 重複影響が許容外なら利用者へ回す。
+        戻し方: 設定を戻す。
+        証拠: コマンド結果。
+        未確定: なし。
+        """
+        result = audit_plan(plan, strict=True)
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertEqual(result["status"], "pass")
+        self.assertNotIn("plan.system.idempotency_missing", rule_ids)
+        self.assertNotIn("idempotency", result["missing"])
+
+    def test_audit_plan_flags_release_provenance_gap(self) -> None:
+        plan = """
+        目的: パッケージを公開する。
+        対象外: UI は作らない。
+        成果物: package と README。
+        作業分解: package と README を作業パッケージに分ける。
+        手順: 調査、実装、検証、公開。
+        順序: 調査後に実装し、検証後に公開する。
+        依存: 既存 packaging。
+        資源: Codex が一作業単位で実施する。
+        リスク: 既存利用者が壊れる。対策: 代表実行で確認する。
+        検証: unittest と CLI。
+        妥当性: 利用者が受入判断する。
+        判断主体: 利用者。
+        確認点: 実装後と公開前に進捗確認。
+        基準線: unittest 通過を判定基準にする。
+        変更統制: 追加要求は後続化する。
+        決定点: 公開前に利用者が go/no-go を判断する。
+        戻し方: 公開前なら差分を戻し、公開後は後続修正と告知を行う。
+        証拠: コマンド結果。
+        未確定: なし。
+        """
+        result = audit_plan(plan, strict=True)
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertIn("plan.release.provenance_missing", rule_ids)
+        self.assertIn("release_provenance", result["missing"])
+        self.assertIn("release_provenance", result["details"]["planning_signals"])
+
+    def test_audit_plan_accepts_release_with_provenance(self) -> None:
+        plan = """
+        目的: パッケージを公開する。
+        対象外: UI は作らない。
+        成果物: package と README。
+        作業分解: package と README を作業パッケージに分ける。
+        手順: 調査、実装、検証、公開。
+        順序: 調査後に実装し、検証後に公開する。
+        依存: 既存 packaging。
+        資源: Codex が一作業単位で実施する。
+        リスク: 既存利用者が壊れる。対策: 代表実行で確認する。
+        版管理: version、tag、commit SHA、変更履歴、build command、checksum を証拠に残す。
+        検証: unittest と CLI。
+        妥当性: 利用者が受入判断する。
+        判断主体: 利用者。
+        確認点: 実装後と公開前に進捗確認。
+        基準線: unittest 通過と checksum 一致を判定基準にする。
+        変更統制: 追加要求は後続化する。
+        決定点: 公開前に利用者が go/no-go を判断する。
+        戻し方: 公開前なら差分を戻し、公開後は後続修正と告知を行う。
+        証拠: コマンド結果。
+        未確定: なし。
+        """
+        result = audit_plan(plan, strict=True)
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertEqual(result["status"], "pass")
+        self.assertNotIn("plan.release.provenance_missing", rule_ids)
+        self.assertNotIn("release_provenance", result["missing"])
+
     def test_audit_plan_flags_missing_decision_gate_for_release_plan(self) -> None:
         plan = """
         目的: 設定を公開する。
@@ -1161,6 +1280,123 @@ class CoreAuditTests(unittest.TestCase):
         self.assertIn("diff.implementation.complexity_growth", rule_ids)
         self.assertIn("minimality", {finding["category"] for finding in result["findings"]})
         self.assertIn("complexity_growth", result["details"])
+
+    def test_audit_diff_flags_filename_content_overbreadth(self) -> None:
+        result = audit_diff(
+            "*** Update File: src/shop/auth.py\n"
+            "+def create_invoice_for_user(user):\n"
+            "+    return Invoice(user.payment_method)\n"
+            "+\n"
+            "+def send_invoice_email(invoice):\n"
+            "+    email(invoice.customer_email)\n"
+            "+\n"
+            "+def migrate_billing_storage(db):\n"
+            "+    db.execute('alter table invoices add column status text')",
+            intent="auth file に利用者認証補助を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+        filename_scope = result["details"]["filename_content_scope"]
+
+        self.assertIn("diff.implementation.filename_content_overbreadth", rule_ids)
+        self.assertIn("filename_scope_alignment", result["missing"])
+        self.assertEqual(filename_scope[0]["path"], "src/shop/auth.py")
+        self.assertEqual(filename_scope[0]["filename_domains"], ["auth"])
+        self.assertGreaterEqual(len(filename_scope[0]["extra_domains"]), 2)
+
+    def test_audit_diff_accepts_filename_content_within_scope(self) -> None:
+        result = audit_diff(
+            "*** Update File: src/shop/billing.py\n"
+            "+def calculate_invoice_total(invoice):\n"
+            "+    return invoice.subtotal + invoice.tax\n"
+            "+\n"
+            "+def refund_payment(payment):\n"
+            "+    return payment.refund()",
+            intent="billing file に請求計算と返金処理を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertNotIn("diff.implementation.filename_content_overbreadth", rule_ids)
+        self.assertNotIn("filename_scope_alignment", result["missing"])
+        self.assertEqual(result["details"]["filename_content_scope"], [])
+
+    def test_audit_diff_flags_broad_added_filename_without_scope_management(self) -> None:
+        result = audit_diff(
+            "*** Add File: src/shop/manager.py\n"
+            "+def create_invoice(user):\n"
+            "+    return Invoice(user)",
+            intent="shop manager を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+        filename_scope = result["details"]["filename_naming_scope"]
+
+        self.assertIn("diff.implementation.filename_scope_underspecified", rule_ids)
+        self.assertIn("filename_scope_management", result["missing"])
+        self.assertEqual(filename_scope[0]["path"], "src/shop/manager.py")
+        self.assertEqual(filename_scope[0]["action"], "added")
+        self.assertIn("manager", filename_scope[0]["risk_tokens"])
+        self.assertEqual(filename_scope[0]["management_expectation"], "fallback_scope_management_for_generic_name")
+
+    def test_audit_diff_flags_main_filename_without_scope_management(self) -> None:
+        result = audit_diff(
+            "*** Add File: src/shop/main.py\n"
+            "+def run_checkout(user):\n"
+            "+    return Invoice(user)",
+            intent="shop entrypoint を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+        filename_scope = result["details"]["filename_naming_scope"]
+
+        self.assertIn("diff.implementation.filename_scope_underspecified", rule_ids)
+        self.assertIn("filename_scope_management", result["missing"])
+        self.assertEqual(filename_scope[0]["path"], "src/shop/main.py")
+        self.assertIn("main", filename_scope[0]["risk_tokens"])
+        self.assertEqual(filename_scope[0]["management_expectation"], "fallback_scope_management_for_generic_name")
+
+    def test_audit_diff_accepts_scoped_filename_with_broad_role_token(self) -> None:
+        result = audit_diff(
+            "*** Add File: src/shop/checkout_invoice_service.py\n"
+            "+def create_invoice(user):\n"
+            "+    return Invoice(user)",
+            intent="checkout invoice service を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertNotIn("diff.implementation.filename_scope_underspecified", rule_ids)
+        self.assertNotIn("filename_scope_management", result["missing"])
+        self.assertEqual(result["details"]["filename_naming_scope"], [])
+
+    def test_audit_diff_accepts_broad_added_filename_with_scope_management(self) -> None:
+        result = audit_diff(
+            "*** Add File: src/shop/manager.py\n"
+            "+def create_invoice(user):\n"
+            "+    return Invoice(user)",
+            intent="shop manager を追加する。責務: checkout orchestration only. 対象外: billing, notification, persistence.",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertNotIn("diff.implementation.filename_scope_underspecified", rule_ids)
+        self.assertNotIn("filename_scope_management", result["missing"])
+        self.assertEqual(result["details"]["filename_naming_scope"], [])
+
+    def test_audit_diff_does_not_flag_broad_filename_on_existing_update(self) -> None:
+        result = audit_diff(
+            "*** Update File: src/shop/manager.py\n"
+            "+def create_invoice(user):\n"
+            "+    return Invoice(user)",
+            intent="既存 manager に checkout helper を追加する。",
+            strict=True,
+        )
+        rule_ids = {finding.get("rule_id") for finding in result["findings"]}
+
+        self.assertNotIn("diff.implementation.filename_scope_underspecified", rule_ids)
+        self.assertNotIn("filename_scope_management", result["missing"])
+        self.assertEqual(result["details"]["filename_naming_scope"], [])
 
     def test_audit_diff_does_not_treat_decision_as_ci_runtime_change(self) -> None:
         result = audit_diff(

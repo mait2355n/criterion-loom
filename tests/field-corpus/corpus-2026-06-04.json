@@ -319,10 +319,10 @@
     "summary": "再試行される背景処理を計画するが、冪等性が無い。",
     "input": "失敗時は同じ同期処理を再実行する。二重作成や重複送信はあとで見る。",
     "expected_review": "再試行・重複・副作用の境界を問う検出器を追加する。",
-    "current_behavior": "rollback や failure に寄るが、冪等性は明示的でない。",
+    "current_behavior": "plan.system.idempotency_missing を期待する。",
     "target_rule_ids": ["plan.system.idempotency_missing"],
     "action": "add_detector",
-    "status": "candidate"
+    "status": "accepted"
   },
   {
     "id": "MS-DIFF-DESTRUCTIVE-001",
@@ -384,9 +384,9 @@
     "summary": "公開配布を計画するが、版、変更履歴、生成物由来が無い。",
     "input": "パッケージを公開する。README を整えたら配布する。",
     "expected_review": "公開物の版、出所、変更履歴、再現手順を問う検出器を追加する。",
-    "current_behavior": "公共文書には寄るが、配布由来の検査軸は薄い。",
+    "current_behavior": "plan.release.provenance_missing を期待する。",
     "target_rule_ids": ["plan.release.provenance_missing"],
     "action": "add_detector",
-    "status": "candidate"
+    "status": "accepted"
   }
 ]

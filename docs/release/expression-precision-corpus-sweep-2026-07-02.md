@@ -4,7 +4,9 @@
 
 This file records one local expression-precision corpus sweep.
 
-Evidence source: `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json`.
+Evidence source: local raw audit output retained outside the public tree. The
+public repository keeps this summary and excludes the raw JSON because it
+contains historical draft excerpts and local calibration details.
 
 Limit: the tables below are not accuracy, precision, or recall claims. Use them
 only as maintenance material for threshold design and fixture additions.
@@ -23,7 +25,7 @@ are not maintained prose that must pass the expression-precision detector.
 - Excluded parts: `.git, .hg, .mypy_cache, .pytest_cache, .ruff_cache, .svn, .tox, .venv, __pycache__, build, dist, node_modules, venv`
 - Audited files: 77 total / 51 primary / 26 backup
 - Errors: 0
-- Raw data: `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json`
+- Raw data: excluded from the public tree; retained as local calibration output.
 - Run timestamp: `2026-07-02T08:06:53+09:00`
 - Decision basis: `primary`; `.backups` is supplemental only.
 
@@ -34,7 +36,6 @@ Run the corpus sweep from the repository root after dependencies are available:
 ```sh
 uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --file README.ja.md
 uv run --python 3.13 --project . semantic-guard evaluate-fixtures
-uv run --python 3.13 --project . python -m json.tool docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json
 ```
 
 ## Aggregate By Scope
@@ -195,7 +196,7 @@ uv run --python 3.13 --project . python -m json.tool docs/release/expression-pre
 - `docs/ja/quickstart.md`の`uvが使える。`は要件・前提条件の箇条書きであり、効用語の曖昧さとして扱う価値は低い。前提条件sectionでは`utility_blurred`を弱めるべき。
 - `no_candidate`は2件だけだが、どちらも読み手が戻って探す必要があるため、現状の警告維持は妥当である。
 - `supported`は50件あり、指示語を全て警告する実装にしなかった判断は妥当である。ここを崩すと過警告が一気に増える。
-- この要約文書自体を`audit_conventions(input_kind="document")`にかけると、表内の `返す`、`もの`、`材料` などから62件の`doc.expression.*`が出る。統計表、監査報告、引用evidenceは通常散文より弱く扱う抑制が必要である。
+- この要約文書自体を`audit_conventions(input_kind="document")`にかけると、表内の`返す`、`もの`、`材料`などから62件の`doc.expression.*`が出る。統計表、監査報告、引用evidenceは通常散文より弱く扱う抑制が必要である。
 
 ## Threshold Notes
 

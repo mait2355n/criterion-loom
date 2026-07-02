@@ -877,6 +877,36 @@ RULES: tuple[Rule, ...] = (
         remediation="副作用、危険移転、負荷移転、上流下流影響、制約確認、または対象外理由を計画へ足す。",
     ),
     Rule(
+        id="plan.system.idempotency_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "SWEBOK: reliability, fault tolerance, and recovery",
+            "ISO/IEC 25010: reliability, recoverability, and integrity",
+            "Distributed Systems: retry safety and idempotent operations",
+        ),
+        concern="再実行、再試行、同期、定期実行などの反復処理が、二重作成や重複送信を起こすこと。",
+        applies_when=(
+            "計画が再実行、再試行、リトライ、再送、同期処理、定期実行、queue/job などに触れる。",
+            "冪等性、重複防止、一意制約、冪等キー、upsert、排他、transaction、または重複検知が見えない。",
+        ),
+        does_not_apply_when=(
+            "計画が読み取り専用、dry-run、調査のみ、または副作用なしの処理である。",
+            "計画または文脈に冪等性、重複防止、一意制約、冪等キー、upsert、排他、transaction、または対象外理由が明示されている。",
+        ),
+        evidence_required=(
+            "再実行または再試行される処理",
+            "二重作成、重複送信、重複更新の防止策",
+            "冪等性、重複検知、排他、または対象外理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="再実行、再試行、同期、定期実行などの反復処理だが、冪等性や重複副作用の扱いが見えない。",
+        remediation="再実行時の二重作成、重複送信、重複更新をどう防ぐか、冪等キー、一意制約、upsert、排他、重複検知、または対象外理由を明示する。",
+    ),
+    Rule(
         id="plan.control.baseline_or_metric_missing",
         discipline="project_planning",
         phase="audit_plan",
@@ -935,6 +965,36 @@ RULES: tuple[Rule, ...] = (
         ),
         finding="移行、公開、運用、設定変更などの高影響作業に対する判断ゲートが見えない。",
         remediation="go/no-go、承認、停止条件、保留条件、または人間判断へ回す条件を明示する。",
+    ),
+    Rule(
+        id="plan.release.provenance_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "SLSA: provenance and build integrity for released artifacts",
+            "ISO/IEC/IEEE 12207: release and configuration management",
+            "SWEBOK: software configuration management and release management",
+        ),
+        concern="公開または配布する成果物の版、出所、変更履歴、再現手順が曖昧なまま外へ出ること。",
+        applies_when=(
+            "計画が公開、配布、release、publish、package、wheel、sdist、PyPI、npm、GitHub 公開に触れる。",
+            "版、tag/commit、checksum、変更履歴、生成物の由来、build/release 手順、照合方法が見えない。",
+        ),
+        does_not_apply_when=(
+            "計画が非公開、配布しない、公開しない、または読み取り専用の確認である。",
+            "計画または文脈に版、tag/commit、変更履歴、生成物の由来、再現手順、build/release 手順、checksum、署名、または不要理由がある。",
+        ),
+        evidence_required=(
+            "公開物の版またはtag/commit",
+            "変更履歴またはrelease note",
+            "生成物の由来、build/release 手順、または照合方法",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="公開または配布を扱う計画だが、版、変更履歴、生成物の由来、または再現手順が見えない。",
+        remediation="公開物の版、tag/commit、変更履歴、生成物の出所、build/release 手順、照合方法、または不要理由を明示する。",
     ),
     Rule(
         id="plan.minimality.justification_missing",
@@ -1185,6 +1245,74 @@ RULES: tuple[Rule, ...] = (
         ),
         finding="差分で複雑性が増えている可能性がある。",
         remediation="必要な安全・証跡・失敗処理を残したまま、不要な抽象、分岐、将来対応、新規依存、標準機能の手製実装を削れないか確認する。",
+    ),
+    Rule(
+        id="diff.implementation.filename_content_overbreadth",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "SWEBOK: software design cohesion and maintainability",
+            "ISO/IEC 25010: maintainability, analyzability, and modifiability",
+            "semantic-implementation: name versus identity and scope preservation",
+            "Lean Engineering: avoid carrying unrelated responsibility in a narrow work unit",
+        ),
+        concern="狭いファイル名の中へ複数の別責務が追加され、名が示す保守単位より中身が過剰になること。",
+        applies_when=(
+            "差分が source file を変更し、その basename が特定責務を示している。",
+            "追加内容に、ファイル名の責務領域に含まれない別責務領域が複数見える。",
+            "ファイル分割、命名変更、同居理由、確認証拠が見えない。",
+        ),
+        does_not_apply_when=(
+            "変更対象が docs/test だけである。",
+            "ファイル名が core/utils/common など意図的に広い保守単位である。",
+            "追加内容がファイル名と同じ責務領域、または一つの補助責務に留まる。",
+            "finish_check 側に、同居が必要な理由、分割不要理由、または命名変更の判断がある。",
+        ),
+        evidence_required=(
+            "ファイル名が示す責務",
+            "追加内容の責務領域",
+            "分割、命名変更、または同居理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="ファイル名が示す責務に対して、追加内容が複数の別責務へ広がっている可能性がある。",
+        remediation="ファイルを分ける、ファイル名を広げる、または同居が必要な理由と確認証拠を finish_check に残す。",
+    ),
+    Rule(
+        id="diff.implementation.filename_scope_underspecified",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "SWEBOK: software design cohesion and modularity",
+            "ISO/IEC 25010: maintainability, analyzability, and modifiability",
+            "semantic-implementation: name versus identity and scope preservation",
+            "Lean Engineering: avoid premature catch-all work units",
+        ),
+        concern="追加または改名された source file の名前だけでは機能範囲を管理しづらく、main/core などの汎用名へ責務が膨らむこと。",
+        applies_when=(
+            "差分が source file を追加または改名している。",
+            "basename に manager、service、utils、core、common、handler、controller などの広い責務語が見える。",
+            "basename が複数の具体語で機能範囲を絞れておらず、命名厳密化または補助的な機能範囲管理が diff、intent、context に見えない。",
+        ),
+        does_not_apply_when=(
+            "変更対象が docs/test だけである。",
+            "既存ファイルの通常更新であり、命名時点ではない。",
+            "ファイル名が複数の具体語で十分に絞られている。",
+            "main/core など名前で絞りづらい場合に、責務範囲、対象外、同居条件、分割条件などの補助管理線が明示されている。",
+        ),
+        evidence_required=(
+            "追加または改名されたファイル path",
+            "膨らみやすい filename token",
+            "名前による範囲管理、または汎用名に対する補助管理線",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="ファイル名による機能範囲管理が弱く、膨張を抑える命名または補助管理線が見えない。",
+        remediation="可能なら basename をより具体的な機能範囲へ絞る。main/core など名前で絞りづらい場合は、責務、対象外、同居条件、分割条件を明示する。",
     ),
     Rule(
         id="diff.meaning.identity_boundary_change",

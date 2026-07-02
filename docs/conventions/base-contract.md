@@ -156,6 +156,25 @@ It only warns when prose leaves the reader unable to recover what is being
 acted on, what operation occurs, what artifact is returned, who judges it, or
 what changes next.
 
+The operation wording slice intentionally favors recall while it is calibrated.
+It warns on role or viewpoint wording such as `〜として見る`, `〜として扱う`, or
+`〜として見せる` when the sentence names a view but not the actual operation.
+It also warns on inspection wording such as `検査する`, `確認する`,
+`レビューする`, `評価する`, `判断する`, or `判定する` when nearby text does not
+expose enough criterion, method, output, or decision actor. The repair payload
+should offer alternatives such as confirmation, inspection against criteria,
+monitoring, classification, or presentation as human decision material rather
+than rewriting automatically.
+
+The first contract-family expansion also favors recall. It warns on
+catalog-listed broad capability triggers when the local sentence does not
+expose enough scope, input boundary, limit, or evidence/output shape. It also
+warns on catalog-listed mapping and control-plane triggers when nearby text
+does not expose enough source field, destination field, rule or condition, or
+evidence-preservation contract. The detector should not treat ordinary
+compounds, negated non-capabilities, or unrelated English repository wording as
+capability claims by themselves.
+
 For demonstratives such as `これ`, `それ`, `この内容`, or `その一覧`, the check
 does not ban the demonstrative. It asks whether the referent is recoverable from
 nearby text. The default detector uses only standard-library string and regular
@@ -202,6 +221,47 @@ output form, and use are recoverable.
 
 This should pass expression-precision because `その一覧` points back to the
 named target `未決定事項`.
+
+```text
+曖昧な箇所を判断材料として見る。
+```
+
+This should warn because `として見る` names a viewpoint but not the operation.
+
+```text
+対象を検査する。
+```
+
+This should warn because the inspection criterion, output, and decision use are
+not recoverable.
+
+```text
+差分を基準に照らして検査し、違反箇所をfindingsとして返す。
+```
+
+This should pass because the criterion, operation, output form, and returned
+artifact are recoverable.
+
+```text
+資源全体を見渡し、次に何を扱うべきかを決める。
+```
+
+This should warn because the resource scope, observation source, priority rule,
+and decision actor are not recoverable.
+
+```text
+監査結果を資源状態、危険、次行動へ写像する。
+```
+
+This should warn because the source fields, destination fields, mapping rule,
+and evidence preservation are not recoverable.
+
+```text
+findingsとevidenceをaudit_record.fieldsに写し、source_audit_idを保持する。
+```
+
+This should pass because the source, destination, and evidence-preservation
+contract are recoverable.
 
 ## Repository Profile
 

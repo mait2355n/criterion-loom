@@ -67,6 +67,10 @@ human-decision boundary.
   - `docs/release/github-publication-summary-2026-07-02.md`
   - `docs/release/expression-precision-reference-heuristic-2026-07-01.md`
   - `docs/release/expression-precision-corpus-sweep-2026-07-02.md`
+  - `docs/release/expression-contract-family-implementation-2026-07-02.md`
+  - `docs/release/expression-operation-ambiguity-scan-2026-07-02.md`
+  - `docs/release/llm-document-expression-audit-triage-2026-07-02.md`
+  - `docs/release/plan-ir-contradiction-priority-design-2026-07-02.md`
   - `docs/release/ci-workflow-template.yml`
   - `docs/release/public-repository-readiness.md`
   - `docs/release/public-writing-guidelines.md`
@@ -107,7 +111,6 @@ uv run --python 3.13 --project . semantic-guard evaluate-fixtures --include-pass
 uv run --python 3.13 --project . semantic-guard doctor
 uv run --python 3.13 --project . semantic-guard audit-result-schema
 uv run --python 3.13 --project . semantic-guard rule-detector-map
-uv run --python 3.13 --project . python -m json.tool docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json
 ```
 
 Document-audit entry points:

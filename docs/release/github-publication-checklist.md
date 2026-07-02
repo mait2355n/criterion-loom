@@ -33,7 +33,7 @@ For the 2026-07-02 expression-precision snapshot, start with
 - [ ] No local absolute paths such as `/Users/...` or `/Volumes/...`.
 - [ ] No `.venv/`, `.backups/`, `__pycache__/`, `*.pyc`, `.DS_Store`, or local generated output.
 - [ ] Internal work records, dated dogfood notes, conflict audits, and local acceptance-bundle work records are excluded.
-- [ ] `docs/release/expression-precision-corpus-sweep-2026-07-02.raw.json` is either intentionally included as local calibration evidence or excluded from the public snapshot.
+- [ ] Raw expression-audit JSON is excluded from the public snapshot; keep only reviewed summary Markdown.
 
 ## Verification
 

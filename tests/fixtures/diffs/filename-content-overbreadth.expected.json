@@ -1,0 +1,38 @@
+{
+  "id": "DIFF-FILENAME-CONTENT-OVERBREADTH-001",
+  "title": "Narrow filename with multiple unrelated responsibilities is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/shop/auth.py b/src/shop/auth.py\n--- a/src/shop/auth.py\n+++ b/src/shop/auth.py\n@@\n+def create_invoice_for_user(user):\n+    return Invoice(user.payment_method)\n+\n+def send_invoice_email(invoice):\n+    email(invoice.customer_email)\n+\n+def migrate_billing_storage(db):\n+    db.execute('alter table invoices add column status text')\n",
+  "intent": "auth file に利用者認証補助を追加する。",
+  "strict": true,
+  "rationale": "A file named for auth should not silently absorb billing, notification, and persistence concerns without split, rename, or justification evidence.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.filename_content_overbreadth"
+    ],
+    "expected_findings": [
+      {
+        "category": "minimality",
+        "rule_id": "diff.implementation.filename_content_overbreadth"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "minimality"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "filename_scope_alignment"
+      ]
+    },
+    "details": {
+      "changed_file_count": 1
+    }
+  }
+}

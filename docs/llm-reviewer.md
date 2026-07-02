@@ -59,7 +59,7 @@ LLM reviewerがしてはいけないこと。
 
 schemaは`schemas/candidate-gap-review.schema.json`に置く。
 
-`codex exec --output-schema`はobject内の`properties`全項目が`required`に含まれていることを要求する。そのため、該当なしの欄も省略せず、JSON fieldに空配列または `なし` 相当の文字列を入れる。
+`codex exec --output-schema`はobject内の`properties`全項目が`required`に含まれていることを要求する。そのため、該当なしの欄も省略せず、JSON fieldに空配列または`なし`相当の文字列を入れる。
 
 ## Prompt Generation
 

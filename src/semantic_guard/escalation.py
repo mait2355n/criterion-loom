@@ -10,7 +10,7 @@ from semantic_guard.codex_exec_review import (
     Runner,
     run_codex_exec_review,
 )
-from semantic_guard.core import (
+from semantic_guard.problem_signals import (
     _problem_mechanism_evidence_signal,
     _problem_or_symptom_signal,
     _side_effect_transfer_evidence_signal,

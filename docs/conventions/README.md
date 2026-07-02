@@ -56,24 +56,24 @@ only place where a caller must find status, type, identity, evidence,
 uncertainty, or next-action semantics.
 
 Expression-precision checks use `doc.expression.*` rule ids inside
-`audit-conventions --kind document`. They are not copy-editing rules.
+`audit-conventions --kind document`. They are not copy-editing rules. They warn
+when public prose leaves the target, operation, output form, or decision actor
+unclear.
 
-Bad examples:
+They also warn when demonstratives do not expose a nearby referent. A sentence
+that names unresolved decisions, points a demonstrative back to that noun, and
+returns the list in the JSON field `findings` is acceptable for expression precision
+because the referent is recoverable in the same sentence.
 
-```text
-怪しい場所を試験できる内容として外に出す
-それを外部へ出す
-```
+Operation-contract warnings are intentionally broad during calibration.
+Viewpoint wording should name whether the work is confirmation, inspection,
+monitoring, classification, or presentation for human decision. Inspection
+wording should expose the criterion, method, output, or decision actor.
 
-Acceptable example:
-
-```text
-未決定事項を抽出し、その一覧をJSONのfindingsとして返す
-```
-
-The bad examples leave the target, operation, output form, decision actor, or
-referent unclear. The acceptable example keeps the referent recoverable in the
-same sentence.
+Contract-family warnings also check broad capability and mapping wording.
+Capability wording should expose scope, input boundary, limit, and output or
+evidence shape. Mapping wording should expose source field, destination field,
+rule or condition, and evidence preservation.
 
 For durable records, keep a short top-level recovery surface: context, current
 state, next action, and detail references. Put raw history and long rationale

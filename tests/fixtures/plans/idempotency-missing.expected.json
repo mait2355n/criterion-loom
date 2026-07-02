@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-IDEMPOTENCY-MISSING-001",
+  "title": "Retrying side-effect plan without idempotency controls is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 同期ジョブの失敗を復旧しやすくする。対象外: UI は作らない。成果物: 同期ジョブ設定と tests。作業分解: 同期ジョブ設定と tests を作業パッケージに分ける。手順: 調査、実装、検証。順序: 調査後に実装し、実装後に検証する。依存: 既存 API。資源: Codex が一作業単位で実施する。リスク: 下流 API 負荷が増える。対策: retry 回数を制限し、負荷を測定する。処理: 失敗時は同じ同期処理を再実行する。二重作成や重複送信はあとで見る。副作用確認: 下流 API 負荷と失敗様式を測定する。検証: unittest と代表実行。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後に進捗確認。基準線: 同期成功と下流 API 負荷を判定基準にする。決定点: 重複影響が許容外なら利用者へ回す。戻し方: 設定を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "Plans that retry side-effecting synchronization need explicit idempotency or duplicate-effect controls.",
+  "labels": {
+    "expected_rules": [
+      "plan.system.idempotency_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "reliability",
+        "rule_id": "plan.system.idempotency_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "reliability"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "idempotency"
+      ]
+    }
+  }
+}

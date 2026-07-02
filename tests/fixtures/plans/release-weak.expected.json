@@ -14,7 +14,8 @@
       "plan.risk.response_missing",
       "plan.control.baseline_or_metric_missing",
       "plan.control.change_control_missing",
-      "plan.governance.decision_gate_missing"
+      "plan.governance.decision_gate_missing",
+      "plan.release.provenance_missing"
     ],
     "expected_findings": [
       {
@@ -24,6 +25,10 @@
       {
         "category": "governance",
         "rule_id": "plan.governance.decision_gate_missing"
+      },
+      {
+        "category": "release",
+        "rule_id": "plan.release.provenance_missing"
       }
     ]
   },
@@ -37,7 +42,8 @@
         "resource",
         "risk",
         "control",
-        "governance"
+        "governance",
+        "release"
       ]
     },
     "missing": {
@@ -48,7 +54,8 @@
         "risk_response",
         "control_baseline",
         "change_control",
-        "decision_gate"
+        "decision_gate",
+        "release_provenance"
       ]
     }
   }

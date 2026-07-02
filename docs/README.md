@@ -71,6 +71,10 @@ or comparison material:
 - `release/github-publication-summary-2026-07-02.md`: publication handoff for the current publishable v0.1 snapshot with expression-precision audit.
 - `release/expression-precision-reference-heuristic-2026-07-01.md`: implementation boundary for unclear demonstrative-reference detection.
 - `release/expression-precision-corpus-sweep-2026-07-02.md`: local corpus sweep summary for expression-precision threshold design.
+- `release/expression-contract-family-implementation-2026-07-02.md`: implementation note for capability and mapping contract-family expression findings.
+- `release/expression-operation-ambiguity-scan-2026-07-02.md`: operation-wording ambiguity scan and triage source.
+- `release/llm-document-expression-audit-triage-2026-07-02.md`: triage note for LLM-suggested document-expression findings.
+- `release/plan-ir-contradiction-priority-design-2026-07-02.md`: plan-rule priority design note for contradiction and release-profile findings.
 - `release/public-writing-guidelines.md`: public wording and claim-boundary rules.
 - `release/publication-format.md`: recommended repository shape and publication sequence.
 - `release/public-repository-readiness.md`: public health file and presentation review.

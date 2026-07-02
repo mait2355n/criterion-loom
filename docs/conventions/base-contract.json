@@ -177,6 +177,22 @@
       "suggested_fix": "Replace broad operation wording with an explicit operation such as extract, return, record, classify, enumerate, or detect."
     },
     {
+      "id": "doc.expression.as_view_operation_blurred",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording uses role or viewpoint wording such as 'as/view/handle as' without naming the concrete operation.",
+      "suggested_fix": "Replace viewpoint wording with a concrete operation such as confirm, inspect against criteria, monitor, classify, or present as human decision material."
+    },
+    {
+      "id": "doc.expression.inspection_contract_missing",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording names inspection, confirmation, review, evaluation, or judgment without enough nearby operation contract.",
+      "suggested_fix": "State the criterion, method, output, or decision actor for the inspection, confirmation, review, evaluation, or judgment."
+    },
+    {
       "id": "doc.expression.utility_blurred",
       "category": "expression_precision",
       "severity": "major",
@@ -207,6 +223,22 @@
       "detector": "expression_precision",
       "finding": "Document wording claims improvement or repair without naming what changes next.",
       "suggested_fix": "Name the revision target, such as rule wording, detector code, fixture expectations, corpus records, documentation, or output contracts."
+    },
+    {
+      "id": "doc.expression.capability_contract_missing",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording makes a broad capability or completeness claim without enough scope, limit, or evidence shape.",
+      "suggested_fix": "State the scope boundary, input boundary, non-guarantee or limit, and evidence or output shape for the capability claim."
+    },
+    {
+      "id": "doc.expression.mapping_contract_missing",
+      "category": "expression_precision",
+      "severity": "major",
+      "detector": "expression_precision",
+      "finding": "Document wording names a mapping, enrichment, routing, or closure operation without enough source, destination, condition, or evidence preservation contract.",
+      "suggested_fix": "State the source field, destination field, rule or condition, and how evidence is preserved through the mapping or closure."
     }
   ],
   "promotion": {
