@@ -148,7 +148,7 @@ jobs:
           PY
 
       - name: Upload wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: semantic-guard-1.0.0-distributions
           path: |
