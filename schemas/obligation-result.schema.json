@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/obligation-result.schema.json",
+  "title": "semantic-guard v1 obligation result",
+  "description": "Per-obligation result. Unknown, disagreement, and incomplete coverage remain first-class and cannot be projected to satisfaction.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "obligation_id",
+    "profile_ref",
+    "subject_ref",
+    "active",
+    "required",
+    "outcome",
+    "finality",
+    "challenge",
+    "interpretations",
+    "supporting_evidence_refs",
+    "refuting_evidence_refs",
+    "challenging_evidence_refs",
+    "rules",
+    "unknown_reasons",
+    "coverage",
+    "residual_risks",
+    "holds",
+    "open_hold_ids",
+    "source_spans",
+    "provenance",
+    "authority_effects"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "obligation-result/v0"
+    },
+    "obligation_id": {
+      "$ref": "common.schema.json#/$defs/stable_id"
+    },
+    "profile_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
+    },
+    "subject_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]
+    },
+    "finality": {
+      "type": "string",
+      "enum": ["provisional", "terminal", "invalid"]
+    },
+    "challenge": {
+      "type": "string",
+      "enum": ["none", "open", "conflict"]
+    },
+    "interpretations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/interpretation"}
+    },
+    "supporting_evidence_refs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+    },
+    "refuting_evidence_refs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+    },
+    "challenging_evidence_refs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+    },
+    "rules": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/rule_reference"}
+    },
+    "unknown_reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "applicability_unknown",
+          "input_boundary_open",
+          "record_boundary_unknown",
+          "required_evidence_missing",
+          "source_scope_ambiguous",
+          "multiple_interpretations",
+          "countercondition_unresolved",
+          "analyzer_not_run",
+          "analyzer_unavailable",
+          "analyzer_failed",
+          "provider_contract_invalid",
+          "integrity_failure",
+          "unobserved_range",
+          "conflicting_evidence",
+          "authority_insufficient",
+          "other"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "coverage": {
+      "$ref": "common.schema.json#/$defs/coverage"
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/residual_risk"}
+    },
+    "holds": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/hold"}
+    },
+    "open_hold_ids": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+      "uniqueItems": true
+    },
+    "source_spans": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/source_span"}
+    },
+    "provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/provenance_record"}
+    },
+    "authority_effects": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/authority_effect"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"outcome": {"const": "satisfied"}},
+        "required": ["outcome"]
+      },
+      "then": {
+        "properties": {"supporting_evidence_refs": {"minItems": 1}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"outcome": {"const": "refuted"}},
+        "required": ["outcome"]
+      },
+      "then": {
+        "properties": {"refuting_evidence_refs": {"minItems": 1}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"outcome": {"const": "undetermined"}},
+        "required": ["outcome"]
+      },
+      "then": {
+        "properties": {
+          "unknown_reasons": {"minItems": 1},
+          "finality": {"const": "provisional"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"challenge": {"enum": ["open", "conflict"]}},
+        "required": ["challenge"]
+      },
+      "then": {
+        "properties": {
+          "challenging_evidence_refs": {"minItems": 1},
+          "authority_effects": {
+            "contains": {
+              "properties": {"kind": {"const": "challenge"}},
+              "required": ["kind"]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "active": {"const": true},
+          "required": {"const": true},
+          "outcome": {"const": "satisfied"},
+          "finality": {"const": "terminal"}
+        },
+        "required": ["active", "required", "outcome", "finality"]
+      },
+      "then": {
+        "properties": {
+          "challenge": {"const": "none"},
+          "coverage": {
+            "properties": {"status": {"const": "complete"}},
+            "required": ["status"]
+          },
+          "open_hold_ids": {"maxItems": 0},
+          "authority_effects": {
+            "contains": {
+              "properties": {"kind": {"const": "support"}},
+              "required": ["kind"]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"outcome": {"const": "not_applicable"}},
+        "required": ["outcome"]
+      },
+      "then": {
+        "properties": {
+          "active": {"const": false},
+          "required": {"const": false},
+          "finality": {"const": "terminal"},
+          "challenge": {"const": "none"},
+          "supporting_evidence_refs": {"minItems": 1},
+          "coverage": {
+            "properties": {"status": {"const": "complete"}},
+            "required": ["status"]
+          },
+          "open_hold_ids": {"maxItems": 0},
+          "authority_effects": {
+            "contains": {
+              "properties": {"kind": {"const": "support"}},
+              "required": ["kind"]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "outcome": {"const": "refuted"},
+          "finality": {"const": "terminal"}
+        },
+        "required": ["outcome", "finality"]
+      },
+      "then": {
+        "properties": {
+          "authority_effects": {
+            "contains": {
+              "properties": {"kind": {"const": "challenge"}},
+              "required": ["kind"]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"outcome": {"const": "invalid"}},
+        "required": ["outcome"]
+      },
+      "then": {
+        "properties": {"finality": {"const": "invalid"}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"finality": {"const": "invalid"}},
+        "required": ["finality"]
+      },
+      "then": {
+        "properties": {"outcome": {"const": "invalid"}}
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

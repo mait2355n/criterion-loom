@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/llm-candidate-input.schema.json",
+  "title": "semantic-guard v1 submitted LLM candidate bundle",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "model_id",
+    "model_version",
+    "prompt_profile_id",
+    "prompt_profile_version",
+    "source_digest",
+    "relations",
+    "scopes",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "semantic-guard-llm-candidates/v0"
+    },
+    "bundle_id": {"$ref": "#/$defs/identifier"},
+    "model_id": {"$ref": "#/$defs/identifier"},
+    "model_version": {"$ref": "#/$defs/identifier"},
+    "prompt_profile_id": {"$ref": "#/$defs/identifier"},
+    "prompt_profile_version": {"$ref": "#/$defs/identifier"},
+    "source_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "relations": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/relation"}
+    },
+    "scopes": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/scope"}
+    },
+    "diagnostics": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    }
+  },
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "span": {
+      "type": "object",
+      "required": ["start", "end", "role"],
+      "properties": {
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "role": {"type": "string", "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    },
+    "relation": {
+      "type": "object",
+      "required": [
+        "relation_kind",
+        "from_span",
+        "to_span",
+        "interpretation_id",
+        "rationale"
+      ],
+      "properties": {
+        "relation_kind": {"$ref": "#/$defs/identifier"},
+        "from_span": {"$ref": "#/$defs/span"},
+        "to_span": {"$ref": "#/$defs/span"},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "interpretation_id": {"$ref": "#/$defs/identifier"},
+        "rationale": {"type": "string", "minLength": 1, "maxLength": 4096}
+      },
+      "unevaluatedProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["scope_kind", "cue_span", "target_span"],
+      "properties": {
+        "scope_kind": {"$ref": "#/$defs/identifier"},
+        "cue_span": {"$ref": "#/$defs/span"},
+        "target_span": {
+          "anyOf": [
+            {"$ref": "#/$defs/span"},
+            {"type": "null"}
+          ]
+        },
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,53 +1,39 @@
-# Changelog
+# Change Log
 
-All notable public-facing changes should be recorded here.
+All notable repository and public-contract changes are recorded here. Package versions follow semantic versioning; schema versions remain independent and change only when their own contract changes.
 
-This project does not yet have versioned public releases. Dates below describe publication snapshots, not release guarantees.
+## [1.0.0] - 2026-07-17
 
-## Purpose
+### Canonicalized
 
-This changelog records user-visible repository, CLI, MCP, fixture, schema, and documentation changes. It is not a release-readiness claim.
+- Promoted the contract-first audit kernel to the canonical `semantic-guard` package, Python module, CLI, and MCP server.
+- Established `audit-requirement`, `shadow-compare`, and `schema` as the three public CLI commands.
+- Established `audit_requirement_relations_tool`, `shadow_compare_legacy_tool`, and `semantic_guard_schema_tool` as the three public MCP tools.
+- Made the fail-closed requirement-obligation result, analyzer authority ceilings, provenance, coverage, unresolved obligations, and versioned schemas the canonical public contract.
 
-## Audience And Use
+### Archived
 
-Use this file to understand what changed between public snapshots or future releases before reading detailed docs or diffs.
+- Froze the former `semantic-guard 0.1.0` source under `legacy/semantic-guard-v0.1.0/`.
+- Kept the old request, plan, diff, finish, convention, reviewer, and acceptance-bundle commands in the frozen legacy source only. They are not transparently forwarded by 1.0.0.
+- Preserved dated validation records as historical observations rather than rewriting them as 1.0.0 evidence.
 
-## Status And Scope
+### Breaking changes
 
-Current entries describe repository snapshots and unreleased work. They do not imply package publication, production readiness, or broad detector accuracy.
+- Replaced the former multi-command 0.1.0 CLI with the three-command v1 audit kernel.
+- Replaced the former broad MCP tool surface with the three v1 MCP tools.
+- Changed package and public implementation identity from the prerelease candidate identity to `semantic-guard 1.0.0`.
+- Legacy comparison now requires an explicitly selected, operator-owned, hash-pinned external legacy execution root. The repository archive alone is not an executable trust root.
 
-## Entry Contract
+### Verification and governance
 
-Each entry should identify the date or version, the affected surface, the change summary, and any caveat about calibration or public claims.
+- Added v1 unit, verification-source, generated-projection, engineering-rule-pack, wheel, installed CLI/MCP, and legacy smoke checks to CI.
+- Added a canonical-promotion decision, migration guide, and canonicalization audit.
+- Kept lifecycle profiles and the engineering rule pack in candidate or pending-human-adoption state.
 
-Entry fields are date or version, affected surface, change summary, verification note, and public-claim caveat.
+### Non-claims
 
-Verification commands for a snapshot are normally:
+1.0.0 does not claim field accuracy, production qualification, security certification, human adoption, external action authenticity, all-lifecycle workflow coverage, or operational default cutover.
 
-```sh
-uv run --python 3.13 --project . python -m unittest discover -s tests -v
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures --include-passed
-uv run --python 3.13 --project . semantic-guard doctor
-```
+## [0.1.0] - archived 2026-07-17
 
-## Unreleased
-
-- Add the Criterion Loom public naming map: Loom Guide, Need Thread, Plan Warp, and Change Weft, while keeping `semantic-guard` as the package, CLI, and MCP server name.
-- Add GitHub repository support files: CI workflow, issue templates, pull request template, contributing guide, security policy, and release checklist.
-
-## 2026-06-05 Public Maturity Pass
-
-- Add `doctor`, `audit-result-schema`, and `rule-detector-map` CLI/MCP support commands.
-- Add the common audit-result JSON Schema at `schemas/audit-result.schema.json`.
-- Add catalog-to-detector mapping coverage for all 36 current catalog rules.
-- Update GitHub Actions CI to verify Python 3.11 and 3.13 with compile, unit tests, fixture evaluation, and `doctor`.
-- Promote three accepted field-corpus examples into deterministic fixtures, raising the local fixture count from 36 to 39.
-- Keep the same caveat: local fixture pass rate and rule coverage are calibration signals only, not broad detector accuracy.
-
-## 2026-06-04 Public Snapshot
-
-- Publish a runnable `semantic-guard` snapshot with CLI, MCP server, tests, fixtures, schemas, public documentation, and the companion `semantic-implementation` skill.
-- Include Japanese usage, quickstart, and company-facing evidence documents.
-- Expand local calibration fixtures to 36 deterministic fixture expectations.
-- Add a 30-entry field corpus for good warnings, noisy warnings, and likely misses.
-- Keep explicit non-claims: not a security scanner, not a release gate, not a formal requirements verifier, and not a replacement for human final acceptance.
+The former local research prototype is preserved under `legacy/semantic-guard-v0.1.0/`. Its own changelog and dated documents remain historical records of that line.

@@ -1,0 +1,1392 @@
+{
+  "$schema": "./verification-gap-register.schema.json",
+  "schema_version": "semantic-guard-verification-gap-register/v0",
+  "register_id": "verification-gap-register.canonical.v0",
+  "source": {
+    "locator": "verification-source.json",
+    "content_digest": {
+      "algorithm": "sha256",
+      "value": "d4fc9da6c08244f190913450ebf9bbdcc777ae151aa2a8bc7781a89d683f520c"
+    }
+  },
+  "denominator": {
+    "included_fields": [
+      "verification_items[].unproven_scope[]",
+      "verification_items[].residual_risks[]",
+      "implementation_conformance_items[].remaining_obligations[]"
+    ],
+    "identity_canonicalization": "sha256(canonical-json({item_id,gap_kind,content}))",
+    "content_digest_algorithm": "sha256"
+  },
+  "gap_set_digest": {
+    "algorithm": "sha256",
+    "value": "fb8bfedc040f0e5bb7fc18e9ea53cb5fc0afb6ea44f2c87da452b238f5eb2a06"
+  },
+  "gaps": [
+    {
+      "gap_id": "gap.sha256.06d59a0366dccb99c531e970625952caecfbff456b5d7c2f0774f60174c8e3ca",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/1/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.engineering-knowledge-governance"
+      },
+      "content": "A target form may become self-referential if its engineering origin is not independently reviewable.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "de3b4e85c01d4643dce4835ee548ef299b9a08b632a631b590a7cc908cf7d14d"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.engineering-rule-pack-governance"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.0763d3eb371fbceae2622315156ab8cddbd84f6ac0a6833f0de7a89e5630cfd8",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/9/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.secure-and-responsible-operation"
+      },
+      "content": "Data classification, consent or authority, provider egress, minimization, secret and personal-data controls, retention and deletion, prompt-injection resistance, dependency and model provenance, least privilege, incident response, and independent review.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "495a6c315f0bc655bc8c61ee9a7f2c21cc223c5f20d3ae845ebd2e8c855de570"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.secure-information-handling-and-external-boundaries"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.0c209b62828224d94922aaaa46b8e82ca238b26f9ebe7f1e447a3a8ed28cbb3e",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/1/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.engineering-knowledge-governance"
+      },
+      "content": "Clause-complete mapping, interpretation governance, organizational adoption, exception expiry, and review cadence.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "b44aef2f446ce45ebf78cbe7196b37cbaffb69970263c9c8da426eeffa868e06"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.engineering-rule-pack-governance"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.1c37e35a43e232a296eabc47c38d851bc197df40c1272bf646da3cd94e793e6f",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/12/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.register-completeness"
+      },
+      "content": "Denominator adoption, stable gap registration, disposition closure, negative omission detection, independent review, and projection value equivalence.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "04af504172313bcb6942a55501cfc0ca37c699edde9eaa0ac6faed7761406891"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.verification-register-completeness"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.204d1083fd18f66c48c963f53ff7a890a63ab9cda09b6674ccaf86dfff32c0c6",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/18/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.dependency-analysis-bundle"
+      },
+      "content": "Provide coreference capability or revise the required bundle by human decision.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "82ea44bb5503eec59156cfc9e9a5a59dccb5657f6793ef3bb745541641c42572"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.2079ac92c2061a70fcba3caa310419d05b045bf93ca0c318108e1ecbc2ad64c8",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/18/remaining_obligations/1",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.dependency-analysis-bundle"
+      },
+      "content": "Evaluate practical dependency and scope accuracy.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "8f09cc176fa8393b7a2add38028cedd21ec973b39bc9bd178cf038ffb7c16788"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.2d49e0413989bf319d02b80dafc436cb82c47957b71cb0dc6a684dba1690df31",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/26/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.migration.legacy-characterization"
+      },
+      "content": "Classify each material old/new semantic difference under independent review.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "24030a14308ec6e8896c3aedbfd052553d09d564b9716285f677541d9f742572"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.evidence-expiry-and-requalification"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.2edc84ef03930e20f6f263fa5ba98040df091bde5277d58970cedb4f31562c6b",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/23/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.completeness.provider-accounting"
+      },
+      "content": "Add semantic performance evidence and operational failure cases.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "57474e76511373ce6d51c40507dd10724c4e1a9c2e44c91cd52200112bf4d30c"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.322696198e9ff20b3bcab86a660bb6e79b5f2ca804efb1e6ce486c6991d1a4c1",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/15/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.transition-and-cutover"
+      },
+      "content": "Transition contract, compatibility window, shadow comparison, evidence migration, rollback rehearsal, abort criteria, human cutover decision, and predecessor retirement.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "831d9182d2602f81db3f2cd52b6c73798a56df2c86e6aa21ed9f6fc9186f7b91"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.transition-cutover-rollback-and-retirement"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.3a7bc810c90e70ae2a148ed8817886db315d31de5595f5b4dfc2d00bc9138164",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/24/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.completeness.public-result"
+      },
+      "content": "Add original-source rechecking and elevated provenance only where required.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "61a9ad5091c0e4ba2b4a0304b32310ed29523bddc13b63896a77b020c5234b2f"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.3d86356637f1e05126bee6cce66a12359a66c45d02c80b53828556ef232a4416",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/2/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.discovery-effectiveness"
+      },
+      "content": "Unknown-unknown discovery recall.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "70aa4230c206adf7f384f6f28d421d192d35983037b8206541d0045c34ffbcb7"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.3df70c3207a77c9b36191766fd0f4d02d74e7516e92110c55f1340eed129713e",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/7/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-008"
+      },
+      "content": "Integrate a human-owned external decision reference without moving ownership into semantic-guard.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "ff789042d24c2d6b3893a1c257356f93752a132fb4a796302ff69e9e2f07d156"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.40ec3ed1fe234d1fe6a760e781ee83397133ff0d264bc8d97c007d17d56ff52d",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/4/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.action-occurrence-and-procedure"
+      },
+      "content": "Action occurrence, actor identity, runtime authority, observer relationship and trust, profile-required observer independence, passed procedure stages, and stop-condition compliance.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "0222e6417cd60238a7d02843370c6dfaa1db8982e3b221a9a7e3880d3f15622f"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.action-evidence-and-authenticity-mechanism"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.428464725a3e46ab607c5903df6ab844be5c58711ce7705b24312bd764cab00d",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/12/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.register-completeness"
+      },
+      "content": "A mechanically complete register can still use an incomplete or wrongly interpreted denominator.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "cc8b983ea36a3db2d86ee6ee6b095b89b97c6e7fdc263481f9f5f7fd1fe5b1f4"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.verification-register-completeness"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.476b90a41f57c6dcc548783d756b609540e0c429c379afdaeec652a83552f0dc",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/22/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.decision-request-materialization"
+      },
+      "content": "Validate agent usability, human comprehension, correct escalation, and repair outcomes.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "c99dea989a6afbd3c02ab6ce41afd4342ec943fcd59f0fafbd3b764f9eeb373e"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.4999332e1e9514ca1365101ae665272afbb139e86d8db785f23ffd6c6a153da0",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/7/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or03.human-decision-boundary"
+      },
+      "content": "External callers can still mislabel pass as acceptance outside the contract.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "bf092cfffdec2893a9dd3bc90c802164bba9a3d0832db9bdb330955d2039fc59"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.5020966d582a7df6362d5c5ad34839e31777d0d296702364b35e847d456a1f18",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/6/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or03.repair-effect"
+      },
+      "content": "Agents may optimize wording to silence findings without fixing the underlying defect.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "bbb4dc63d3011a40e51b2c4023ba294f96b501bfeb08ae8f2fccd58fa222fd2c"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.repair-loop-implementation-and-effect"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.50be6a43d790f31b042d5d5eb104b277872b04a43cb84ad29c9ac3fdf49fcf18",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/11/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-012"
+      },
+      "content": "Evaluate long inputs, resource exhaustion, chunking, and semantic accuracy.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "5699ea1dc1b563c8d933d29d62cdfc09349811dc888a45bacaf9271f37a6763b"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.555b2eea2e585d21476a3911f5069bd5a5bf09df3c637856910b1e96591e222f",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/4/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.action-occurrence-and-procedure"
+      },
+      "content": "A future signed event can still carry semantically wrong action metadata.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "de99a9002c6949645d41312b5072ba12776dc67a33636444315b5e5a0aa14a4e"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.action-evidence-and-authenticity-mechanism"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.55c546a23af6cbec16c5e594bbb939750ae0dc8836d2710fec3cbf17b5344b68",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/0/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-001"
+      },
+      "content": "Measure catastrophic false satisfaction and silent coverage gaps on real artifacts.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "9cde31d809936a60384beea1bdab856d098a22d1ed0a0a51e67d857e05e42e9e"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.596498ffcd40da54e3afded3681c6f05e3e4b92bdce5a1b38fb9620b0010a13a",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/25/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.migration.legacy-baseline"
+      },
+      "content": "Define environment qualification if legacy comparison becomes release evidence.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "7437e1f92e2dfc5804ad9715948e1f5fb26d06d4f957e70cfd30789e319cec86"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.evidence-expiry-and-requalification"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.6287f105dffa0b751c32a9f736a681da2c73e2a3a2b8f836ba4825f1f63202f9",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/9/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.secure-and-responsible-operation"
+      },
+      "content": "Even an accepted control profile cannot eliminate provider compromise, malicious dependencies, insider misuse, or semantic leakage through allowed outputs.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "6d1e8ea383fb2376e0b9c7ea91371ada4482ae44b782715dd2124db54a72189d"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.secure-information-handling-and-external-boundaries"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.677e501ae34922fe9c9cd8179cfc9aaf360f9cc44c60a9c3058763b6c0eab078",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/1/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-002"
+      },
+      "content": "Evaluate conditional-mode misses on real artifacts.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "9663de8b4d57ccbdbaaff445bcc12aef12ea606b87274f74802ad1491627377f"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.681fe255a1062b24840a8d989ba8db25712abb725bbf06e3ed06981f6e954bf8",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/10/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.operational-reverification"
+      },
+      "content": "A technically current snapshot may still be invalid for a changed target population or risk policy.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "d50114c6b3c480a5976e9781e8346c2a70bd1de7b3f097de85201b55147e9f5a"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.secure-information-handling-and-external-boundaries"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.691096203ff137b73322550304147180f31e0ee120d61cc5a415da9150fbda7c",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/14/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.operational-qualification"
+      },
+      "content": "Deployment envelope, duration, concurrency, load, resource exhaustion, provider failure, restart, recovery, compatibility, multiple platforms, observability, incident response, and independent qualification review.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "42fdbd5e7edd8e8a2193f91e972525e25230cf52b10a7d2930cb755e8a73e8c3"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.operational-qualification"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.6ccdd6f54907c37a0a27ed36079417dfd986ee062f73640b5a1e09fc821324d5",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/16/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.human-operational-use"
+      },
+      "content": "Usable material in one organization, language, domain, or model may not transfer to another without re-evaluation.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "0d21a300b01fa0472ddf3ed980b6952bcf52eec3414007756d2afb7e8128d8a6"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.human-operational-use"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.4fda96cb3dfb944703a9a70f4a0f0562f0d5efdae7e1b92f4f07463a79820b4f",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/0/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.lifecycle-surface-coverage"
+      },
+      "content": "Request, exploration-question, decision-state, plan, action, realization-policy, diff, verification-artifact, and completion-claim vertical slices; only the requirement surface has the current v1 vertical implementation.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "4c9143deda6c758a3e94af9b61f50a1b78aaeb9b32055fe8e02c16e1cbeaffdb"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.lifecycle-surface-vertical-slices"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.7161d63591ada41189116b92ca9eda41fc77120432a3ccaae80b12d1dcd314f7",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/0/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.lifecycle-surface-coverage"
+      },
+      "content": "Progress on the requirement slice can dominate attention and hide untouched lifecycle surfaces.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "c8233d553b1c2eacab6ef4c1315da42af39e55e0fb7d1553583a39f6f756549d"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.lifecycle-surface-vertical-slices"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.7312b28fd38510cab9af61548158d76b67ba756b342063fe27af80de63e01da4",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/13/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.lifecycle-trace-and-composition"
+      },
+      "content": "A syntactically closed trace can preserve the wrong engineering meaning if profile semantics or rule-pack interpretation are wrong.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "d72f562675604b59b92a9069d1a9d35be3ffa961109ddeea987939f77401c30a"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.lifecycle-trace-and-composition"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.7351a77c8dfeb9cfaf5cfccf070e15e0784e341ce05feb04cc898c54a34505fd",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/12/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-013"
+      },
+      "content": "Add version-transition and independent serializer round-trip evidence.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "1a29feeea3c3467686b5ccc93de5fab43ce3b45b5900350f183799a7b1a485b0"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.749286599ba0cb71ae2fab6dbb4186e20e84219880aacbfe90090ed6c02aa9b6",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/2/unproven_scope/2",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.discovery-effectiveness"
+      },
+      "content": "Target-population accuracy and generalization.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "84521eb63f4c231a27ca2413529c210039b6a87bdbf710797a6bc7715535f63c"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.77f2d596c9c64d575bb9c84af632a66c9e34d3d945a274650bf5837d56b2a844",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/13/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-014"
+      },
+      "content": "Define elevated occurrence identity and replay protection where operational profiles require them.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "5fe61a9b42fc5254ca5093fb87e3e8f1bebfb8065eba86390b4672f57f32cd03"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.7c718377fa1f282f7ce7064feefa39117041ba1dde55f38671739066874e6e13",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/9/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-010"
+      },
+      "content": "Add elevated provenance mechanisms only for claims that require them.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "320ee4de6bc10336445cdf33eea6dbcec4065501fa166a21ce5eb25f577e4dd1"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.81f75d515e1d351422a1c5c08724afdf5bec62ce610ee8204a80b1625dc48def",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/5/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.artifact-provenance-authenticity"
+      },
+      "content": "Semantic extraction error may be preserved by a strong provenance mechanism.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "eeb287c65dccae9d70f78f066a3935a918f92557588f48107b7c1db618cbddde"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.action-evidence-and-authenticity-mechanism"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.82185dc1009b45103cd0b57f51c619094d7b066a663974b42000c4dd96482757",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/3/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.bounded-claim-model"
+      },
+      "content": "Real action evidence acquisition, independent observation, authenticity, and causal proof.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "a3acf024449e03156ac2ba4d66fcd93fbf4b1e12f20917fdb4c1a0203ea12ae4"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.assurance-profile-and-public-trust-basis"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.82cc67610a4bb12923f2ebff27ea82dd9c9e9b696a87f41be9f3856b38de5616",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/2/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.discovery-effectiveness"
+      },
+      "content": "Improved analyzer sophistication can still create confidently wrong candidates if the target relation model is wrong.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "a7fb1ea3bc7244f6f1fdeb4713473da0d9183e8298f20059dd455ba13dd339c2"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.82e361a05237265fb0b6772be87aaf89f173b28d4bfa311c185f43622103afe6",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/6/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or03.repair-effect"
+      },
+      "content": "Agent repair success, regression rate, handoff usability, correct escalation, and human comprehension.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "d3d08cd107327be3b07fa57d9468c2440be624df8e79236ac3c70918d129f501"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.repair-loop-implementation-and-effect"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.83c2e0fe58b4457c4df6950bdba2e1d976d4ae72d10126832737ebb0e40de8a7",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/14/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.operational-qualification"
+      },
+      "content": "Qualification cannot enumerate every correlated failure or establish continued validity after the subject or environment changes.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "2f87a31c0d71cc475d8f23d5b7633d4a687ec3fef504bbf69407076faaaa7685"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.operational-qualification"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.84f888a683e55c8c1eea20427531c4e811cbae082375f6393c4d6c0a647b28ce",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/19/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.versioned-lifting-rule"
+      },
+      "content": "Add engineering-grounded rules for negation, modality, quotation, reporting, and cross-field relations.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "10937c87b5b4b6edc610e1ef7fe8b3e936b978f4021c1d85d5b5c118b9dc6966"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.86ddc073d77561665e743c8fe3d1d78c3c03e6ffc9c65709dc98fb1e2479bd53",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/3/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-004"
+      },
+      "content": "Test latency, resource exhaustion, concurrency, and partial infrastructure failure.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "a292de4b3345f08d0c49369577b5463607f574826ddace3a3bc5f7e7d0014051"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.8ea2a8483b96093b9982a9f33f8bc4d2dabb6270295f76c377b6ee8d7c5128c3",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/4/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-005"
+      },
+      "content": "Define external adapter and model-identity evidence without raising candidate authority.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "48b80ebfca60b391d15ff40ccd74f6db3c9d2baf66e85c7751693545c0f6337d"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.9606ebb6635ace9cfa483e7888ae7dbbccdf6694303b9f6ffcae58ec53c34bc2",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/17/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.morphology"
+      },
+      "content": "Evaluate contribution to detection under ablation and field cases.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "dfd20f328f3831d151a559741a739f8410be5e28ec5d05e766c542452f6731b2"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.97f0fafe9a1154d5ea7af50b454f33c417860cc05c99c6e31422c4421a7c8940",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/15/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.provisional-direct-audit"
+      },
+      "content": "Adopt traceable rule packs and evaluate false satisfaction.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "178eea916da0bf269aec065c68c3997726e8c6799c38e8cf976b45e44fa3adec"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.a72f7cca66a2bd3f74eb3ac020c31aac8efbc32273e0ef6458e296d981119275",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/5/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-006"
+      },
+      "content": "Evaluate domain paraphrases, cross-sentence scope, and reporting structures.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "a352deb3b3fe90667589310d150208ff1ec7437de43481b5542b5be791847fe2"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.a80136b5cd05c6423847736753440817ad867f3cc9abcadd65b7927d3108ecec",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/10/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.operational-reverification"
+      },
+      "content": "Evidence expiry policy, cross-platform operation, long-duration behavior, concurrency, denial of service, incident feedback, and rollback qualification.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "019335542b665e99045f3ff5b667b10efa836d7625b2abe9fd52cea8f27f77d3"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.secure-information-handling-and-external-boundaries"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.a8d417487b7d4de5b95cc5b76e81a478fdb13d9f44063483fe8b4f86d343dbbe",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/14/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.input-boundary"
+      },
+      "content": "Add separately versioned profiles for other lifecycle artifacts.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "c83feb94c0c6b98634224254ce8d4101b0ac3be0709f0cae5c9faa072e8ea9c4"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.b22270ee18f35f7353d1fcebd69fd9fb1a9a890d0040b256de04e4c8116f867f",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/10/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-011"
+      },
+      "content": "Build engineering-grounded relation profiles and evaluate practical vocabulary coverage.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "c8323c7a1f1e0c7e27d8af8813148f81b12b6adc5a8d517e0ba71ddd16189b23"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.b636afe4da78c8b046397e7b851267d70763ac9d1687d925a094183729125eb8",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/16/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.human-operational-use"
+      },
+      "content": "Role taxonomy, routing accuracy, agent actionability, human comprehension, escalation correctness, repair quality, authority errors, accessibility, and organizational fit.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "da89d66ae0baca27f8564fefa7191b90c2bcd75ca5a14de7f6d64f0c19bfdba3"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.human-operational-use"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.bb18670f23ce3f53150e315346eb84187ea6cc4bbffd8071c7997bfec74cb595",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/5/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.artifact-provenance-authenticity"
+      },
+      "content": "Trusted time, actor identity, original-evidence authenticity, artifact generation event, and causality.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "7560da3142c1b63c044502de40a37b9ee5e542d8ae76d928e62a7c6843c6f04d"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.action-evidence-and-authenticity-mechanism"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.bc40e4c5f2450443af379472c45cc540176fb47b1b793cc35cac2f0bc99e3ea5",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/6/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-007"
+      },
+      "content": "Implement and validate multi-requirement record segmentation.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "48899de84156b8ebb27e31e3723427b8deab7b68b3c3e971f752cf648296a878"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.bd1b21c62dbfd7c2a7cb4fb9e78cef7b555122d5c15cad94b6d3f0a1a415b0f1",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/3/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.bounded-claim-model"
+      },
+      "content": "A structurally complete but semantically wrong claim can still be recorded.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "afc670373018a5b8bd45c1ecac8158f19d47c8029eaadfd279b3a237848e3fdc"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.assurance-profile-and-public-trust-basis"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d545911b1e9331e687c8d5881ba5a90aa42e5a7881fc9cedbe73ebd204f4fcdf",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/2/unproven_scope/1",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.discovery-effectiveness"
+      },
+      "content": "Cross-sentence and coreference-dependent relations.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "2970a38902372df5c7f8883d999bcb3b583358497206d303c3e42f737237b294"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d5e85ef41adc250b3e02ad3c68b5345585840abb3d66df7a008ad60332333158",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/11/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.proof-obligation-and-assurance-graph-soundness"
+      },
+      "content": "A closed graph can still encode a semantically wrong rule or unauthentic observation unless normative governance, subject binding, and evidence trust are independently closed.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "4b8fe35134b52ec506cb27ebff793c1d9a9788f4c4fc7c9ea60217cf3f017159"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.proof-obligation-and-assurance-graph-soundness"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d657cde2d5200468babe753ed1c1e0b97860b8b1eb6a63b81e0a3f7a59883a46",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/8/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-009"
+      },
+      "content": "Monitor and document legacy consumer misuse during migration.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "b6cff6491bcff3c81d2ce2b11bd821117bd6f373bda9a0db8dcf622d5c3b2492"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d72948820d5a9bb23b88f030b40e1ecb28f867007d770868deaab29ce012791a",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/15/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.transition-and-cutover"
+      },
+      "content": "A rehearsed transition can still encounter unrepresented callers, stored records, environments, or organizational dependencies.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "758529bd7a85c4ef271fa176c8eabdc78337722aa73815bfd7b703c9ff339d99"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.transition-cutover-rollback-and-retirement"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d7714eee33915685f7e7bd993bb1a7dde1d50c8bc312481cfd831847f1714bc4",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/13/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.lifecycle-trace-and-composition"
+      },
+      "content": "Cross-stage identity, proposition, obligation, authority, evidence, and unresolved-scope composition for all lifecycle transitions and branching forms.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "2fd0016372ad8228bc3e0a6ede07e40945a72ceac15a9cc9e731a77d98653fe2"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.lifecycle-trace-and-composition"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.d7f3ed2aaba321497ebd89466210455c125af0b31e9c5bb66becc9e8754975d5",
+      "gap_kind": "verification_residual_risk",
+      "source_locator": "verification-source.json#/verification_items/8/residual_risks/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.field-validation"
+      },
+      "content": "A benchmark can become a tuning target and cease to represent unseen work.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "42e98b0d55aac974997052b936f97dd11c82050cca0ce19df3b7a5b8a8ee761e"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.dc31919b0fe0111e2eda3987972e0a56a9ff66f3e26b5b8fa4ae286b9534dd55",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/11/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or02.proof-obligation-and-assurance-graph-soundness"
+      },
+      "content": "Runtime cross-field closure, v1 graph implementation, independent reaggregation, mutation resistance, profile adoption, migration behavior, and independent adversarial review.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "ca059b71c0a4602126acaba2930f1b48623db609aeaf366ce0c0680a3815b766"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.proof-obligation-and-assurance-graph-soundness"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.e3b49a4b92b1488c7965357c072795e5a46e75d809810bb228893c54453ac792",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/2/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.INV-VN-003"
+      },
+      "content": "Add artifact authenticity and signed provenance only where elevated claims require them.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "0d53eef44daca03f8a97661817a590f4f8a2781cbdc5cf367e84fa3793ac7c00"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.e892950f8c76116dc849e1530fee96b04cd1f3ac5c14f61aee38e294972d7cfc",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/16/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.residual-risk-gate"
+      },
+      "content": "Build a denominator and target-population validation.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "764e90c36aba8389b1a7bd3cef961f895da423d753bdfe7c558a39789b8594ad"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.e93e8c85bff8ff7e6178458a5d47f70de44dff5bca041446a8376d39cef7711a",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/20/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.llm-candidate"
+      },
+      "content": "Define external invocation evidence and evaluate incremental value without authority escalation.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "b84b0d7bba33b76a5675a6d99041086bb78b5ea9107be8196146d75b15ef3d72"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.analyzer-route-effectiveness-and-incremental-value"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.f608aed3968581fd363f058d73c6f99a90b16b557ded40a14ceefb378aa0ea45",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/8/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.cross.field-validation"
+      },
+      "content": "Target population, generalization, confidence bounds, reviewer agreement, user comprehension, repair success, and operational value.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "7c2c1739125fae61e8416986912f7dc8f424b28c9f890479dff3262f4911168f"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.fb43c5ff2368dbb9595c05729e397bb567063b007cb23b4db7f6b247f24b4288",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/2/unproven_scope/3",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or01.discovery-effectiveness"
+      },
+      "content": "Performance on plans, diffs, actions, verification reports, and completion claims.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "7944b3da53b71b7b001d2e12bfa819f44592b783107760b46313926a444c6a7a"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.field-population-and-thresholds"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.fe84e408ae9dddbfa3b65e7c3a64a000134267b9fae6f15b0f3727b7a1d97228",
+      "gap_kind": "conformance_remaining_obligation",
+      "source_locator": "verification-source.json#/implementation_conformance_items/21/remaining_obligations/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "conformance.stage.obligation-reaggregation"
+      },
+      "content": "Bind aggregation evaluation to discovery-effectiveness evidence.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "9fbc3934837fa2a70ea3da75138de8cd5b36b7e932319d1bf85b1fa212010cf5"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    },
+    {
+      "gap_id": "gap.sha256.ffcc0611daddd59de889e28d54925d16436b7cbcea088837a4ac51b42b360ec0",
+      "gap_kind": "verification_unproven_scope",
+      "source_locator": "verification-source.json#/verification_items/7/unproven_scope/0",
+      "item_ref": {
+        "reference_kind": "ref",
+        "entity_id": "verification.or03.human-decision-boundary"
+      },
+      "content": "Usability and completeness of a future human acceptance record.",
+      "content_digest": {
+        "algorithm": "sha256",
+        "value": "86095f157d1fe375e1a33d7b8d49947f288e51e978627a8441faacf2bb0805c9"
+      },
+      "disposition": {
+        "kind": "canonical_unresolved",
+        "unresolved_ref": {
+          "reference_kind": "ref",
+          "entity_id": "unresolved.state-evidence-derivation-and-subject-binding"
+        }
+      }
+    }
+  ]
+}

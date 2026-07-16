@@ -1,162 +1,102 @@
 ---
 name: semantic-implementation
-description: Meaning-, intent-, and value-oriented requirements, planning, implementation, and completion audit. Use when Codex works on non-trivial design, implementation, refactoring, migration, documentation, creative canon organization, requirement clarification, or any task where meaning, intent, scope, non-goals, uncertainty, verification, validation, traceability, or change impact may be misunderstood. Do not use for trivial typo fixes, simple one-line commands, current time checks, or already-obvious mechanical edits.
+description: Route non-trivial development work through semantic-guard v1 requirement-relation audits while preserving intent, engineering basis, uncertainty, provenance, authority ceilings, compatibility boundaries, and final human judgment. Use when Codex clarifies or audits a structured functional requirement, compares canonical v1 with the frozen 0.1.0 behavior, retrieves semantic-guard schemas, or works on design, implementation, migration, documentation, public contracts, durable evidence, and completion claims whose meaning could drift. Do not claim that v1 directly audits plans, diffs, finish evidence, or every lifecycle phase.
 ---
 
 # Semantic Implementation
 
-## Purpose
+Keep the original purpose visible: expose whether development requirements, plans, actions, realization methods, and evidence are justified by explicit engineering knowledge. Use the current v1 runtime only for the requirement-relation slice it actually implements.
 
-Use this skill to keep implementation from becoming shape-matching. Clarify what must be preserved, why it matters, what is not being done, and how the result can be verified before changing files.
+Do not approve, reject, certify, accept risk, adopt policy, or make the final human decision.
 
-## Operating Rule
+## Public v1 surface
 
-Use the lightest audit that protects the task.
+Prefer the MCP server when available:
 
-- For open-ended ideas that are not yet requirements, run exploration first: use deterministic exploration for fast preflight, and use LLM exploration when the task needs all available information extracted before every material missing question is asked.
-- For ambiguous or high-impact work, run the full chain: exploration when needed, target understanding, request audit, plan audit, diff audit, finish check.
-- For ordinary code changes, at least identify meaning, intent, non-goals, risk, and verification before editing.
-- For small obvious edits, keep the audit implicit and do not perform ritual paperwork.
-- If the `semantic-guard` MCP server is available, prefer it for structured audits.
-- If the MCP server is unavailable but a `semantic-guard` checkout is available, run the CLI from the checkout root with `uv run --python 3.13 --project . semantic-guard ...`, or set `SG_PROJECT=/absolute/path/to/semantic-guard` and use `--project "$SG_PROJECT"`.
-- Before relying on a fresh checkout or publication snapshot as the audit source, run `semantic-guard doctor`.
-- When auditing prose rather than a requirement statement, pass `--kind document` or MCP `kind="document"` to avoid requirement-only warnings.
-- When a task adds or changes public I/O, CLI behavior, MCP tools, API responses, durable records, error handling, output schemas, or repository-wide coding conventions, run `audit_conventions_tool` or CLI `audit-conventions` before closing the implementation.
-- Use LLM reviewer only as intermediate audit material. It may point out missing aspects and supplements; it must not approve, reject, or decide final acceptance.
-- Use `llm_review_run_tool` or `llm-review-run` in dry-run mode first. Use `execute=true` or `--execute` only when the extra review value justifies the cost, latency, and risk.
-- When an MCP reviewer call may take long enough that status matters, prefer `llm_review_start_tool` or `review_if_needed_start_tool`, then poll `llm_review_status_tool` until the job is no longer `running`.
-- For final human acceptance, build an `acceptance_review_bundle`. Keep `final_human_decision.status` as `pending` unless the human has actually decided.
+- `audit_requirement_relations_tool`: audit one structured functional requirement.
+- `shadow_compare_legacy_tool`: compare v1 with an operator-pinned external 0.1.0 execution root.
+- `semantic_guard_schema_tool`: retrieve one closed v1 schema.
 
-## Audit Chain
-
-### 0. Explore Request
-
-Use this before requirements exist, especially for product ideas, feature sketches, broad documentation requests, creative canon organization, or any task where asking the wrong questions would quietly fix the wrong scope.
-
-- Generate plausible audience or stakeholder hypotheses and state how each would change scope.
-- For exhaustive elicitation, use the LLM exploration path so the reviewer extracts visible facts, inferences, hypotheses, unknowns, and pending decisions before questioning gaps.
-- Extract only material ambiguities: scope, data shape, identity, privacy, payment, permissions, external authority, acceptance evidence, unresolved human decisions.
-- Ask only questions whose answers would change the artifact or audit path.
-- Keep taste, wording, and implementation-preference questions out unless they affect scope, public contracts, evidence, or risk.
-- Produce a spec outline with non-goals, acceptance criteria, unresolved decisions, and next design or planning phase.
-- Do not start implementation from this phase.
-
-Use MCP `explore_request_tool` or CLI `semantic-guard explore-request` for fast deterministic preflight. Use MCP `llm_explore_request_tool` or CLI `semantic-guard llm-explore-request --execute` when the point is to take all visible information first and then interrogate every missing material item. Treat both outputs as elicitation material, not approval or a final requirement.
-
-### 1. Understand Target
-
-Confirm that the object of work is understood before refining requirements.
-
-- What is the subject: entity, module, document, feature, setting, or story fact.
-- Who or what the work serves: user, maintainer, operator, author, reader, character, system.
-- What is the current state and desired state.
-- What meaning, intent, and value must be preserved.
-- What constraints, non-goals, assumptions, and unknowns exist.
-- How the user or artifact will prove that the problem itself is the right one.
-
-Block implementation when purpose, desired state, non-goals, unknowns, or validation route are absent or only guessed for high-impact work.
-
-### 2. Audit Request
-
-Separate need from solution.
-
-- Classify requirements as purpose, stakeholder, solution, transition, quality, operation, or non-requirement.
-- Check clarity, atomicity, feasibility, necessity, priority, verifiability, acceptance criteria, and traceability.
-- Mark undecided points as unknown, hypothesis, pending decision, one-sided observation, or time-dependent fact.
-- Do not turn examples, implementation ideas, or storage layout into requirements unless the user or artifact makes them binding.
-
-### 3. Audit Plan
-
-Check that the plan can satisfy the requirement without expanding the scope.
-
-- State objective, non-goals, deliverables, work breakdown, dependencies, assumptions, risks, decision points, verification, validation, rollback, and completion evidence.
-- Include documentation, migration, tests, generated files, and configuration when affected.
-- Identify user decisions only when required for correctness or permission.
-
-### 4. Audit Diff
-
-After editing, inspect the change as a possible meaning break.
-
-- Trace each material change to a requirement or intent.
-- Check semantic preservation: name versus identity, display versus identifier, storage versus membership, hypothesis versus fact.
-- Check quality impact: functional suitability, reliability, maintainability, security, compatibility, performance, portability.
-- Check complexity, public API, persistence, permissions, configuration, dependencies, operations, and documentation impact.
-
-### 5. Finish Check
-
-Do not close on "implemented" alone.
-
-- Record commands run, tests not run, and reasons.
-- Map acceptance criteria to evidence.
-- Note residual risk, blockers, breaking changes, migration needs, and follow-up work.
-- Prefer concrete evidence: file path, line, command, result, screenshot, or rendered artifact.
-
-## LLM Reviewer
-
-Use the LLM reviewer when deterministic audit is not enough to inspect context, weak assumptions, counter-conditions, rule item coverage, or missing supplements.
-
-Good triggers:
-
-- Requirements are ambiguous, high-impact, or likely to hide non-goals or acceptance gaps.
-- A plan is large enough that dependency order, risk, rollback, or validation may be incomplete.
-- A diff touches meaning, identity, storage, permissions, security-sensitive configuration, persistence, or public behavior.
-- Finish evidence exists, but residual risk or acceptance mapping is still thin.
-- You need a second, isolated reviewer before producing final human-review material.
-- You need a fresh-eyes pass because the same context planned, implemented, and checked the work.
-
-Default flow:
-
-1. Run the relevant deterministic audit first.
-2. When routing should be inspected, use `review_if_needed_tool` or CLI `review-if-needed` with `candidate`, `phase`, `deterministic_audit`, and optional `review_context`.
-3. Use `review_context.independent_review_requested` or `fresh_eyes_requested` when the value is an uncontaminated second pass rather than a deterministic warning.
-4. Read `escalation.pressure.score_semantics`: it is review routing pressure, not correctness probability.
-5. Dry-run the LLM reviewer first through `review_if_needed_tool`, `llm_review_command_tool`, `llm_review_run_tool` with `execute=false`, or CLI `llm-review-run --dry-run`.
-6. If execution is justified and a blocking call is acceptable, run `review_if_needed_tool` with `execute=true`, `llm_review_run_tool` with `execute=true`, or CLI `llm-review-run --execute`.
-7. If execution is justified and response state must be observable, run `review_if_needed_start_tool` or `llm_review_start_tool`, then poll `llm_review_status_tool`. Treat `running=true` as still waiting, `review_received=true` as valid reviewer JSON received, `state=failed` as an invalid or failed run, and `state=timed_out` as timeout.
-8. Treat the result as supplement material. Decide which supplements to adopt, reject, or defer in the main Codex work.
-
-Never use LLM reviewer output as final approval. Never auto-apply supplement proposals without checking their relation to the request, non-goals, and evidence.
-
-## Acceptance Review Bundle
-
-Build an `acceptance_review_bundle` when the final artifact is ready for human evaluation, especially after non-trivial implementation, migration, policy, public documentation, or creative-canon changes.
-
-The bundle should include:
-
-- original request.
-- final artifact kind, reference, and summary.
-- deterministic audits.
-- LLM reviewer material when used.
-- adopted, rejected, and deferred supplements.
-- execution evidence.
-- residual risks.
-- human review points.
-- `final_human_decision` with `status: pending`.
-
-Use `acceptance_bundle_template_tool` or CLI `acceptance-bundle-template` to scaffold it. Use `validate_acceptance_bundle_tool` or CLI `validate-acceptance-bundle` before presenting it.
-
-Human decision values are limited to `accept`, `request_revision`, and `defer`. Do not fill a final decision on the user's behalf.
-
-## CLI Examples
-
-When MCP tools are unavailable, use the local CLI.
+Use the CLI fallback from the repository root:
 
 ```sh
-uv run --python 3.13 --project . semantic-guard explore-request --text "..."
-uv run --python 3.13 --project . semantic-guard llm-explore-request --text "..." --execute
-uv run --python 3.13 --project . semantic-guard audit-plan --file plan.md
-uv run --python 3.13 --project . semantic-guard audit-conventions --file plan.md
-uv run --python 3.13 --project . semantic-guard doctor
-uv run --python 3.13 --project . semantic-guard audit-result-schema
-uv run --python 3.13 --project . semantic-guard rule-detector-map
-uv run --python 3.13 --project . semantic-guard conventions-catalog
-uv run --python 3.13 --project . semantic-guard llm-review-run --file review-input.json --dry-run
-uv run --python 3.13 --project . semantic-guard acceptance-bundle-template --file bundle-input.json
-uv run --python 3.13 --project . semantic-guard validate-acceptance-bundle --file acceptance-bundle.json
+uv run --locked semantic-guard audit-requirement --file requirement.txt
+uv run --locked semantic-guard shadow-compare \
+  --file requirement.txt \
+  --legacy-root /absolute/operator-owned/legacy-root \
+  --require-legacy
+uv run --locked semantic-guard schema audit-result
 ```
 
-## References
+Read [references/mcp-contract.md](references/mcp-contract.md) when invoking or changing the public surface. Read [references/audit-rubric.md](references/audit-rubric.md) when judging requirement quality, relation coverage, evidence, or claim boundaries.
 
-- Read `README.md` when installing or syncing this skill into a live Codex environment.
-- Read `references/audit-rubric.md` when designing or reviewing the audit model.
-- Read `references/mcp-contract.md` when using or extending the `semantic-guard` MCP/CLI interface.
+## Route the work
+
+1. State the target, purpose, stakeholder, desired state, non-goals, constraints, unknowns, and validation route before editing.
+2. Separate a functional requirement from examples, notes, plans, implementation ideas, historical statements, and acceptance decisions.
+3. Give the v1 auditor one bounded requirement record at a time. Do not feed an entire plan or release note and rename the output a plan audit.
+4. Retrieve the current schema when producing or consuming durable JSON.
+5. Preserve every `undetermined`, `partial`, `failed`, challenge, hold, and unresolved obligation. Never coerce absence into success.
+6. Map audit material into a plan, implementation change, verification step, or human question outside the audit engine. Keep that mapping explicit.
+7. Record commands, exact results, checks not run, residual risks, and pending human decisions before claiming completion.
+
+## Use the analysis chain correctly
+
+The requirement audit proceeds through structured fields and direct rules, unresolved-obligation reassessment, optional morphology signals, optional dependency candidates, and optional caller-supplied LLM candidates.
+
+- Treat morphology as `signal_only`.
+- Treat dependency and LLM results as `candidate_only`.
+- Require source digest, spans, provider identity, resource version, requested and fulfilled capabilities, and coverage where the contract calls for them.
+- Do not let analyzer agreement create support, apply a hold, release a hold, or decide acceptance.
+- Use `analysis_mode="assurance"` by default.
+- Use `conditional` only when deliberately evaluating the unresolved gate; it is not a proven safe shortcut for practical-domain recall.
+- Use `shadow_all` for observation without granting analyzer decision authority.
+
+When submitting LLM candidates, retrieve `llm-candidate-input`, bind the candidate bundle to the exact input digest and source spans, and treat it as untrusted candidate material. The audit core does not call a particular model API.
+
+## Interpret the result
+
+Keep these axes separate:
+
+- outcome: `satisfied`, `refuted`, `undetermined`, `not_applicable`, `invalid`;
+- finality: `provisional`, `terminal`, `invalid`;
+- challenge: `none`, `open`, `conflict`;
+- coverage: `complete`, `partial`, `not_evaluated`, `failed`;
+- workflow disposition: `pass`, `warn`, `block`.
+
+Treat `pass` only as “the selected versioned audit policy does not stop this workflow.” It is not correctness probability, field validation, security approval, human acceptance, policy adoption, or proof that an external AI action occurred.
+
+## Handle unsupported lifecycle work
+
+For plans, diffs, completion evidence, conventions, reviewer material, and other lifecycle phases:
+
+1. Perform ordinary engineering analysis and identify the requirement relations that can be audited by v1.
+2. Mark the rest as not integrated into the canonical v1 workflow.
+3. Use the frozen 0.1.0 implementation only when its historical heuristic is explicitly requested or materially useful.
+4. Label every old result with the legacy version and never present it as v1 output or current truth.
+
+The frozen source lives at `legacy/semantic-guard-v0.1.0/` in the repository. Running it is an explicit compatibility action, not a transparent fallback. Repository source preservation alone does not satisfy the trust-root requirements of v1 `shadow-compare`.
+
+## Preserve decision ownership
+
+Keep these decisions outside the audit engine:
+
+- accepting, revising, deferring, or rejecting the work;
+- accepting residual risk;
+- adopting an engineering rule pack or lifecycle profile;
+- authorizing external or irreversible action;
+- switching an operational default;
+- retiring a predecessor deployment.
+
+Record an unresolved item with an owner, needed-for target, blocking state, next action, evidence reference, and resolution condition when it affects correctness or authority.
+
+## Close the task
+
+Before reporting completion:
+
+- trace each material change to the purpose or requirement;
+- verify affected schemas, CLI, MCP, packaging, migration, documentation, and archive boundaries;
+- run the relevant tests and validators;
+- distinguish current observations from dated historical evidence;
+- state field validity, external authenticity, human adoption, and operational qualification as unestablished unless separately evidenced;
+- leave final human acceptance pending until the human decides.

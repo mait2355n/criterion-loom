@@ -18,6 +18,14 @@ body:
       render: shell
     validations:
       required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version and surface
+      description: State the semantic-guard version and whether this is canonical v1 or frozen 0.1.0.
+      placeholder: "semantic-guard 1.0.0 / audit-requirement"
+    validations:
+      required: true
   - type: textarea
     id: expected
     attributes:
@@ -29,14 +37,14 @@ body:
     id: actual
     attributes:
       label: Actual behavior
-      description: Include status, findings, missing fields, or traceback.
+      description: Include workflow disposition, obligation outcome, coverage, challenge, error, or traceback.
     validations:
       required: true
   - type: textarea
     id: verification
     attributes:
       label: Verification
-      description: Mention whether tests, fixture evaluation, or document audit were run.
+      description: Mention tests, validators, schema validation, and whether optional providers were configured.
       render: shell
     validations:
       required: false

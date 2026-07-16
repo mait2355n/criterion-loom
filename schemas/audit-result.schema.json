@@ -1,146 +1,329 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://semantic-guard.local/schemas/audit-result.schema.json",
-  "title": "semantic-guard audit result",
+  "$id": "https://semantic-guard.local/v1/schemas/audit-result.schema.json",
+  "title": "semantic-guard v1 audit result",
+  "description": "A closed audit envelope separating semantic conclusion, audit execution completeness, and workflow disposition. pass never means human acceptance.",
   "type": "object",
-  "additionalProperties": false,
   "required": [
+    "schema_version",
+    "audit_id",
     "phase",
-    "status",
-    "score",
-    "findings",
-    "missing",
-    "next_actions",
-    "details"
+    "analysis_mode",
+    "subject_ref",
+    "profile_refs",
+    "audit_conclusion",
+    "execution",
+    "workflow_disposition",
+    "obligation_results",
+    "assurance_claims",
+    "analysis_runs",
+    "shadow_observations",
+    "decision_requests",
+    "interpretations",
+    "coverage",
+    "unresolved_required_obligation_ids",
+    "open_hold_ids",
+    "blocking_residual_risk_ids",
+    "residual_risks",
+    "source_spans",
+    "provenance",
+    "authority_effects",
+    "presentation"
   ],
   "properties": {
+    "schema_version": {
+      "const": "semantic-guard-audit-result/v0"
+    },
+    "audit_id": {
+      "$ref": "common.schema.json#/$defs/stable_id"
+    },
     "phase": {
+      "$ref": "common.schema.json#/$defs/non_empty_string"
+    },
+    "analysis_mode": {
       "type": "string",
-      "minLength": 1
+      "enum": ["assurance", "conditional", "shadow_all"]
     },
-    "status": {
-      "type": "string",
-      "enum": ["pass", "warn", "block"]
+    "subject_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
     },
-    "score": {
-      "type": "number",
-      "minimum": 0,
-      "maximum": 1
-    },
-    "findings": {
+    "profile_refs": {
       "type": "array",
-      "items": {
-        "$ref": "#/$defs/finding"
-      }
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
     },
-    "missing": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "next_actions": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "details": {
+    "audit_conclusion": {
       "type": "object",
-      "additionalProperties": true
+      "required": ["outcome", "finality", "challenge", "basis_refs", "limitations"],
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]
+        },
+        "finality": {
+          "type": "string",
+          "enum": ["provisional", "terminal", "invalid"]
+        },
+        "challenge": {
+          "type": "string",
+          "enum": ["none", "open", "conflict"]
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+        },
+        "limitations": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "started_at",
+        "finished_at",
+        "coverage",
+        "integrity_failure_ids",
+        "required_provider_failure_ids",
+        "attempted_stage_refs",
+        "completed_stage_refs",
+        "not_evaluated_stage_refs"
+      ],
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": "string", "format": "date-time"},
+        "coverage": {"$ref": "common.schema.json#/$defs/coverage"},
+        "integrity_failure_ids": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+          "uniqueItems": true
+        },
+        "required_provider_failure_ids": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+          "uniqueItems": true
+        },
+        "attempted_stage_refs": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+        },
+        "completed_stage_refs": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+        },
+        "not_evaluated_stage_refs": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "workflow_disposition": {
+      "type": "object",
+      "required": ["status", "reason_codes", "semantics", "acceptance_owner"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "warn", "block"]
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+          "uniqueItems": true
+        },
+        "semantics": {
+          "const": "audit_rules_do_not_currently_stop_work_not_human_acceptance"
+        },
+        "acceptance_owner": {
+          "const": "human_external_to_semantic_guard"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "obligation_results": {
+      "type": "array",
+      "items": {"$ref": "obligation-result.schema.json"}
+    },
+    "assurance_claims": {
+      "type": "array",
+      "items": {"$ref": "assurance-claim.schema.json"}
+    },
+    "analysis_runs": {
+      "type": "array",
+      "items": {"$ref": "analysis-provider.schema.json"}
+    },
+    "shadow_observations": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/shadow_observation"}
+    },
+    "decision_requests": {
+      "type": "array",
+      "items": {"$ref": "decision-request.schema.json"}
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/interpretation"}
+    },
+    "coverage": {
+      "$ref": "common.schema.json#/$defs/coverage"
+    },
+    "unresolved_required_obligation_ids": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+      "uniqueItems": true
+    },
+    "open_hold_ids": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+      "uniqueItems": true
+    },
+    "blocking_residual_risk_ids": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+      "uniqueItems": true
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/residual_risk"}
+    },
+    "source_spans": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/source_span"}
+    },
+    "provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/provenance_record"}
+    },
+    "authority_effects": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/authority_effect"}
+    },
+    "presentation": {
+      "type": "object",
+      "description": "Intuitive projection only; obligation_results remains the canonical decision basis.",
+      "required": ["met", "not_met", "undetermined", "contested", "not_applicable", "not_evaluated"],
+      "properties": {
+        "met": {"$ref": "#/$defs/id_array"},
+        "not_met": {"$ref": "#/$defs/id_array"},
+        "undetermined": {"$ref": "#/$defs/id_array"},
+        "contested": {"$ref": "#/$defs/id_array"},
+        "not_applicable": {"$ref": "#/$defs/id_array"},
+        "not_evaluated": {"$ref": "#/$defs/id_array"}
+      },
+      "unevaluatedProperties": false
+    },
+    "legacy_projection": {
+      "type": "object",
+      "required": ["status", "score", "score_semantics"],
+      "properties": {
+        "status": {"type": "string", "enum": ["pass", "warn", "block"]},
+        "score": {"type": "number", "minimum": 0, "maximum": 1},
+        "score_semantics": {"const": "legacy_heuristic_not_correctness_probability"}
+      },
+      "unevaluatedProperties": false
     }
   },
   "$defs": {
-    "finding": {
-      "type": "object",
-      "additionalProperties": true,
-      "required": [
-        "severity",
-        "category",
-        "basis",
-        "evidence",
-        "finding",
-        "suggested_fix",
-        "needs_human_decision",
-        "warning_class"
-      ],
-      "properties": {
-        "severity": {
-          "type": "string",
-          "enum": ["blocker", "major", "minor", "info"]
-        },
-        "category": {
-          "type": "string",
-          "minLength": 1
-        },
-        "basis": {
-          "type": "array",
-          "items": {
-            "type": "string"
+    "id_array": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/stable_id"},
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "workflow_disposition": {
+            "properties": {"status": {"const": "pass"}},
+            "required": ["status"]
           }
         },
-        "evidence": {
-          "type": "string"
-        },
-        "finding": {
-          "type": "string",
-          "minLength": 1
-        },
-        "suggested_fix": {
-          "type": "string"
-        },
-        "needs_human_decision": {
-          "type": "boolean"
-        },
-        "warning_class": {
-          "type": "string",
-          "enum": ["actionable", "generic caution", "possible false positive"]
-        },
-        "nearest_candidates": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        "required": ["workflow_disposition"]
+      },
+      "then": {
+        "properties": {
+          "audit_conclusion": {
+            "properties": {
+              "outcome": {"enum": ["satisfied", "not_applicable"]},
+              "finality": {"const": "terminal"},
+              "challenge": {"const": "none"}
+            },
+            "required": ["outcome", "finality", "challenge"]
+          },
+          "execution": {
+            "properties": {
+              "integrity_failure_ids": {"maxItems": 0},
+              "required_provider_failure_ids": {"maxItems": 0},
+              "not_evaluated_stage_refs": {"maxItems": 0}
+            },
+            "required": ["integrity_failure_ids", "required_provider_failure_ids", "not_evaluated_stage_refs"]
+          },
+          "coverage": {
+            "properties": {"status": {"const": "complete"}},
+            "required": ["status"]
+          },
+          "unresolved_required_obligation_ids": {"maxItems": 0},
+          "open_hold_ids": {"maxItems": 0},
+          "blocking_residual_risk_ids": {"maxItems": 0},
+          "decision_requests": {"maxItems": 0},
+          "obligation_results": {"minItems": 1}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "audit_conclusion": {
+            "properties": {"outcome": {"const": "invalid"}},
+            "required": ["outcome"]
           }
         },
-        "semantic_boundaries": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        "required": ["audit_conclusion"]
+      },
+      "then": {
+        "properties": {
+          "audit_conclusion": {
+            "properties": {"finality": {"const": "invalid"}},
+            "required": ["finality"]
+          },
+          "workflow_disposition": {
+            "properties": {"status": {"const": "block"}},
+            "required": ["status"]
           }
-        },
-        "rule_id": {
-          "type": "string"
-        },
-        "repair": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "match_status": {
-          "type": "string",
-          "enum": ["matched", "partial", "rejected", "missing", "not_applicable", "unknown"]
-        },
-        "confidence": {
-          "type": "string",
-          "enum": ["high", "medium", "low"]
-        },
-        "ambiguity_reasons": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"analysis_mode": {"const": "shadow_all"}},
+        "required": ["analysis_mode"]
+      },
+      "then": {
+        "properties": {
+          "analysis_runs": {
+            "items": {
+              "properties": {"decision_influence": {"const": "shadow_observation"}},
+              "required": ["decision_influence"]
+            }
           }
-        },
-        "candidate_matches": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": true
-          }
-        },
-        "derivation": {
-          "type": "object",
-          "additionalProperties": true
+        }
+      },
+      "else": {
+        "properties": {
+          "analysis_runs": {
+            "items": {
+              "properties": {"decision_influence": {"const": "effective"}},
+              "required": ["decision_influence"]
+            }
+          },
+          "shadow_observations": {"maxItems": 0}
         }
       }
     }
-  }
+  ],
+  "unevaluatedProperties": false
 }

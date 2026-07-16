@@ -1,0 +1,712 @@
+{
+  "schema_version": "semantic-guard-legacy-baseline/v1",
+  "pin_profile": "semantic-guard-requirement-relations-legacy/v1",
+  "captured_at": "2026-07-17T01:39:34+09:00",
+  "capture_authority": {
+    "status": "pending_human_acceptance",
+    "statement": "This is a complete-scope working-tree capture, not proof that the working tree itself was historically correct or uncompromised."
+  },
+  "version_control_state": {
+    "status": "unavailable",
+    "reason": "source root is not a Git repository"
+  },
+  "runtime": {
+    "interpreter_path": ".venv/bin/python",
+    "resolved_path_observation": "<private-archive-runtime>",
+    "sha256": "70db9c86354ca8b7c6e3a2c73cb623e05dc03d87452727af36675bfe04ba6c41",
+    "python_version": "Python 3.13.12 (main, Mar 10 2026, 18:26:32) [Clang 21.1.4 ]",
+    "limits": "The executable hash and lockfile detect ordinary runtime drift; they do not attest the operating system, dynamic libraries, or host."
+  },
+  "coverage": {
+    "scopes": [
+      {
+        "root": "src/semantic_guard",
+        "suffixes": [
+          ".py"
+        ]
+      },
+      {
+        "root": "schemas",
+        "suffixes": [
+          ".json"
+        ]
+      },
+      {
+        "root": "docs/conventions",
+        "suffixes": [
+          ".json",
+          ".md"
+        ]
+      },
+      {
+        "root": "docs/prototypes",
+        "suffixes": [
+          ".md"
+        ]
+      },
+      {
+        "root": "skills/semantic-implementation",
+        "suffixes": [
+          ".md",
+          ".yaml",
+          ".yml"
+        ]
+      },
+      {
+        "root": "tests",
+        "suffixes": [
+          ".diff",
+          ".json",
+          ".md",
+          ".py"
+        ]
+      }
+    ],
+    "exact_paths": [
+      ".github/workflows/ci.yml",
+      "LICENSE",
+      "README.md",
+      "pyproject.toml",
+      "uv.lock",
+      "vnext/scripts/legacy_request_adapter.py"
+    ],
+    "closure_rule": "Every matching live file and every exact path must appear in source_digests; additions, removals, and content changes are drift."
+  },
+  "source_digests": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "71b886d7554dc098db5c5f8bb5e98dca1568f99cd604e5d42d566feb67433fa1"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "1c1d640d46e9ad519e3f8bdbbb5c342a6517a8daf447b8485dc01ac4c886b20e"
+    },
+    {
+      "path": "README.md",
+      "sha256": "5f5dc08630daf274550de495aa0d184e3a73c2502eb0192f7f0e25048fff39f0"
+    },
+    {
+      "path": "docs/conventions/README.md",
+      "sha256": "96c8c1c54b92a021c6347852d28bc520be74de3cb5aa60c2125cecf349f41761"
+    },
+    {
+      "path": "docs/conventions/base-contract.json",
+      "sha256": "88c18a60017b6ff838465c5273be307fda0ba4ca8b1539272cd68edab33787a0"
+    },
+    {
+      "path": "docs/conventions/base-contract.md",
+      "sha256": "52456fc92a30d1ba752359f1d6de9ebb3cd9a18b258d6069f180ad0cfc9196be"
+    },
+    {
+      "path": "docs/prototypes/origin-requirement.md",
+      "sha256": "9d50a8a53cdadae3ef98f8e50a2450324c7f396aa97d5b669d0112a7c236d1f3"
+    },
+    {
+      "path": "docs/prototypes/proof-obligation-assurance-graph-charter-2026-07-16.md",
+      "sha256": "ba3ba1afd8f6c0161a03da58ca6f1cade9dfdb5d65866f1914006e5ac3ad5ec8"
+    },
+    {
+      "path": "docs/prototypes/requirement-relation-audit-charter-2026-07-12.md",
+      "sha256": "9591ca7d325ef2a1b3cb833f7da18a754685b880d6d4bd1b8481763da3cfcb37"
+    },
+    {
+      "path": "docs/prototypes/verification-register-completeness-charter-2026-07-16.md",
+      "sha256": "c8d5b91a99d2122ff51bac11a8316d6a7f9fb5ad32161c85badf6af7a5493230"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "28b2699f782838357198eef11c6e7c2085225bcd4910008dd2aa266447bb8dde"
+    },
+    {
+      "path": "schemas/acceptance-review-bundle.schema.json",
+      "sha256": "4a4f1c821b77110cdd2fb44eef0a23b733fb3d62f048c6df1be8c2ae3a620834"
+    },
+    {
+      "path": "schemas/audit-result.schema.json",
+      "sha256": "8b28c78e9b2592aebec6e9d5f1b1be1c1f258f525600124d1b9d0df452cf1f72"
+    },
+    {
+      "path": "schemas/candidate-gap-review.schema.json",
+      "sha256": "92297b30e4b221284223deaab59ae502534592c8f0cb5f13266d284859c6c34a"
+    },
+    {
+      "path": "schemas/request-exploration-review.schema.json",
+      "sha256": "7dd972419a23eed4eba83227367b30c3fd7720ec4d73df2fa502f2a1068fe983"
+    },
+    {
+      "path": "skills/semantic-implementation/README.md",
+      "sha256": "1ad109798f538b1a3e40fdfcd49c214fcc083c6bfee7e0329f221bd5cde8f05b"
+    },
+    {
+      "path": "skills/semantic-implementation/SKILL.md",
+      "sha256": "aab5af3ac89025d08e7bad9553e8dfb6afda8077b0016d500a8682a2bdb7b11a"
+    },
+    {
+      "path": "skills/semantic-implementation/agents/openai.yaml",
+      "sha256": "f29f1fa4abee3f1b0e7054723f2d9cbf9b69a5c22e3bb2fea094e6bf0c3aa42b"
+    },
+    {
+      "path": "skills/semantic-implementation/references/audit-rubric.md",
+      "sha256": "ff7811d42775f02306de74dc9cd464cab82d210d0627a647db9f70de9419b436"
+    },
+    {
+      "path": "skills/semantic-implementation/references/mcp-contract.md",
+      "sha256": "473d8921a96d972394d3620065d41465c1a39445f530b60a30f4b46cb0ba3a13"
+    },
+    {
+      "path": "src/semantic_guard/__init__.py",
+      "sha256": "663479357f4d9c225e505a17cd403a1b682bc527a08dccfae1722918e849461b"
+    },
+    {
+      "path": "src/semantic_guard/acceptance_review.py",
+      "sha256": "519b869e94cde1e6536087e1a48e1d076829e97ccaa3052dd6f71259bf85c904"
+    },
+    {
+      "path": "src/semantic_guard/assertion_context.py",
+      "sha256": "81659e4de5a30cf5f6763125dac64e9a2c441a3d2d68ad12fa2def851f799167"
+    },
+    {
+      "path": "src/semantic_guard/audit_common.py",
+      "sha256": "0b0d9d527ccb37b4ef899803da7f24c2a21bb895b844a38238de54ff1e296c71"
+    },
+    {
+      "path": "src/semantic_guard/cli.py",
+      "sha256": "238c9b0d42df54e01800594dfaf3add05ccd908f7f9396131107c41905d9bed8"
+    },
+    {
+      "path": "src/semantic_guard/codex_exec_exploration.py",
+      "sha256": "2ec3b44afa48e9529a65c32f66e3a1d1c3c64f0b3e07402c7f098cd7de47c84a"
+    },
+    {
+      "path": "src/semantic_guard/codex_exec_review.py",
+      "sha256": "b04a332c604d2d530664fa30f481e6c9c9db0010d5c794bfe7f7f829d1f5eadc"
+    },
+    {
+      "path": "src/semantic_guard/conventions.py",
+      "sha256": "82b34c61f56241734e3544ece21054f541720ee19fee085df6c3e952f6c19ce8"
+    },
+    {
+      "path": "src/semantic_guard/core.py",
+      "sha256": "cb0cc45066d8722b4c5b832967f4cb6fde4b9c773e8ac59f823b99d91bd007d6"
+    },
+    {
+      "path": "src/semantic_guard/decision_state.py",
+      "sha256": "ca86eb24b501ea5b28eab34320421cd11f18c130498860f9837c717782236029"
+    },
+    {
+      "path": "src/semantic_guard/diff_audit.py",
+      "sha256": "90162dd94a6df974414308e8914f65dfe34bc313a685f8b15861a91f40128dec"
+    },
+    {
+      "path": "src/semantic_guard/doctor.py",
+      "sha256": "613a60a43be4eba51a02424e288dc555346cd3548d38344d921dc22c792941c7"
+    },
+    {
+      "path": "src/semantic_guard/document_audit.py",
+      "sha256": "a8c048b9b9ff50a68e242d038f54baf06bc05db419c6c8680ca9edb000fbbda5"
+    },
+    {
+      "path": "src/semantic_guard/escalation.py",
+      "sha256": "bc748eadb9e82b7cd1165fcc2dcb96fd09f422ad2141f1ca961c911fc7ac0cd7"
+    },
+    {
+      "path": "src/semantic_guard/evaluation.py",
+      "sha256": "053eb8e380b187c3cbfcf11b310735f7d3bd9d16f01c4e260d9dfdb1f3cd4130"
+    },
+    {
+      "path": "src/semantic_guard/exploration.py",
+      "sha256": "dc91f0ceebdf6ca9a81d858c8c270a2bdb2636b3fed008628015034fd701e9a1"
+    },
+    {
+      "path": "src/semantic_guard/exploration_jobs.py",
+      "sha256": "819abfd0a1a375f9708eefb1690cb31c2ba6999370e6e37e43595c5788811860"
+    },
+    {
+      "path": "src/semantic_guard/expression_precision.py",
+      "sha256": "b4eb2aabe5dc3a2acc49f52e06b975a23cda7964b2095886fe1bd23e90470416"
+    },
+    {
+      "path": "src/semantic_guard/expression_terms.py",
+      "sha256": "f9df483bd582d0d3eefae0c7b5d75253d3481b50758b55dd380a9da3916ed1ef"
+    },
+    {
+      "path": "src/semantic_guard/field_detection.py",
+      "sha256": "210b15e12dc2a4fa36d972e80a87f84f578901de363c063dd891ed5067915b09"
+    },
+    {
+      "path": "src/semantic_guard/finish_audit.py",
+      "sha256": "6359c3ae9c8f46100ac314c765915698806991633e6827b294f4e8597b40342c"
+    },
+    {
+      "path": "src/semantic_guard/japanese_morphology.py",
+      "sha256": "239a6931f5fe1ecd731b2f3c0af7cee42cc8dde203864159372b2f7a3fcecc82"
+    },
+    {
+      "path": "src/semantic_guard/llm_review.py",
+      "sha256": "b9004da6550f8d63d6240cbec7aca538095e82de11bb2324612bef85a810d42d"
+    },
+    {
+      "path": "src/semantic_guard/logic.py",
+      "sha256": "e0167d5fea414746c4a88b8b3b8894018b30df3bf4ff6440d88d1e729708b390"
+    },
+    {
+      "path": "src/semantic_guard/matching.py",
+      "sha256": "d13d0f2e1be5a268eb36bdc49b5d3bd9792edb0360ca345a93a99406eef037be"
+    },
+    {
+      "path": "src/semantic_guard/mcp_server.py",
+      "sha256": "ee1d6386873f7826ee6cbf7dc35b19e7a8035e842a5989640d4cbf89fc66c621"
+    },
+    {
+      "path": "src/semantic_guard/models.py",
+      "sha256": "a28bb629f4b8139c601bdd6e6fdbeb6d277dd2f3466f241c676985342af36987"
+    },
+    {
+      "path": "src/semantic_guard/plan_audit.py",
+      "sha256": "744968b63bf6ce23945c4a7b6b34cdcf722498772b1a8aec26f3dd8b2dba50bb"
+    },
+    {
+      "path": "src/semantic_guard/problem_signals.py",
+      "sha256": "c16b0626409d7275896b04dd3e020236a438b365f81e9ada082dc6386c2be5d4"
+    },
+    {
+      "path": "src/semantic_guard/request_audit.py",
+      "sha256": "64d624e80001a8e5cfbbd0c8c9d0ca37bd43aae627a4272de6172e11225bd757"
+    },
+    {
+      "path": "src/semantic_guard/request_exploration_review.py",
+      "sha256": "8ad7f88b260c9cae58372c050261941c5da005725e435f8023816fa77cfd28a8"
+    },
+    {
+      "path": "src/semantic_guard/request_findings.py",
+      "sha256": "f682df18e139e8133039e34de6bbb79d4876050fa68f483d8e5ef610b9d5f4f3"
+    },
+    {
+      "path": "src/semantic_guard/request_profiles.py",
+      "sha256": "0f7c7d6b552c54fbfc462cda3ab66dbae1d9a3ebaf932d5f7b33076c149b6322"
+    },
+    {
+      "path": "src/semantic_guard/request_signals.py",
+      "sha256": "f86a4345a1b0e8fb55741ccf6c309ed17feae0d20b430f66c4f5d0deaabe1dd6"
+    },
+    {
+      "path": "src/semantic_guard/requirement_relations.py",
+      "sha256": "8906bd29291897c4c3c32f57e6a8d81cc94d6f2da05a8662dbc80f1222085921"
+    },
+    {
+      "path": "src/semantic_guard/resources.py",
+      "sha256": "7a0755e756dbddb01a27a7e52e5c46a5b14bd4134f3b209b1721d18b0820f413"
+    },
+    {
+      "path": "src/semantic_guard/result_builder.py",
+      "sha256": "f784a73a1dfb935832b0f3d62365116343c827abc5a6ae14e4f972ac7f85d59f"
+    },
+    {
+      "path": "src/semantic_guard/review_jobs.py",
+      "sha256": "2cfd01a844449b92d1c27eeaac354275d1947ad683c3af1ed55dd34e266179ef"
+    },
+    {
+      "path": "src/semantic_guard/rule_mapping.py",
+      "sha256": "95a87757e570790773a1f3c99e8862b89a496663d1d80049d24f8b6c38f3b833"
+    },
+    {
+      "path": "src/semantic_guard/rules.py",
+      "sha256": "d797b391f5d3c79cc1f2029c6a606258e2240fe4545becc50b2d3b99574b0cf0"
+    },
+    {
+      "path": "src/semantic_guard/semantic_assertions.py",
+      "sha256": "54274c017cbef1ceb9d366cf8755ea800019b7d627d2c12f13a7a5a4b43b10e7"
+    },
+    {
+      "path": "src/semantic_guard/severity_profiles.py",
+      "sha256": "ccd89a0ea61bf2c04a9767ac0ba3a8e80a22d47ffd2d5b98a851468805c27b8b"
+    },
+    {
+      "path": "src/semantic_guard/target_understanding.py",
+      "sha256": "6aa20d2aefb8a551c6cb2a46f1ba6bce0f6177889fac27868178f021a4f35513"
+    },
+    {
+      "path": "src/semantic_guard/text_matching.py",
+      "sha256": "bfa2e7f456a73037e4a787d45416849102831abbe4a09a867746f28adc03e469"
+    },
+    {
+      "path": "src/semantic_guard/text_utils.py",
+      "sha256": "97d081a4e2dfc68a92648cea3838df2160d5fa56cbe17a05da2ed2fcd24d7ec9"
+    },
+    {
+      "path": "src/semantic_guard/traceability.py",
+      "sha256": "ea67cab81aea0a248ff0f100f8cc8ff521ad4c37781e7e339dea49cb64319077"
+    },
+    {
+      "path": "tests/field-corpus/corpus-2026-06-04.json",
+      "sha256": "b6e657423a1e74f9db64b9e1c82d1ffaf0dbe29c5fea40c7d4cea9231fe2c471"
+    },
+    {
+      "path": "tests/fixtures/conflicts/c01-bounded-whole-plan.expected.json",
+      "sha256": "96f6f0278ba988daee9065bf5f3c479520cb959f3809e06b49d28cac04c783da"
+    },
+    {
+      "path": "tests/fixtures/conflicts/c02-bounded-work-package-request.expected.json",
+      "sha256": "a969c896e3ea34a688f8596730fe7f843255651a7d1fa907ae9cb320e27cdc2d"
+    },
+    {
+      "path": "tests/fixtures/conflicts/c07-docs-only-evidence-diff.expected.json",
+      "sha256": "5b7c8338450567e3ec5229ab2b5b4960f533b4b134f6696aae81009d6dbab05a"
+    },
+    {
+      "path": "tests/fixtures/diffs/command-defaults.diff",
+      "sha256": "742160a17798d08b6c40f54d94d862d222ed6647c22a9a054ccd78866d99beab"
+    },
+    {
+      "path": "tests/fixtures/diffs/command-defaults.expected.json",
+      "sha256": "bbd1456a72b8619271bfd5518ea7f02e01e1ca05645aeedd0ab2963500858430"
+    },
+    {
+      "path": "tests/fixtures/diffs/complexity-growth.expected.json",
+      "sha256": "320a4a8cee65b1c7da28e7e36f07fd16cd4536022f3b9be35a359dc43175ee9a"
+    },
+    {
+      "path": "tests/fixtures/diffs/dependency-runtime-change.expected.json",
+      "sha256": "4336c84c0ba8c73b55544699ba3629a892e437181fdeb8043c70abc1fab3ecbf"
+    },
+    {
+      "path": "tests/fixtures/diffs/failure-handling-missing.expected.json",
+      "sha256": "2f9bf3c0ee244a747c81d3959cd6864164b5d5fa084c1f1bd5fa4d1c10f18e30"
+    },
+    {
+      "path": "tests/fixtures/diffs/field-test-command-no-contract.expected.json",
+      "sha256": "722cee3c5926a4974ed5d67c132fd60f2acfba16d87dd4860d80920ab9723ae6"
+    },
+    {
+      "path": "tests/fixtures/diffs/filename-content-overbreadth.expected.json",
+      "sha256": "aa5b56cd5c822e14bc830c5fcf7d5b0901f427b49cda3e2d7199b20dc2af2b39"
+    },
+    {
+      "path": "tests/fixtures/diffs/filename-scope-underspecified.expected.json",
+      "sha256": "1bef85e2fdec7b5d3e1414f3bc6779c7e46a952a7495b08a6ae98c3679018f20"
+    },
+    {
+      "path": "tests/fixtures/diffs/identity-boundary-change.expected.json",
+      "sha256": "8a6e1235ff74c8b4fe930c0672e73c1654c7ec151527057778e9ed956ebb211f"
+    },
+    {
+      "path": "tests/fixtures/diffs/operational-observability-missing.expected.json",
+      "sha256": "a8a8af07907dc5cb4b5463d58528f4dbbc5b86756958fa19c20c726168a4794d"
+    },
+    {
+      "path": "tests/fixtures/diffs/public-contract-change.expected.json",
+      "sha256": "86d2f7acd359465983c491b1b52ed88978d4745633c3e7cbb89fe262bbbb9c2d"
+    },
+    {
+      "path": "tests/fixtures/diffs/source-without-tests.expected.json",
+      "sha256": "64c1dd01d9f226b4fa86e504386f4588a4135ff0412ba6c277ece2224c2266c4"
+    },
+    {
+      "path": "tests/fixtures/diffs/subprocess-security.diff",
+      "sha256": "49bebb433aeb43b7bc95488a8d72643c0616426fd4eb35be62b9f15aedbaa13c"
+    },
+    {
+      "path": "tests/fixtures/diffs/subprocess-security.expected.json",
+      "sha256": "c27faa1ba7b7f80bd4c2ecf2eb2d378f02d6b4eabbfe6be9f24f0b4aa8122a31"
+    },
+    {
+      "path": "tests/fixtures/documents/overclaim.expected.json",
+      "sha256": "a0714dbb5fa56ff1c154df914294731b565d07b2ad9161f8ff710e61ef7afa86"
+    },
+    {
+      "path": "tests/fixtures/documents/overclaim.md",
+      "sha256": "391ee9c3f61fe8868105e3238f02d72bd85b454dd784d663953766ef174ffe02"
+    },
+    {
+      "path": "tests/fixtures/documents/readme-good.expected.json",
+      "sha256": "7b0cba371e08b768752d7365ff829a9c8fcb6d0dc6f83b7b53632bc819459b99"
+    },
+    {
+      "path": "tests/fixtures/documents/readme-good.md",
+      "sha256": "4eaa5d05ca65957d128415226c70969ea7093263115ba4e28ed176f7cf1e8dd4"
+    },
+    {
+      "path": "tests/fixtures/finish/no-evidence.expected.json",
+      "sha256": "fcc415c1849377ec5515486609e1cd4a61227b7f9e036e0e0e5f104cce885ee0"
+    },
+    {
+      "path": "tests/fixtures/finish/no-evidence.md",
+      "sha256": "59d9156b8494333d428fd517c5bc17f2d1af43720acfb4666bbcea45547887f8"
+    },
+    {
+      "path": "tests/fixtures/finish/public-behavior-good.expected.json",
+      "sha256": "95f35a20fdeb057fc1ba7ace32e6f75f56694b82dc3e7548ba584e00539d7aa8"
+    },
+    {
+      "path": "tests/fixtures/finish/public-behavior-missing.expected.json",
+      "sha256": "ccaa9f4dbc9b91c87833973b82da4d27b8bbe4a6ec95cff7906ba38b1ec4eaba"
+    },
+    {
+      "path": "tests/fixtures/plans/autonomy-permission-question-good.expected.json",
+      "sha256": "05661bea1540755d8f8c7c1f8ae7fe5089f10500b8bba9d230ac9f39f92fe4d7"
+    },
+    {
+      "path": "tests/fixtures/plans/autonomy-question-necessity-missing.expected.json",
+      "sha256": "ba39101600312330239593a6b8742814c665f60a57a3ae7fc2999d1f718833d0"
+    },
+    {
+      "path": "tests/fixtures/plans/field-rollback-missing.expected.json",
+      "sha256": "de56c61c2024d86afd85de1b7fa630ec22201d489d6c7948f42aae56da90fc71"
+    },
+    {
+      "path": "tests/fixtures/plans/good.expected.json",
+      "sha256": "0b55076b5d7a5b008130d7ed7e29ec70df7ad353751b541962de120a6b0ac275"
+    },
+    {
+      "path": "tests/fixtures/plans/good.md",
+      "sha256": "0b37585be62368cc6af058c01de49c8db602694c12a2c53fd874fd852aa14b01"
+    },
+    {
+      "path": "tests/fixtures/plans/hazard-transfer-good.expected.json",
+      "sha256": "d6ea7d5f95827c5e53d7a3110d9a288b0a803de2818ec05322ba974beec6ef26"
+    },
+    {
+      "path": "tests/fixtures/plans/hazard-transfer-missing.expected.json",
+      "sha256": "87859383737af251c5a6d24baf5fcb3156f351b9e043e68d54abe6aea56a42fd"
+    },
+    {
+      "path": "tests/fixtures/plans/idempotency-missing.expected.json",
+      "sha256": "05245d4185b994751e59b60c57742617615fa9c4ef864d4d9eec6b87966f57f7"
+    },
+    {
+      "path": "tests/fixtures/plans/minimality-justification-missing.expected.json",
+      "sha256": "26677a589e609b4c7577b68e3ef16f8d681112563116fb5d81b4bd501c777c28"
+    },
+    {
+      "path": "tests/fixtures/plans/problem-fit-missing.expected.json",
+      "sha256": "6245ecb2edfdf66b36d549d715a92d0ffb5eb00c161a593abd1044e07c3395cf"
+    },
+    {
+      "path": "tests/fixtures/plans/progress-control-missing.expected.json",
+      "sha256": "ef189e81e762b538f19a732137c75144e6d8a91e14340b2ff65423f55b829d4d"
+    },
+    {
+      "path": "tests/fixtures/plans/release-good.expected.json",
+      "sha256": "cbc86ea8dcc29c36abe6910236150a9a67a7c8a0ecefd103a9557c2cd63beb16"
+    },
+    {
+      "path": "tests/fixtures/plans/release-provenance-missing.expected.json",
+      "sha256": "5d1751bc87c7d971f15f3fb9de5f468842fefceb69a96ae8c820fce29685333c"
+    },
+    {
+      "path": "tests/fixtures/plans/release-weak.expected.json",
+      "sha256": "01828aa09e83660a56a6d69263117a740cae7fa5903baa7136d971b65787390a"
+    },
+    {
+      "path": "tests/fixtures/plans/rollback-missing.expected.json",
+      "sha256": "ceb8a36286e7dbb9bf038883842493b5fbd41a06c99c8d8f25f4d960944de2fe"
+    },
+    {
+      "path": "tests/fixtures/plans/validation-owner-missing.expected.json",
+      "sha256": "4a199bdf26eb87f7e045304b0b8bfb94dc08df928e1ca4a9d4c81c5ced01a168"
+    },
+    {
+      "path": "tests/fixtures/requests/achievement-criteria-missing.expected.json",
+      "sha256": "d3294f9ed4662229085b35313ad904ee88772e9d37d604a83a5a0734a7dc53dc"
+    },
+    {
+      "path": "tests/fixtures/requests/ambiguous.expected.json",
+      "sha256": "a04b7cfcac2d02ca58e2ed76326d5ad39a3d7b04b3f56370709656623e8c8fb4"
+    },
+    {
+      "path": "tests/fixtures/requests/ambiguous.md",
+      "sha256": "fb643d5ba7c621afa55947a289a20592c82fcd75d07f2f646bfd305904cbf516"
+    },
+    {
+      "path": "tests/fixtures/requests/detailed-search.expected.json",
+      "sha256": "17e6869d3148368402028755d3a8199361a64e35e4ecb4783297634ba5725075"
+    },
+    {
+      "path": "tests/fixtures/requests/evidence-artifact-missing.expected.json",
+      "sha256": "722601790068434967bd6212224016e069d2163aca86bb0a757710e4983f1699"
+    },
+    {
+      "path": "tests/fixtures/requests/field-priority-unprioritized.expected.json",
+      "sha256": "68789226eb21f61e07590cc76e718b59ab610b526f7161cbb86f612d9ee21a5c"
+    },
+    {
+      "path": "tests/fixtures/requests/interface-contract-missing.expected.json",
+      "sha256": "69e2f0ae9754ecbb44e00d1122a7025cf8c100f2cc1bdee9f6b158b9e74df79f"
+    },
+    {
+      "path": "tests/fixtures/requests/negated-assurance-fields.expected.json",
+      "sha256": "90c45c630c16f2f06f8bfe740ead36f274717d65986ec7774b9b4e992b56e928"
+    },
+    {
+      "path": "tests/fixtures/requests/observable-behavior-missing.expected.json",
+      "sha256": "273256c4e7502667e948caeae3f500ac6e94c0ef1259a1b67963025d4f4afdd4"
+    },
+    {
+      "path": "tests/fixtures/requests/priority-missing.expected.json",
+      "sha256": "169b301a3da9aa7eaa02df9f6217e56c59d5b9ad133338249746f3a3c4198591"
+    },
+    {
+      "path": "tests/fixtures/requests/problem-mechanism-fit-good.expected.json",
+      "sha256": "62c4076a74416c0c7734226b1a7b23bcd7724608a330770444760883bd6955c2"
+    },
+    {
+      "path": "tests/fixtures/requests/problem-mechanism-fit-missing.expected.json",
+      "sha256": "0699596aa98217fb62b47d86c3588a6de707a02e9ebde52c252c9b225d5e7a48"
+    },
+    {
+      "path": "tests/fixtures/requests/rejection-condition-missing.expected.json",
+      "sha256": "7c216836b455ae1b023b7ab7cab8ea0bf9cc9f722a949fec18dc7278d0e7c24a"
+    },
+    {
+      "path": "tests/fixtures/requests/scenario-context-missing.expected.json",
+      "sha256": "3cc93e4e91d9a49e88e76ff9d9ce99bc220a782c6b020a698410ca3af12725ff"
+    },
+    {
+      "path": "tests/fixtures/requests/stakeholder-source-missing.expected.json",
+      "sha256": "25d214a6224acee1dd7452035285a8fea7921bb5189f255e22c0194aa182624d"
+    },
+    {
+      "path": "tests/fixtures/requests/structured-negated-assurance-fields.expected.json",
+      "sha256": "1719b44fd896e7a443fcfa4166b90bcb6bcfcd9143087fbe0290d90a48e25e60"
+    },
+    {
+      "path": "tests/fixtures/requests/uncertainty-classified-good.expected.json",
+      "sha256": "1fc107e19ebc0db7f6fae97ac58d2406c4973c6fb4d6a1f75bf922cc4679a9ae"
+    },
+    {
+      "path": "tests/fixtures/requests/uncertainty-unclassified.expected.json",
+      "sha256": "e344b1b475e9a67fcd9ce25d0d2a1166adb0c30bb1988c8ed106206b69c7f675"
+    },
+    {
+      "path": "tests/fixtures/requests/verification-method-weak.expected.json",
+      "sha256": "ce3992926f36df34d27e29e01d38ec3c713d89b7fcd053b008c09d4b2e223bbd"
+    },
+    {
+      "path": "tests/fixtures/requests/verification-target-mismatch.expected.json",
+      "sha256": "f0400ac899fda64fd3fdb200efda4053f503c87daf5fcfa8ae7c82ed4f91aa08"
+    },
+    {
+      "path": "tests/test_acceptance_review.py",
+      "sha256": "6ab73067ff5fea6c8ccef9ed8465459320faa359d579913cae1a70373bcc1480"
+    },
+    {
+      "path": "tests/test_assertion_context.py",
+      "sha256": "757a5fbddf6eaa2683332c08c0ad39fa0f4286a616ad0c613ce693068f3dafeb"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "sha256": "0b2cf954d94db2ee93a76a41090a3db3c136a26ac12a7b3071dfb6682bb3412b"
+    },
+    {
+      "path": "tests/test_codex_exec_exploration.py",
+      "sha256": "40a0190c6fbabaa03257fe5d9bb38987be9f11f957624e0c9d5c88d72360a347"
+    },
+    {
+      "path": "tests/test_codex_exec_review.py",
+      "sha256": "a0f85fd497d1e9e15239383d669bb19e11a5d916d141e0538a522d0615dad30d"
+    },
+    {
+      "path": "tests/test_conventions.py",
+      "sha256": "5c64dd0d6fbb7e4c62a42dceb7eeeb4bbe41d2be0083990a103462e868954c3c"
+    },
+    {
+      "path": "tests/test_core.py",
+      "sha256": "92a2e360fd8733fd54b0b927a3be88a67708bd1f3c99ef91a7839a7fcb9a3029"
+    },
+    {
+      "path": "tests/test_doctor.py",
+      "sha256": "a7983d5b210c7663b18b4d2256b53b58b3e4416c443741a9cff6a17af863a4d1"
+    },
+    {
+      "path": "tests/test_escalation.py",
+      "sha256": "65ce71820bc881ef6777ce07bdb30357c84387aed42b7180c70af7bb0c16ef0b"
+    },
+    {
+      "path": "tests/test_evaluation.py",
+      "sha256": "da50a7665c16505ce2fb418980c5f768ec847798a289087cfb3c49173a72c30c"
+    },
+    {
+      "path": "tests/test_exploration_jobs.py",
+      "sha256": "0b6306c50a3badcb1a629a866d577acd3a9804fb944d124555285301ba0fd1b6"
+    },
+    {
+      "path": "tests/test_field_corpus.py",
+      "sha256": "802f01ea08f4dcf5922c79ff25f90d4e939671d289b8ad7d53ff7acb3013a0ea"
+    },
+    {
+      "path": "tests/test_fixtures.py",
+      "sha256": "fac74bcde5e94df4e933fa8c746bb73acfc5cabe76f93e7938e6739bf75ff1eb"
+    },
+    {
+      "path": "tests/test_japanese_morphology.py",
+      "sha256": "0a8af0c4c45a0e35884d507992650035818a38ded457058331c4beeec304b905"
+    },
+    {
+      "path": "tests/test_llm_review.py",
+      "sha256": "79b049a449f286fed6cc48f630a87607621e9f7873430906afd118e0b5646da1"
+    },
+    {
+      "path": "tests/test_logic.py",
+      "sha256": "f02e556b64661404738d4dfc47ac0640a690ad64e6e375c06cbbdb4d8d21246a"
+    },
+    {
+      "path": "tests/test_mcp_tools.py",
+      "sha256": "4ac05904cd574164554479e944b267412b12693162385a25912c345589e8fbcb"
+    },
+    {
+      "path": "tests/test_request_exploration_review.py",
+      "sha256": "5fa0ed0a03d5d168a0ccdd9325c52550282f145d1d620f3514d12d14b9c35f0f"
+    },
+    {
+      "path": "tests/test_requirement_relations.py",
+      "sha256": "8a269eb1edf486e33af584e56fc1299337b5992a7857d67f692cb9e6be889ca8"
+    },
+    {
+      "path": "tests/test_review_jobs.py",
+      "sha256": "6d3a6705a1f42673a898d27d58865b274ddafcd32f359aa8b84e60f3413cc2ea"
+    },
+    {
+      "path": "tests/test_rules.py",
+      "sha256": "5910f664ec13438c49cca2b789be25c4c08dd28bd9d58c3efc0352e9acfe8ed8"
+    },
+    {
+      "path": "tests/test_semantic_assertions.py",
+      "sha256": "1f4eb6f147573785d463853ca7dd195eaf40f7647d54b01607eea2ce53b91c5d"
+    },
+    {
+      "path": "tests/test_severity_profiles.py",
+      "sha256": "e2dac21999d8c9d25425dd2ec2b6a475baf6ebb32bc1ea5443e69704752ffefd"
+    },
+    {
+      "path": "tests/test_traceability.py",
+      "sha256": "dd484c1f97071ae3e0d3e79083d546e91e314a7b2783a86d2b658eb2ff54b672"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "7257cb72f73e08c37ad4d3ad220ebc16bc11809ab4059316a3263fb947ad7de7"
+    },
+    {
+      "path": "vnext/scripts/legacy_request_adapter.py",
+      "sha256": "3263d96efd368ecd2c57673e3c6553e3e442576e614b286e9c9a5b8388003819"
+    }
+  ],
+  "verification_reference": "Verification observations are recorded separately under vnext/validation; the capture tool does not claim commands it did not execute.",
+  "known_test_failures": [
+    {
+      "test": "test_aligned_public_evidence_uses_the_unique_verifies_pair",
+      "observed": "verification excerpt included the full method sentence instead of the expected bounded terms"
+    },
+    {
+      "test": "test_asserted_verification_dimension_mismatch_is_derived_and_not_satisfied",
+      "observed": "verification mismatch status was candidate instead of derived"
+    }
+  ],
+  "known_semantic_failures": [
+    "top-level pass can coexist with unknown relation applicability and open-text coverage",
+    "quoted, reported, unadopted, or negated structured values can be treated as satisfied",
+    "the unresolved decision is global rather than obligation-scoped",
+    "morphology, dependency, and LLM stages do not re-evaluate obligation outcomes",
+    "provider output cannot release or apply a hold through a versioned policy"
+  ],
+  "interpretation": "This record is a migration observation and drift detector, not a correctness oracle, provenance signature, or release approval."
+}

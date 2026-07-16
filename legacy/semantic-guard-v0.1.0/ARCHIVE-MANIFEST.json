@@ -1,0 +1,38 @@
+{
+  "schema_version": "semantic-guard-archive-manifest/v0",
+  "archive_id": "archive.semantic-guard.v0.1.0",
+  "version": "0.1.0",
+  "archived_at": "2026-07-17",
+  "git_anchor": {
+    "tag": "v0.1.0",
+    "commit": "e0a3dd39f17385b66f6361ade25eb44bed6e1ab3",
+    "tree_sha": "16b943a89d14fa7ec8e76f2707aa9a402184cb18"
+  },
+  "snapshot": {
+    "file_count": 155,
+    "digest_algorithm": "sha256-path-content-manifest/v0",
+    "digest": "e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5",
+    "excludes": [
+      "ARCHIVE-MANIFEST.json"
+    ],
+    "record_format": "sha256 <file_sha256> <size_bytes> <utf8_relative_path>\\n",
+    "ordering": "utf8_relative_path_bytes_ascending"
+  },
+  "authority": {
+    "archive_status": "frozen_predecessor_source",
+    "allowed_use": [
+      "historical_inspection",
+      "explicit_compatibility_execution",
+      "controlled_shadow_observation_input"
+    ],
+    "runtime_authority": "none",
+    "policy_authority": "none",
+    "operational_trust_root": false
+  },
+  "non_claims": [
+    "The archive is not the canonical v1 implementation.",
+    "The archive is not a correctness oracle for v1.",
+    "The repository snapshot alone is not the operator-owned legacy execution trust root required by shadow comparison.",
+    "Digest agreement does not establish field validity, external authenticity, security certification, operational qualification, or human acceptance."
+  ]
+}

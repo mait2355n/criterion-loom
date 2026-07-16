@@ -1,97 +1,62 @@
-# Public Snapshot
+# Public Snapshot: semantic-guard 1.0.0
 
-## Purpose
+Snapshot date: 2026-07-17
 
-This file records what is included in the GitHub-oriented publication snapshot and what is intentionally excluded from the local working checkout.
+## Identity
 
-## Audience And Use
+- Distribution: `semantic-guard`
+- Version: `1.0.0`
+- CLI: `semantic-guard`
+- MCP server: `semantic-guard-mcp`
+- Python package: `semantic_guard`
+- Canonical source: repository root
+- Frozen predecessor source: `legacy/semantic-guard-v0.1.0/`
 
-Use this file when checking whether the public tree contains only publishable package files, tests, fixtures, schemas, skills, and documentation. It is for maintainers preparing the repository for GitHub.
+## Public execution surface
 
-## Snapshot Contract
+CLI commands:
 
-The snapshot should be runnable from its own root and should not depend on the
-local working checkout. Local-only paths, backup directories, generated caches,
-private work notes, and unredacted private inputs stay out. Selected dated
-design, audit, and acceptance records may remain as historical evidence only
-after hygiene review; they are not current guidance or public-contract sources.
+- `audit-requirement`
+- `shadow-compare`
+- `schema`
 
-## Status And Scope
+MCP tools:
 
-The initial source snapshot was prepared on 2026-06-04. Publication hygiene was
-revised on 2026-07-16. This is a GitHub repository source tree, not a package
-release guarantee or a production readiness claim.
+- `audit_requirement_relations_tool`
+- `shadow_compare_legacy_tool`
+- `semantic_guard_schema_tool`
 
-## Usage
+The schema tool exposes 23 closed contract schemas. Schema availability does not assert that every sidecar has a public end-to-end workflow.
 
-From this directory, verify the snapshot with:
+## Snapshot contents
 
-```sh
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures
-uv run --python 3.13 --project . semantic-guard doctor
-uv run --python 3.13 --project . python -m unittest discover -s tests -v
-```
+- Canonical audit kernel under `src/semantic_guard/`
+- Closed schemas under `schemas/`
+- Constitution under `constitution/`
+- Unit and conformance tests under `tests/`
+- Versioned verification source and generated projection under `validation/`
+- Package verification and validation scripts under `scripts/`
+- Repository companion Codex skill under `skills/semantic-implementation/`; it is excluded from wheel and sdist and is not installed automatically
+- Frozen 0.1.0 source under `legacy/semantic-guard-v0.1.0/`
+- Publication, migration, operation, security, support, and contribution documents
+- GitHub Actions checks for the canonical and frozen legacy surfaces
 
-## Snapshot Fields
+## Evidence status
 
-This file records source, included files, excluded files, and verification commands. The important review fields are `Source`, `Included`, `Excluded`, and `Verification Intent`.
+The repository contains dated historical records created before canonical promotion. They remain useful observations but do not, by themselves, bind the 1.0.0 source or wheel.
 
-## Source
+Release evidence must identify the exact commit, wheel digest, commands, environment, and outcomes generated after canonicalization. CI success establishes local contract and packaging checks only.
 
-- Source checkout: local working checkout
-- Snapshot path: this directory
+## Explicit limits
 
-## Included
+This snapshot does not establish:
 
-- package metadata: `.gitignore`, `LICENSE`, `README.md`, `pyproject.toml`,
-  `uv.lock`
-- repository support: `.github/`, `CONTRIBUTING.md`, `SECURITY.md`,
-  `CHANGELOG.md`
-- implementation: `src/`
-- schemas: `schemas/`
-- tests and fixtures: `tests/`
-- companion Codex skill: `skills/semantic-implementation/`
-- public-facing docs:
-  - `README.ja.md`
-  - `docs/README.md`
-  - `docs/naming.md`
-  - `docs/ja/README.md`
-  - `docs/ja/naming.md`
-  - `docs/ja/quickstart.md`
-  - `docs/ja/company-evidence.md`
-  - `docs/public-comparison-2026-06-02.md`
-  - `docs/public-comparison-2026-06-02.ja.md`
-  - `docs/llm-reviewer.md`
-  - `docs/acceptance-review-bundle.md`
-  - `docs/rule-model.md`
-  - `docs/fixture-record-design.md`
-  - `docs/field-corpus-2026-06-04.md`
-  - `docs/calibration-report-2026-06-04.md`
-  - `docs/calibration-report-2026-06-05.md`
-  - `docs/release/github-publication-checklist.md`
-- selected dated design, dogfood, audit, and acceptance records under `docs/`
-  that passed the same local-path and sensitive-material review. These files
-  preserve implementation history and do not override the README, schemas, or
-  current public-facing documents.
+- statistical accuracy or value on practical-domain documents;
+- public workflow coverage for every development lifecycle phase;
+- authenticity of external AI-agent actions or identities;
+- human adoption of candidate rule packs or lifecycle profiles;
+- security certification or operational qualification;
+- operational default cutover or irreversible predecessor retirement;
+- final human acceptance.
 
-## Excluded
-
-- `.venv/`
-- `.backups/`
-- `__pycache__/` and `*.pyc`
-- private or machine-specific work records
-- unredacted local inputs and acceptance material
-- generated build, test, or reviewer output that is not selected evidence
-
-## Verification Intent
-
-Verify this snapshot from its own root, not from the working checkout:
-
-```sh
-uv run --python 3.13 --project . semantic-guard --help
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures --include-passed
-uv run --python 3.13 --project . semantic-guard doctor
-uv run --python 3.13 --project . semantic-guard audit-result-schema
-uv run --python 3.13 --project . semantic-guard rule-detector-map
-uv run --python 3.13 --project . python -m unittest discover -s tests -v
-```
+The canonical-promotion decision is recorded in `docs/canonical-promotion-decision.md`. Verification findings and remaining closure conditions are recorded in `docs/audits/canonicalization-audit-v1.0.0-2026-07-17.md`.

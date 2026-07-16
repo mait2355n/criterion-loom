@@ -5,15 +5,20 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  test:
-    name: Python ${{ matrix.python-version }}
+  v1-contract:
+    name: v1 contract / Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.13"]
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -26,14 +31,123 @@ jobs:
       - name: Install uv
         run: python -m pip install --upgrade pip uv
 
-      - name: Compile Python files
-        run: uv run --python ${{ matrix.python-version }} --project . python -m compileall src/semantic_guard tests
+      - name: Verify lockfile and environment
+        run: |
+          uv lock --check
+          uv sync --locked --python ${{ matrix.python-version }}
 
-      - name: Run unit tests
-        run: uv run --python ${{ matrix.python-version }} --project . python -m unittest discover -s tests -v
+      - name: Compile canonical source and tests
+        run: uv run --locked python -m compileall -q src/semantic_guard tests scripts
 
-      - name: Evaluate fixtures
-        run: uv run --python ${{ matrix.python-version }} --project . semantic-guard evaluate-fixtures
+      - name: Run full canonical test suite
+        run: uv run --locked python -m unittest discover -s tests -v
 
-      - name: Run doctor
-        run: uv run --python ${{ matrix.python-version }} --project . semantic-guard doctor
+      - name: Validate verification source
+        run: uv run --locked python scripts/validate_verification_source.py
+
+      - name: Check generated verification projection
+        run: uv run --locked python scripts/render_verification_projection.py --check
+
+      - name: Validate engineering rule pack
+        run: uv run --locked python scripts/validate_engineering_rule_pack.py
+
+      - name: Smoke canonical CLI
+        run: |
+          uv run --locked semantic-guard --help
+          uv run --locked semantic-guard schema audit-result > /tmp/semantic-guard-audit-result.schema.json
+          uv run --locked semantic-guard audit-requirement --text "The system shall retain the audit result."
+
+  legacy-smoke:
+    name: frozen 0.1.0 smoke
+    runs-on: ubuntu-latest
+    env:
+      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/semantic-guard-legacy-v0.1.0
+    defaults:
+      run:
+        working-directory: legacy/semantic-guard-v0.1.0
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: python -m pip install --upgrade pip uv
+
+      - name: Sync frozen legacy environment
+        run: uv sync --locked --python 3.13
+
+      - name: Run bounded legacy smoke tests
+        run: uv run --locked python -m unittest tests.test_core tests.test_cli -v
+
+      - name: Smoke explicit legacy CLI
+        run: |
+          uv run --locked semantic-guard --help
+          uv run --locked semantic-guard audit-request --text "利用者: 開発者。目的: 監査結果を保存する。受入基準: JSON が出力される。"
+
+  package:
+    name: wheel and installed public surface
+    runs-on: ubuntu-latest
+    needs: [v1-contract, legacy-smoke]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: python -m pip install --upgrade pip uv
+
+      - name: Build canonical wheel and source distribution
+        run: |
+          uv lock --check
+          uv build --out-dir dist
+
+      - name: Verify packaged contracts
+        run: |
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0-*.whl' -print -quit)"
+          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0.tar.gz' -print -quit)"
+          test -n "$WHEEL"
+          test -n "$SDIST"
+          uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"
+
+      - name: Verify installed CLI and MCP inventory
+        run: |
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0-*.whl' -print -quit)"
+          VENV="$RUNNER_TEMP/semantic-guard-installed"
+          python -m venv "$VENV"
+          "$VENV/bin/python" -m pip install --upgrade pip
+          "$VENV/bin/python" -m pip install "$WHEEL"
+          "$VENV/bin/semantic-guard" --help
+          "$VENV/bin/semantic-guard" schema audit-result > "$RUNNER_TEMP/audit-result.schema.json"
+          test -x "$VENV/bin/semantic-guard-mcp"
+          "$VENV/bin/python" - <<'PY'
+          import asyncio
+          from semantic_guard.mcp_server import mcp
+
+          expected = {
+              "audit_requirement_relations_tool",
+              "shadow_compare_legacy_tool",
+              "semantic_guard_schema_tool",
+          }
+          actual = {tool.name for tool in asyncio.run(mcp.list_tools())}
+          if actual != expected:
+              raise SystemExit(f"installed MCP inventory mismatch: {sorted(actual)}")
+          PY
+
+      - name: Upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: semantic-guard-1.0.0-distributions
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error

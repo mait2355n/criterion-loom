@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/evidence-validity-policy.schema.json",
+  "title": "semantic-guard v1 evidence validity policy",
+  "description": "Versioned policy for bounded evidence lifetime, identity-change invalidation, and requalification requirements. Adoption is a human decision external to state assessment.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "policy_version",
+    "adoption_state",
+    "human_decision_ref",
+    "clock_requirement",
+    "evidence_kind_rules",
+    "change_invalidation",
+    "policy_basis_digest",
+    "policy_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "evidence-validity-policy/v2"},
+    "policy_id": {"$ref": "#/$defs/stable_id"},
+    "policy_version": {"type": "string", "minLength": 1},
+    "adoption_state": {"enum": ["pending", "adopted", "retired"]},
+    "human_decision_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/human_decision_ref"}
+      ]
+    },
+    "clock_requirement": {
+      "type": "object",
+      "required": ["trusted_time_required", "untrusted_time_result"],
+      "properties": {
+        "trusted_time_required": {"const": true},
+        "untrusted_time_result": {"enum": ["stale", "unbound"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_kind_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "evidence_kind",
+          "max_age_seconds",
+          "accepted_trust_classes",
+          "requalification_evidence_kinds",
+          "claim_ceiling"
+        ],
+        "properties": {
+          "evidence_kind": {"$ref": "#/$defs/evidence_kind"},
+          "max_age_seconds": {"type": "integer", "minimum": 1},
+          "accepted_trust_classes": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/trust_class"}
+          },
+          "requalification_evidence_kinds": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/evidence_kind"}
+          },
+          "claim_ceiling": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/claim_ceiling"}
+          }
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "change_invalidation": {
+      "type": "object",
+      "required": [
+        "subject_digest_change",
+        "environment_digest_change",
+        "tool_digest_change",
+        "profile_digest_change",
+        "rule_digest_change"
+      ],
+      "properties": {
+        "subject_digest_change": {"$ref": "#/$defs/change_rule"},
+        "environment_digest_change": {"$ref": "#/$defs/change_rule"},
+        "tool_digest_change": {"$ref": "#/$defs/change_rule"},
+        "profile_digest_change": {"$ref": "#/$defs/change_rule"},
+        "rule_digest_change": {"$ref": "#/$defs/change_rule"}
+      },
+      "unevaluatedProperties": false
+    },
+    "policy_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+    "policy_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_kind": {
+      "enum": [
+        "test_execution",
+        "filesystem_observation",
+        "tool_output",
+        "signed_attestation",
+        "independent_review",
+        "human_testimony",
+        "model_output",
+        "other"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "self_reported",
+        "locally_observed",
+        "tool_reported",
+        "independently_observed",
+        "signed",
+        "formally_verified",
+        "unknown"
+      ]
+    },
+    "human_decision_ref": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "target_id",
+        "target_version",
+        "target_basis_digest",
+        "status",
+        "locator",
+        "content_digest",
+        "decided_by",
+        "decision_maker_identity",
+        "decision_maker_kind",
+        "external_to_semantic_guard",
+        "decided_at"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "decision_kind": {"const": "adopt_evidence_validity_policy"},
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_version": {"type": "string", "minLength": 1},
+        "target_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "status": {"const": "accepted"},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "decided_by": {"$ref": "#/$defs/stable_id"},
+        "decision_maker_identity": {"$ref": "#/$defs/identity_binding"},
+        "decision_maker_kind": {"const": "human"},
+        "external_to_semantic_guard": {"const": true},
+        "decided_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    },
+    "axis_name": {
+      "enum": ["implementation", "verification", "validation", "assurance"]
+    },
+    "axis_value": {
+      "enum": [
+        "missing", "partial", "implemented",
+        "not_run", "passed", "failed", "invalid",
+        "not_evaluated", "supported_in_context", "inconclusive", "refuted_in_context",
+        "unbound", "undetermined", "satisfied", "refuted"
+      ]
+    },
+    "claim_ceiling": {
+      "type": "object",
+      "required": ["axis", "allowed_values"],
+      "properties": {
+        "axis": {"$ref": "#/$defs/axis_name"},
+        "allowed_values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/axis_value"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "change_rule": {
+      "type": "object",
+      "required": [
+        "invalidates",
+        "freshness_after_change",
+        "requalification_evidence_kinds"
+      ],
+      "properties": {
+        "invalidates": {"const": true},
+        "freshness_after_change": {"enum": ["stale", "unbound"]},
+        "requalification_evidence_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/evidence_kind"}
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"adoption_state": {"const": "adopted"}},
+        "required": ["adoption_state"]
+      },
+      "then": {
+        "properties": {
+          "human_decision_ref": {"$ref": "#/$defs/human_decision_ref"}
+        }
+      },
+      "else": {
+        "properties": {"human_decision_ref": {"type": "null"}}
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

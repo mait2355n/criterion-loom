@@ -1,0 +1,1125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/secure-operation.schema.json",
+  "title": "semantic-guard v1 declared secure-operation consistency material",
+  "description": "Two exclusive internal-consistency paths over supplied declarations: a profile claimed to have an external human decision, or claimed local synthetic nonapplicability. Version 1 has no external signature, identity, clock, inventory, or evidence verifier and therefore exposes only weak declared_*_internally_consistent statuses plus explicit unproved claims. It never adopts policy, proves classification truth, sends data, issues credentials, decides incidents, accepts risk, or makes final human acceptance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "assessment_version",
+    "path",
+    "assessed_at",
+    "time_trust",
+    "claimed_environment",
+    "scope_manifests",
+    "scope_digest",
+    "evidence_observations",
+    "human_decision_records",
+    "unresolved_scope",
+    "path_contract",
+    "review_basis_digest",
+    "independent_review_record",
+    "result",
+    "independent_open_dimensions",
+    "authority_boundary",
+    "limitations",
+    "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "secure-operation/v1"},
+    "assessment_id": {"$ref": "#/$defs/stableId"},
+    "assessment_version": {"$ref": "#/$defs/nonEmptyString"},
+    "path": {"enum": ["adopted_profile", "verified_nonapplicability"]},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "time_trust": {"enum": ["trusted", "untrusted"]},
+    "claimed_environment": {"enum": ["local_fixture", "development", "production"]},
+    "scope_manifests": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/scopeManifest"}
+    },
+    "scope_digest": {"$ref": "#/$defs/digest"},
+    "evidence_observations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/evidenceObservation"}
+    },
+    "human_decision_records": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": {"$ref": "#/$defs/humanDecision"}
+    },
+    "unresolved_scope": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/unresolvedScope"}
+    },
+    "path_contract": {"$ref": "#/$defs/pathContract"},
+    "review_basis_digest": {"$ref": "#/$defs/digest"},
+    "independent_review_record": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/independentReview"}
+      ]
+    },
+    "result": {"$ref": "#/$defs/result"},
+    "independent_open_dimensions": {"$ref": "#/$defs/openDimensions"},
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "assessment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 8192},
+    "idStrings": {
+      "type": "array",
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stableId"}
+    },
+    "nonEmptyIdStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/stableId"}
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "version", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "dataClass": {
+      "enum": ["synthetic", "public", "internal", "confidential", "personal", "secret"]
+    },
+    "scopeAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data_classes",
+        "source_kind",
+        "real_material",
+        "execution_location",
+        "external_provider",
+        "durable",
+        "persistent_log",
+        "persistent_artifact",
+        "privileged",
+        "credential_present"
+      ],
+      "properties": {
+        "data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "source_kind": {
+          "enum": ["synthetic", "local_fixture", "public_material", "operational_material", "not_applicable"]
+        },
+        "real_material": {"type": "boolean"},
+        "execution_location": {"enum": ["local", "external"]},
+        "external_provider": {"type": "boolean"},
+        "durable": {"type": "boolean"},
+        "persistent_log": {"type": "boolean"},
+        "persistent_artifact": {"type": "boolean"},
+        "privileged": {"type": "boolean"},
+        "credential_present": {"type": "boolean"}
+      }
+    },
+    "scopeEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "entry_kind",
+        "locator",
+        "content_digest",
+        "attributes",
+        "evidence_refs",
+        "entry_digest"
+      ],
+      "properties": {
+        "entry_id": {"$ref": "#/$defs/stableId"},
+        "entry_kind": {"enum": ["subject", "configuration", "runtime_path"]},
+        "locator": {"$ref": "#/$defs/nonEmptyString"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "attributes": {"$ref": "#/$defs/scopeAttributes"},
+        "evidence_refs": {"$ref": "#/$defs/idStrings"},
+        "entry_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "scopeManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "manifest_id",
+        "manifest_version",
+        "manifest_kind",
+        "closure_rule",
+        "inventory_status",
+        "inventory_authority_ref",
+        "inventory_evidence_refs",
+        "previous_manifest_digest",
+        "entries",
+        "manifest_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "secure-operation-scope-manifest/v1"},
+        "manifest_id": {"$ref": "#/$defs/stableId"},
+        "manifest_version": {"$ref": "#/$defs/nonEmptyString"},
+        "manifest_kind": {"enum": ["subject", "configuration", "runtime_path"]},
+        "closure_rule": {"$ref": "#/$defs/nonEmptyString"},
+        "inventory_status": {"const": "declared_complete_unverified"},
+        "inventory_authority_ref": {"$ref": "#/$defs/versionedRef"},
+        "inventory_evidence_refs": {"$ref": "#/$defs/nonEmptyIdStrings"},
+        "previous_manifest_digest": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/digest"}
+          ]
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/scopeEntry"}
+        },
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "observer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_ref", "observer_kind", "relationship_to_subject"],
+      "properties": {
+        "observer_ref": {"$ref": "#/$defs/versionedRef"},
+        "observer_kind": {"enum": ["human", "tool", "external_system"]},
+        "relationship_to_subject": {"enum": ["self", "tool_observer", "independent"]}
+      }
+    },
+    "evidenceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "evidence_id",
+        "evidence_kind",
+        "locator",
+        "content_digest",
+        "scope_digest",
+        "claim_refs",
+        "observer",
+        "trust_class",
+        "observed_at",
+        "expires_at",
+        "time_trust",
+        "authenticity_status",
+        "limitations",
+        "evidence_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "secure-operation-evidence/v1"},
+        "evidence_id": {"$ref": "#/$defs/stableId"},
+        "evidence_kind": {
+          "enum": [
+            "scope_inventory",
+            "information_flow_observation",
+            "control_test",
+            "configuration_observation",
+            "runtime_observation",
+            "dependency_scan",
+            "resource_test",
+            "dos_test",
+            "incident_rehearsal",
+            "notification_rehearsal",
+            "restart_test",
+            "independent_review",
+            "retention_test",
+            "deletion_test"
+          ]
+        },
+        "locator": {"$ref": "#/$defs/nonEmptyString"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "scope_digest": {"$ref": "#/$defs/digest"},
+        "claim_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "observer": {"$ref": "#/$defs/observer"},
+        "trust_class": {"enum": ["self_reported", "tool_observed", "independently_observed", "signed"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "authenticity_status": {"const": "unverified"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "evidence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "externalRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "locator": {"$ref": "#/$defs/nonEmptyString"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "humanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_sequence",
+        "decision_kind",
+        "decision_source",
+        "actor_kind",
+        "decided_by",
+        "decided_at",
+        "status",
+        "target_id",
+        "target_version",
+        "target_digest",
+        "target_scope_digest",
+        "trust_class",
+        "authenticity_status",
+        "record_ref",
+        "rationale",
+        "decision_digest"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stableId"},
+        "decision_sequence": {"type": "integer", "minimum": 0},
+        "decision_kind": {
+          "enum": [
+            "adopt_secure_operation_profile",
+            "retire_secure_operation_profile",
+            "select_nonapplicability_boundary",
+            "retire_nonapplicability_boundary"
+          ]
+        },
+        "decision_source": {"const": "external_human_record"},
+        "actor_kind": {"const": "human"},
+        "decided_by": {"$ref": "#/$defs/stableId"},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "status": {"const": "accepted"},
+        "target_id": {"$ref": "#/$defs/stableId"},
+        "target_version": {"$ref": "#/$defs/nonEmptyString"},
+        "target_digest": {"$ref": "#/$defs/digest"},
+        "target_scope_digest": {"$ref": "#/$defs/digest"},
+        "trust_class": {"enum": ["independently_observed", "signed"]},
+        "authenticity_status": {"const": "unverified"},
+        "record_ref": {"$ref": "#/$defs/externalRecordRef"},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"},
+        "decision_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "unresolvedScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_id", "blocking", "owner_kind", "reason", "evidence_refs"],
+      "properties": {
+        "scope_id": {"$ref": "#/$defs/stableId"},
+        "blocking": {"type": "boolean"},
+        "owner_kind": {"enum": ["human", "external_system"]},
+        "reason": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_refs": {"$ref": "#/$defs/idStrings"}
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["purpose_id", "version", "description", "allowed_data_classes", "purpose_digest"],
+      "properties": {
+        "purpose_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "allowed_data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "purpose_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination_id",
+        "version",
+        "component_kind",
+        "external",
+        "allowed_data_classes",
+        "allowed_purpose_refs",
+        "destination_digest"
+      ],
+      "properties": {
+        "destination_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "component_kind": {"enum": ["processor", "provider", "log", "artifact", "retention"]},
+        "external": {"type": "boolean"},
+        "allowed_data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "allowed_purpose_refs": {"$ref": "#/$defs/idStrings"},
+        "destination_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "retentionRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retention_id",
+        "version",
+        "data_classes",
+        "maximum_seconds",
+        "deletion_evidence_required",
+        "retention_digest"
+      ],
+      "properties": {
+        "retention_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "data_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "maximum_seconds": {"type": "integer", "minimum": 0},
+        "deletion_evidence_required": {"type": "boolean"},
+        "retention_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "retentionObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "component_ref",
+        "retention_rule_ref",
+        "retention_rule_digest",
+        "configured_maximum_seconds",
+        "deletion_evidence_present",
+        "evidence_refs",
+        "observation_digest"
+      ],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/stableId"},
+        "component_ref": {"$ref": "#/$defs/stableId"},
+        "retention_rule_ref": {"$ref": "#/$defs/stableId"},
+        "retention_rule_digest": {"$ref": "#/$defs/digest"},
+        "configured_maximum_seconds": {"type": "integer", "minimum": 0},
+        "deletion_evidence_present": {"type": "boolean"},
+        "evidence_refs": {"$ref": "#/$defs/nonEmptyIdStrings"},
+        "observation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "controlProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control_id", "version", "control_kind", "requirements", "control_digest"],
+      "properties": {
+        "control_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "control_kind": {
+          "enum": [
+            "encryption",
+            "credential",
+            "least_privilege",
+            "dependency",
+            "resource_limit",
+            "denial_of_service",
+            "incident_response",
+            "notification"
+          ]
+        },
+        "requirements": {"$ref": "#/$defs/nonEmptyStrings"},
+        "control_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "requalificationTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger_id",
+        "version",
+        "dimension",
+        "condition",
+        "invalidates",
+        "required_evidence_kinds",
+        "trigger_digest"
+      ],
+      "properties": {
+        "trigger_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "dimension": {
+          "enum": ["subject", "classification", "provider", "configuration", "runtime_path", "dependency", "credential", "incident"]
+        },
+        "condition": {"$ref": "#/$defs/nonEmptyString"},
+        "invalidates": {"const": true},
+        "required_evidence_kinds": {"$ref": "#/$defs/nonEmptyStrings"},
+        "trigger_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "classificationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "redaction_required_classes",
+        "encryption_in_transit_required_classes",
+        "encryption_at_rest_required_classes",
+        "external_transmission_allowed_classes",
+        "prohibited_log_classes",
+        "raw_secret_material_prohibited"
+      ],
+      "properties": {
+        "redaction_required_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "encryption_in_transit_required_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "encryption_at_rest_required_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "external_transmission_allowed_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "prohibited_log_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/dataClass"}
+        },
+        "raw_secret_material_prohibited": {"const": true}
+      }
+    },
+    "secureOperationProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile_id",
+        "profile_version",
+        "purposes",
+        "destination_allowlist",
+        "retention_rules",
+        "classification_policy",
+        "control_profiles",
+        "requalification_triggers",
+        "max_evidence_age_seconds",
+        "profile_basis_digest",
+        "status",
+        "decision_record_ref",
+        "profile_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "secure-operation-profile/v0"},
+        "profile_id": {"$ref": "#/$defs/stableId"},
+        "profile_version": {"$ref": "#/$defs/nonEmptyString"},
+        "purposes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1024,
+          "items": {"$ref": "#/$defs/purpose"}
+        },
+        "destination_allowlist": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/destination"}
+        },
+        "retention_rules": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/retentionRule"}
+        },
+        "classification_policy": {"$ref": "#/$defs/classificationPolicy"},
+        "control_profiles": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/controlProfile"}
+        },
+        "requalification_triggers": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/requalificationTrigger"}
+        },
+        "max_evidence_age_seconds": {"type": "integer", "minimum": 1},
+        "profile_basis_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["pending", "adopted", "retired"]},
+        "decision_record_ref": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "profile_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "dataItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data_id",
+        "data_class",
+        "subject_entry_ref",
+        "source_component_ref",
+        "allowed_purpose_refs",
+        "field_names",
+        "data_digest"
+      ],
+      "properties": {
+        "data_id": {"$ref": "#/$defs/stableId"},
+        "data_class": {"$ref": "#/$defs/dataClass"},
+        "subject_entry_ref": {"$ref": "#/$defs/stableId"},
+        "source_component_ref": {"$ref": "#/$defs/stableId"},
+        "allowed_purpose_refs": {"$ref": "#/$defs/idStrings"},
+        "field_names": {"$ref": "#/$defs/nonEmptyStrings"},
+        "data_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "flowComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_id",
+        "component_kind",
+        "runtime_entry_ref",
+        "destination_ref",
+        "external",
+        "persistent",
+        "privileged",
+        "retention_rule_ref",
+        "encryption_at_rest",
+        "least_privilege_scopes",
+        "credential_binding_ref",
+        "component_digest"
+      ],
+      "properties": {
+        "component_id": {"$ref": "#/$defs/stableId"},
+        "component_kind": {"enum": ["source", "processor", "provider", "log", "artifact", "retention"]},
+        "runtime_entry_ref": {"$ref": "#/$defs/stableId"},
+        "destination_ref": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "external": {"type": "boolean"},
+        "persistent": {"type": "boolean"},
+        "privileged": {"type": "boolean"},
+        "retention_rule_ref": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "encryption_at_rest": {"enum": ["applied", "not_applied", "not_applicable", "unknown"]},
+        "least_privilege_scopes": {"$ref": "#/$defs/idStrings"},
+        "credential_binding_ref": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/versionedRef"}
+          ]
+        },
+        "component_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "informationFlow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flow_id",
+        "data_ref",
+        "from_component_ref",
+        "to_component_ref",
+        "purpose_ref",
+        "transmitted_fields",
+        "minimization",
+        "redaction",
+        "encryption_in_transit",
+        "credential_binding_ref",
+        "evidence_refs",
+        "flow_digest"
+      ],
+      "properties": {
+        "flow_id": {"$ref": "#/$defs/stableId"},
+        "data_ref": {"$ref": "#/$defs/stableId"},
+        "from_component_ref": {"$ref": "#/$defs/stableId"},
+        "to_component_ref": {"$ref": "#/$defs/stableId"},
+        "purpose_ref": {"$ref": "#/$defs/stableId"},
+        "transmitted_fields": {"$ref": "#/$defs/nonEmptyStrings"},
+        "minimization": {"enum": ["applied", "not_applied", "unknown"]},
+        "redaction": {"enum": ["applied", "not_applied", "not_applicable", "unknown"]},
+        "encryption_in_transit": {"enum": ["applied", "not_applied", "not_applicable", "unknown"]},
+        "credential_binding_ref": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/versionedRef"}
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "flow_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "flowObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_id", "flow_ref", "flow_digest", "evidence_refs", "observation_digest"],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/stableId"},
+        "flow_ref": {"$ref": "#/$defs/stableId"},
+        "flow_digest": {"$ref": "#/$defs/digest"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "observation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "controlResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["control_ref", "control_digest", "control_kind", "status", "evidence_refs", "result_digest"],
+      "properties": {
+        "control_ref": {"$ref": "#/$defs/stableId"},
+        "control_digest": {"$ref": "#/$defs/digest"},
+        "control_kind": {"$ref": "#/$defs/controlKind"},
+        "status": {"enum": ["satisfied", "refuted", "unproved"]},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "result_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "controlKind": {
+      "enum": [
+        "encryption",
+        "credential",
+        "least_privilege",
+        "dependency",
+        "resource_limit",
+        "denial_of_service",
+        "incident_response",
+        "notification"
+      ]
+    },
+    "triggerAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger_ref", "trigger_digest", "dimension", "status", "evidence_refs", "assessment_digest"],
+      "properties": {
+        "trigger_ref": {"$ref": "#/$defs/stableId"},
+        "trigger_digest": {"$ref": "#/$defs/digest"},
+        "dimension": {
+          "enum": ["subject", "classification", "provider", "configuration", "runtime_path", "dependency", "credential", "incident"]
+        },
+        "status": {"enum": ["not_observed", "observed", "unresolved"]},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "assessment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "adoptedProfileContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "profile",
+        "data_items",
+        "components",
+        "declared_flows",
+        "flow_observations",
+        "retention_observations",
+        "control_results",
+        "trigger_assessments"
+      ],
+      "properties": {
+        "kind": {"const": "adopted_profile"},
+        "profile": {"$ref": "#/$defs/secureOperationProfile"},
+        "data_items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/dataItem"}
+        },
+        "components": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/flowComponent"}
+        },
+        "declared_flows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {"$ref": "#/$defs/informationFlow"}
+        },
+        "flow_observations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {"$ref": "#/$defs/flowObservation"}
+        },
+        "retention_observations": {
+          "type": "array",
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/retentionObservation"}
+        },
+        "control_results": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/controlResult"}
+        },
+        "trigger_assessments": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/triggerAssessment"}
+        }
+      }
+    },
+    "nonapplicabilityProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile_id",
+        "profile_version",
+        "required_conditions",
+        "reactivation_triggers",
+        "scope_limit",
+        "max_evidence_age_seconds",
+        "profile_basis_digest",
+        "status",
+        "decision_record_ref",
+        "profile_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "secure-operation-nonapplicability-profile/v0"},
+        "profile_id": {"$ref": "#/$defs/stableId"},
+        "profile_version": {"$ref": "#/$defs/nonEmptyString"},
+        "required_conditions": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonapplicabilityCondition"}
+        },
+        "reactivation_triggers": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/reactivationTrigger"}
+        },
+        "scope_limit": {"const": "local_fixture_only"},
+        "max_evidence_age_seconds": {"type": "integer", "minimum": 1},
+        "profile_basis_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["pending", "adopted", "retired"]},
+        "decision_record_ref": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "profile_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nonapplicabilityCondition": {
+      "enum": ["synthetic", "local", "nonprivileged", "nondurable", "no_external", "no_sensitive"]
+    },
+    "reactivationTrigger": {
+      "enum": [
+        "external_provider_observed",
+        "real_material_observed",
+        "durable_output_observed",
+        "sensitive_data_observed",
+        "privilege_observed",
+        "production_scope_requested",
+        "restart_binding_mismatch"
+      ]
+    },
+    "conditionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["condition_id", "status", "scope_digest", "evidence_refs", "result_digest"],
+      "properties": {
+        "condition_id": {"$ref": "#/$defs/nonapplicabilityCondition"},
+        "status": {"enum": ["confirmed", "refuted", "unresolved"]},
+        "scope_digest": {"$ref": "#/$defs/digest"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "result_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "restartTest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test_id",
+        "before_configuration_digest",
+        "before_runtime_path_digest",
+        "after_configuration_digest",
+        "after_runtime_path_digest",
+        "status",
+        "observed_at",
+        "expires_at",
+        "time_trust",
+        "authenticity_status",
+        "evidence_refs",
+        "test_digest"
+      ],
+      "properties": {
+        "test_id": {"$ref": "#/$defs/stableId"},
+        "before_configuration_digest": {"$ref": "#/$defs/digest"},
+        "before_runtime_path_digest": {"$ref": "#/$defs/digest"},
+        "after_configuration_digest": {"$ref": "#/$defs/digest"},
+        "after_runtime_path_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["passed", "failed", "unresolved"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "authenticity_status": {"const": "unverified"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "test_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nonapplicabilityContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "profile", "condition_results", "restart_test"],
+      "properties": {
+        "kind": {"const": "verified_nonapplicability"},
+        "profile": {"$ref": "#/$defs/nonapplicabilityProfile"},
+        "condition_results": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {"$ref": "#/$defs/conditionResult"}
+        },
+        "restart_test": {"$ref": "#/$defs/restartTest"}
+      }
+    },
+    "pathContract": {
+      "oneOf": [
+        {"$ref": "#/$defs/adoptedProfileContract"},
+        {"$ref": "#/$defs/nonapplicabilityContract"}
+      ]
+    },
+    "independentReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "review_id",
+        "review_source",
+        "reviewer_ref",
+        "relationship_to_subject",
+        "target_assessment_id",
+        "target_assessment_version",
+        "target_basis_digest",
+        "status",
+        "reviewed_at",
+        "expires_at",
+        "time_trust",
+        "authenticity_status",
+        "evidence_refs",
+        "review_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "secure-operation-independent-review/v1"},
+        "review_id": {"$ref": "#/$defs/stableId"},
+        "review_source": {"const": "external_independent_record"},
+        "reviewer_ref": {"$ref": "#/$defs/versionedRef"},
+        "relationship_to_subject": {"const": "independent"},
+        "target_assessment_id": {"$ref": "#/$defs/stableId"},
+        "target_assessment_version": {"$ref": "#/$defs/nonEmptyString"},
+        "target_basis_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["accepted", "rejected", "inconclusive"]},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "authenticity_status": {"const": "unverified"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "review_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "profileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "profile_digest", "status"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stableId"},
+        "profile_version": {"$ref": "#/$defs/nonEmptyString"},
+        "profile_digest": {"$ref": "#/$defs/digest"},
+        "status": {"enum": ["pending", "adopted", "retired"]}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "status",
+        "reason_codes",
+        "unproved_claim_codes",
+        "reactivation_triggers",
+        "profile_ref",
+        "scope_digest",
+        "review_basis_digest",
+        "unresolved_scope_refs",
+        "result_digest"
+      ],
+      "properties": {
+        "path": {"enum": ["adopted_profile", "verified_nonapplicability"]},
+        "status": {
+          "enum": [
+            "declared_profile_internally_consistent",
+            "declared_nonapplicability_internally_consistent",
+            "reactivated",
+            "not_established"
+          ]
+        },
+        "reason_codes": {"$ref": "#/$defs/idStrings"},
+        "unproved_claim_codes": {"$ref": "#/$defs/nonEmptyIdStrings"},
+        "reactivation_triggers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/reactivationTrigger"}
+        },
+        "profile_ref": {"$ref": "#/$defs/profileRef"},
+        "scope_digest": {"$ref": "#/$defs/digest"},
+        "review_basis_digest": {"$ref": "#/$defs/digest"},
+        "unresolved_scope_refs": {"$ref": "#/$defs/idStrings"},
+        "result_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "openDimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification_truth",
+        "credential_authority",
+        "incident_decision",
+        "risk_acceptance",
+        "human_acceptance",
+        "field_validity"
+      ],
+      "properties": {
+        "classification_truth": {"const": "open"},
+        "credential_authority": {"const": "open"},
+        "incident_decision": {"const": "open"},
+        "risk_acceptance": {"const": "open"},
+        "human_acceptance": {"const": "open"},
+        "field_validity": {"const": "open"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_guard_role",
+        "adopt_policy",
+        "verify_external_authenticity",
+        "strong_positive_claims_enabled",
+        "determine_classification_truth",
+        "issue_credentials",
+        "transmit_external_data",
+        "declare_incident",
+        "accept_risk",
+        "final_acceptance_owner"
+      ],
+      "properties": {
+        "semantic_guard_role": {"const": "audit_declared_information_handling_only"},
+        "adopt_policy": {"const": false},
+        "verify_external_authenticity": {"const": false},
+        "strong_positive_claims_enabled": {"const": false},
+        "determine_classification_truth": {"const": false},
+        "issue_credentials": {"const": false},
+        "transmit_external_data": {"const": false},
+        "declare_incident": {"const": false},
+        "accept_risk": {"const": false},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    }
+  }
+}

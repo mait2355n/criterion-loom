@@ -1,53 +1,54 @@
 # Contributing
 
-Criterion Loom's `semantic-guard` package is a small research prototype for meaning-first audits of Codex work. Contributions should preserve the public boundary: this is not a general natural-language understanding engine, a security scanner, or a replacement for human acceptance.
+Changes to `semantic-guard` must preserve its audit-only authority boundary and keep claims proportional to evidence.
 
-## Purpose
+## Before changing code or contracts
 
-This guide defines how to propose changes without weakening the repository's audit boundaries, fixture discipline, or public non-claims.
+State:
 
-## Audience And Use
+- the requirement, affected public surface, and intended value;
+- what remains unchanged and what is explicitly out of scope;
+- schema, CLI, MCP, migration, archive, and evidence impact;
+- verification commands and the evidence that would justify completion;
+- unresolved human decisions.
 
-Use this file if you want to change code, rules, fixtures, field-corpus entries, schemas, CI, or public documentation. It is written for maintainers and contributors who need a concise verification contract before opening a pull request.
+Do not treat a detector warning, parser candidate, LLM output, test pass, or prior-version result as release approval.
 
-## Useful Contributions
+## Canonical and legacy boundaries
 
-- tighter deterministic checks with focused fixtures.
-- false-positive and false-negative examples for the field corpus.
-- clearer public documentation and runnable examples.
-- safer CLI or MCP contracts.
-- tests that preserve existing non-claims and human-decision boundaries.
+- Canonical v1 code lives at the repository root.
+- `legacy/semantic-guard-v0.1.0/` is frozen predecessor source, not a second editable implementation tree.
+- Fixes intended for v1 belong in the canonical root.
+- A necessary legacy correction requires a separate, explicit compatibility decision and must update the archive manifest. Do not silently rewrite historical records.
+- Dated validation records are append-only historical observations. Add a new record instead of modifying an old one.
 
-## Local Verification
+## Required checks
 
-Run these from the repository root before proposing a change:
-
-```sh
-uv run --python 3.13 --project . python -m compileall src/semantic_guard tests
-uv run --python 3.13 --project . python -m unittest discover -s tests -v
-uv run --python 3.13 --project . semantic-guard evaluate-fixtures --include-passed
-uv run --python 3.13 --project . semantic-guard doctor
-```
-
-If public documentation changes, also run document audit on the changed files:
+Run the smallest relevant set while iterating, then the full release set before proposing a public-contract or release change:
 
 ```sh
-uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.md
-uv run --python 3.13 --project . semantic-guard audit-request --kind document --file README.ja.md
+uv lock --check
+uv run --locked python -m unittest discover -s tests -v
+uv run --locked python scripts/validate_verification_source.py
+uv run --locked python scripts/render_verification_projection.py --check
+uv run --locked python scripts/validate_engineering_rule_pack.py
+uv build
+uv run --locked python scripts/verify_packaged_contracts.py \
+  --wheel dist/semantic_guard-*.whl \
+  --sdist dist/semantic_guard-1.0.0.tar.gz
 ```
 
-## Pull Request Contract
+For documentation changes, verify paths, examples, command names, contract versions, claim/evidence/limitation triples, and the distinction between canonicalization and adoption.
 
-A pull request should state the changed surface, the reason for the change, the verification commands that were run, and any public contract impact. If CLI output, MCP tools, schemas, or rule ids changed, call that out explicitly in the pull request summary.
+## Pull requests
 
-If a rule is added or moved, update `rule-detector-map` coverage and add or adjust fixtures before treating the rule as part of the public catalog.
+A pull request should include:
 
-## Fixture And Corpus Policy
+- objective and non-goals;
+- affected files and public contracts;
+- migration and compatibility effects;
+- commands run and exact outcomes;
+- checks not run and why;
+- residual risks and pending human decisions.
 
-Use deterministic fixtures under `tests/fixtures/` for behavior that should become a stable regression check.
-
-Use the field corpus under `tests/field-corpus/` for examples that are plausible but still need review. Do not promote a corpus entry into a detector only because it is easy to keyword-match.
-
-## Human Decision Boundary
-
-LLM review output is supplemental review material. It must not become final acceptance. Keep `final_human_decision.status` pending until a person decides.
+Human review remains the final acceptance gate.

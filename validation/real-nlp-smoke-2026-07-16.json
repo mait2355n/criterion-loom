@@ -1,0 +1,121 @@
+{
+  "schema_version": "semantic-guard-vnext-validation-record/v0",
+  "recorded_at": "2026-07-16T00:00:00+09:00",
+  "scope": "local end-to-end assurance-mode smoke cases using real Sudachi and GiNZA resources",
+  "environment": {
+    "python": "3.13.12",
+    "sudachipy": "0.6.11",
+    "sudachidict_core": "20260428",
+    "spacy": "3.8.14",
+    "ginza": "5.2.0",
+    "ja_ginza": "5.2.0"
+  },
+  "provider_contract": {
+    "morphology_requested": ["tokenization", "lemma", "part_of_speech"],
+    "dependency_requested": [
+      "dependency",
+      "scope",
+      "predicate_argument",
+      "polarity_scope",
+      "modality_scope",
+      "coordination",
+      "coreference_candidate"
+    ],
+    "expected_missing_dependency_capabilities": ["coreference_candidate"]
+  },
+  "cases": [
+    {
+      "case_id": "aligned.single-action",
+      "input_digest": "sha256:5f78e8f0e06a47557069197d4dc9f95cb2f78232d093d53bf9e06722a7941f66",
+      "input_text": "Purpose: 検索APIが検索結果を p95 500ms以内で返す\nUser: 検索API\nScenario: 検索APIが検索結果を返す\nExpected result: 検索結果を p95 500ms以内で返す\nAcceptance criteria: 検索応答時間 p95 500ms 以下\nVerification method: 検索結果の検索応答時間を benchmark で測定する\nEvidence: 検索結果の検索応答時間 benchmark report",
+      "morphology_status": "ok",
+      "dependency_status": "partial",
+      "dependency_missing_capabilities": ["coreference_candidate"],
+      "projected_relations": ["performs", "acts_on"],
+      "open_hold_count": 0,
+      "workflow": "warn",
+      "outcome": "undetermined",
+      "coverage": "partial",
+      "public_schema_validation": "passed"
+    },
+    {
+      "case_id": "aligned.multiple-actions",
+      "input_digest": "sha256:7392c9318fa1a7c5303f199b05e35b72177e1d2194ca47a54eb780e23e60ab09",
+      "input_text": "Purpose: 検索APIが検索結果を p95 500ms以内で返す\nUser: 検索API\nScenario: 検索APIが検索要求を処理して検索結果を返す\nExpected result: 検索結果を p95 500ms以内で返す\nAcceptance criteria: 検索応答時間 p95 500ms 以下\nVerification method: 検索結果の検索応答時間を benchmark で測定する\nEvidence: 検索結果の検索応答時間 benchmark report",
+      "morphology_status": "ok",
+      "dependency_status": "partial",
+      "dependency_missing_capabilities": ["coreference_candidate"],
+      "projected_relations": ["performs", "acts_on", "acts_on"],
+      "conflicted_obligations": ["func.acts_on"],
+      "open_hold_count": 1,
+      "workflow": "block",
+      "outcome": "undetermined",
+      "coverage": "partial",
+      "public_schema_validation": "passed"
+    },
+    {
+      "case_id": "relation.shared-domain-causal-mismatch",
+      "input_digest": "sha256:7cdd6c738c7330145ba46424b8e082c81b583042b647b7157f0dce5a44160b95",
+      "input_text": "目的: 検索機能を提供する\n利用者: 検索API\nシナリオ: 検索APIが検索要求を処理する\n期待結果: 検索ログは削除される\n受入基準: 検索応答時間は100ms以内\n検証方法: 検索応答時間を測定する\n証拠: 検索応答時間CSV",
+      "morphology_status": "ok",
+      "dependency_status": "partial",
+      "dependency_missing_capabilities": ["coreference_candidate"],
+      "direct_unresolved_obligations": [
+        "func.produces",
+        "func.constrained_by",
+        "func.verified_by"
+      ],
+      "projected_relations": ["performs", "acts_on"],
+      "open_hold_count": 0,
+      "workflow": "warn",
+      "outcome": "undetermined",
+      "coverage": "partial",
+      "public_schema_validation": "passed"
+    },
+    {
+      "case_id": "relation.same-endpoint-opposing-actions",
+      "input_digest": "sha256:73bc662c33e41842dafd817790b86f400a594770b0b778d69c51ddf32ff8a019",
+      "input_text": "目的: 検索APIが監査対象ログ・audit_logを保存する\n利用者: 検索API\nシナリオ: 検索APIが監査対象ログ・audit_logを保存する\n期待結果: 監査対象ログ・audit_logを100ms以内に削除する\n受入基準: 監査対象ログ削除時間は100ms以内\n検証方法: 監査対象ログ削除時間を測定する\n証拠: 監査対象ログ削除時間CSV",
+      "morphology_status": "ok",
+      "dependency_status": "partial",
+      "dependency_missing_capabilities": ["coreference_candidate"],
+      "direct_refuted_obligations": ["func.produces"],
+      "projected_relations": ["performs", "acts_on"],
+      "open_hold_count": 0,
+      "workflow": "block",
+      "outcome": "refuted",
+      "coverage": "partial",
+      "public_schema_validation": "passed"
+    },
+    {
+      "case_id": "scope.conditional-compound-behavior",
+      "input_digest": "sha256:a9867919f58ab0a1c61a060b75370476936c0db069a7227777d27b2626a3f02f",
+      "input_text": "目的: 検索応答時間を監査する\n利用者: 検索API\nシナリオ: 検索APIが検索要求を処理した場合は検索応答時間を記録する\n期待結果: 検索応答時間を p95 500ms以内で記録する\n受入基準: 検索応答時間 p95 500ms 以下\n検証方法: 検索応答時間を benchmark で測定する\n証拠: 検索応答時間 benchmark report",
+      "morphology_status": "ok",
+      "dependency_status": "partial",
+      "dependency_missing_capabilities": ["coreference_candidate"],
+      "lifting_rule": "lifting.condition-attachment/v0",
+      "lifting_status": "resolved",
+      "projected_relations": ["performs", "acts_on", "triggered_by", "acts_on"],
+      "conflicted_obligations": ["func.acts_on"],
+      "open_hold_count": 1,
+      "workflow": "block",
+      "outcome": "undetermined",
+      "coverage": "partial",
+      "public_schema_validation": "passed"
+    }
+  ],
+  "interpretation": [
+    "Sudachi satisfied all requested morphology capabilities for every case.",
+    "GiNZA output remained partial because coreference_candidate was not fulfilled; assurance therefore never passed even for the aligned case.",
+    "Fulfilled dependency and scope capabilities remained usable as candidate material despite the partial provider state.",
+    "Dependency projection exposed an independent acts_on conflict in the multiple-action cases; resolving one condition attachment did not erase that conflict.",
+    "Shared domain vocabulary and an opposing result action no longer produced a false pass in these cases."
+  ],
+  "limitations": [
+    "These are engineered local smoke cases, not an accuracy, recall, precision, or field-value evaluation.",
+    "The observations do not establish general dependency, scope, coordination, coreference, or cross-sentence quality.",
+    "Provider identity and resource versions are locally reported, not cryptographically attested.",
+    "The workflow result is not human acceptance or proof that an agent action occurred."
+  ]
+}

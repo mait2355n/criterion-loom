@@ -1,395 +1,260 @@
 from __future__ import annotations
 
-from typing import Any
+from importlib import resources
+import hashlib
+import json
+import os
+from pathlib import Path
+from typing import Any, Mapping
 
 from mcp.server.fastmcp import FastMCP
 
-from semantic_guard.acceptance_review import build_acceptance_review_bundle_template, validate_acceptance_review_bundle
-from semantic_guard.codex_exec_exploration import (
-    DEFAULT_CODEX_MODEL as DEFAULT_EXPLORATION_CODEX_MODEL,
-    DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
-    CodexExecExplorationRequest,
-    run_codex_exec_exploration,
-)
-from semantic_guard.codex_exec_review import DEFAULT_CODEX_MODEL, DEFAULT_TIMEOUT_SECONDS, CodexExecReviewRequest, run_codex_exec_review
-from semantic_guard.conventions import audit_conventions, load_conventions_catalog
-from semantic_guard.core import (
-    apply_logical_trace_mode,
-    audit_decision_state,
-    audit_diff,
-    audit_plan,
-    audit_request,
-    finish_check,
-    understand_target,
-)
-from semantic_guard.doctor import run_doctor
-from semantic_guard.escalation import review_if_needed
-from semantic_guard.evaluation import DEFAULT_FIXTURE_ROOT, evaluate_fixture_tree
-from semantic_guard.exploration import explore_request
-from semantic_guard.exploration_jobs import ExplorationJobStore
-from semantic_guard.models import load_audit_result_schema
-from semantic_guard.request_exploration_review import load_request_exploration_review_schema
-from semantic_guard.review_jobs import ReviewJobStore, start_review_if_needed_job
-from semantic_guard.rule_mapping import rule_detector_mappings, unmapped_rule_ids
-from semantic_guard.rules import RULES
-from semantic_guard.severity_profiles import apply_severity_profile
-from semantic_guard.traceability import build_trace_report
+from .assurance_graph import public_assurance_claim_v1
+from .compat import project_legacy_result
+from .engine import audit_requirement_relations
+from .japanese_dependency import GinzaDependencyProvider
+from .japanese_morphology import SudachiMorphologyProvider
+from .llm_candidates import SubmittedLLMCandidateProvider
+from .legacy_runner import run_legacy_request, validate_requirement_input_size
+from .public_contract import load_public_schema, public_audit_payload, validate_public_audit
+from .shadow import compare_with_legacy
+
 
 mcp = FastMCP("semantic-guard", json_response=True)
-_review_jobs = ReviewJobStore()
-_exploration_jobs = ExplorationJobStore()
+
+LEGACY_SHADOW_ENABLE_ENV = "SEMANTIC_GUARD_ENABLE_LEGACY_SHADOW"
+LEGACY_SHADOW_ROOT_ENV = "SEMANTIC_GUARD_LEGACY_ROOT"
+# Historical archive-relative locators retain the predecessor's ``vnext``
+# subtree.  They are not canonical v1 package or public-contract names.
+_LEGACY_BASELINE = Path("vnext/migration/legacy-baseline-2026-07-17.json")
+_LEGACY_ADAPTER = Path("vnext/scripts/legacy_request_adapter.py")
+_LEGACY_BASELINE_SHA256 = "df7acb77fe03495d11e82dff44b4674ae020bab852da7f706bc86c55a8d53fe4"
+_MAX_SHADOW_TIMEOUT_SECONDS = 120.0
+_MAX_LLM_CANDIDATE_BUNDLE_BYTES = 1_048_576
 
 
-@mcp.tool()
-def explore_request_tool(text: str, context: str = "", strict: bool = True, profile: str = "default") -> dict[str, object]:
-    """Expose material ambiguities and necessary questions before turning an open-ended idea into a spec."""
-    return apply_severity_profile(explore_request(text=text, context=context, strict=strict), profile)
+def _providers(morphology: str, dependency: str):
+    if morphology not in {"none", "sudachi"}:
+        raise ValueError("morphology must be none or sudachi")
+    if dependency not in {"none", "ginza"}:
+        raise ValueError("dependency must be none or ginza")
+    return (
+        SudachiMorphologyProvider() if morphology == "sudachi" else None,
+        GinzaDependencyProvider() if dependency == "ginza" else None,
+    )
 
 
-@mcp.tool()
-def llm_explore_request_tool(
+def audit_requirement_relations_service(
     text: str,
-    context: str = "",
-    execute: bool = False,
-    model: str = DEFAULT_EXPLORATION_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Run or dry-run an isolated LLM exploration reviewer for pre-spec questions. Dry-run is the default."""
-    deterministic_exploration = explore_request(text=text, context=context, strict=True)
+    *,
+    analysis_mode: str = "assurance",
+    morphology: str = "none",
+    dependency: str = "none",
+    llm_candidate_bundle: dict[str, Any] | None = None,
+    output: str = "public",
+) -> dict[str, Any]:
+    validate_requirement_input_size(text)
+    morphology_provider, dependency_provider = _providers(morphology, dependency)
+    llm_provider = _llm_provider(llm_candidate_bundle)
+    report = audit_requirement_relations(
+        text,
+        analysis_mode=analysis_mode,
+        morphology_provider=morphology_provider,
+        dependency_provider=dependency_provider,
+        llm_provider=llm_provider,
+    )
+    if output == "legacy-compat":
+        return project_legacy_result(report)
+    if output == "assurance-v1":
+        return public_assurance_claim_v1(report)
+    if output != "public":
+        raise ValueError("output must be public, assurance-v1, or legacy-compat")
+    payload = public_audit_payload(report)
+    validate_public_audit(payload)
+    return payload
+
+
+@mcp.tool()
+def audit_requirement_relations_tool(
+    text: str,
+    analysis_mode: str = "assurance",
+    morphology: str = "none",
+    dependency: str = "none",
+    llm_candidate_bundle: dict[str, Any] | None = None,
+    output: str = "public",
+) -> dict[str, Any]:
+    """Audit a structured functional requirement with fail-closed obligation states.
+
+    Provider choices are explicit.  Parser and LLM candidates never acquire
+    support or hold-mutation authority merely by being selected. The optional
+    assurance-v1 output wraps the validated public audit in a replayable proof
+    graph; it is not human acceptance.
+    """
+
+    return audit_requirement_relations_service(
+        text,
+        analysis_mode=analysis_mode,
+        morphology=morphology,
+        dependency=dependency,
+        llm_candidate_bundle=llm_candidate_bundle,
+        output=output,
+    )
+
+
+def _llm_provider(
+    bundle: dict[str, Any] | None,
+) -> SubmittedLLMCandidateProvider | None:
+    if bundle is None:
+        return None
     try:
-        request = CodexExecExplorationRequest.from_mapping(
-            {
-                "text": text,
-                "context": context,
-                "deterministic_exploration": deterministic_exploration,
-            },
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
-            codex_binary="codex",
-            include_schema_in_prompt=include_schema,
+        encoded = json.dumps(bundle, ensure_ascii=False, separators=(",", ":")).encode(
+            "utf-8"
         )
-    except ValueError as exc:
-        return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
-    return run_codex_exec_exploration(request, execute=execute).as_dict()
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"LLM candidate bundle is not JSON serializable: {exc}") from exc
+    if len(encoded) > _MAX_LLM_CANDIDATE_BUNDLE_BYTES:
+        raise ValueError(
+            "LLM candidate bundle exceeds "
+            f"{_MAX_LLM_CANDIDATE_BUNDLE_BYTES} UTF-8 bytes"
+        )
+    return SubmittedLLMCandidateProvider(bundle)
 
 
-@mcp.tool()
-def llm_explore_request_start_tool(
-    text: str,
-    context: str = "",
-    model: str = DEFAULT_EXPLORATION_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Start the isolated LLM exploration reviewer as a pollable background job."""
-    deterministic_exploration = explore_request(text=text, context=context, strict=True)
+def _fixed_legacy_shadow_paths(
+    environ: Mapping[str, str] | None = None,
+) -> tuple[Path, Path, Path]:
+    """Resolve operator-owned legacy paths without accepting tool-supplied paths."""
+
+    values = os.environ if environ is None else environ
+    if values.get(LEGACY_SHADOW_ENABLE_ENV) != "1":
+        raise RuntimeError(
+            "legacy shadow comparison is disabled; the MCP server operator must set "
+            f"{LEGACY_SHADOW_ENABLE_ENV}=1"
+        )
+    configured_root = values.get(LEGACY_SHADOW_ROOT_ENV, "")
+    root_path = Path(configured_root)
+    if not configured_root or not root_path.is_absolute():
+        raise RuntimeError(
+            f"{LEGACY_SHADOW_ROOT_ENV} must be an absolute legacy source root"
+        )
     try:
-        request = CodexExecExplorationRequest.from_mapping(
-            {
-                "text": text,
-                "context": context,
-                "deterministic_exploration": deterministic_exploration,
-            },
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
-            codex_binary="codex",
-            include_schema_in_prompt=include_schema,
+        root = root_path.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(f"legacy source root is unavailable: {exc}") from exc
+    if not root.is_dir():
+        raise RuntimeError("legacy source root must be a directory")
+
+    baseline = _fixed_descendant(root, _LEGACY_BASELINE, "baseline manifest")
+    adapter = _fixed_descendant(root, _LEGACY_ADAPTER, "legacy adapter")
+    baseline_digest = hashlib.sha256(baseline.read_bytes()).hexdigest()
+    if baseline_digest != _LEGACY_BASELINE_SHA256:
+        raise RuntimeError(
+            "legacy baseline manifest digest does not match the server-pinned migration baseline"
         )
+    interpreter = root / ".venv" / "bin" / "python"
+    if not interpreter.is_file() or not os.access(interpreter, os.X_OK):
+        raise RuntimeError("legacy interpreter .venv/bin/python is unavailable or not executable")
+    return root, baseline, adapter
+
+
+def _fixed_descendant(root: Path, relative: Path, label: str) -> Path:
+    candidate = root / relative
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError(f"{label} is unavailable: {exc}") from exc
+    try:
+        resolved.relative_to(root)
     except ValueError as exc:
-        return {
-            "job_id": None,
-            "state": "input_error",
-            "done": True,
-            "running": False,
-            "process_finished": False,
-            "exploration_received": False,
-            "response_state": "input_error",
-            "valid": False,
-            "errors": [str(exc)],
-        }
-    return _exploration_jobs.start(request, metadata={"kind": "llm_explore_request"})
+        raise RuntimeError(f"{label} resolves outside the configured legacy root") from exc
+    if not resolved.is_file():
+        raise RuntimeError(f"{label} must be a regular file")
+    return resolved
 
 
 @mcp.tool()
-def llm_exploration_status_tool(job_id: str, include_result: bool = True, include_prompt: bool = False) -> dict[str, object]:
-    """Return a background LLM exploration job state: running, completed, failed, timed_out, or not_found."""
-    return _exploration_jobs.get(job_id, include_result=include_result, include_prompt=include_prompt)
-
-
-@mcp.tool()
-def understand_target_tool(text: str, context: str = "", strict: bool = True, profile: str = "default") -> dict[str, object]:
-    """Audit whether the target, purpose, value, non-goals, unknowns, and validation route are understood."""
-    return apply_severity_profile(understand_target(text=text, context=context, strict=strict), profile)
-
-
-@mcp.tool()
-def audit_request_tool(
+def shadow_compare_legacy_tool(
     text: str,
-    context: str = "",
-    strict: bool = True,
-    kind: str = "requirement",
-    profile: str = "default",
-    logical_trace: str = "summary",
-) -> dict[str, object]:
-    """Audit requirements or documents with kind-aware checks."""
-    result = apply_severity_profile(audit_request(text=text, context=context, strict=strict, input_kind=kind), profile)
-    return apply_logical_trace_mode(result, logical_trace)
+    analysis_mode: str = "shadow_all",
+    morphology: str = "none",
+    dependency: str = "none",
+    llm_candidate_bundle: dict[str, Any] | None = None,
+    timeout_seconds: float = 30.0,
+) -> dict[str, Any]:
+    """Observe an operator-pinned legacy process and classify, but do not auto-resolve, deltas.
 
+    This tool is disabled unless the server operator explicitly enables it and
+    supplies one absolute legacy root through process environment.  Tool
+    callers cannot select an executable, adapter, manifest, or filesystem root.
+    """
 
-@mcp.tool()
-def audit_decision_state_tool(
-    text: str,
-    context: str = "",
-    strict: bool = True,
-    kind: str = "document",
-    profile: str = "default",
-) -> dict[str, object]:
-    """Expose decided, undecided, hypothetical, inferred, value-judgment, and evidence-gap states without resolving them."""
-    return apply_severity_profile(audit_decision_state(text=text, context=context, strict=strict, input_kind=kind), profile)
-
-
-@mcp.tool()
-def audit_plan_tool(
-    plan: str,
-    request: str = "",
-    context: str = "",
-    strict: bool = True,
-    kind: str = "plan",
-    profile: str = "default",
-) -> dict[str, object]:
-    """Audit an implementation plan for scope, decomposition, risk, verification, validation, and completion evidence."""
-    return apply_severity_profile(audit_plan(plan=plan, request=request, context=context, strict=strict, input_kind=kind), profile)
-
-
-@mcp.tool()
-def audit_diff_tool(
-    diff: str,
-    intent: str = "",
-    context: str = "",
-    strict: bool = True,
-    kind: str = "diff-summary",
-    profile: str = "default",
-) -> dict[str, object]:
-    """Audit a diff or change summary for traceability, meaning preservation, quality, security, tests, and docs."""
-    return apply_severity_profile(audit_diff(diff=diff, intent=intent, context=context, strict=strict, input_kind=kind), profile)
-
-
-@mcp.tool()
-def finish_check_tool(
-    summary: str,
-    evidence: str = "",
-    context: str = "",
-    strict: bool = True,
-    profile: str = "default",
-) -> dict[str, object]:
-    """Audit completion evidence, acceptance evidence, residual risk, and release blockers."""
-    return apply_severity_profile(finish_check(summary=summary, evidence=evidence, context=context, strict=strict), profile)
-
-
-@mcp.tool()
-def audit_conventions_tool(
-    text: str,
-    context: str = "",
-    strict: bool = True,
-    kind: str = "document",
-    profile: str = "default",
-) -> dict[str, object]:
-    """Audit public I/O, CLI, MCP, error, record, and repository-profile convention coverage."""
-    return apply_severity_profile(audit_conventions(text=text, context=context, strict=strict, input_kind=kind), profile)
-
-
-@mcp.tool()
-def conventions_catalog_tool() -> dict[str, object]:
-    """Return the machine-readable baseline convention catalog."""
-    return load_conventions_catalog()
-
-
-@mcp.tool()
-def evaluate_fixtures_tool(path: str = str(DEFAULT_FIXTURE_ROOT), include_passed: bool = False) -> dict[str, object]:
-    """Evaluate local calibration fixtures and return structured pass/fail data."""
-    return evaluate_fixture_tree(path, include_passed=include_passed)
-
-
-@mcp.tool()
-def trace_report_tool(payload: dict[str, Any]) -> dict[str, object]:
-    """Build a request-plan-diff-finish trace report from a JSON payload."""
-    return build_trace_report(payload)
-
-
-@mcp.tool()
-def audit_result_schema_tool() -> dict[str, object]:
-    """Return the shared AuditResult JSON schema."""
-    return load_audit_result_schema()
-
-
-@mcp.tool()
-def request_exploration_review_schema_tool() -> dict[str, object]:
-    """Return the LLM request-exploration review output schema."""
-    return load_request_exploration_review_schema()
-
-
-@mcp.tool()
-def rule_detector_map_tool() -> dict[str, object]:
-    """Return rule ids mapped to detector and predicate surfaces."""
-    mappings = rule_detector_mappings()
+    validate_requirement_input_size(text)
+    if not 0.1 <= timeout_seconds <= _MAX_SHADOW_TIMEOUT_SECONDS:
+        raise ValueError(
+            f"timeout_seconds must be between 0.1 and {_MAX_SHADOW_TIMEOUT_SECONDS}"
+        )
+    root, baseline, adapter = _fixed_legacy_shadow_paths()
+    morphology_provider, dependency_provider = _providers(morphology, dependency)
+    llm_provider = _llm_provider(llm_candidate_bundle)
+    report = audit_requirement_relations(
+        text,
+        analysis_mode=analysis_mode,
+        morphology_provider=morphology_provider,
+        dependency_provider=dependency_provider,
+        llm_provider=llm_provider,
+    )
+    legacy = run_legacy_request(
+        text=text,
+        legacy_root=root,
+        baseline_manifest=baseline,
+        adapter_script=adapter,
+        timeout_seconds=timeout_seconds,
+    )
+    native = public_audit_payload(report)
+    validate_public_audit(native)
     return {
-        "rule_count": len(RULES),
-        "mapping_count": len(mappings),
-        "unmapped_rule_ids": unmapped_rule_ids(),
-        "mappings": mappings,
+        "schema_version": "semantic-guard-shadow-run/v0",
+        "canonical": native,
+        "legacy": legacy.as_dict(),
+        "comparison": compare_with_legacy(report, legacy).as_dict(),
     }
 
 
 @mcp.tool()
-def doctor_tool(project_root: str = ".", run_fixtures: bool = True) -> dict[str, object]:
-    """Check local semantic-guard environment, schemas, mappings, CI, and fixtures."""
-    return run_doctor(project_root, run_fixtures=run_fixtures)
+def semantic_guard_schema_tool(name: str = "audit-result") -> dict[str, Any]:
+    """Return one closed v1 JSON Schema by its public contract name."""
+
+    return load_public_schema(name)
 
 
-@mcp.tool()
-def llm_review_command_tool(
-    payload: dict[str, Any],
-    model: str = DEFAULT_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Build the isolated codex exec LLM reviewer command and prompt without executing it."""
-    try:
-        request = CodexExecReviewRequest.from_mapping(
-            payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
-            codex_binary="codex",
-            include_schema_in_prompt=include_schema,
-        )
-    except ValueError as exc:
-        return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
-    return run_codex_exec_review(request, execute=False).as_dict()
+@mcp.resource(
+    "semantic-guard://schemas/{name}",
+    name="semantic-guard-schema",
+    description="One closed semantic-guard v1 JSON Schema.",
+    mime_type="application/schema+json",
+)
+def semantic_guard_schema_resource(name: str) -> str:
+    return json.dumps(load_public_schema(name), ensure_ascii=False, sort_keys=True)
 
 
-@mcp.tool()
-def llm_review_run_tool(
-    payload: dict[str, Any],
-    execute: bool = False,
-    model: str = DEFAULT_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Run or dry-run the isolated codex exec LLM reviewer. Dry-run is the default."""
-    try:
-        request = CodexExecReviewRequest.from_mapping(
-            payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
-            codex_binary="codex",
-            include_schema_in_prompt=include_schema,
-        )
-    except ValueError as exc:
-        return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
-    return run_codex_exec_review(request, execute=execute).as_dict()
-
-
-@mcp.tool()
-def llm_review_start_tool(
-    payload: dict[str, Any],
-    model: str = DEFAULT_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Start the isolated codex exec LLM reviewer as a pollable background job."""
-    try:
-        request = CodexExecReviewRequest.from_mapping(
-            payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
-            codex_binary="codex",
-            include_schema_in_prompt=include_schema,
-        )
-    except ValueError as exc:
-        return {
-            "job_id": None,
-            "state": "input_error",
-            "done": True,
-            "running": False,
-            "process_finished": False,
-            "review_received": False,
-            "response_state": "input_error",
-            "valid": False,
-            "errors": [str(exc)],
-        }
-    return _review_jobs.start(request, metadata={"kind": "llm_review"})
-
-
-@mcp.tool()
-def review_if_needed_start_tool(
-    payload: dict[str, Any],
-    model: str = DEFAULT_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Start an isolated reviewer job only when review-if-needed escalation says it is useful."""
-    return start_review_if_needed_job(
-        _review_jobs,
-        payload,
-        model=model,
-        timeout_seconds=timeout_seconds,
-        working_directory=working_directory,
-        include_schema=include_schema,
+@mcp.resource(
+    "semantic-guard://constitution/v1",
+    name="semantic-guard-constitution",
+    description="The canonical semantic-guard v1 constitution.",
+    mime_type="application/yaml",
+)
+def semantic_guard_constitution_resource() -> str:
+    package_candidate = resources.files("semantic_guard").joinpath(
+        "constitution/semantic-guard-constitution.yaml"
     )
-
-
-@mcp.tool()
-def llm_review_status_tool(job_id: str, include_result: bool = True, include_prompt: bool = False) -> dict[str, object]:
-    """Return a background reviewer job state: running, completed, failed, timed_out, or not_found."""
-    return _review_jobs.get(job_id, include_result=include_result, include_prompt=include_prompt)
-
-
-@mcp.tool()
-def review_if_needed_tool(
-    payload: dict[str, Any],
-    execute: bool = False,
-    model: str = DEFAULT_CODEX_MODEL,
-    timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
-    working_directory: str = "",
-    include_schema: bool = False,
-) -> dict[str, object]:
-    """Escalate deterministic audit uncertainty to the isolated reviewer when needed. Dry-run is the default."""
-    return review_if_needed(
-        payload,
-        execute=execute,
-        model=model,
-        timeout_seconds=timeout_seconds,
-        working_directory=working_directory,
-        include_schema=include_schema,
+    if package_candidate.is_file():
+        return package_candidate.read_text(encoding="utf-8")
+    source_candidate = (
+        Path(__file__).resolve().parents[2]
+        / "constitution"
+        / "semantic-guard-constitution.yaml"
     )
-
-
-@mcp.tool()
-def acceptance_bundle_template_tool(payload: dict[str, Any]) -> dict[str, object]:
-    """Build an acceptance review bundle scaffold for the final human decision."""
-    try:
-        return build_acceptance_review_bundle_template(payload)
-    except ValueError as exc:
-        return {"schema_version": "acceptance-review-bundle/v1", "input_error": str(exc)}
-
-
-@mcp.tool()
-def validate_acceptance_bundle_tool(bundle: dict[str, Any], strict: bool = True) -> dict[str, object]:
-    """Validate an acceptance review bundle before a human final decision."""
-    errors = validate_acceptance_review_bundle(bundle, strict=strict)
-    return {"valid": not errors, "errors": errors}
+    return source_candidate.read_text(encoding="utf-8")
 
 
 def main() -> None:

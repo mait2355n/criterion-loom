@@ -1,0 +1,224 @@
+{
+  "schema_version": "semantic-guard-vnext-integrated-verification/v0",
+  "recorded_at": "2026-07-16T00:00:00+09:00",
+  "subject": "semantic-guard vNext requirement-relation vertical slice",
+  "acceptance_state": {
+    "implementation_verification": "passed_with_declared_legacy_defects_and_residual_risks",
+    "human_acceptance": "pending",
+    "production_readiness": "not_established",
+    "default_route_cutover": "not_authorized"
+  },
+  "vnext_verification": {
+    "unit_and_contract_tests": [
+      {
+        "runtime": "Python 3.13.12, vnext project environment with all NLP extras",
+        "command": "PYTHONPATH=vnext/src vnext/.venv/bin/python -m unittest discover -s vnext/tests -v",
+        "total": 147,
+        "passed": 147,
+        "failed": 0
+      },
+      {
+        "runtime": "isolated Python 3.11",
+        "command": "PYTHONPATH=vnext/src uv run --isolated --project vnext --python 3.11 python -m unittest discover -s vnext/tests",
+        "total": 147,
+        "passed": 147,
+        "failed": 0
+      }
+    ],
+    "json_schemas": {
+      "draft": "2020-12",
+      "checked": 7,
+      "self_validation": "passed"
+    },
+    "compileall": {
+      "scope": ["vnext/src", "vnext/tests", "vnext/scripts"],
+      "status": "passed"
+    },
+    "static_analysis": {
+      "tool": "ruff",
+      "scope": ["vnext/src", "vnext/tests", "vnext/scripts"],
+      "status": "passed"
+    },
+    "dependency_lock": {
+      "uv_lock_check": "passed",
+      "uv_sync_check_all_extras": "passed"
+    },
+    "conformance_corpus": {
+      "case_count": 11,
+      "status": "passed",
+      "scope_note": "Invariant and adversarial regression evidence only; not a population accuracy estimate."
+    },
+    "pipeline_order": {
+      "status": "passed",
+      "assertion": "Dependency semantic projections and source-aligned scopes are materialized before the LLM candidate stage and supplied as explicit upstream candidate context.",
+      "regression_test": "test_dependency_semantic_candidates_are_materialized_before_llm_stage"
+    },
+    "origin_trace": {
+      "status": "passed",
+      "checked_documents": 2,
+      "digest_matches": 2,
+      "scope_note": "Repository-root origin documents matched the constitution digests; the wheel carries the constitution but not those full origin documents."
+    }
+  },
+  "distribution_verification": {
+    "version": "0.1.0a0",
+    "wheel": {
+      "filename": "semantic_guard_vnext-0.1.0a0-py3-none-any.whl",
+      "sha256": "b57926fe0cb563f90d3bc39523cd3562b1700a785a984613247a94b2e7c688d7"
+    },
+    "sdist": {
+      "filename": "semantic_guard_vnext-0.1.0a0.tar.gz",
+      "sha256_recording": "omitted because this verification record is itself included in the source distribution"
+    },
+    "twine_check": "passed",
+    "artifact_retention": "temporary local build directory; hashes are observations, not signed release provenance",
+    "isolated_install": {
+      "python": "3.11.15",
+      "mcp": "1.14.0",
+      "package_import": "passed",
+      "python_api_default_mode": "assurance",
+      "packaged_constitution": "present",
+      "packaged_schemas": "present"
+    }
+  },
+  "mcp_stdio_verification": {
+    "transport": "stdio",
+    "runtime": "isolated Python 3.11.15 with mcp 1.14.0 and built wheel",
+    "server_name": "semantic-guard-vnext",
+    "tool_names": [
+      "audit_requirement_relations_vnext_tool",
+      "semantic_guard_vnext_schema_tool",
+      "shadow_compare_legacy_vnext_tool"
+    ],
+    "resource_count": 1,
+    "schema_call": "passed",
+    "audit_call": "passed",
+    "default_without_optional_providers": {
+      "workflow": "warn",
+      "analysis_statuses": ["unavailable", "unavailable"]
+    }
+  },
+  "real_nlp_verification": {
+    "record_ref": "real-nlp-smoke-2026-07-16.json",
+    "case_count": 5,
+    "sudachi_requested_capabilities": "all fulfilled",
+    "ginza_status": "partial",
+    "ginza_missing_capabilities": ["coreference_candidate"],
+    "fulfilled_partial_outputs_used_by_capability": true,
+    "public_schema_validation": "passed for every case",
+    "observed_dispositions": {
+      "aligned_single_action": "warn",
+      "aligned_multiple_actions": "block",
+      "shared_domain_causal_mismatch": "warn",
+      "same_endpoint_opposing_actions": "block",
+      "conditional_compound_behavior": "block"
+    },
+    "cli_real_provider_run": {
+      "status": "passed",
+      "workflow": "warn",
+      "morphology_execution": "complete",
+      "dependency_execution": "partial",
+      "missing_capabilities": ["coreference_candidate"]
+    }
+  },
+  "legacy_verification": {
+    "baseline": {
+      "schema_version": "semantic-guard-legacy-baseline/v1",
+      "manifest_ref": "../migration/legacy-baseline-2026-07-16.json",
+      "manifest_sha256": "3f06828e9f544285dc2c4084698a05e03aa56fabaee8563bb9c4217cde352d46",
+      "checked_assets_and_runtime": 153,
+      "status": "matched"
+    },
+    "unit_tests": {
+      "total": 334,
+      "passed": 332,
+      "failed": 2,
+      "known_failures": [
+        "test_aligned_public_evidence_uses_the_unique_verifies_pair",
+        "test_asserted_verification_dimension_mismatch_is_derived_and_not_satisfied"
+      ],
+      "interpretation": "Preserved legacy defects; not vNext conformance failures and not an accepted ground-truth baseline."
+    },
+    "fixture_evaluation": {
+      "total": 54,
+      "passed": 54,
+      "failed": 0,
+      "local_calibration_only": true
+    },
+    "doctor": {
+      "checks": 9,
+      "passed": 9,
+      "warned": 0,
+      "blocked": 0
+    },
+    "real_shadow_run": {
+      "execution_status": "completed",
+      "baseline_status": "matched",
+      "adapter_pin_status": "manifest_pinned",
+      "result_schema_valid": true,
+      "legacy_exit_code": 0,
+      "legacy_stdout_bytes": 11357,
+      "legacy_stdout_sha256": "7eea0aba26fbe9110b32a783c1a3182e03c79f4f1ab75bc92b2363946269a9a8",
+      "comparison_difference_count": 1,
+      "comparison_unresolved_requires_review_count": 1,
+      "interpretation": "Execution integrity passed; the semantic delta remains explicitly unresolved and was not auto-ranked."
+    }
+  },
+  "measured_operational_risks": [
+    {
+      "risk_id": "risk.public-payload-amplification",
+      "observation": "A 381-byte aligned input with real Sudachi and GiNZA produced a 451111-byte pretty CLI payload and a 300366-byte compact JSON payload.",
+      "cause": "Closed audit contracts repeat provenance, authority effects, and spans across analysis, obligation, and assurance projections.",
+      "disposition": "Retain for re-auditability in this version; design reference-separated or paged detail retrieval before high-volume MCP use."
+    },
+    {
+      "risk_id": "risk.runtime-environment-selection",
+      "observation": "The repository root environment lacks optional Japanese analyzers while vnext/.venv contains them.",
+      "disposition": "Use the vNext project environment or a built package with explicit NLP extras; provider absence remains visible and cannot pass assurance."
+    }
+  ],
+  "unverified_or_unimplemented": [
+    "Adjudicated real-work corpus, blind double review, statistical recall, precision, and catastrophic false-satisfaction rate.",
+    "Requirement profiles beyond one structured functional-requirement profile.",
+    "Dependency-to-semantic projections beyond performs, acts_on, and triggered_by, and deterministic lifting beyond one condition attachment rule.",
+    "Coreference capability in the configured GiNZA provider.",
+    "Automatic external LLM API invocation, model identity authentication, and retry or latency policy.",
+    "Plan, diff, convention, finish, and acceptance vNext vertical slices.",
+    "Cryptographic signatures, trusted time, actor identity, action occurrence, causal proof, and artifact authenticity.",
+    "Long-duration, concurrency, load, denial-of-service, and cross-platform CI evidence.",
+    "One versioned failure envelope shared across Python, CLI, and MCP; CLI pre-audit errors currently use stderr and exit 2 while MCP uses protocol errors.",
+    "Human final acceptance and cutover authorization."
+  ],
+  "next_actions": [
+    {
+      "priority": 1,
+      "action": "Build an adjudicated real-work corpus with independent double review and a cost matrix that weights catastrophic false satisfaction first.",
+      "completion_evidence": "Domain-stratified results with disagreement, adjudication, recall, precision, abstention, and catastrophic false-satisfaction counts."
+    },
+    {
+      "priority": 2,
+      "action": "Provide or integrate a source-aligned coreference candidate capability, or obtain a human policy decision that revises the required dependency bundle.",
+      "completion_evidence": "Capability contract, adversarial tests, resource version, and real-case evaluation without hiding missing coverage."
+    },
+    {
+      "priority": 3,
+      "action": "Expand dependency projection and deterministic lifting under versioned rules, beginning with negation, modality, quotation, reporting, and cross-field verification relations.",
+      "completion_evidence": "Per-rule invariants, counterexamples, source-span provenance, and no candidate authority escalation."
+    },
+    {
+      "priority": 4,
+      "action": "Design a reference-separated or paged MCP detail surface and a versioned cross-surface failure envelope while retaining a schema-valid complete evidence export.",
+      "completion_evidence": "Bounded summary response, deterministic detail retrieval, stable Python/CLI/MCP error schema, payload measurements, and round-trip reaggregation tests."
+    },
+    {
+      "priority": 5,
+      "action": "Implement separate vNext profiles and vertical slices for plan, diff, convention, finish, and acceptance material before any legacy cutover.",
+      "completion_evidence": "Profile constitutions, schemas, conformance corpora, migration maps, and representative real-work shadow records."
+    },
+    {
+      "priority": 6,
+      "action": "Run human acceptance review and explicitly accept, revise, defer, or reject cutover; do not infer acceptance from workflow pass.",
+      "completion_evidence": "A human-owned acceptance record with residual-risk decisions and rollback conditions."
+    }
+  ]
+}

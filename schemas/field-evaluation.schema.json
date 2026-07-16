@@ -1,0 +1,738 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/field-evaluation.schema.json",
+  "title": "semantic-guard field evaluation and route ablation bundle",
+  "description": "Content-addressed field population, blind labels, holdout isolation, route runs, error costs, deterministic metrics, and bounded field-validity status. It does not choose costs, thresholds, or cutover.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "policy",
+    "human_decision_records",
+    "label_guide",
+    "reviewers",
+    "cases",
+    "labels",
+    "adjudications",
+    "holdout",
+    "runs",
+    "metrics",
+    "field_validity",
+    "outcome_axes",
+    "authority_boundary",
+    "limitations",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "field-evaluation/v0"},
+    "evaluation_id": {"type": "string", "pattern": "^field-evaluation\\.[a-z0-9.-]+$"},
+    "policy": {"$ref": "#/$defs/policy"},
+    "human_decision_records": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/humanDecision"}
+    },
+    "label_guide": {"$ref": "#/$defs/versionedRef"},
+    "reviewers": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/reviewer"}
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/case"}
+    },
+    "labels": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/label"}
+    },
+    "adjudications": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/adjudication"}
+    },
+    "holdout": {"$ref": "#/$defs/holdout"},
+    "runs": {
+      "type": "array",
+      "minItems": 4,
+      "items": {"$ref": "#/$defs/run"}
+    },
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "field_validity": {"$ref": "#/$defs/fieldValidity"},
+    "outcome_axes": {"$ref": "#/$defs/outcomeAxes"},
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "idStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "version", "digest"],
+      "properties": {
+        "ref_id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "targetPopulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population_id",
+        "description",
+        "intended_use_id",
+        "intended_use",
+        "unit_of_analysis",
+        "sampling_frame",
+        "inclusion_criteria",
+        "exclusion_criteria",
+        "population_digest"
+      ],
+      "properties": {
+        "population_id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "intended_use_id": {"type": "string", "minLength": 1},
+        "intended_use": {"type": "string", "minLength": 1},
+        "unit_of_analysis": {"type": "string", "minLength": 1},
+        "sampling_frame": {"type": "string", "minLength": 1},
+        "inclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "exclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "population_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "stratum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stratum_id", "label", "definition"],
+      "properties": {
+        "stratum_id": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "definition": {"type": "string", "minLength": 1}
+      }
+    },
+    "stratification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension_id", "required", "strata"],
+      "properties": {
+        "dimension_id": {"type": "string", "minLength": 1},
+        "required": {"type": "boolean"},
+        "strata": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stratum"}
+        }
+      }
+    },
+    "costModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "false_satisfaction_cost",
+        "false_refutation_cost",
+        "abstention_cost",
+        "catastrophic_false_satisfaction",
+        "currency_or_unit",
+        "rationale"
+      ],
+      "properties": {
+        "false_satisfaction_cost": {"type": "number", "exclusiveMinimum": 0},
+        "false_refutation_cost": {"type": "number", "minimum": 0},
+        "abstention_cost": {"type": "number", "minimum": 0},
+        "catastrophic_false_satisfaction": {"const": true},
+        "currency_or_unit": {"type": "string", "minLength": 1},
+        "rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_false_satisfaction_rate",
+        "max_false_refutation_rate",
+        "max_abstention_rate",
+        "min_coverage",
+        "max_cost_weighted_loss"
+      ],
+      "properties": {
+        "max_false_satisfaction_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_false_refutation_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_abstention_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_coverage": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_cost_weighted_loss": {"type": "number", "minimum": 0}
+      }
+    },
+    "minimumSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall", "reference_satisfied", "reference_refuted", "per_required_stratum"],
+      "properties": {
+        "overall": {"type": "integer", "minimum": 1},
+        "reference_satisfied": {"type": "integer", "minimum": 1},
+        "reference_refuted": {"type": "integer", "minimum": 1},
+        "per_required_stratum": {"type": "integer", "minimum": 1}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "version",
+        "owner_kind",
+        "status",
+        "decision_record_ref",
+        "target_population",
+        "stratification",
+        "cost_model",
+        "thresholds",
+        "minimum_sample",
+        "confidence_level",
+        "primary_metric",
+        "candidate_route",
+        "evidence_class",
+        "review_triggers",
+        "policy_digest"
+      ],
+      "properties": {
+        "policy_id": {"type": "string", "pattern": "^field-policy\\.[a-z0-9.-]+$"},
+        "version": {"type": "string", "minLength": 1},
+        "owner_kind": {"const": "human"},
+        "status": {"enum": ["pending", "adopted", "retired"]},
+        "decision_record_ref": {"type": ["string", "null"], "minLength": 1},
+        "target_population": {"$ref": "#/$defs/targetPopulation"},
+        "stratification": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stratification"}
+        },
+        "cost_model": {"$ref": "#/$defs/costModel"},
+        "thresholds": {"$ref": "#/$defs/thresholds"},
+        "minimum_sample": {"$ref": "#/$defs/minimumSample"},
+        "confidence_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "primary_metric": {
+          "enum": [
+            "false_satisfaction_rate",
+            "false_refutation_rate",
+            "abstention_rate",
+            "coverage",
+            "cost_weighted_loss"
+          ]
+        },
+        "candidate_route": {"$ref": "#/$defs/route"},
+        "evidence_class": {"enum": ["field_evaluation", "local_fixture", "smoke"]},
+        "review_triggers": {"$ref": "#/$defs/nonEmptyStrings"},
+        "policy_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "humanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_type",
+        "issuer_kind",
+        "human_actor_ref",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "decision",
+        "rationale",
+        "evidence_refs",
+        "recorded_at"
+      ],
+      "properties": {
+        "decision_id": {"type": "string", "pattern": "^human-decision\\.[a-z0-9.-]+$"},
+        "decision_type": {"enum": ["adopt_policy", "retire_policy"]},
+        "issuer_kind": {"const": "human"},
+        "human_actor_ref": {"type": "string", "minLength": 1},
+        "policy_id": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "string", "minLength": 1},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "decision": {"enum": ["adopt", "retire"]},
+        "rationale": {"type": "string", "minLength": 1},
+        "evidence_refs": {"$ref": "#/$defs/idStrings"},
+        "recorded_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer_id",
+        "reviewer_kind",
+        "role",
+        "independence_group",
+        "relationship_to_system",
+        "blind_to_route_outputs",
+        "blind_to_other_labels",
+        "conflict_statement"
+      ],
+      "properties": {
+        "reviewer_id": {"type": "string", "minLength": 1},
+        "reviewer_kind": {"const": "human"},
+        "role": {"enum": ["label_reviewer", "adjudicator"]},
+        "independence_group": {"type": "string", "minLength": 1},
+        "relationship_to_system": {"enum": ["independent", "developer", "operator", "unknown"]},
+        "blind_to_route_outputs": {"type": "boolean"},
+        "blind_to_other_labels": {"type": "boolean"},
+        "conflict_statement": {"type": "string", "minLength": 1}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "subject_ref",
+        "subject_digest",
+        "population_id",
+        "intended_use_id",
+        "stratum_refs",
+        "source_kind",
+        "split",
+        "case_digest"
+      ],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^field-case\\.[a-z0-9.-]+$"},
+        "subject_ref": {"type": "string", "minLength": 1},
+        "subject_digest": {"$ref": "#/$defs/digest"},
+        "population_id": {"type": "string", "minLength": 1},
+        "intended_use_id": {"type": "string", "minLength": 1},
+        "stratum_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "source_kind": {"enum": ["field_sample", "local_fixture", "smoke"]},
+        "split": {"const": "holdout"},
+        "case_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "referenceLabel": {"enum": ["satisfied", "refuted"]},
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label_id",
+        "case_id",
+        "case_digest",
+        "reviewer_id",
+        "reference_label",
+        "label_guide_ref",
+        "label_guide_digest",
+        "blind_to_route_outputs",
+        "blind_to_other_labels",
+        "recorded_at",
+        "label_digest"
+      ],
+      "properties": {
+        "label_id": {"type": "string", "pattern": "^label\\.[a-z0-9.-]+$"},
+        "case_id": {"type": "string", "minLength": 1},
+        "case_digest": {"$ref": "#/$defs/digest"},
+        "reviewer_id": {"type": "string", "minLength": 1},
+        "reference_label": {"$ref": "#/$defs/referenceLabel"},
+        "label_guide_ref": {"type": "string", "minLength": 1},
+        "label_guide_digest": {"$ref": "#/$defs/digest"},
+        "blind_to_route_outputs": {"type": "boolean"},
+        "blind_to_other_labels": {"type": "boolean"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "label_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "adjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adjudication_id",
+        "case_id",
+        "case_digest",
+        "adjudicator_id",
+        "basis_label_refs",
+        "final_label",
+        "label_guide_ref",
+        "label_guide_digest",
+        "recorded_at",
+        "adjudication_digest"
+      ],
+      "properties": {
+        "adjudication_id": {"type": "string", "pattern": "^adjudication\\.[a-z0-9.-]+$"},
+        "case_id": {"type": "string", "minLength": 1},
+        "case_digest": {"$ref": "#/$defs/digest"},
+        "adjudicator_id": {"type": "string", "minLength": 1},
+        "basis_label_refs": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "final_label": {"$ref": "#/$defs/referenceLabel"},
+        "label_guide_ref": {"type": "string", "minLength": 1},
+        "label_guide_digest": {"$ref": "#/$defs/digest"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "adjudication_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "caseBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "case_digest"],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "case_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "holdout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "holdout_id",
+        "case_refs",
+        "case_set_digest",
+        "sealed_at",
+        "labels_released_at",
+        "holdout_digest"
+      ],
+      "properties": {
+        "holdout_id": {"type": "string", "pattern": "^holdout\\.[a-z0-9.-]+$"},
+        "case_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/caseBinding"}
+        },
+        "case_set_digest": {"$ref": "#/$defs/digest"},
+        "sealed_at": {"type": "string", "format": "date-time"},
+        "labels_released_at": {"type": "string", "format": "date-time"},
+        "holdout_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "route": {"enum": ["direct_only", "morphology", "dependency", "llm"]},
+    "prediction": {"enum": ["satisfied", "refuted", "abstain"]},
+    "caseResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "case_digest", "prediction", "reason_codes"],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "case_digest": {"$ref": "#/$defs/digest"},
+        "prediction": {"$ref": "#/$defs/prediction"},
+        "reason_codes": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "route",
+        "route_config",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "population_digest",
+        "holdout_id",
+        "holdout_digest",
+        "case_set_digest",
+        "label_bundle_digest",
+        "predictions_recorded_at",
+        "label_access_prohibited",
+        "training_case_refs",
+        "case_results",
+        "run_digest"
+      ],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^field-run\\.[a-z0-9.-]+$"},
+        "route": {"$ref": "#/$defs/route"},
+        "route_config": {"$ref": "#/$defs/versionedRef"},
+        "policy_id": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "string", "minLength": 1},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "population_digest": {"$ref": "#/$defs/digest"},
+        "holdout_id": {"type": "string", "minLength": 1},
+        "holdout_digest": {"$ref": "#/$defs/digest"},
+        "case_set_digest": {"$ref": "#/$defs/digest"},
+        "label_bundle_digest": {"$ref": "#/$defs/digest"},
+        "predictions_recorded_at": {"type": "string", "format": "date-time"},
+        "label_access_prohibited": {"type": "boolean"},
+        "training_case_refs": {"$ref": "#/$defs/idStrings"},
+        "case_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/caseResult"}
+        },
+        "run_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confidence_level", "lower", "upper"],
+      "properties": {
+        "confidence_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "lower": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "upper": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator", "value", "wilson_interval"],
+      "properties": {
+        "numerator": {"type": "integer", "minimum": 0},
+        "denominator": {"type": "integer", "minimum": 0},
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "wilson_interval": {"$ref": "#/$defs/interval"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "total",
+        "reference_satisfied",
+        "reference_refuted",
+        "false_satisfaction",
+        "false_refutation",
+        "abstain",
+        "covered",
+        "correct"
+      ],
+      "properties": {
+        "total": {"type": "integer", "minimum": 0},
+        "reference_satisfied": {"type": "integer", "minimum": 0},
+        "reference_refuted": {"type": "integer", "minimum": 0},
+        "false_satisfaction": {"type": "integer", "minimum": 0},
+        "false_refutation": {"type": "integer", "minimum": 0},
+        "abstain": {"type": "integer", "minimum": 0},
+        "covered": {"type": "integer", "minimum": 0},
+        "correct": {"type": "integer", "minimum": 0}
+      }
+    },
+    "rateSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["false_satisfaction", "false_refutation", "abstention", "coverage"],
+      "properties": {
+        "false_satisfaction": {"$ref": "#/$defs/rate"},
+        "false_refutation": {"$ref": "#/$defs/rate"},
+        "abstention": {"$ref": "#/$defs/rate"},
+        "coverage": {"$ref": "#/$defs/rate"}
+      }
+    },
+    "stratumMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stratum_ref", "counts", "rates", "cost_weighted_loss"],
+      "properties": {
+        "stratum_ref": {"type": "string", "minLength": 1},
+        "counts": {"$ref": "#/$defs/counts"},
+        "rates": {"$ref": "#/$defs/rateSet"},
+        "cost_weighted_loss": {"type": "number", "minimum": 0}
+      }
+    },
+    "routeMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route",
+        "run_ref",
+        "run_digest",
+        "counts",
+        "rates",
+        "cost_weighted_loss",
+        "strata"
+      ],
+      "properties": {
+        "route": {"$ref": "#/$defs/route"},
+        "run_ref": {"type": "string", "minLength": 1},
+        "run_digest": {"$ref": "#/$defs/digest"},
+        "counts": {"$ref": "#/$defs/counts"},
+        "rates": {"$ref": "#/$defs/rateSet"},
+        "cost_weighted_loss": {"type": "number", "minimum": 0},
+        "strata": {"type": "array", "items": {"$ref": "#/$defs/stratumMetric"}}
+      }
+    },
+    "incrementalValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_route",
+        "target_route",
+        "case_set_digest",
+        "loss_reduction",
+        "coverage_delta",
+        "false_satisfaction_rate_delta",
+        "false_refutation_rate_delta",
+        "resolved_abstentions",
+        "introduced_errors"
+      ],
+      "properties": {
+        "baseline_route": {"$ref": "#/$defs/route"},
+        "target_route": {"$ref": "#/$defs/route"},
+        "case_set_digest": {"$ref": "#/$defs/digest"},
+        "loss_reduction": {"type": "number"},
+        "coverage_delta": {"type": "number", "minimum": -1, "maximum": 1},
+        "false_satisfaction_rate_delta": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "false_refutation_rate_delta": {"type": ["number", "null"], "minimum": -1, "maximum": 1},
+        "resolved_abstentions": {"type": "integer", "minimum": 0},
+        "introduced_errors": {"type": "integer", "minimum": 0}
+      }
+    },
+    "thresholdCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "operator",
+        "point_estimate",
+        "comparison_value",
+        "comparison_basis",
+        "confidence_level",
+        "threshold",
+        "passed"
+      ],
+      "properties": {
+        "metric": {"type": "string", "minLength": 1},
+        "operator": {"enum": ["<=", ">="]},
+        "point_estimate": {"type": ["number", "null"]},
+        "comparison_value": {"type": ["number", "null"]},
+        "comparison_basis": {
+          "enum": ["wilson_upper", "wilson_lower", "point_estimate"]
+        },
+        "confidence_level": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "threshold": {"type": "number", "minimum": 0},
+        "passed": {"type": "boolean"}
+      }
+    },
+    "thresholdAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route", "status", "criteria"],
+      "properties": {
+        "route": {"$ref": "#/$defs/route"},
+        "status": {"enum": ["passed", "failed"]},
+        "criteria": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"$ref": "#/$defs/thresholdCriterion"}
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_set_digest",
+        "label_bundle_digest",
+        "population_digest",
+        "route_metrics",
+        "incremental_values",
+        "threshold_assessment",
+        "metrics_digest"
+      ],
+      "properties": {
+        "case_set_digest": {"$ref": "#/$defs/digest"},
+        "label_bundle_digest": {"$ref": "#/$defs/digest"},
+        "population_digest": {"$ref": "#/$defs/digest"},
+        "route_metrics": {
+          "type": "array",
+          "minItems": 4,
+          "items": {"$ref": "#/$defs/routeMetric"}
+        },
+        "incremental_values": {
+          "type": "array",
+          "minItems": 3,
+          "items": {"$ref": "#/$defs/incrementalValue"}
+        },
+        "threshold_assessment": {"$ref": "#/$defs/thresholdAssessment"},
+        "metrics_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "fieldValidity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reasons",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "population_digest",
+        "holdout_digest",
+        "evaluated_route",
+        "limitations"
+      ],
+      "properties": {
+        "status": {"enum": ["not_established", "established_for_declared_population"]},
+        "reasons": {"$ref": "#/$defs/idStrings"},
+        "policy_id": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "string", "minLength": 1},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "population_digest": {"$ref": "#/$defs/digest"},
+        "holdout_digest": {"$ref": "#/$defs/digest"},
+        "evaluated_route": {"$ref": "#/$defs/route"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "notEvaluatedAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence_refs", "reason"],
+      "properties": {
+        "status": {"const": "not_evaluated"},
+        "evidence_refs": {"maxItems": 0, "type": "array"},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "outcomeAxes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repair_effect", "human_operational_use", "operational_qualification"],
+      "properties": {
+        "repair_effect": {"$ref": "#/$defs/notEvaluatedAxis"},
+        "human_operational_use": {"$ref": "#/$defs/notEvaluatedAxis"},
+        "operational_qualification": {"$ref": "#/$defs/notEvaluatedAxis"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_guard_role", "cost_owner", "threshold_owner", "cutover_owner", "final_acceptance_owner"],
+      "properties": {
+        "semantic_guard_role": {"const": "compute_and_validate_declared_evaluation"},
+        "cost_owner": {"const": "human"},
+        "threshold_owner": {"const": "human"},
+        "cutover_owner": {"const": "external_human_or_control_plane"},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    }
+  }
+}

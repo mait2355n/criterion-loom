@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/responsibility-policy.schema.json",
+  "title": "semantic-guard responsibility policy",
+  "description": "A human-owned policy describing which layer may decide which issue. The policy is audit input, not an authority grant produced by semantic-guard.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "policy_id",
+    "policy_version",
+    "adoption_state",
+    "human_decision_ref",
+    "roles",
+    "issue_rules",
+    "repair_effect_policy",
+    "policy_basis_digest",
+    "policy_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "responsibility-policy/v2"},
+    "policy_id": {"$ref": "#/$defs/stable_id"},
+    "policy_version": {"$ref": "#/$defs/non_empty"},
+    "adoption_state": {"enum": ["pending", "adopted", "retired"]},
+    "human_decision_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/human_decision_ref"}
+      ]
+    },
+    "roles": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/role"}
+    },
+    "issue_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/issue_rule"}
+    },
+    "repair_effect_policy": {
+      "type": "object",
+      "required": ["transition_rule_id", "independent_review_required"],
+      "properties": {
+        "transition_rule_id": {"const": "repair-effect-transition/v1"},
+        "independent_review_required": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "policy_basis_digest": {"$ref": "#/$defs/digest"},
+    "policy_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"adoption_state": {"const": "adopted"}},
+        "required": ["adoption_state"]
+      },
+      "then": {
+        "properties": {"human_decision_ref": {"$ref": "#/$defs/human_decision_ref"}}
+      },
+      "else": {
+        "properties": {"human_decision_ref": {"type": "null"}}
+      }
+    }
+  ],
+  "$defs": {
+    "non_empty": {"type": "string", "minLength": 1},
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "record_ref": {
+      "type": "object",
+      "required": ["record_id", "record_locator", "record_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "record_locator": {"$ref": "#/$defs/non_empty"},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"$ref": "#/$defs/non_empty"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "human_decision_ref": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "target_id",
+        "target_version",
+        "target_basis_digest",
+        "status",
+        "decided_by",
+        "decision_maker_identity",
+        "decision_maker_kind",
+        "external_to_semantic_guard",
+        "decided_at",
+        "record_ref"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "decision_kind": {"const": "adopt_responsibility_policy"},
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_version": {"$ref": "#/$defs/non_empty"},
+        "target_basis_digest": {"$ref": "#/$defs/digest"},
+        "status": {"const": "accepted"},
+        "decided_by": {"$ref": "#/$defs/stable_id"},
+        "decision_maker_identity": {"$ref": "#/$defs/identity_binding"},
+        "decision_maker_kind": {"const": "human"},
+        "external_to_semantic_guard": {"const": true},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "record_ref": {"$ref": "#/$defs/record_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "actor_class": {
+      "enum": [
+        "coding_agent",
+        "human_requester",
+        "human_reviewer",
+        "human_approver",
+        "external_control_plane"
+      ]
+    },
+    "decision_right": {
+      "enum": [
+        "acquire_evidence",
+        "bounded_technical_interpretation",
+        "propose_repair",
+        "execute_authorized_repair",
+        "run_reaudit",
+        "schedule_or_delegate",
+        "change_intent_or_scope",
+        "accept_residual_risk",
+        "grant_or_expand_authority",
+        "authorize_external_effect",
+        "final_acceptance"
+      ]
+    },
+    "role": {
+      "type": "object",
+      "required": ["role_id", "actor_class", "decision_rights", "limitations"],
+      "properties": {
+        "role_id": {"$ref": "#/$defs/stable_id"},
+        "actor_class": {"$ref": "#/$defs/actor_class"},
+        "decision_rights": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/decision_right"}
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "issue_class": {
+      "enum": [
+        "missing_evidence",
+        "ambiguous_interpretation",
+        "conflicting_evidence",
+        "implementation_defect",
+        "verification_failure",
+        "scope_or_intent_choice",
+        "risk_acceptance",
+        "authority_change",
+        "external_or_irreversible_effect",
+        "final_acceptance",
+        "other"
+      ]
+    },
+    "issue_rule": {
+      "type": "object",
+      "required": [
+        "issue_class",
+        "accountable_role_id",
+        "permitted_role_ids",
+        "required_right",
+        "technical_work_before_escalation",
+        "escalation_conditions"
+      ],
+      "properties": {
+        "issue_class": {"$ref": "#/$defs/issue_class"},
+        "accountable_role_id": {"$ref": "#/$defs/stable_id"},
+        "permitted_role_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "required_right": {"$ref": "#/$defs/decision_right"},
+        "technical_work_before_escalation": {"type": "boolean"},
+        "escalation_conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

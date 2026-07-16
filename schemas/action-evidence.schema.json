@@ -1,0 +1,550 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/action-evidence.schema.json",
+  "title": "semantic-guard v1 action evidence assessment",
+  "description": "Closed bundle for bounded action occurrence, actor identity, authority, procedure, artifact provenance, authenticity, and causality claims. It is audit material only and never dispatches, grants authority, or performs human acceptance.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "profile_ref",
+    "expected_action_spec",
+    "expected_action_spec_digest",
+    "event",
+    "observations",
+    "authority_grants",
+    "signature_attestations",
+    "causal_observations",
+    "evaluated_at",
+    "claim_results",
+    "summary",
+    "limitations",
+    "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "action-evidence-assessment/v0"},
+    "assessment_id": {
+      "type": "string",
+      "pattern": "^action-assessment\\.sha256\\.[0-9a-f]{64}$"
+    },
+    "profile_ref": {"$ref": "#/$defs/profile_ref"},
+    "expected_action_spec": {"$ref": "#/$defs/action_spec"},
+    "expected_action_spec_digest": {"$ref": "#/$defs/sha256_digest"},
+    "event": {"$ref": "#/$defs/action_event"},
+    "observations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/action_observation"}
+    },
+    "authority_grants": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/authority_grant"}
+    },
+    "signature_attestations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/signature_attestation"}
+    },
+    "causal_observations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/causal_observation"}
+    },
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "claim_results": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {"$ref": "#/$defs/claim_result"}
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "required_claim_classes",
+        "unproved_claim_classes",
+        "refuted_claim_classes",
+        "all_required_claims_proved",
+        "human_acceptance",
+        "semantic_guard_role"
+      ],
+      "properties": {
+        "required_claim_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/claim_class"}
+        },
+        "unproved_claim_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/claim_class"}
+        },
+        "refuted_claim_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/claim_class"}
+        },
+        "all_required_claims_proved": {"type": "boolean"},
+        "human_acceptance": {"const": "pending"},
+        "semantic_guard_role": {"const": "audit_only_no_dispatch_or_authority_grant"}
+      },
+      "unevaluatedProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "assessment_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_locator": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_root_ref": {
+      "type": "object",
+      "required": ["root_id", "root_version", "locator", "content_digest"],
+      "properties": {
+        "root_id": {"$ref": "#/$defs/stable_id"},
+        "root_version": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "profile_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"type": "string", "minLength": 1},
+        "profile_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "action_spec": {
+      "type": "object",
+      "required": ["action_type", "target_ref", "intent_digest", "parameters_digest"],
+      "properties": {
+        "action_type": {"$ref": "#/$defs/stable_id"},
+        "target_ref": {"$ref": "#/$defs/identity_binding"},
+        "intent_digest": {"$ref": "#/$defs/sha256_digest"},
+        "parameters_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "artifact_ref": {
+      "type": "object",
+      "required": ["artifact_id", "role", "locator", "content_digest"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/stable_id"},
+        "role": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "time_attestation": {
+      "type": "object",
+      "required": ["time_trust", "clock_identity", "trust_root_ref"],
+      "properties": {
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "clock_identity": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/identity_binding"}]
+        },
+        "trust_root_ref": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/trust_root_ref"}]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "procedure_stage_observation": {
+      "type": "object",
+      "required": ["stage_id", "status", "observed_at", "evidence_digest"],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/stable_id"},
+        "status": {"enum": ["completed", "failed", "skipped", "not_observed"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "evidence_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "stop_condition_observation": {
+      "type": "object",
+      "required": ["condition_id", "triggered", "response", "evidence_digest"],
+      "properties": {
+        "condition_id": {"$ref": "#/$defs/stable_id"},
+        "triggered": {"type": "boolean"},
+        "response": {"enum": ["stopped", "continued", "not_observed"]},
+        "evidence_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "action_event_ref": {
+      "type": "object",
+      "required": ["event_id", "event_digest"],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^action-event\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "event_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "action_event": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "event_id",
+        "action_spec",
+        "action_spec_digest",
+        "actor_identity",
+        "environment_identity",
+        "occurred_at",
+        "time_attestation",
+        "execution_status",
+        "input_artifacts",
+        "output_artifacts",
+        "procedure_stages",
+        "stop_conditions",
+        "event_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "action-event/v0"},
+        "event_id": {
+          "type": "string",
+          "pattern": "^action-event\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "action_spec": {"$ref": "#/$defs/action_spec"},
+        "action_spec_digest": {"$ref": "#/$defs/sha256_digest"},
+        "actor_identity": {"$ref": "#/$defs/identity_binding"},
+        "environment_identity": {"$ref": "#/$defs/identity_binding"},
+        "occurred_at": {"type": "string", "format": "date-time"},
+        "time_attestation": {"$ref": "#/$defs/time_attestation"},
+        "execution_status": {"enum": ["succeeded", "failed", "aborted", "unknown"]},
+        "input_artifacts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "output_artifacts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "procedure_stages": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/procedure_stage_observation"}
+        },
+        "stop_conditions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/stop_condition_observation"}
+        },
+        "event_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_kind": {
+      "enum": [
+        "prose_description",
+        "tool_request",
+        "self_report",
+        "observer_attestation",
+        "trusted_execution_log",
+        "signed_event"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "self_reported",
+        "locally_observed",
+        "tool_reported",
+        "independently_observed",
+        "signed",
+        "formally_verified",
+        "unknown"
+      ]
+    },
+    "action_observation": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "observation_id",
+        "evidence_kind",
+        "event_ref",
+        "observer_identity",
+        "relationship_to_actor",
+        "trust_class",
+        "observed_action_spec_digest",
+        "observed_actor_identity",
+        "observed_environment_identity",
+        "observed_at",
+        "time_attestation",
+        "observed_input_artifacts",
+        "observed_output_artifacts",
+        "observed_stage_ids",
+        "observed_stop_condition_ids",
+        "evidence_record_ref",
+        "limitations",
+        "observation_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "action-observation/v0"},
+        "observation_id": {
+          "type": "string",
+          "pattern": "^action-observation\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "evidence_kind": {"$ref": "#/$defs/evidence_kind"},
+        "event_ref": {"$ref": "#/$defs/action_event_ref"},
+        "observer_identity": {"$ref": "#/$defs/identity_binding"},
+        "relationship_to_actor": {
+          "enum": ["self", "same_process", "same_operator", "independent", "unknown"]
+        },
+        "trust_class": {"$ref": "#/$defs/trust_class"},
+        "observed_action_spec_digest": {"$ref": "#/$defs/sha256_digest"},
+        "observed_actor_identity": {"$ref": "#/$defs/identity_binding"},
+        "observed_environment_identity": {"$ref": "#/$defs/identity_binding"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "time_attestation": {"$ref": "#/$defs/time_attestation"},
+        "observed_input_artifacts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "observed_output_artifacts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/artifact_ref"}
+        },
+        "observed_stage_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "observed_stop_condition_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "evidence_record_ref": {"$ref": "#/$defs/digest_bound_locator"},
+        "limitations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "observation_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "signature_attestation": {
+      "type": "object",
+      "required": [
+        "signature_id",
+        "algorithm",
+        "signer_identity",
+        "signed_content_digest",
+        "signature_value_digest",
+        "trust_root_ref",
+        "verification_status",
+        "verifier_identity",
+        "verified_at",
+        "time_attestation",
+        "verification_record_ref",
+        "attestation_digest"
+      ],
+      "properties": {
+        "signature_id": {"$ref": "#/$defs/stable_id"},
+        "algorithm": {"type": "string", "minLength": 1},
+        "signer_identity": {"$ref": "#/$defs/identity_binding"},
+        "signed_content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "signature_value_digest": {"$ref": "#/$defs/sha256_digest"},
+        "trust_root_ref": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/trust_root_ref"}]
+        },
+        "verification_status": {"enum": ["verified", "failed", "not_verified"]},
+        "verifier_identity": {"$ref": "#/$defs/identity_binding"},
+        "verified_at": {"type": "string", "format": "date-time"},
+        "time_attestation": {"$ref": "#/$defs/time_attestation"},
+        "verification_record_ref": {"$ref": "#/$defs/digest_bound_locator"},
+        "attestation_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "authority_grant": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "grant_id",
+        "grantor_identity",
+        "grantee_identity",
+        "action_types",
+        "target_ids",
+        "environment_ids",
+        "issued_at",
+        "expires_at",
+        "time_attestation",
+        "status",
+        "grant_record_ref",
+        "grant_material_digest",
+        "grant_signature",
+        "grant_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "authority-grant/v0"},
+        "grant_id": {
+          "type": "string",
+          "pattern": "^authority-grant\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "grantor_identity": {"$ref": "#/$defs/identity_binding"},
+        "grantee_identity": {"$ref": "#/$defs/identity_binding"},
+        "action_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "target_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "environment_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_attestation": {"$ref": "#/$defs/time_attestation"},
+        "status": {"enum": ["active", "revoked"]},
+        "grant_record_ref": {"$ref": "#/$defs/digest_bound_locator"},
+        "grant_material_digest": {"$ref": "#/$defs/sha256_digest"},
+        "grant_signature": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/signature_attestation"}
+          ]
+        },
+        "grant_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "causal_observation": {
+      "type": "object",
+      "required": [
+        "causal_id",
+        "event_ref",
+        "effect_artifact_ref",
+        "observer_observation_id",
+        "method",
+        "outcome",
+        "observed_at",
+        "time_attestation",
+        "evidence_digest",
+        "observation_digest"
+      ],
+      "properties": {
+        "causal_id": {
+          "type": "string",
+          "pattern": "^causal-observation\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "event_ref": {"$ref": "#/$defs/action_event_ref"},
+        "effect_artifact_ref": {"$ref": "#/$defs/artifact_ref"},
+        "observer_observation_id": {
+          "type": "string",
+          "pattern": "^action-observation\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "method": {
+          "enum": [
+            "controlled_replay",
+            "trace_link",
+            "independent_observation",
+            "formal_derivation"
+          ]
+        },
+        "outcome": {"enum": ["supports", "refutes"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "time_attestation": {"$ref": "#/$defs/time_attestation"},
+        "evidence_digest": {"$ref": "#/$defs/sha256_digest"},
+        "observation_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "claim_class": {
+      "enum": [
+        "occurrence",
+        "identity",
+        "authority",
+        "procedure",
+        "artifact_provenance",
+        "authenticity",
+        "causality"
+      ]
+    },
+    "claim_result": {
+      "type": "object",
+      "required": [
+        "claim_class",
+        "state",
+        "basis_refs",
+        "counterevidence_refs",
+        "reasons",
+        "limitations"
+      ],
+      "properties": {
+        "claim_class": {"$ref": "#/$defs/claim_class"},
+        "state": {"enum": ["proved", "unproved", "refuted"]},
+        "basis_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "counterevidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

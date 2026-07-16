@@ -1,0 +1,441 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/lifecycle-profile-registry.schema.json",
+  "title": "semantic-guard v1 candidate lifecycle profile registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "registry_id",
+    "version",
+    "status",
+    "purpose",
+    "authority_boundary",
+    "stage_order",
+    "profiles",
+    "limitations",
+    "registry_digest",
+    "summary"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "minLength": 1},
+    "schema_version": {"const": "lifecycle-profile-registry/v0"},
+    "registry_id": {"type": "string", "pattern": "^lifecycle-profile-registry\\.[a-z0-9.-]+$"},
+    "version": {"type": "string", "pattern": "^candidate-[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "status": {"const": "candidate"},
+    "purpose": {"type": "string", "minLength": 1},
+    "authority_boundary": {"$ref": "#/$defs/registryAuthority"},
+    "stage_order": {"$ref": "#/$defs/stageOrder"},
+    "profiles": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {"$ref": "#/$defs/profile"}
+    },
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "registry_digest": {"$ref": "#/$defs/digest"},
+    "summary": {"$ref": "#/$defs/summary"}
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "stage": {
+      "enum": [
+        "request",
+        "exploration",
+        "requirement",
+        "decision",
+        "plan",
+        "action",
+        "realization",
+        "diff",
+        "verification",
+        "completion"
+      ]
+    },
+    "traceStage": {
+      "enum": [
+        "request",
+        "exploration_question",
+        "requirement",
+        "decision",
+        "plan",
+        "action",
+        "realization",
+        "diff",
+        "verification",
+        "completion_claim"
+      ]
+    },
+    "stageOrder": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "prefixItems": [
+        {"const": "request"},
+        {"const": "exploration"},
+        {"const": "requirement"},
+        {"const": "decision"},
+        {"const": "plan"},
+        {"const": "action"},
+        {"const": "realization"},
+        {"const": "diff"},
+        {"const": "verification"},
+        {"const": "completion"}
+      ],
+      "items": false
+    },
+    "registryAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adoption_owner",
+        "semantic_guard_adoption_authority",
+        "agent_adoption_authority",
+        "runtime_authority",
+        "final_acceptance_owner"
+      ],
+      "properties": {
+        "adoption_owner": {"const": "human"},
+        "semantic_guard_adoption_authority": {"const": "none"},
+        "agent_adoption_authority": {"const": "none"},
+        "runtime_authority": {"const": "none"},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["condition_id", "statement", "evidence_requirement"],
+      "properties": {
+        "condition_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "statement": {"type": "string", "minLength": 1},
+        "evidence_requirement": {"type": "string", "minLength": 1}
+      }
+    },
+    "semanticField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field_id", "meaning", "required", "absence_effect"],
+      "properties": {
+        "field_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "meaning": {"type": "string", "minLength": 1},
+        "required": {"const": true},
+        "absence_effect": {"enum": ["unresolved", "refuted", "blocked"]}
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "relationship_id",
+        "subject_role",
+        "predicate",
+        "object_role",
+        "cardinality",
+        "absence_effect"
+      ],
+      "properties": {
+        "relationship_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "subject_role": {"type": "string", "minLength": 1},
+        "predicate": {"type": "string", "minLength": 1},
+        "object_role": {"type": "string", "minLength": 1},
+        "cardinality": {"enum": ["exactly_one", "one_or_more"]},
+        "absence_effect": {"enum": ["unresolved", "refuted", "blocked"]}
+      }
+    },
+    "obligationTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "obligation_id",
+        "statement",
+        "origin_trace",
+        "required_evidence_types",
+        "absence_effect"
+      ],
+      "properties": {
+        "obligation_id": {"type": "string", "pattern": "^obligation\\.[a-z0-9_.-]+$"},
+        "statement": {"type": "string", "minLength": 1},
+        "origin_trace": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["OR-01", "OR-02", "OR-03"]}
+        },
+        "required_evidence_types": {"$ref": "#/$defs/nonEmptyStrings"},
+        "absence_effect": {"enum": ["unresolved", "refuted", "blocked"]}
+      }
+    },
+    "hollowCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["condition_id", "condition_kind", "statement"],
+      "properties": {
+        "condition_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "condition_kind": {
+          "enum": [
+            "artifact_presence_only",
+            "lexical_match_only",
+            "audit_pass_only",
+            "local_test_only",
+            "self_report_only",
+            "authority_inference",
+            "unresolved_erasure"
+          ]
+        },
+        "statement": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidenceType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_type", "supports", "does_not_establish"],
+      "properties": {
+        "evidence_type": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "supports": {"type": "string", "minLength": 1},
+        "does_not_establish": {"type": "string", "minLength": 1}
+      }
+    },
+    "validationMaterial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_id", "kind", "purpose", "required"],
+      "properties": {
+        "material_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "kind": {
+          "enum": [
+            "document",
+            "structured_record",
+            "rule_trace",
+            "execution_evidence",
+            "independent_review",
+            "field_evaluation",
+            "human_decision",
+            "regression_result",
+            "provenance_record"
+          ]
+        },
+        "purpose": {"type": "string", "minLength": 1},
+        "required": {"const": true}
+      }
+    },
+    "acceptanceQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question_id", "question", "owner", "required"],
+      "properties": {
+        "question_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "question": {"type": "string", "minLength": 1},
+        "owner": {"const": "human"},
+        "required": {"const": true}
+      }
+    },
+    "unresolvedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unresolved_id", "question", "owner", "blocking_effect", "resolution_evidence"],
+      "properties": {
+        "unresolved_id": {"type": "string", "pattern": "^unresolved\\.[a-z0-9_.-]+$"},
+        "question": {"type": "string", "minLength": 1},
+        "owner": {"enum": ["human", "maintainer", "domain_expert", "independent_reviewer", "operator"]},
+        "blocking_effect": {"type": "string", "minLength": 1},
+        "resolution_evidence": {"type": "string", "minLength": 1}
+      }
+    },
+    "upstreamTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin_requirements", "stage_refs", "inputs_carried"],
+      "properties": {
+        "origin_requirements": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"enum": ["OR-01", "OR-02", "OR-03"]}
+        },
+        "stage_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stage"}
+        },
+        "inputs_carried": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "downstreamTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_refs", "outputs_carried"],
+      "properties": {
+        "stage_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stage"}
+        },
+        "outputs_carried": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "requalificationTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger_id", "condition", "invalidates", "required_action"],
+      "properties": {
+        "trigger_id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+        "condition": {"type": "string", "minLength": 1},
+        "invalidates": {"$ref": "#/$defs/nonEmptyStrings"},
+        "required_action": {"type": "string", "minLength": 1}
+      }
+    },
+    "profileAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_owner",
+        "semantic_guard_role",
+        "decision_authority",
+        "execution_authority",
+        "occurrence_evidence_required",
+        "final_acceptance_authority",
+        "prohibited_promotions"
+      ],
+      "properties": {
+        "claim_owner": {
+          "enum": ["human", "explicitly_authorized_actor", "human_or_explicitly_authorized_actor"]
+        },
+        "semantic_guard_role": {"const": "audit_material_validation_only"},
+        "decision_authority": {"enum": ["human_only", "external_authority_record_required", "not_applicable"]},
+        "execution_authority": {"enum": ["external_authority_record_required", "not_applicable"]},
+        "occurrence_evidence_required": {"type": "boolean"},
+        "final_acceptance_authority": {"const": "human_only"},
+        "prohibited_promotions": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "version",
+        "status",
+        "stage",
+        "lifecycle_trace_stage",
+        "purpose",
+        "entry_conditions",
+        "exit_conditions",
+        "required_semantic_fields",
+        "required_relationships",
+        "obligation_templates",
+        "non_goals",
+        "hollow_success_conditions",
+        "verification_evidence_types",
+        "validation_materials",
+        "human_acceptance_questions",
+        "unresolved",
+        "upstream_trace",
+        "downstream_trace",
+        "requalification_triggers",
+        "authority_boundary",
+        "profile_digest"
+      ],
+      "properties": {
+        "profile_id": {"type": "string", "pattern": "^lifecycle-profile\\.[a-z]+$"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+-candidate$"},
+        "status": {"const": "pending_human_adoption"},
+        "stage": {"$ref": "#/$defs/stage"},
+        "lifecycle_trace_stage": {"$ref": "#/$defs/traceStage"},
+        "purpose": {"type": "string", "minLength": 1},
+        "entry_conditions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/condition"}},
+        "exit_conditions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/condition"}},
+        "required_semantic_fields": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/semanticField"}},
+        "required_relationships": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/relationship"}},
+        "obligation_templates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/obligationTemplate"}},
+        "non_goals": {"$ref": "#/$defs/nonEmptyStrings"},
+        "hollow_success_conditions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/hollowCondition"}},
+        "verification_evidence_types": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/evidenceType"}},
+        "validation_materials": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/validationMaterial"}},
+        "human_acceptance_questions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/acceptanceQuestion"}},
+        "unresolved": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/unresolvedItem"}},
+        "upstream_trace": {"$ref": "#/$defs/upstreamTrace"},
+        "downstream_trace": {"$ref": "#/$defs/downstreamTrace"},
+        "requalification_triggers": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/requalificationTrigger"}},
+        "authority_boundary": {"$ref": "#/$defs/profileAuthority"},
+        "profile_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "profileSummaryRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "profile_id", "version", "profile_digest"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/stage"},
+        "profile_id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "profile_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "originCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["OR-01", "OR-02", "OR-03"],
+      "properties": {
+        "OR-01": {"$ref": "#/$defs/nonEmptyStrings"},
+        "OR-02": {"$ref": "#/$defs/nonEmptyStrings"},
+        "OR-03": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "adoptionCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pending_human_adoption", "adopted"],
+      "properties": {
+        "pending_human_adoption": {"type": "integer", "minimum": 0},
+        "adopted": {"type": "integer", "minimum": 0}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "registry_id",
+        "registry_version",
+        "registry_digest",
+        "profile_count",
+        "stage_order",
+        "profile_refs",
+        "origin_coverage",
+        "adoption_counts",
+        "authority_statement",
+        "summary_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-profile-registry-summary/v0"},
+        "registry_id": {"type": "string", "minLength": 1},
+        "registry_version": {"type": "string", "minLength": 1},
+        "registry_digest": {"$ref": "#/$defs/digest"},
+        "profile_count": {"const": 10},
+        "stage_order": {"$ref": "#/$defs/stageOrder"},
+        "profile_refs": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/profileSummaryRef"}},
+        "origin_coverage": {"$ref": "#/$defs/originCoverage"},
+        "adoption_counts": {"$ref": "#/$defs/adoptionCounts"},
+        "authority_statement": {"type": "string", "minLength": 1},
+        "summary_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

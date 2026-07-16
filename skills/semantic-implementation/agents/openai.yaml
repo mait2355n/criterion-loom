@@ -1,12 +1,12 @@
 interface:
   display_name: "Semantic Implementation"
-  short_description: "Meaning-first requirements, implementation, LLM reviewer, and final human-review audit"
-  default_prompt: "Use $semantic-implementation to clarify meaning, intent, requirements, plan risks, verification, intermediate LLM review when useful, and final human-review evidence."
+  short_description: "Route work through bounded v1 requirement audits"
+  default_prompt: "Use $semantic-implementation to audit requirement relations, preserve uncertainty, and keep final human judgment explicit."
 dependencies:
   tools:
     - type: "mcp"
       value: "semantic_guard"
-      description: "Local semantic-guard MCP server for requirement, plan, diff, finish, LLM reviewer, and acceptance bundle audits"
+      description: "Local semantic-guard MCP server exposing the three canonical v1 audit tools"
       transport: "stdio"
 policy:
   allow_implicit_invocation: true
