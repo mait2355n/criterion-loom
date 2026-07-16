@@ -1,4 +1,4 @@
-# Public Snapshot 2026-06-04
+# Public Snapshot
 
 ## Purpose
 
@@ -10,11 +10,17 @@ Use this file when checking whether the public tree contains only publishable pa
 
 ## Snapshot Contract
 
-The snapshot should be runnable from its own root, should not depend on the local working checkout, and should avoid local-only paths, backup directories, generated caches, dated dogfood records, and private work notes.
+The snapshot should be runnable from its own root and should not depend on the
+local working checkout. Local-only paths, backup directories, generated caches,
+private work notes, and unredacted private inputs stay out. Selected dated
+design, audit, and acceptance records may remain as historical evidence only
+after hygiene review; they are not current guidance or public-contract sources.
 
 ## Status And Scope
 
-This is the 2026-06-04 publication snapshot. It is intended as a GitHub repository source tree, not as a package release guarantee or a production readiness claim.
+The initial source snapshot was prepared on 2026-06-04. Publication hygiene was
+revised on 2026-07-16. This is a GitHub repository source tree, not a package
+release guarantee or a production readiness claim.
 
 ## Usage
 
@@ -58,21 +64,24 @@ This file records source, included files, excluded files, and verification comma
   - `docs/llm-reviewer.md`
   - `docs/acceptance-review-bundle.md`
   - `docs/rule-model.md`
-      - `docs/fixture-record-design.md`
-      - `docs/field-corpus-2026-06-04.md`
-      - `docs/calibration-report-2026-06-04.md`
-      - `docs/calibration-report-2026-06-05.md`
-      - `docs/release/github-publication-checklist.md`
+  - `docs/fixture-record-design.md`
+  - `docs/field-corpus-2026-06-04.md`
+  - `docs/calibration-report-2026-06-04.md`
+  - `docs/calibration-report-2026-06-05.md`
+  - `docs/release/github-publication-checklist.md`
+- selected dated design, dogfood, audit, and acceptance records under `docs/`
+  that passed the same local-path and sensitive-material review. These files
+  preserve implementation history and do not override the README, schemas, or
+  current public-facing documents.
 
 ## Excluded
 
 - `.venv/`
 - `.backups/`
 - `__pycache__/` and `*.pyc`
-- dated dogfood records
-- conflict audits
-- implementation plans
-- local acceptance-bundle work records
+- private or machine-specific work records
+- unredacted local inputs and acceptance material
+- generated build, test, or reviewer output that is not selected evidence
 
 ## Verification Intent
 

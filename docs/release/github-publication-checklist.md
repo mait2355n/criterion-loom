@@ -29,7 +29,10 @@ The expected output is a reviewed publication tree plus recorded command results
 
 - [ ] No local absolute paths such as `/Users/...` or `/Volumes/...`.
 - [ ] No `.venv/`, `.backups/`, `__pycache__/`, `*.pyc`, `.DS_Store`, or local generated output.
-- [ ] Internal work records, dated dogfood notes, conflict audits, and local acceptance-bundle work records are excluded.
+- [ ] Selected historical design, dogfood, audit, and acceptance records have
+  been reviewed for sensitive or machine-specific material and are treated as
+  historical evidence rather than current guidance. Private work records remain
+  excluded.
 
 ## Verification
 
