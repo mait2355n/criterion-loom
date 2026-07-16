@@ -1,0 +1,114 @@
+{
+  "schema_version": "semantic-guard-hosted-release-verification/v0",
+  "record_id": "verification.semantic-guard.v1.0.0.github.2026-07-17",
+  "recorded_at": "2026-07-17T02:22:56+09:00",
+  "authority": "hosted_technical_observation_only",
+  "subject": {
+    "repository": "morie-lene/criterion-loom",
+    "pull_request": 1,
+    "pull_request_url": "https://github.com/morie-lene/criterion-loom/pull/1",
+    "branch": "agent/promote-v1-canonical",
+    "publication_head": "a47301641b16df0f00b505143c8228b97af7dc75",
+    "locally_verified_implementation_commit": "dec7c737403cb9708942e43a7ac007397b161742",
+    "scope": "The publication head contains the locally verified implementation plus evidence records and CI-only corrections. This evidence record is not part of its own subject."
+  },
+  "workflow_run": {
+    "id": 29519250814,
+    "url": "https://github.com/morie-lene/criterion-loom/actions/runs/29519250814",
+    "workflow": "CI",
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-07-16T17:18:47Z",
+    "started_at": "2026-07-16T17:18:47Z",
+    "completed_at": "2026-07-16T17:22:18Z",
+    "reported_annotations": [],
+    "jobs": [
+      {
+        "id": 87691931090,
+        "name": "frozen 0.1.0 smoke",
+        "conclusion": "success",
+        "started_at": "2026-07-16T17:18:49Z",
+        "completed_at": "2026-07-16T17:19:02Z"
+      },
+      {
+        "id": 87691931104,
+        "name": "v1 contract / Python 3.11",
+        "conclusion": "success",
+        "started_at": "2026-07-16T17:18:50Z",
+        "completed_at": "2026-07-16T17:20:27Z"
+      },
+      {
+        "id": 87691931123,
+        "name": "v1 contract / Python 3.13",
+        "conclusion": "success",
+        "started_at": "2026-07-16T17:18:50Z",
+        "completed_at": "2026-07-16T17:21:37Z"
+      },
+      {
+        "id": 87692570717,
+        "name": "wheel and installed public surface",
+        "conclusion": "success",
+        "started_at": "2026-07-16T17:21:39Z",
+        "completed_at": "2026-07-16T17:22:17Z"
+      }
+    ]
+  },
+  "hosted_artifact": {
+    "id": 8384070680,
+    "name": "semantic-guard-1.0.0-distributions",
+    "archive_sha256": "049832f2ed2eab0436ac0d8d7e6bbdfa48e3dab5c5e134c66b49ebc7c5fcb761",
+    "archive_size_bytes": 603172,
+    "created_at": "2026-07-16T17:22:15Z",
+    "expires_at": "2026-10-14T17:18:47Z",
+    "expired": false,
+    "inner_artifact_byte_equivalence_to_local_build": "not_asserted"
+  },
+  "repair_trace": [
+    {
+      "run_id": 29518485238,
+      "head": "8aef2218e6220e44f804f4a2e3439b69e1c45655",
+      "conclusion": "failure",
+      "jobs_created": 0,
+      "diagnosed_cause": "runner.temp was referenced from job-level env before a runner context existed",
+      "resolution_commit": "36dccae1fbf4135fab8ba44e5b8c9beacc20d77d"
+    },
+    {
+      "run_id": 29518694476,
+      "head": "36dccae1fbf4135fab8ba44e5b8c9beacc20d77d",
+      "conclusion": "success",
+      "remaining_condition": "Node.js 20 deprecation annotation for checkout and setup-python actions",
+      "resolution_commit": "4a90a7ff4ea0f1225dffea161125b42305271a4b"
+    },
+    {
+      "run_id": 29518961542,
+      "head": "4a90a7ff4ea0f1225dffea161125b42305271a4b",
+      "conclusion": "success",
+      "remaining_condition": "Node.js 20 deprecation annotation for upload-artifact action",
+      "resolution_commit": "a47301641b16df0f00b505143c8228b97af7dc75"
+    },
+    {
+      "run_id": 29519250814,
+      "head": "a47301641b16df0f00b505143c8228b97af7dc75",
+      "conclusion": "success",
+      "remaining_condition": "none reported by gh run watch"
+    }
+  ],
+  "workflow_action_versions": {
+    "actions/checkout": "v6",
+    "actions/setup-python": "v6",
+    "actions/upload-artifact": "v7"
+  },
+  "limitations": [
+    "Hosted success establishes the declared workflow on one GitHub-hosted run, not future runner or dependency-index stability.",
+    "The hosted artifact archive digest identifies the uploaded archive and does not prove byte equality with the locally built wheel or sdist.",
+    "The workflow does not establish practical-domain accuracy, external action authenticity, security certification, operational qualification, or human acceptance.",
+    "This record does not authorize merge, the v1.0.0 tag, a v1 release, or operational default cutover."
+  ],
+  "human_decision": {
+    "pull_request_state": "draft",
+    "final_pr_acceptance": "pending",
+    "merge": "pending",
+    "v1_tag_and_release": "pending_after_merge"
+  }
+}

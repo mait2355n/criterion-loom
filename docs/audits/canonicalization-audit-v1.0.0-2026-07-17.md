@@ -9,9 +9,9 @@ Audit authority: technical audit material only; no automatic release approval or
 ## Record surface
 
 - `context`: determine whether the former contract-first candidate can become the canonical source without misrepresenting maturity or losing the predecessor lineage.
-- `current_state`: source, names, documentation, Skill, CI, migration, and archive are aligned; local tests, validators, and distribution checks pass. The verified source tree is bound to commit `dec7c737403cb9708942e43a7ac007397b161742`; hosted CI, merge, v1 tag publication, and final human acceptance remain pending.
-- `action`: publish the bound source and its separate verification record, run hosted CI, then present the exact publication evidence and residual risks to the human decision owner.
-- `detail_refs`: repository diff, CI run, wheel verification output, `validation/canonical-release-verification-2026-07-17.json`, `PUBLIC-SNAPSHOT.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
+- `current_state`: source, names, documentation, Skill, CI, migration, and archive are aligned; local tests, validators, distribution checks, and hosted CI pass. The locally verified implementation tree is bound to commit `dec7c737403cb9708942e43a7ac007397b161742`; publication head `a47301641b16df0f00b505143c8228b97af7dc75` adds evidence and CI maintenance only. Merge, v1 tag publication, and final human acceptance remain pending.
+- `action`: present the exact publication evidence and residual risks to the human decision owner; merge and create `v1.0.0` only after explicit acceptance.
+- `detail_refs`: repository diff, [hosted CI run 29519250814](https://github.com/morie-lene/criterion-loom/actions/runs/29519250814), wheel verification output, `validation/canonical-release-verification-2026-07-17.json`, `validation/hosted-canonical-release-verification-2026-07-17.json`, `PUBLIC-SNAPSHOT.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
 
 ## Audit criteria
 
@@ -75,7 +75,7 @@ These digests bind the locally built artifacts, not a future GitHub-hosted artif
 
 | Claim | Required evidence | Current disposition |
 | --- | --- | --- |
-| Canonical source identity is v1.0.0 | final diff, package metadata, CLI/MCP smoke | locally observed and bound to `dec7c737403cb9708942e43a7ac007397b161742`; hosted confirmation pending |
+| Canonical source identity is v1.0.0 | final diff, package metadata, CLI/MCP smoke | locally bound to `dec7c737403cb9708942e43a7ac007397b161742`; hosted confirmation passed at publication head `a47301641b16df0f00b505143c8228b97af7dc75` |
 | Closed local contracts remain valid | full unit suite and validators | locally observed pass |
 | Wheel and sdist carry only the intended distribution boundary | trusted local digests and packaged-contract verifier | locally observed pass |
 | Installed public surface is callable | isolated installed CLI and MCP inventory checks | locally observed pass |
@@ -84,6 +84,19 @@ These digests bind the locally built artifacts, not a future GitHub-hosted artif
 | Candidate policy/profile is adopted | explicit human decision record | not established |
 | External AI action is authentic | trusted observer, identity, time, and provenance evidence | not established |
 | Operational default cutover is safe | qualification, shadow, rollback, security, and human-use gates | not established |
+
+## Hosted verification result
+
+Draft PR [#1](https://github.com/morie-lene/criterion-loom/pull/1) ran the canonical workflow against publication head `a47301641b16df0f00b505143c8228b97af7dc75`. [Run 29519250814](https://github.com/morie-lene/criterion-loom/actions/runs/29519250814) completed successfully with four jobs:
+
+- v1 contract on Python 3.11;
+- v1 contract on Python 3.13;
+- frozen 0.1.0 smoke;
+- wheel and installed public surface.
+
+The run uploaded `semantic-guard-1.0.0-distributions` as artifact `8384070680`. GitHub reported archive digest `sha256:049832f2ed2eab0436ac0d8d7e6bbdfa48e3dab5c5e134c66b49ebc7c5fcb761`. This is the digest of the hosted artifact archive, not an assertion that its inner wheel and sdist are byte-identical to the locally recorded artifacts.
+
+The first hosted attempt failed before job creation. The cause was diagnosed as use of `runner.temp` at job-level `env`, where that context is unavailable; moving the value to step-level environments in commit `36dccae1fbf4135fab8ba44e5b8c9beacc20d77d` made the workflow schedulable. Subsequent Node.js 20 deprecation annotations were removed by updating the official checkout, Python setup, and artifact upload actions before the final successful run. These were CI-only corrections; the locally verified implementation subject remained unchanged.
 
 ## Release claim boundary
 
@@ -95,4 +108,4 @@ The audit does not permit claims of production readiness, general natural-langua
 
 ## Human decision
 
-Final acceptance remains pending until the exact final diff, Git commit, CI result, wheel digest, verification output, and residual risks are reviewed by the repository owner.
+Final acceptance remains pending until the exact final diff, Git commits, successful hosted CI result, artifact identities, verification outputs, and residual risks are reviewed by the repository owner.
