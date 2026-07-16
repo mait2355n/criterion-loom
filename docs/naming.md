@@ -12,15 +12,16 @@ Use this document when writing README copy, repository descriptions, release not
 
 | Public Name | Meaning | Technical Surface |
 | --- | --- | --- |
-| **Criterion Loom** | whole public project and audit system | repository and package: `semantic-guard` |
+| **Criterion Loom** | whole public project and audit system | repository: `criterion-loom`; package: `semantic-guard` |
 | **Loom Guide** | Codex skill that guides work through the audit sequence | `skills/semantic-implementation/` |
 | **Need Thread** | requirements audit for need, stakeholder, scope, verification, quality, priority, and uncertainty | `semantic-guard audit-request` |
 | **Plan Warp** | planning audit for work breakdown, sequence, risk, validation, progress, rollback, and evidence | `semantic-guard audit-plan` |
 | **Change Weft** | implementation audit for changed meaning, public contract, failure handling, tests, docs, operations, and finish evidence | `semantic-guard audit-diff` and `semantic-guard finish-check` |
 
-## Technical Names That Stay
+## Repository And Technical Names
 
-The repository, Python package, CLI command, and MCP server keep the `semantic-guard` name:
+The GitHub repository uses `criterion-loom`. The Python package, CLI command,
+and MCP server keep the `semantic-guard` name for compatibility:
 
 ```sh
 uv run --python 3.13 --project . semantic-guard --help
@@ -54,6 +55,8 @@ These commands support the public four-part shape but are not separate public pi
 
 ## Naming Rule
 
-Use **Criterion Loom** when talking about the public project. Use `semantic-guard` when referring to the repository, package installation, CLI commands, MCP configuration, schemas, or code paths.
+Use **Criterion Loom** when talking about the public project. Use
+`criterion-loom` for the GitHub repository, and use `semantic-guard` for
+package installation, CLI commands, MCP configuration, schemas, or code paths.
 
 Do not present the names as separate products. Loom Guide, Need Thread, Plan Warp, and Change Weft are parts of Criterion Loom.

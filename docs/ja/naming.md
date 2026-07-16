@@ -12,15 +12,16 @@ README、repository description、実績証明、release note、貢献案内を�
 
 | 公開名 | 意味 | 技術上の実体 |
 | --- | --- | --- |
-| **Criterion Loom** | 全体の公開 project 名、監査体系の包括名。 | repository と package: `semantic-guard` |
+| **Criterion Loom** | 全体の公開 project 名、監査体系の包括名。 | repository: `criterion-loom`、package: `semantic-guard` |
 | **Loom Guide** | Codex に監査手順を辿らせる skill 導線。 | `skills/semantic-implementation/` |
 | **Need Thread** | 必要、利害関係者、範囲、検証、品質、優先順位、不確実性を見る要求監査。 | `semantic-guard audit-request` |
 | **Plan Warp** | 作業分解、順序、リスク、妥当性確認、進捗、撤回、証拠を見る計画監査。 | `semantic-guard audit-plan` |
 | **Change Weft** | 差分と完了主張について、意味、公共契約、失敗処理、試験、文書、運用、証拠を見る実装監査。 | `semantic-guard audit-diff` / `semantic-guard finish-check` |
 
-## 残す技術名
+## Repository 名と残す技術名
 
-repository、Python package、CLI command、MCP server は `semantic-guard` 名を残す。
+GitHub repository は `criterion-loom` とする。Python package、CLI command、
+MCP server は互換性のため `semantic-guard` 名を残す。
 
 ```sh
 uv run --python 3.13 --project . semantic-guard --help
@@ -53,6 +54,8 @@ Criterion Loom の各 command は、引き続き `semantic-guard` の監査欄�
 
 ## 命名規則
 
-公開 project を語る時は **Criterion Loom** を使う。repository、package、CLI、MCP 設定、schema、code path を語る時は `semantic-guard` を使う。
+公開 project を語る時は **Criterion Loom** を使う。GitHub repository は
+`criterion-loom`、package、CLI、MCP 設定、schema、code path は
+`semantic-guard` と呼ぶ。
 
 Loom Guide、Need Thread、Plan Warp、Change Weft は別製品ではなく、Criterion Loom の構成要素である。
