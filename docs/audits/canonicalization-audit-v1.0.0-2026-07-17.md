@@ -9,9 +9,9 @@ Audit authority: technical audit material only; no automatic release approval or
 ## Record surface
 
 - `context`: determine whether the former contract-first candidate can become the canonical source without misrepresenting maturity or losing the predecessor lineage.
-- `current_state`: source, names, documentation, Skill, CI, migration, and archive are aligned; local tests, validators, and distribution checks pass. Git commit binding, hosted CI, publication, and final human acceptance remain pending.
-- `action`: bind the verified tree and distributions to the final Git commit, run hosted CI, then present the exact publication evidence and residual risks to the human decision owner.
-- `detail_refs`: repository diff, CI run, wheel verification output, `PUBLIC-SNAPSHOT.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
+- `current_state`: source, names, documentation, Skill, CI, migration, and archive are aligned; local tests, validators, and distribution checks pass. The verified source tree is bound to commit `dec7c737403cb9708942e43a7ac007397b161742`; hosted CI, merge, v1 tag publication, and final human acceptance remain pending.
+- `action`: publish the bound source and its separate verification record, run hosted CI, then present the exact publication evidence and residual risks to the human decision owner.
+- `detail_refs`: repository diff, CI run, wheel verification output, `validation/canonical-release-verification-2026-07-17.json`, `PUBLIC-SNAPSHOT.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
 
 ## Audit criteria
 
@@ -55,19 +55,19 @@ CI additionally verifies the installed CLI schema command, the installed MCP too
 The final local tree produced the following observations:
 
 - `uv lock --check`: passed.
-- canonical unit and contract suite: 575 tests passed in 41.775 seconds.
+- canonical unit and contract suite: 575 tests passed in 41.899 seconds against source commit `dec7c737403cb9708942e43a7ac007397b161742`.
 - verification source: all six checks passed; 17 verification items, 17 unresolved items, 52 resolution obligations, 19 resolution paths, and 65 gap records remained explicit.
 - generated verification projection: exact match.
 - engineering rule pack: schema, mapping, and governance checks passed for 11 candidate rules and 5 sources.
 - canonical CLI: version `1.0.0` and exactly three commands observed.
 - canonical MCP: exactly three public tools observed.
 - frozen legacy suite: all 196 tests passed from an external temporary environment; this is compatibility evidence, not v1 conformance evidence.
-- packaged-contract verifier: passed for the final wheel and sdist, including 23 public schemas, 23 MCP schema resources, 3 MCP tools, 10 lifecycle profiles, 11 candidate engineering rules, canonical producer version, installed CLI, and installed MCP entry point.
+- packaged-contract verifier: passed for the source-commit wheel and sdist, including 23 public schemas, 23 MCP schema resources, 3 MCP tools, 10 lifecycle profiles, 11 candidate engineering rules, canonical producer version, installed CLI, and installed MCP entry point. A second build from the same worktree produced the same byte digests.
 
 Final local distribution digests:
 
-- wheel `semantic_guard-1.0.0-py3-none-any.whl`: `dfe0956493f18c8a938f0805ec3e280b33d3c7c800ae922ce654bfe09b2ae551`;
-- sdist `semantic_guard-1.0.0.tar.gz`: `419f3dff372e99cfee0bc79b0c75f1797fce69278336f7569688589c49d4b41c`.
+- wheel `semantic_guard-1.0.0-py3-none-any.whl`: `9e1eb2c546610fd828e345724e740f3a98dab5362e02d5f837918812242c6210` (324347 bytes);
+- sdist `semantic_guard-1.0.0.tar.gz`: `bebb14e96d0d7ef3d5bafc3743812d2d82a25d245f19e019090b2c9061bb6af1` (284271 bytes).
 
 These digests bind the locally built artifacts, not a future GitHub-hosted artifact unless that artifact is compared byte-for-byte.
 
@@ -75,7 +75,7 @@ These digests bind the locally built artifacts, not a future GitHub-hosted artif
 
 | Claim | Required evidence | Current disposition |
 | --- | --- | --- |
-| Canonical source identity is v1.0.0 | final diff, package metadata, CLI/MCP smoke | locally observed; Git commit binding pending |
+| Canonical source identity is v1.0.0 | final diff, package metadata, CLI/MCP smoke | locally observed and bound to `dec7c737403cb9708942e43a7ac007397b161742`; hosted confirmation pending |
 | Closed local contracts remain valid | full unit suite and validators | locally observed pass |
 | Wheel and sdist carry only the intended distribution boundary | trusted local digests and packaged-contract verifier | locally observed pass |
 | Installed public surface is callable | isolated installed CLI and MCP inventory checks | locally observed pass |

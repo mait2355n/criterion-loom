@@ -1,0 +1,169 @@
+{
+  "schema_version": "semantic-guard-canonical-release-verification/v0",
+  "record_id": "verification.semantic-guard.v1.0.0.local.2026-07-17",
+  "recorded_at": "2026-07-17T02:06:08+09:00",
+  "authority": "technical_observation_only",
+  "subject": {
+    "repository": "morie-lene/criterion-loom",
+    "branch": "agent/promote-v1-canonical",
+    "source_commit": "dec7c737403cb9708942e43a7ac007397b161742",
+    "version": "1.0.0",
+    "scope": "The source commit immediately before this evidence-only record. This record is not part of its own subject."
+  },
+  "purpose_boundary": {
+    "purpose": "Audit requirements, plans, actions, realization methods, evidence, and completion claims against explicit engineering obligations while separating observations, derivations, unresolved matters, and bounded assurance.",
+    "canonical_public_slice": "requirement",
+    "control_plane_owned_elsewhere": true,
+    "final_acceptance_owned_by_human": true
+  },
+  "predecessor": {
+    "tag": "v0.1.0",
+    "commit": "e0a3dd39f17385b66f6361ade25eb44bed6e1ab3",
+    "tree": "16b943a89d14fa7ec8e76f2707aa9a402184cb18",
+    "tag_file_count": 154,
+    "frozen_tracked_file_count": 156,
+    "tag_file_mismatches": 0,
+    "archive_manifest_additions": 2,
+    "public_archive_path_content_manifest_sha256": "e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5",
+    "private_recovery_checksum_manifest_sha256": "49987550abf3583f3f95ac9722be212aa237f4dc687852ddbfe71e4f90e16bdb",
+    "legacy_trust_root_manifest_sha256": "df7acb77fe03495d11e82dff44b4674ae020bab852da7f706bc86c55a8d53fe4",
+    "legacy_trust_root_status": "pending_human_acceptance",
+    "correctness_oracle": false
+  },
+  "checks": [
+    {
+      "id": "lockfile",
+      "command": "uv lock --check",
+      "status": "passed"
+    },
+    {
+      "id": "canonical-unit-and-contract-suite",
+      "command": "uv run --locked python -m unittest discover -s tests -q",
+      "status": "passed",
+      "tests": 575,
+      "duration_seconds": 41.899
+    },
+    {
+      "id": "verification-source",
+      "command": "uv run --locked python scripts/validate_verification_source.py",
+      "status": "passed",
+      "checks": 6,
+      "verification_items": 17,
+      "unresolved_items": 17,
+      "resolution_obligations": 52,
+      "resolution_paths": 19,
+      "gap_records": 65
+    },
+    {
+      "id": "verification-projection",
+      "command": "uv run --locked python scripts/render_verification_projection.py --check",
+      "status": "passed",
+      "exact_match": true
+    },
+    {
+      "id": "engineering-rule-pack",
+      "command": "uv run --locked python scripts/validate_engineering_rule_pack.py",
+      "status": "passed",
+      "candidate_rules": 11,
+      "sources": 5,
+      "adopted_rules": 0
+    },
+    {
+      "id": "static-style",
+      "command": "uvx ruff check src tests scripts",
+      "status": "passed"
+    },
+    {
+      "id": "bytecode-compilation",
+      "command": "uv run --locked python -m compileall -q src scripts",
+      "status": "passed"
+    },
+    {
+      "id": "frozen-legacy-suite",
+      "command": "UV_PROJECT_ENVIRONMENT=<external-temporary-environment> uv run --locked python -m unittest discover -s tests",
+      "status": "passed",
+      "tests": 196,
+      "duration_seconds": 0.165,
+      "meaning": "predecessor compatibility observation only"
+    },
+    {
+      "id": "frozen-tag-exactness",
+      "status": "passed",
+      "tag_files_compared": 154,
+      "mismatches": 0
+    },
+    {
+      "id": "packaged-contracts",
+      "command": "uv run --locked python scripts/verify_packaged_contracts.py --wheel <wheel> --sdist <sdist>",
+      "status": "passed",
+      "public_schemas": 23,
+      "mcp_schema_resources": 23,
+      "mcp_tools": 3,
+      "lifecycle_profiles": 10,
+      "engineering_rules": 11,
+      "repeat_build_byte_match": true
+    },
+    {
+      "id": "repository-secret-and-local-path-scan",
+      "status": "passed",
+      "private_absolute_path_matches": 0,
+      "known_token_matches": 0
+    }
+  ],
+  "public_surface": {
+    "cli_version": "semantic-guard 1.0.0",
+    "cli_commands": [
+      "audit-requirement",
+      "schema",
+      "shadow-compare"
+    ],
+    "mcp_tools": [
+      "audit_requirement_relations_tool",
+      "semantic_guard_schema_tool",
+      "shadow_compare_legacy_tool"
+    ],
+    "mcp_resources": [
+      "semantic-guard://constitution/v1"
+    ],
+    "mcp_resource_templates": [
+      "semantic-guard://schemas/{name}"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "semantic_guard-1.0.0-py3-none-any.whl",
+      "sha256": "9e1eb2c546610fd828e345724e740f3a98dab5362e02d5f837918812242c6210",
+      "size_bytes": 324347,
+      "locally_built": true
+    },
+    {
+      "name": "semantic_guard-1.0.0.tar.gz",
+      "sha256": "bebb14e96d0d7ef3d5bafc3743812d2d82a25d245f19e019090b2c9061bb6af1",
+      "size_bytes": 284271,
+      "locally_built": true
+    }
+  ],
+  "environment": {
+    "operating_system": "macOS 26.5.2",
+    "architecture": "arm64",
+    "python": "3.13.12",
+    "uv": "0.10.10"
+  },
+  "limitations": [
+    "A passing local contract suite does not establish practical-domain accuracy, field validity, or production readiness.",
+    "Candidate engineering rules and lifecycle profiles have not been adopted by the human decision owner.",
+    "Parser and LLM outputs remain signals or candidates and do not independently satisfy obligations or mutate holds.",
+    "The frozen predecessor and the trust-root capture are lineage evidence, not correctness oracles.",
+    "The package verifier is not an operating-system sandbox and does not establish security certification.",
+    "This record does not establish external action authenticity, trusted identity, trusted time, or human acceptance.",
+    "Hosted CI, merge into main, the v1.0.0 tag, and operational default cutover remain outside this local observation."
+  ],
+  "human_decision": {
+    "repository_canonicalization": "authorized_for_publication_as_draft_pr",
+    "final_pr_acceptance": "pending",
+    "candidate_rule_pack_adoption": "pending",
+    "lifecycle_profile_adoption": "pending",
+    "operational_default_cutover": "pending",
+    "v1_tag_and_release": "pending_after_merge"
+  }
+}
