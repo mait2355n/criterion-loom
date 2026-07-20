@@ -1,7 +1,7 @@
 # semantic-guard 1.0.0 実装状態
 
-更新日: 2026-07-17
-判定: 要求関係監査の局所契約を正本へ昇格。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択及び運用既定経路切替は未完。
+更新日: 2026-07-21
+判定: 要求関係監査の局所契約を正本へ昇格し、Codex 局所環境の対応済み監査は v1 を唯一の既定経路へ切替済み。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択、外部配備切替及び不可逆な旧版廃止は未完。
 
 この正本化はリポジトリ、配布物、CLI、MCPの同一性判断である。後述する2026-07-16の試験値とwheel値は候補時点の歴史的観測であり、1.0.0へ束縛した新証拠ではない。
 
@@ -45,7 +45,7 @@
 | C. 公開CLI/MCP縦断 | requirement relation監査とassurance-v1は利用可能 | 部分成立。十工程・action・repair・評価・運用sidecarは未接続 |
 | D. 実務妥当性 | 評価protocolと閾値計算器は存在 | 未成立。実母集団、独立標識、実参加者、実provider、実運用観測が無い |
 | E. 外部真正性 | digestと型付き参照で内部差替えを検出 | 未成立。署名、本人性、信頼時刻、外部台帳、証拠保管庫を検証しない |
-| F. 人間採択・既定切替 | 判断対象をbasis digestへ結ぶ契約は存在 | 未成立。rule-pack、profile、評価方針、運用包絡、切替、retirementは未採択 |
+| F. 人間採択・既定切替 | 判断対象をbasis digestへ結ぶ契約が存在し、Codex 局所環境の要求関係監査は v1 へ既定切替済み | 局所構成だけ成立。rule-pack、profile、評価方針、運用包絡、外部配備切替及びretirementは未採択 |
 
 ## 独立査読で見つけ、修正した誤通過
 
@@ -79,7 +79,7 @@
 4. **行為・真正性連携** — runtime event、主体・権限snapshot、署名検証、信頼時刻、外部台帳、artifact provenanceを取得する。
 5. **人間利用評価** — 実参加者、真正な同意、独立盲検採点、脱落を含む実務studyを実行する。
 6. **運用資格** — 実配備で長時間、並行、負荷、枯渇、provider障害、restart、recovery、互換、事故を測る。
-7. **移行判断** — shadow、opt-in、rollback rehearsal、証拠移行を経て、人間がdefault化又はretirementを別々に判断する。
+7. **外部移行判断** — Codex 局所既定値は [2026-07-21 の切替記録](operational-default-cutover-2026-07-21.md) により v1 化した。外部配備は shadow、opt-in、rollback rehearsal、証拠移行を経て、人間がdefault化又はretirementを別々に判断する。
 
 ## 現段階で許される主張
 
@@ -95,6 +95,6 @@
 - AIエージェントの行為発生、本人性、真正性又は因果性を実証した。
 - 実務母集団で修復効果又は人間利用価値が成立した。
 - `pass`、局所試験、内部整合又はdigest一致が人間受理を意味する。
-- リポジトリ正本化だけを根拠に、運用環境の既定CLI/MCP経路へ切替えてよい。
+- 局所切替記録だけを根拠に、別の運用環境の既定CLI/MCP経路へ切替えてよい。
 
 運用詳細は [operations.md](operations.md)、正本化判断は [canonical-promotion-decision.md](canonical-promotion-decision.md)、移行は [migration-v0.1.0-to-v1.0.0.md](migration-v0.1.0-to-v1.0.0.md)、検証状態の正本は [verification-source.json](../validation/verification-source.json) を参照する。日付付きの [影響度と実行順](impact-and-execution-order-2026-07-16.md) は候補時点の歴史資料として保持する。

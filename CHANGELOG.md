@@ -2,6 +2,14 @@
 
 All notable repository and public-contract changes are recorded here. Package versions follow semantic versioning; schema versions remain independent and change only when their own contract changes.
 
+## [Unreleased]
+
+### Operations
+
+- Switched the supported requirement-relation audit path in the local Codex environment to the canonical `semantic-guard 1.0.0` MCP server and companion Skill.
+- Removed the frozen pre-v1 Skill backup from Codex Skill discovery while preserving it in the external archive.
+- Recorded the human-directed, reversible local-default decision separately from production qualification and irreversible predecessor retirement.
+
 ## [1.0.0] - 2026-07-17
 
 ### Canonicalized

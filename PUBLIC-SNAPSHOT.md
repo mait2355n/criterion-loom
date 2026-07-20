@@ -56,7 +56,7 @@ This snapshot does not establish:
 - authenticity of external AI-agent actions or identities;
 - human adoption of candidate rule packs or lifecycle profiles;
 - security certification or operational qualification;
-- operational default cutover or irreversible predecessor retirement;
+- operational default cutover outside the separately recorded local Codex scope, or irreversible predecessor retirement;
 - final human acceptance.
 
 The canonical-promotion decision is recorded in `docs/canonical-promotion-decision.md`. Verification findings and remaining closure conditions are recorded in `docs/audits/canonicalization-audit-v1.0.0-2026-07-17.md`.
