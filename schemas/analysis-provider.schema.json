@@ -1,0 +1,337 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/analysis-provider.schema.json",
+  "title": "semantic-guard v1 analysis provider execution",
+  "description": "Versioned provider capability and one execution record. Raw analyzer output never gains authority through complexity or agreement alone.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "decision_influence",
+    "provider_id",
+    "provider_kind",
+    "provider_version",
+    "resource_version",
+    "implementation_ref",
+    "determinism",
+    "maximum_evidentiary_authority",
+    "authority_rights",
+    "input_contract",
+    "output_contract",
+    "failure_policy",
+    "execution",
+    "interpretations",
+    "coverage",
+    "residual_risks",
+    "source_spans",
+    "provenance",
+    "authority_effects"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "analysis-provider/v0"
+    },
+    "decision_influence": {
+      "type": "string",
+      "enum": ["effective", "shadow_observation"]
+    },
+    "provider_id": {
+      "$ref": "common.schema.json#/$defs/stable_id"
+    },
+    "provider_kind": {
+      "type": "string",
+      "enum": [
+        "typed_structure",
+        "direct_rule",
+        "morphology",
+        "dependency",
+        "predicate_argument",
+        "scope",
+        "coordination",
+        "coreference",
+        "llm",
+        "other"
+      ]
+    },
+    "provider_version": {
+      "$ref": "common.schema.json#/$defs/non_empty_string"
+    },
+    "resource_version": {
+      "description": "Version of the dictionary, model, or other analysis resource used by this execution; unknown is explicit rather than omission.",
+      "$ref": "common.schema.json#/$defs/non_empty_string"
+    },
+    "implementation_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
+    },
+    "determinism": {
+      "type": "string",
+      "enum": ["deterministic", "model_backed", "hybrid", "unknown"]
+    },
+    "maximum_evidentiary_authority": {
+      "type": "string",
+      "enum": ["signal_only", "candidate_only", "assertion_capable"]
+    },
+    "authority_rights": {
+      "$ref": "common.schema.json#/$defs/authority_rights"
+    },
+    "input_contract": {
+      "type": "object",
+      "required": ["accepted_media_types", "requires_closed_record", "requires_source_digest"],
+      "properties": {
+        "accepted_media_types": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "uniqueItems": true
+        },
+        "requires_closed_record": {"type": "boolean"},
+        "requires_source_digest": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "requires_source_spans",
+        "requires_provenance",
+        "preserves_multiple_interpretations",
+        "may_emit_relation_candidates",
+        "raw_output_may_satisfy_obligation",
+        "lifting_rule_required_for_support"
+      ],
+      "properties": {
+        "requires_source_spans": {"const": true},
+        "requires_provenance": {"const": true},
+        "preserves_multiple_interpretations": {"const": true},
+        "may_emit_relation_candidates": {"type": "boolean"},
+        "raw_output_may_satisfy_obligation": {"type": "boolean"},
+        "lifting_rule_required_for_support": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "failure_policy": {
+      "type": "object",
+      "required": ["on_not_run", "on_unavailable", "on_failure", "on_invalid_output"],
+      "properties": {
+        "on_not_run": {"const": "emit_unknown_and_hold_when_required"},
+        "on_unavailable": {"const": "emit_unknown_and_hold_when_required"},
+        "on_failure": {"const": "emit_unknown_and_hold_when_required"},
+        "on_invalid_output": {"const": "invalidate_provider_result_and_hold"}
+      },
+      "unevaluatedProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "execution_id",
+        "status",
+        "started_at",
+        "finished_at",
+        "input_digest",
+        "requested_capabilities",
+        "fulfilled_capabilities",
+        "missing_capabilities",
+        "diagnostics",
+        "unknown_effect"
+      ],
+      "properties": {
+        "execution_id": {
+          "$ref": "common.schema.json#/$defs/stable_id"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["not_run", "complete", "partial", "unavailable", "failed", "invalid_output"]
+        },
+        "started_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "finished_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "input_digest": {
+          "$ref": "common.schema.json#/$defs/digest"
+        },
+        "requested_capabilities": {
+          "description": "Capabilities requested for this concrete provider execution.",
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "uniqueItems": true
+        },
+        "fulfilled_capabilities": {
+          "description": "Requested capabilities actually fulfilled by this execution.",
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "uniqueItems": true
+        },
+        "missing_capabilities": {
+          "description": "Requested capabilities not fulfilled by this execution.",
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "uniqueItems": true
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        },
+        "unknown_effect": {
+          "type": "string",
+          "enum": ["none", "emit_unknown_and_hold_when_required", "invalidate_provider_result_and_hold"]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/interpretation"}
+    },
+    "coverage": {
+      "$ref": "common.schema.json#/$defs/coverage"
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/residual_risk"}
+    },
+    "source_spans": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/source_span"}
+    },
+    "provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/provenance_record"}
+    },
+    "authority_effects": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/authority_effect"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provider_kind": {
+            "enum": ["morphology", "dependency", "predicate_argument", "scope", "coordination", "coreference", "llm"]
+          }
+        },
+        "required": ["provider_kind"]
+      },
+      "then": {
+        "properties": {
+          "maximum_evidentiary_authority": {
+            "enum": ["signal_only", "candidate_only"]
+          },
+          "authority_rights": {
+            "properties": {
+              "support": {"const": false},
+              "hold_apply": {"const": false},
+              "hold_release": {"const": false}
+            },
+            "required": ["support", "hold_apply", "hold_release"]
+          },
+          "output_contract": {
+            "properties": {
+              "raw_output_may_satisfy_obligation": {"const": false},
+              "lifting_rule_required_for_support": {"const": true}
+            },
+            "required": ["raw_output_may_satisfy_obligation", "lifting_rule_required_for_support"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"provider_kind": {"const": "morphology"}},
+        "required": ["provider_kind"]
+      },
+      "then": {
+        "properties": {
+          "maximum_evidentiary_authority": {"const": "signal_only"},
+          "authority_rights": {
+            "properties": {
+              "support": {"const": false},
+              "challenge": {"const": false},
+              "hold_apply": {"const": false},
+              "hold_release": {"const": false}
+            },
+            "required": ["support", "challenge", "hold_apply", "hold_release"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution": {
+            "properties": {
+              "status": {"enum": ["not_run", "partial", "unavailable", "failed", "invalid_output"]}
+            },
+            "required": ["status"]
+          }
+        },
+        "required": ["execution"]
+      },
+      "then": {
+        "properties": {
+          "execution": {
+            "properties": {
+              "unknown_effect": {
+                "enum": ["emit_unknown_and_hold_when_required", "invalidate_provider_result_and_hold"]
+              }
+            },
+            "required": ["unknown_effect"]
+          },
+          "coverage": {
+            "properties": {
+              "status": {"enum": ["partial", "not_evaluated", "failed"]}
+            },
+            "required": ["status"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "execution": {
+            "properties": {"status": {"const": "complete"}},
+            "required": ["status"]
+          }
+        },
+        "required": ["execution"]
+      },
+      "then": {
+        "properties": {
+          "execution": {
+            "properties": {
+              "unknown_effect": {"const": "none"},
+              "missing_capabilities": {"maxItems": 0}
+            },
+            "required": ["unknown_effect", "missing_capabilities"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"decision_influence": {"const": "shadow_observation"}},
+        "required": ["decision_influence"]
+      },
+      "then": {
+        "properties": {
+          "authority_effects": {"maxItems": 0},
+          "interpretations": {
+            "items": {
+              "properties": {
+                "status": {"const": "candidate"},
+                "supporting_evidence_refs": {"maxItems": 0}
+              },
+              "required": ["status", "supporting_evidence_refs"]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

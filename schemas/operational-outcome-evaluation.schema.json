@@ -1,0 +1,1434 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/operational-outcome-evaluation.schema.json",
+  "title": "semantic-guard operational outcome evaluation bundle",
+  "description": "A closed, content-addressed contract for separate repair-effect and human-operational-use evaluation. It does not establish field validity, operation, security, cutover, or final acceptance. The Python validator also rejects input nesting deeper than 128 levels before schema evaluation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "policy",
+    "human_decision_records",
+    "task_set",
+    "enrollment_manifest",
+    "tasks",
+    "participants",
+    "sessions",
+    "observations",
+    "graders",
+    "scores",
+    "adjudications",
+    "axis_results",
+    "non_inference_axes",
+    "authority_boundary",
+    "limitations",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "operational-outcome-evaluation/v1"},
+    "evaluation_id": {
+      "type": "string",
+      "pattern": "^operational-outcome-evaluation\\.[0-9a-f]{64}$",
+      "maxLength": 128
+    },
+    "policy": {"$ref": "#/$defs/policy"},
+    "human_decision_records": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/humanDecision"}
+    },
+    "task_set": {"$ref": "#/$defs/taskSet"},
+    "enrollment_manifest": {"$ref": "#/$defs/enrollmentManifest"},
+    "tasks": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/task"},
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis"],
+            "properties": {"axis": {"const": "repair_effect"}}
+          },
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis"],
+            "properties": {"axis": {"const": "human_operational_use"}}
+          },
+          "minContains": 1
+        }
+      ]
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2048,
+      "items": {"$ref": "#/$defs/participant"}
+    },
+    "sessions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/session"}
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 65536,
+      "items": {"$ref": "#/$defs/observation"},
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis", "arm"],
+            "properties": {
+              "axis": {"const": "repair_effect"},
+              "arm": {"const": "baseline"}
+            }
+          },
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis", "arm"],
+            "properties": {
+              "axis": {"const": "repair_effect"},
+              "arm": {"const": "candidate"}
+            }
+          },
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis", "arm"],
+            "properties": {
+              "axis": {"const": "human_operational_use"},
+              "arm": {"const": "baseline"}
+            }
+          },
+          "minContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "required": ["axis", "arm"],
+            "properties": {
+              "axis": {"const": "human_operational_use"},
+              "arm": {"const": "candidate"}
+            }
+          },
+          "minContains": 1
+        }
+      ]
+    },
+    "graders": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 128,
+      "items": {"$ref": "#/$defs/grader"}
+    },
+    "scores": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 262144,
+      "items": {"$ref": "#/$defs/score"}
+    },
+    "adjudications": {
+      "type": "array",
+      "maxItems": 65536,
+      "items": {"$ref": "#/$defs/adjudication"}
+    },
+    "axis_results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repair_effect", "human_operational_use"],
+      "properties": {
+        "repair_effect": {"$ref": "#/$defs/axisResult"},
+        "human_operational_use": {"$ref": "#/$defs/axisResult"}
+      }
+    },
+    "non_inference_axes": {"$ref": "#/$defs/nonInferenceAxes"},
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "idStrings": {
+      "type": "array",
+      "maxItems": 65536,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "digestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/nonEmptyString"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nullableDigestRef": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/digestRef"}
+      ]
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "version", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/nonEmptyString"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "axis": {
+      "enum": ["repair_effect", "human_operational_use"]
+    },
+    "arm": {"enum": ["baseline", "candidate"]},
+    "metricId": {
+      "enum": [
+        "correct_repair",
+        "regression_free",
+        "finding_integrity_preserved",
+        "correct_escalation",
+        "unresolved_preserved",
+        "responsibility_boundary_preserved",
+        "correct_routing",
+        "proposition_understood",
+        "evidence_understood",
+        "limitations_understood",
+        "unresolved_understood",
+        "actionable",
+        "authority_safe",
+        "technical_pass_not_converted_to_acceptance"
+      ]
+    },
+    "humanDecisionRight": {
+      "enum": [
+        "change_intent_or_scope",
+        "accept_residual_risk",
+        "grant_or_expand_authority",
+        "authorize_external_effect",
+        "final_acceptance"
+      ]
+    },
+    "targetPopulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population_id",
+        "description",
+        "sampling_frame",
+        "unit_of_analysis",
+        "inclusion_criteria",
+        "exclusion_criteria",
+        "population_digest"
+      ],
+      "properties": {
+        "population_id": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "sampling_frame": {"$ref": "#/$defs/nonEmptyString"},
+        "unit_of_analysis": {"$ref": "#/$defs/nonEmptyString"},
+        "inclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "exclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "population_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "intendedUse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["use_id", "description", "operational_context"],
+      "properties": {
+        "use_id": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "operational_context": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role_id", "actor_class", "description"],
+      "properties": {
+        "role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "actor_class": {
+          "enum": [
+            "coding_agent",
+            "human_requester",
+            "human_reviewer",
+            "human_approver",
+            "maintainer",
+            "operator"
+          ]
+        },
+        "description": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "taskStratum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stratum_id", "axis", "description", "required"],
+      "properties": {
+        "stratum_id": {"$ref": "#/$defs/nonEmptyString"},
+        "axis": {"$ref": "#/$defs/axis"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "required": {"type": "boolean"}
+      }
+    },
+    "metricThreshold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "max_error_rate",
+        "min_success_rate",
+        "error_cost"
+      ],
+      "properties": {
+        "metric_id": {"$ref": "#/$defs/metricId"},
+        "max_error_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "min_success_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "error_cost": {"type": "number", "exclusiveMinimum": 0, "maximum": 1000000}
+      }
+    },
+    "axisPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis",
+        "metric_thresholds",
+        "max_weighted_error_loss",
+        "min_weighted_loss_improvement",
+        "effort_cap_seconds",
+        "effort_cap_units",
+        "max_effort_seconds",
+        "max_effort_units",
+        "max_dropout_rate"
+      ],
+      "properties": {
+        "axis": {"$ref": "#/$defs/axis"},
+        "metric_thresholds": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/metricThreshold"}
+        },
+        "max_weighted_error_loss": {"type": "number", "minimum": 0, "maximum": 1000000},
+        "min_weighted_loss_improvement": {"type": "number", "minimum": -1000000, "maximum": 1000000},
+        "effort_cap_seconds": {"type": "number", "exclusiveMinimum": 0, "maximum": 10000000},
+        "effort_cap_units": {"type": "number", "exclusiveMinimum": 0, "maximum": 10000000},
+        "max_effort_seconds": {"type": "number", "minimum": 0, "maximum": 10000000},
+        "max_effort_units": {"type": "number", "minimum": 0, "maximum": 10000000},
+        "max_dropout_rate": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "privacyConsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pseudonymization_required",
+        "raw_identifiers_prohibited",
+        "required_consent_scope",
+        "consent_scope_ref",
+        "data_use_limitations",
+        "retention_policy",
+        "withdrawal_handling",
+        "privacy_owner"
+      ],
+      "properties": {
+        "pseudonymization_required": {"const": true},
+        "raw_identifiers_prohibited": {"const": true},
+        "required_consent_scope": {"$ref": "#/$defs/nonEmptyString"},
+        "consent_scope_ref": {"$ref": "#/$defs/versionedRef"},
+        "data_use_limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "retention_policy": {"$ref": "#/$defs/nonEmptyString"},
+        "withdrawal_handling": {"$ref": "#/$defs/nonEmptyString"},
+        "privacy_owner": {"const": "external_human_or_organization"}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "version",
+        "owner_kind",
+        "status",
+        "decision_record_ref",
+        "evidence_class",
+        "target_population",
+        "intended_use",
+        "roles",
+        "task_strata",
+        "arm_contract",
+        "axis_policies",
+        "confidence_level",
+        "minimum_sample",
+        "privacy_consent",
+        "stop_conditions",
+        "policy_digest"
+      ],
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "pattern": "^outcome-policy\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "owner_kind": {"const": "human"},
+        "status": {"enum": ["pending", "adopted", "retired"]},
+        "decision_record_ref": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "evidence_class": {
+          "enum": [
+            "operational_participant",
+            "synthetic",
+            "local_fixture",
+            "smoke"
+          ]
+        },
+        "target_population": {"$ref": "#/$defs/targetPopulation"},
+        "intended_use": {"$ref": "#/$defs/intendedUse"},
+        "roles": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/role"}
+        },
+        "task_strata": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/taskStratum"}
+        },
+        "arm_contract": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "baseline",
+            "candidate",
+            "same_task_set_required",
+            "cross_arm_participant_reuse_prohibited"
+          ],
+          "properties": {
+            "baseline": {"$ref": "#/$defs/versionedRef"},
+            "candidate": {"$ref": "#/$defs/versionedRef"},
+            "same_task_set_required": {"const": true},
+            "cross_arm_participant_reuse_prohibited": {"const": true}
+          }
+        },
+        "axis_policies": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/axisPolicy"}
+        },
+        "confidence_level": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "minimum_sample": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "per_axis_arm_observations",
+            "per_axis_arm_participants",
+            "per_axis_arm_clusters",
+            "per_required_stratum_participants"
+          ],
+          "properties": {
+            "per_axis_arm_observations": {"type": "integer", "minimum": 1, "maximum": 65536},
+            "per_axis_arm_participants": {"type": "integer", "minimum": 1, "maximum": 2048},
+            "per_axis_arm_clusters": {"type": "integer", "minimum": 1, "maximum": 2048},
+            "per_required_stratum_participants": {"type": "integer", "minimum": 1, "maximum": 2048}
+          }
+        },
+        "privacy_consent": {"$ref": "#/$defs/privacyConsent"},
+        "stop_conditions": {"$ref": "#/$defs/nonEmptyStrings"},
+        "policy_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "humanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_type",
+        "issuer_kind",
+        "human_actor_ref",
+        "policy_ref",
+        "decision",
+        "rationale",
+        "evidence_refs",
+        "recorded_at",
+        "decision_digest"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "pattern": "^human-decision\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "decision_type": {"enum": ["adopt_policy", "retire_policy"]},
+        "issuer_kind": {"const": "human"},
+        "human_actor_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "policy_ref": {"$ref": "#/$defs/versionedRef"},
+        "decision": {"enum": ["adopt", "retire"]},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/digestRef"}
+        },
+        "recorded_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "decision_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "taskRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "task_digest"],
+      "properties": {
+        "task_id": {"$ref": "#/$defs/nonEmptyString"},
+        "task_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "decisionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_id", "decision_digest"],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/nonEmptyString"},
+        "decision_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nullableDecisionRef": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/decisionRef"}
+      ]
+    },
+    "taskSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_set_id",
+        "policy_ref",
+        "adoption_decision_ref",
+        "sealed_at",
+        "task_refs",
+        "task_set_digest"
+      ],
+      "properties": {
+        "task_set_id": {
+          "type": "string",
+          "pattern": "^outcome-task-set\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "policy_ref": {"$ref": "#/$defs/versionedRef"},
+        "adoption_decision_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "sealed_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "task_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/taskRef"}
+        },
+        "task_set_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "enrollmentParticipantRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_id",
+        "enrollment_digest",
+        "role_id",
+        "arm",
+        "cluster_id"
+      ],
+      "properties": {
+        "participant_id": {"$ref": "#/$defs/nonEmptyString"},
+        "enrollment_digest": {"$ref": "#/$defs/digest"},
+        "role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "arm": {"$ref": "#/$defs/arm"},
+        "cluster_id": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "enrollmentManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_id",
+        "policy_ref",
+        "task_set_digest",
+        "sealed_at",
+        "participant_refs",
+        "manifest_digest"
+      ],
+      "properties": {
+        "manifest_id": {
+          "type": "string",
+          "pattern": "^outcome-enrollment\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "policy_ref": {"$ref": "#/$defs/versionedRef"},
+        "task_set_digest": {"$ref": "#/$defs/digest"},
+        "sealed_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "participant_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2048,
+          "items": {"$ref": "#/$defs/enrollmentParticipantRef"}
+        },
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "armMaterial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_ref", "derived_from_arm_ref"],
+      "properties": {
+        "material_ref": {"$ref": "#/$defs/versionedRef"},
+        "derived_from_arm_ref": {"$ref": "#/$defs/versionedRef"}
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "axis",
+        "target_role_id",
+        "stratum_id",
+        "correct_answer_ref",
+        "rubric_ref",
+        "arm_materials",
+        "prohibited_decisions",
+        "required_escalation",
+        "unresolved_must_be_preserved",
+        "prohibited_repair_shortcuts",
+        "sealed_at",
+        "task_digest"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "pattern": "^outcome-task\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "axis": {"$ref": "#/$defs/axis"},
+        "target_role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "stratum_id": {"$ref": "#/$defs/nonEmptyString"},
+        "correct_answer_ref": {"$ref": "#/$defs/versionedRef"},
+        "rubric_ref": {"$ref": "#/$defs/versionedRef"},
+        "arm_materials": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["baseline", "candidate"],
+          "properties": {
+            "baseline": {"$ref": "#/$defs/armMaterial"},
+            "candidate": {"$ref": "#/$defs/armMaterial"}
+          }
+        },
+        "prohibited_decisions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/humanDecisionRight"}
+        },
+        "required_escalation": {"type": "boolean"},
+        "unresolved_must_be_preserved": {"type": "boolean"},
+        "prohibited_repair_shortcuts": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "finding_suppression",
+              "rule_weakening",
+              "verification_bypass"
+            ]
+          }
+        },
+        "sealed_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "task_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence_ref", "scope_ref", "recorded_at"],
+      "properties": {
+        "status": {"enum": ["obtained", "not_obtained", "withdrawn"]},
+        "evidence_ref": {"$ref": "#/$defs/digestRef"},
+        "scope_ref": {"$ref": "#/$defs/versionedRef"},
+        "recorded_at": {"type": "string", "format": "date-time", "maxLength": 64}
+      }
+    },
+    "participantDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason", "evidence_ref", "recorded_at"],
+      "properties": {
+        "status": {
+          "enum": [
+            "completed",
+            "withdrawn",
+            "protocol_violation",
+            "missing",
+            "excluded"
+          ]
+        },
+        "reason": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_ref": {"$ref": "#/$defs/nullableDigestRef"},
+        "recorded_at": {"type": "string", "format": "date-time", "maxLength": 64}
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_id",
+        "pseudonymized",
+        "raw_identifiers_present",
+        "role_id",
+        "population_id",
+        "assigned_arm",
+        "cluster_id",
+        "source_kind",
+        "enrolled_at",
+        "consent",
+        "enrollment_digest",
+        "disposition",
+        "participant_digest"
+      ],
+      "properties": {
+        "participant_id": {
+          "type": "string",
+          "pattern": "^participant-pseudo\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "pseudonymized": {"const": true},
+        "raw_identifiers_present": {"const": false},
+        "role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "population_id": {"$ref": "#/$defs/nonEmptyString"},
+        "assigned_arm": {"$ref": "#/$defs/arm"},
+        "cluster_id": {"$ref": "#/$defs/nonEmptyString"},
+        "source_kind": {
+          "enum": [
+            "operational_participant",
+            "synthetic",
+            "local_fixture",
+            "smoke"
+          ]
+        },
+        "enrolled_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "consent": {"$ref": "#/$defs/consent"},
+        "enrollment_digest": {"$ref": "#/$defs/digest"},
+        "disposition": {"$ref": "#/$defs/participantDisposition"},
+        "participant_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_id",
+        "participant_id",
+        "participant_digest",
+        "role_id",
+        "arm",
+        "policy_ref",
+        "task_set_digest",
+        "started_at",
+        "completed_at",
+        "prior_task_exposure",
+        "training_task_refs",
+        "session_digest"
+      ],
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "pattern": "^outcome-session\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "participant_id": {"$ref": "#/$defs/nonEmptyString"},
+        "participant_digest": {"$ref": "#/$defs/digest"},
+        "role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "arm": {"$ref": "#/$defs/arm"},
+        "policy_ref": {"$ref": "#/$defs/versionedRef"},
+        "task_set_digest": {"$ref": "#/$defs/digest"},
+        "started_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "completed_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "prior_task_exposure": {"type": "boolean"},
+        "training_task_refs": {"$ref": "#/$defs/idStrings"},
+        "session_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "responseProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routing_destination",
+        "escalation_chosen",
+        "decision_claim",
+        "authority_claims"
+      ],
+      "properties": {
+        "routing_destination": {
+          "enum": [
+            "coding_agent",
+            "human_requester",
+            "human_reviewer",
+            "human_approver",
+            "external_control_plane",
+            "no_action"
+          ]
+        },
+        "escalation_chosen": {"type": "boolean"},
+        "decision_claim": {
+          "enum": [
+            "accept",
+            "request_revision",
+            "defer",
+            "technical_pass",
+            "no_final_decision"
+          ]
+        },
+        "authority_claims": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/humanDecisionRight"}
+        }
+      }
+    },
+    "selfReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claimed_success", "note_ref"],
+      "properties": {
+        "claimed_success": {"type": "boolean"},
+        "note_ref": {"$ref": "#/$defs/nullableDigestRef"}
+      }
+    },
+    "effort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["elapsed_seconds", "effort_units", "interruptions"],
+      "properties": {
+        "elapsed_seconds": {"type": "number", "minimum": 0, "maximum": 10000000},
+        "effort_units": {"type": "number", "minimum": 0, "maximum": 10000000},
+        "interruptions": {"type": "integer", "minimum": 0, "maximum": 1000000}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "session_id",
+        "session_digest",
+        "participant_id",
+        "role_id",
+        "arm",
+        "axis",
+        "task_id",
+        "task_digest",
+        "material_ref",
+        "response_ref",
+        "repair_artifact_ref",
+        "repair_verification_refs",
+        "repair_shortcuts_used",
+        "regression_status",
+        "unresolved_preserved",
+        "response_projection",
+        "participant_self_report",
+        "started_at",
+        "completed_at",
+        "effort",
+        "observation_digest"
+      ],
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "pattern": "^outcome-observation\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "session_id": {"$ref": "#/$defs/nonEmptyString"},
+        "session_digest": {"$ref": "#/$defs/digest"},
+        "participant_id": {"$ref": "#/$defs/nonEmptyString"},
+        "role_id": {"$ref": "#/$defs/nonEmptyString"},
+        "arm": {"$ref": "#/$defs/arm"},
+        "axis": {"$ref": "#/$defs/axis"},
+        "task_id": {"$ref": "#/$defs/nonEmptyString"},
+        "task_digest": {"$ref": "#/$defs/digest"},
+        "material_ref": {"$ref": "#/$defs/versionedRef"},
+        "response_ref": {"$ref": "#/$defs/nullableDigestRef"},
+        "repair_artifact_ref": {"$ref": "#/$defs/nullableDigestRef"},
+        "repair_verification_refs": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/digestRef"}
+        },
+        "repair_shortcuts_used": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "finding_suppression",
+              "rule_weakening",
+              "verification_bypass"
+            ]
+          }
+        },
+        "regression_status": {
+          "enum": ["passed", "failed", "not_checked", "not_applicable"]
+        },
+        "unresolved_preserved": {"type": "boolean"},
+        "response_projection": {"$ref": "#/$defs/responseProjection"},
+        "participant_self_report": {"$ref": "#/$defs/selfReport"},
+        "started_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "completed_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "effort": {"$ref": "#/$defs/effort"},
+        "observation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "grader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grader_id",
+        "grader_kind",
+        "role",
+        "independence_group",
+        "relationship_to_artifact",
+        "blind_to_arm",
+        "blind_to_participant_identity",
+        "conflict_statement",
+        "grader_digest"
+      ],
+      "properties": {
+        "grader_id": {
+          "type": "string",
+          "pattern": "^outcome-grader\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "grader_kind": {"const": "human"},
+        "role": {"enum": ["score_grader", "adjudicator"]},
+        "independence_group": {"$ref": "#/$defs/nonEmptyString"},
+        "relationship_to_artifact": {
+          "enum": [
+            "independent",
+            "system_author",
+            "material_author",
+            "participant",
+            "operator"
+          ]
+        },
+        "blind_to_arm": {"type": "boolean"},
+        "blind_to_participant_identity": {"type": "boolean"},
+        "conflict_statement": {"$ref": "#/$defs/nonEmptyString"},
+        "grader_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "criterionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric_id", "result"],
+      "properties": {
+        "metric_id": {"$ref": "#/$defs/metricId"},
+        "result": {"type": "boolean"}
+      }
+    },
+    "score": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score_id",
+        "observation_id",
+        "observation_digest",
+        "grader_id",
+        "grader_digest",
+        "rubric_ref",
+        "blind_to_arm",
+        "participant_self_report_used",
+        "criteria",
+        "recorded_at",
+        "score_digest"
+      ],
+      "properties": {
+        "score_id": {
+          "type": "string",
+          "pattern": "^outcome-score\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "observation_id": {"$ref": "#/$defs/nonEmptyString"},
+        "observation_digest": {"$ref": "#/$defs/digest"},
+        "grader_id": {"$ref": "#/$defs/nonEmptyString"},
+        "grader_digest": {"$ref": "#/$defs/digest"},
+        "rubric_ref": {"$ref": "#/$defs/versionedRef"},
+        "blind_to_arm": {"type": "boolean"},
+        "participant_self_report_used": {"type": "boolean"},
+        "criteria": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/criterionResult"}
+        },
+        "recorded_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "score_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "adjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adjudication_id",
+        "observation_id",
+        "observation_digest",
+        "metric_id",
+        "basis_score_refs",
+        "adjudicator_id",
+        "adjudicator_digest",
+        "blind_to_arm",
+        "resolved_result",
+        "rationale",
+        "recorded_at",
+        "adjudication_digest"
+      ],
+      "properties": {
+        "adjudication_id": {
+          "type": "string",
+          "pattern": "^outcome-adjudication\\.[a-z0-9.-]+$",
+          "maxLength": 512
+        },
+        "observation_id": {"$ref": "#/$defs/nonEmptyString"},
+        "observation_digest": {"$ref": "#/$defs/digest"},
+        "metric_id": {"$ref": "#/$defs/metricId"},
+        "basis_score_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "adjudicator_id": {"$ref": "#/$defs/nonEmptyString"},
+        "adjudicator_digest": {"$ref": "#/$defs/digest"},
+        "blind_to_arm": {"type": "boolean"},
+        "resolved_result": {"type": "boolean"},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"},
+        "recorded_at": {"type": "string", "format": "date-time", "maxLength": 64},
+        "adjudication_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "rateInterval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["point", "lower", "upper", "confidence"],
+      "properties": {
+        "point": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "lower": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "upper": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "confidence": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}
+      }
+    },
+    "metricRate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "success_count",
+        "error_count",
+        "denominator",
+        "success_rate",
+        "error_rate"
+      ],
+      "properties": {
+        "metric_id": {"$ref": "#/$defs/metricId"},
+        "success_count": {"type": "integer", "minimum": 0},
+        "error_count": {"type": "integer", "minimum": 0},
+        "denominator": {"type": "integer", "minimum": 0},
+        "success_rate": {"$ref": "#/$defs/rateInterval"},
+        "error_rate": {"$ref": "#/$defs/rateInterval"}
+      }
+    },
+    "boundedMean": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "count",
+        "mean",
+        "lower",
+        "upper",
+        "cap",
+        "confidence",
+        "basis"
+      ],
+      "properties": {
+        "count": {"type": "integer", "minimum": 0},
+        "mean": {"type": ["number", "null"], "minimum": 0},
+        "lower": {"type": ["number", "null"], "minimum": 0},
+        "upper": {"type": ["number", "null"], "minimum": 0},
+        "cap": {"type": "number", "exclusiveMinimum": 0},
+        "confidence": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "basis": {"const": "two_sided_hoeffding_bound"}
+      }
+    },
+    "stratumCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stratum_id",
+        "observation_count",
+        "participant_count",
+        "cluster_count"
+      ],
+      "properties": {
+        "stratum_id": {"$ref": "#/$defs/nonEmptyString"},
+        "observation_count": {"type": "integer", "minimum": 0},
+        "participant_count": {"type": "integer", "minimum": 0},
+        "cluster_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "dispositionCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "count"],
+      "properties": {
+        "status": {
+          "enum": [
+            "completed",
+            "withdrawn",
+            "protocol_violation",
+            "missing",
+            "excluded"
+          ]
+        },
+        "count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "enrollmentSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enrolled_participant_count",
+        "completed_participant_count",
+        "dropout_count",
+        "dropout_rate",
+        "disposition_counts"
+      ],
+      "properties": {
+        "enrolled_participant_count": {"type": "integer", "minimum": 0},
+        "completed_participant_count": {"type": "integer", "minimum": 0},
+        "dropout_count": {"type": "integer", "minimum": 0},
+        "dropout_rate": {"$ref": "#/$defs/rateInterval"},
+        "disposition_counts": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/dispositionCount"}
+        }
+      }
+    },
+    "armMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_count",
+        "participant_count",
+        "cluster_count",
+        "analysis_unit",
+        "metric_rates",
+        "weighted_error_loss",
+        "effort_seconds",
+        "effort_units",
+        "enrollment",
+        "stratum_counts"
+      ],
+      "properties": {
+        "observation_count": {"type": "integer", "minimum": 0},
+        "participant_count": {"type": "integer", "minimum": 0},
+        "cluster_count": {"type": "integer", "minimum": 0},
+        "analysis_unit": {"const": "participant_cluster"},
+        "metric_rates": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/metricRate"}
+        },
+        "weighted_error_loss": {"$ref": "#/$defs/boundedMean"},
+        "effort_seconds": {"$ref": "#/$defs/boundedMean"},
+        "effort_units": {"$ref": "#/$defs/boundedMean"},
+        "enrollment": {"$ref": "#/$defs/enrollmentSummary"},
+        "stratum_counts": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/stratumCount"}
+        }
+      }
+    },
+    "thresholdCriterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "criterion",
+        "metric_id",
+        "observed",
+        "threshold",
+        "comparison",
+        "basis",
+        "passed"
+      ],
+      "properties": {
+        "criterion": {
+          "enum": [
+            "error_rate_wilson_upper",
+            "success_rate_wilson_lower",
+            "weighted_error_loss_upper",
+            "weighted_loss_improvement_lower",
+            "effort_seconds_upper",
+            "effort_units_upper",
+            "baseline_dropout_rate_wilson_upper",
+            "candidate_dropout_rate_wilson_upper"
+          ]
+        },
+        "metric_id": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/metricId"}
+          ]
+        },
+        "observed": {"type": "number"},
+        "threshold": {"type": "number"},
+        "comparison": {"enum": ["less_than_or_equal", "greater_than_or_equal"]},
+        "basis": {
+          "enum": [
+            "wilson_upper_bound",
+            "wilson_lower_bound",
+            "hoeffding_upper_bound",
+            "baseline_hoeffding_lower_minus_candidate_hoeffding_upper"
+          ]
+        },
+        "passed": {"type": "boolean"}
+      }
+    },
+    "disagreement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "metric_id",
+        "score_refs",
+        "adjudication_ref",
+        "resolved_result"
+      ],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/nonEmptyString"},
+        "metric_id": {"$ref": "#/$defs/metricId"},
+        "score_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "adjudication_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "resolved_result": {"type": "boolean"}
+      }
+    },
+    "axisResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis",
+        "status",
+        "claim_scope",
+        "task_set_digest",
+        "arm_metrics",
+        "unpaired_arm_comparison",
+        "threshold_assessment",
+        "disagreements",
+        "reasons",
+        "limitations",
+        "cross_axis_inference_prohibited",
+        "result_digest"
+      ],
+      "properties": {
+        "axis": {"$ref": "#/$defs/axis"},
+        "status": {"enum": ["meets_policy_for_declared_records", "not_established"]},
+        "claim_scope": {
+          "enum": [
+            "declared_records_only",
+            "declared_synthetic_protocol_only",
+            "declared_protocol_not_established"
+          ]
+        },
+        "task_set_digest": {"$ref": "#/$defs/digest"},
+        "arm_metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["baseline", "candidate"],
+          "properties": {
+            "baseline": {"$ref": "#/$defs/armMetrics"},
+            "candidate": {"$ref": "#/$defs/armMetrics"}
+          }
+        },
+        "unpaired_arm_comparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "baseline_weighted_loss_lower",
+            "candidate_weighted_loss_upper",
+            "improvement_lower",
+            "minimum_required_improvement",
+            "basis",
+            "passed"
+          ],
+          "properties": {
+            "baseline_weighted_loss_lower": {"type": "number", "minimum": 0},
+            "candidate_weighted_loss_upper": {"type": "number", "minimum": 0},
+            "improvement_lower": {"type": "number"},
+            "minimum_required_improvement": {"type": "number"},
+            "basis": {"const": "baseline_hoeffding_lower_minus_candidate_hoeffding_upper"},
+            "passed": {"type": "boolean"}
+          }
+        },
+        "threshold_assessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "criteria", "confidence_level"],
+          "properties": {
+            "status": {"enum": ["passed", "failed"]},
+            "criteria": {
+              "type": "array",
+              "minItems": 18,
+              "maxItems": 64,
+              "items": {"$ref": "#/$defs/thresholdCriterion"}
+            },
+            "confidence_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1}
+          }
+        },
+        "disagreements": {
+          "type": "array",
+          "maxItems": 65536,
+          "items": {"$ref": "#/$defs/disagreement"}
+        },
+        "reasons": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "cross_axis_inference_prohibited": {"const": true},
+        "result_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "nonInferenceValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason"],
+      "properties": {
+        "status": {"const": "not_evaluated"},
+        "reason": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "nonInferenceAxes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field_validity",
+        "operational_qualification",
+        "security",
+        "cutover",
+        "final_acceptance"
+      ],
+      "properties": {
+        "field_validity": {"$ref": "#/$defs/nonInferenceValue"},
+        "operational_qualification": {"$ref": "#/$defs/nonInferenceValue"},
+        "security": {"$ref": "#/$defs/nonInferenceValue"},
+        "cutover": {"$ref": "#/$defs/nonInferenceValue"},
+        "final_acceptance": {"$ref": "#/$defs/nonInferenceValue"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_guard_role",
+        "participant_assignment",
+        "work_routing",
+        "repair_execution",
+        "authority_grant",
+        "question_sending",
+        "policy_adoption",
+        "cutover_decision",
+        "final_acceptance",
+        "external_owners"
+      ],
+      "properties": {
+        "semantic_guard_role": {"const": "compute_and_validate_audit_material_only"},
+        "participant_assignment": {"const": false},
+        "work_routing": {"const": false},
+        "repair_execution": {"const": false},
+        "authority_grant": {"const": false},
+        "question_sending": {"const": false},
+        "policy_adoption": {"const": false},
+        "cutover_decision": {"const": false},
+        "final_acceptance": {"const": false},
+        "external_owners": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "study_operation",
+            "control",
+            "policy_and_thresholds",
+            "final_acceptance"
+          ],
+          "properties": {
+            "study_operation": {"const": "external_research_or_operations_owner"},
+            "control": {"const": "external_caller_or_resource_control_plane"},
+            "policy_and_thresholds": {"const": "human"},
+            "final_acceptance": {"const": "human"}
+          }
+        }
+      }
+    }
+  }
+}

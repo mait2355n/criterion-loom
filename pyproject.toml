@@ -1,17 +1,53 @@
 [project]
 name = "semantic-guard"
-version = "0.1.0"
-description = "Meaning-, intent-, and requirements-oriented audit tools for Codex work."
+version = "1.0.0"
+description = "Contract-first audit kernel for semantic-guard."
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "aster00" }]
 requires-python = ">=3.11"
 dependencies = [
-  "mcp>=1.12.0",
+  "jsonschema[format]>=4.25,<5",
+  "mcp>=1.14,<2",
+]
+
+[project.optional-dependencies]
+nlp-ja = [
+  "SudachiDict-core==20260428",
+  "SudachiPy>=0.6.11,<0.7",
+]
+nlp-ja-dependency = [
+  "ginza>=5.2,<6",
+  "ja-ginza>=5.2,<6",
 ]
 
 [project.scripts]
 semantic-guard = "semantic_guard.cli:main"
 semantic-guard-mcp = "semantic_guard.mcp_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/semantic_guard"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"constitution" = "semantic_guard/constitution"
+"schemas" = "semantic_guard/schemas"
+"validation/lifecycle-profile-registry.candidate.json" = "semantic_guard/validation/lifecycle-profile-registry.candidate.json"
+"validation/engineering-rule-pack.candidate.json" = "semantic_guard/validation/engineering-rule-pack.candidate.json"
+"validation/engineering-rule-pack.schema.json" = "semantic_guard/validation/engineering-rule-pack.schema.json"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src/semantic_guard",
+  "/schemas",
+  "/constitution",
+  "/validation/lifecycle-profile-registry.candidate.json",
+  "/validation/engineering-rule-pack.candidate.json",
+  "/validation/engineering-rule-pack.schema.json",
+  "/pyproject.toml",
+  "/README.md",
+  "/LICENSE",
+]
 
 [build-system]
 requires = ["hatchling"]

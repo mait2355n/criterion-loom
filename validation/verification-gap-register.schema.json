@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/validation/verification-gap-register.schema.json",
+  "title": "semantic-guard v1 verification gap register",
+  "description": "Closed, content-addressed register for every declared unproven scope, residual risk, and implementation-conformance remaining obligation in verification-source.json. Completeness is bounded to this declared denominator and does not discover unknown unknowns or establish resolution truth by itself.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schema_version",
+    "register_id",
+    "source",
+    "denominator",
+    "gap_set_digest",
+    "gaps"
+  ],
+  "properties": {
+    "$schema": {"const": "./verification-gap-register.schema.json"},
+    "schema_version": {
+      "const": "semantic-guard-verification-gap-register/v0"
+    },
+    "register_id": {
+      "const": "verification-gap-register.canonical.v0"
+    },
+    "source": {
+      "type": "object",
+      "required": ["locator", "content_digest"],
+      "properties": {
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "denominator": {
+      "type": "object",
+      "required": [
+        "included_fields",
+        "identity_canonicalization",
+        "content_digest_algorithm"
+      ],
+      "properties": {
+        "included_fields": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "verification_items[].unproven_scope[]",
+              "verification_items[].residual_risks[]",
+              "implementation_conformance_items[].remaining_obligations[]"
+            ]
+          }
+        },
+        "identity_canonicalization": {
+          "const": "sha256(canonical-json({item_id,gap_kind,content}))"
+        },
+        "content_digest_algorithm": {"const": "sha256"}
+      },
+      "unevaluatedProperties": false
+    },
+    "gap_set_digest": {"$ref": "#/$defs/sha256_digest"},
+    "gaps": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/gap_record"}
+    }
+  },
+  "$defs": {
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "entity_ref": {
+      "type": "object",
+      "required": ["reference_kind", "entity_id"],
+      "properties": {
+        "reference_kind": {"const": "ref"},
+        "entity_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "label_hint": {"type": "string", "minLength": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "canonical_unresolved": {
+      "type": "object",
+      "required": ["kind", "unresolved_ref"],
+      "properties": {
+        "kind": {"const": "canonical_unresolved"},
+        "unresolved_ref": {"$ref": "#/$defs/entity_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "resolved": {
+      "type": "object",
+      "required": [
+        "kind",
+        "evidence_refs",
+        "completion_rule",
+        "completion_assessment"
+      ],
+      "properties": {
+        "kind": {"const": "resolved"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/entity_ref"}
+        },
+        "completion_rule": {"type": "string", "minLength": 1},
+        "completion_assessment": {
+          "type": "object",
+          "required": [
+            "status",
+            "assessed_gap_id",
+            "assessor_ref",
+            "assessed_at"
+          ],
+          "properties": {
+            "status": {"const": "satisfied"},
+            "assessed_gap_id": {
+              "type": "string",
+              "pattern": "^gap\\.sha256\\.[0-9a-f]{64}$"
+            },
+            "assessor_ref": {"type": "string", "minLength": 1},
+            "assessed_at": {"type": "string", "format": "date-time"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "not_applicable": {
+      "type": "object",
+      "required": ["kind", "accepted_human_decision", "reactivation"],
+      "properties": {
+        "kind": {"const": "not_applicable"},
+        "accepted_human_decision": {
+          "type": "object",
+          "required": [
+            "decision_id",
+            "status",
+            "locator",
+            "content_digest",
+            "decided_by",
+            "decided_at",
+            "scope"
+          ],
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+            },
+            "status": {"const": "accepted"},
+            "locator": {"type": "string", "minLength": 1},
+            "content_digest": {"$ref": "#/$defs/sha256_digest"},
+            "decided_by": {"type": "string", "minLength": 1},
+            "decided_at": {"type": "string", "format": "date-time"},
+            "scope": {"type": "string", "minLength": 1}
+          },
+          "unevaluatedProperties": false
+        },
+        "reactivation": {
+          "type": "object",
+          "required": ["triggers", "review_by"],
+          "properties": {
+            "triggers": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            },
+            "review_by": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "control_plane_handoff": {
+      "type": "object",
+      "required": ["kind", "handoff_id", "audit_unresolved_ref"],
+      "properties": {
+        "kind": {"const": "control_plane_handoff"},
+        "handoff_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "handoff_locator": {"type": "string", "minLength": 1},
+        "audit_unresolved_ref": {"$ref": "#/$defs/entity_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "gap_record": {
+      "type": "object",
+      "required": [
+        "gap_id",
+        "gap_kind",
+        "source_locator",
+        "item_ref",
+        "content",
+        "content_digest",
+        "disposition"
+      ],
+      "properties": {
+        "gap_id": {
+          "type": "string",
+          "pattern": "^gap\\.sha256\\.[0-9a-f]{64}$"
+        },
+        "gap_kind": {
+          "enum": [
+            "verification_unproven_scope",
+            "verification_residual_risk",
+            "conformance_remaining_obligation"
+          ]
+        },
+        "source_locator": {
+          "type": "string",
+          "pattern": "^[^#]+#/(verification_items|implementation_conformance_items)/[0-9]+/(unproven_scope|residual_risks|remaining_obligations)/[0-9]+$"
+        },
+        "item_ref": {"$ref": "#/$defs/entity_ref"},
+        "content": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "disposition": {
+          "oneOf": [
+            {"$ref": "#/$defs/canonical_unresolved"},
+            {"$ref": "#/$defs/resolved"},
+            {"$ref": "#/$defs/not_applicable"},
+            {"$ref": "#/$defs/control_plane_handoff"}
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/validation/verification-validation-result.schema.json",
+  "title": "semantic-guard v1 verification source validation result",
+  "description": "Closed result envelope for the internal verification-source consistency validator. Success does not imply field validation, action authenticity, or human acceptance.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "subject",
+    "execution",
+    "checks",
+    "counts",
+    "errors",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "semantic-guard-verification-validation-result/v0"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "source",
+        "source_sha256",
+        "schema",
+        "schema_sha256",
+        "common_schema",
+        "common_schema_sha256",
+        "projection",
+        "projection_sha256",
+        "gap_register",
+        "gap_register_sha256",
+        "gap_register_schema",
+        "gap_register_schema_sha256",
+        "gap_set_sha256"
+      ],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "source_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "schema": {"type": "string", "minLength": 1},
+        "schema_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "common_schema": {"type": "string", "minLength": 1},
+        "common_schema_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "projection": {"type": "string", "minLength": 1},
+        "projection_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "gap_register": {"type": "string", "minLength": 1},
+        "gap_register_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "gap_register_schema": {"type": "string", "minLength": 1},
+        "gap_register_schema_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "gap_set_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "validator",
+        "validator_sha256",
+        "executed_at",
+        "python_version",
+        "jsonschema_version"
+      ],
+      "properties": {
+        "validator": {"type": "string", "minLength": 1},
+        "validator_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executed_at": {"type": "string", "format": "date-time"},
+        "python_version": {"type": "string", "minLength": 1},
+        "jsonschema_version": {"type": "string", "minLength": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "checks": {
+      "type": "object",
+      "required": [
+        "schema_validation",
+        "reference_closure",
+        "paths_and_digests",
+        "temporal_consistency",
+        "projection_surface",
+        "gap_register"
+      ],
+      "properties": {
+        "schema_validation": {"$ref": "#/$defs/check_status"},
+        "reference_closure": {"$ref": "#/$defs/check_status"},
+        "paths_and_digests": {"$ref": "#/$defs/check_status"},
+        "temporal_consistency": {"$ref": "#/$defs/check_status"},
+        "projection_surface": {"$ref": "#/$defs/check_status"},
+        "gap_register": {"$ref": "#/$defs/check_status"}
+      },
+      "unevaluatedProperties": false
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "state_profiles": {"type": "integer", "minimum": 0},
+        "evidence_observations": {"type": "integer", "minimum": 0},
+        "evidence_effects": {"type": "integer", "minimum": 0},
+        "resolution_obligations": {"type": "integer", "minimum": 0},
+        "resolution_paths": {"type": "integer", "minimum": 0},
+        "verification_items": {"type": "integer", "minimum": 0},
+        "implementation_conformance_items": {"type": "integer", "minimum": 0},
+        "views": {"type": "integer", "minimum": 0},
+        "unresolved_items": {"type": "integer", "minimum": 0},
+        "gap_records": {"type": "integer", "minimum": 0}
+      },
+      "unevaluatedProperties": false
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "location", "message"],
+        "properties": {
+          "code": {"type": "string", "minLength": 1},
+          "location": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "check_status": {
+      "type": "string",
+      "enum": ["not_run", "passed", "failed"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "ok"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "subject": {
+            "properties": {
+              "source_sha256": {"type": "string"},
+              "schema_sha256": {"type": "string"},
+              "common_schema_sha256": {"type": "string"},
+              "projection_sha256": {"type": "string"},
+              "gap_register_sha256": {"type": "string"},
+              "gap_register_schema_sha256": {"type": "string"},
+              "gap_set_sha256": {"type": "string"}
+            },
+            "required": [
+              "source_sha256",
+              "schema_sha256",
+              "common_schema_sha256",
+              "projection_sha256",
+              "gap_register_sha256",
+              "gap_register_schema_sha256",
+              "gap_set_sha256"
+            ]
+          },
+          "execution": {
+            "properties": {
+              "validator_sha256": {"type": "string"}
+            },
+            "required": ["validator_sha256"]
+          },
+          "checks": {
+            "properties": {
+              "schema_validation": {"const": "passed"},
+              "reference_closure": {"const": "passed"},
+              "paths_and_digests": {"const": "passed"},
+              "temporal_consistency": {"const": "passed"},
+              "projection_surface": {"const": "passed"},
+              "gap_register": {"const": "passed"}
+            }
+          },
+          "counts": {
+            "required": [
+              "state_profiles",
+              "evidence_observations",
+              "evidence_effects",
+              "resolution_obligations",
+              "resolution_paths",
+              "verification_items",
+              "implementation_conformance_items",
+              "views",
+              "unresolved_items",
+              "gap_records"
+            ]
+          },
+          "errors": {"maxItems": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "errors": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

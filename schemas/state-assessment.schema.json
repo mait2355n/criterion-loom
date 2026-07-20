@@ -1,0 +1,526 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/state-assessment.schema.json",
+  "title": "semantic-guard v1 state assessment",
+  "description": "Deterministic state derivation over a closed subject manifest and a versioned validity policy. Implementation, verification, validation, assurance, freshness, and human acceptance remain independent axes. The record does not authenticate time or make a human decision.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "assessment_id",
+    "proposition",
+    "subject_manifest_ref",
+    "validity_policy_ref",
+    "current_context",
+    "assessed_at",
+    "time_trust",
+    "axes",
+    "axis_derivations",
+    "evidence_observations",
+    "evidence_evaluations",
+    "applied_rules",
+    "supporting_evidence_refs",
+    "counterevidence_refs",
+    "unproven_scope",
+    "requalification_plan",
+    "human_acceptance_record",
+    "limitations",
+    "acceptance_basis_digest",
+    "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "state-assessment/v2"},
+    "assessment_id": {"$ref": "#/$defs/stable_id"},
+    "proposition": {"type": "string", "minLength": 1},
+    "subject_manifest_ref": {"$ref": "#/$defs/subject_manifest_ref"},
+    "validity_policy_ref": {"$ref": "#/$defs/validity_policy_ref"},
+    "current_context": {"$ref": "#/$defs/current_context"},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "time_trust": {"enum": ["trusted", "untrusted"]},
+    "axes": {
+      "type": "object",
+      "required": [
+        "implementation",
+        "verification",
+        "validation",
+        "assurance",
+        "freshness",
+        "human_acceptance"
+      ],
+      "properties": {
+        "implementation": {"$ref": "#/$defs/implementation_state"},
+        "verification": {"$ref": "#/$defs/verification_state"},
+        "validation": {"$ref": "#/$defs/validation_state"},
+        "assurance": {"$ref": "#/$defs/assurance_state"},
+        "freshness": {"$ref": "#/$defs/freshness_state"},
+        "human_acceptance": {"$ref": "#/$defs/human_acceptance_state"}
+      },
+      "unevaluatedProperties": false
+    },
+    "axis_derivations": {
+      "type": "object",
+      "required": [
+        "implementation",
+        "verification",
+        "validation",
+        "assurance",
+        "freshness",
+        "human_acceptance"
+      ],
+      "properties": {
+        "implementation": {"$ref": "#/$defs/explicit_axis_derivation"},
+        "verification": {"$ref": "#/$defs/explicit_axis_derivation"},
+        "validation": {"$ref": "#/$defs/explicit_axis_derivation"},
+        "assurance": {"$ref": "#/$defs/explicit_axis_derivation"},
+        "freshness": {"$ref": "#/$defs/freshness_derivation"},
+        "human_acceptance": {"$ref": "#/$defs/human_acceptance_derivation"}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_observations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence_observation"}
+    },
+    "evidence_evaluations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence_evaluation"}
+    },
+    "applied_rules": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identity_binding"}
+    },
+    "supporting_evidence_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence_ref"}
+    },
+    "counterevidence_refs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence_ref"}
+    },
+    "unproven_scope": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "requalification_plan": {"$ref": "#/$defs/requalification_plan"},
+    "human_acceptance_record": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/human_acceptance_record"}
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "acceptance_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+    "assessment_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "subject_manifest_ref": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stable_id"},
+        "manifest_version": {"type": "string", "minLength": 1},
+        "manifest_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "validity_policy_ref": {
+      "type": "object",
+      "required": ["policy_id", "policy_version", "policy_digest"],
+      "properties": {
+        "policy_id": {"$ref": "#/$defs/stable_id"},
+        "policy_version": {"type": "string", "minLength": 1},
+        "policy_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "current_context": {
+      "type": "object",
+      "required": [
+        "environment_bindings",
+        "tool_identity",
+        "profile_bindings",
+        "rule_bindings"
+      ],
+      "properties": {
+        "environment_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "tool_identity": {"$ref": "#/$defs/identity_binding"},
+        "profile_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "rule_bindings": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/identity_binding"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "implementation_state": {
+      "enum": ["not_assessed", "missing", "partial", "implemented"]
+    },
+    "verification_state": {
+      "enum": ["not_assessed", "not_run", "passed", "failed", "invalid"]
+    },
+    "validation_state": {
+      "enum": [
+        "not_assessed",
+        "not_evaluated",
+        "supported_in_context",
+        "inconclusive",
+        "refuted_in_context"
+      ]
+    },
+    "assurance_state": {
+      "enum": ["not_assessed", "unbound", "undetermined", "satisfied", "refuted"]
+    },
+    "freshness_state": {"enum": ["unbound", "stale", "current"]},
+    "human_acceptance_state": {
+      "enum": ["pending", "accept", "request_revision", "defer"]
+    },
+    "explicit_axis_derivation": {
+      "type": "object",
+      "required": ["mode", "value", "asserted_value", "basis_evidence_refs", "basis_rule_refs", "rationale"],
+      "properties": {
+        "mode": {"enum": ["not_assessed", "asserted_input_unproved", "typed_evidence_effect"]},
+        "value": {"type": "string", "minLength": 1},
+        "asserted_value": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1}
+          ]
+        },
+        "basis_evidence_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "basis_rule_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "rationale": {"type": "string", "minLength": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "freshness_derivation": {
+      "type": "object",
+      "required": ["mode", "value", "evidence_evaluation_refs", "rationale"],
+      "properties": {
+        "mode": {"const": "validity_policy_derivation"},
+        "value": {"$ref": "#/$defs/freshness_state"},
+        "evidence_evaluation_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "rationale": {"type": "string", "minLength": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "human_acceptance_derivation": {
+      "type": "object",
+      "required": ["mode", "value", "decision_record_ref", "rationale"],
+      "properties": {
+        "mode": {"enum": ["pending_without_external_record", "external_human_record"]},
+        "value": {"$ref": "#/$defs/human_acceptance_state"},
+        "decision_record_ref": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/digest_bound_locator"}
+          ]
+        },
+        "rationale": {"type": "string", "minLength": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_kind": {
+      "enum": [
+        "test_execution",
+        "filesystem_observation",
+        "tool_output",
+        "signed_attestation",
+        "independent_review",
+        "human_testimony",
+        "model_output",
+        "other"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "self_reported",
+        "locally_observed",
+        "tool_reported",
+        "independently_observed",
+        "signed",
+        "formally_verified",
+        "unknown"
+      ]
+    },
+    "evidence_observation": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "evidence_id",
+        "evidence_kind",
+        "content_digest",
+        "observation_digest",
+        "subject_manifest_ref",
+        "observed_at",
+        "expires_at",
+        "time_trust",
+        "environment_identity",
+        "tool_identity",
+        "profile_identity",
+        "rule_identities",
+        "covered_claim_dimensions",
+        "claim_effects",
+        "trust_class",
+        "limitations"
+      ],
+      "properties": {
+        "schema_version": {"const": "state-evidence-observation/v1"},
+        "evidence_id": {"$ref": "#/$defs/stable_id"},
+        "evidence_kind": {"$ref": "#/$defs/evidence_kind"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "observation_digest": {"$ref": "#/$defs/sha256_digest"},
+        "subject_manifest_ref": {"$ref": "#/$defs/subject_manifest_ref"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "environment_identity": {"$ref": "#/$defs/identity_binding"},
+        "tool_identity": {"$ref": "#/$defs/identity_binding"},
+        "profile_identity": {"$ref": "#/$defs/identity_binding"},
+        "rule_identities": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "covered_claim_dimensions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["implementation", "verification", "validation", "assurance"]
+          }
+        },
+        "claim_effects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/claim_effect"}
+        },
+        "trust_class": {"$ref": "#/$defs/trust_class"},
+        "limitations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "claim_effect": {
+      "type": "object",
+      "required": ["axis", "effect", "value", "rule_id"],
+      "properties": {
+        "axis": {
+          "enum": ["implementation", "verification", "validation", "assurance"]
+        },
+        "effect": {"const": "supports_axis_value"},
+        "value": {"type": "string", "minLength": 1},
+        "rule_id": {"$ref": "#/$defs/stable_id"}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_ref": {
+      "type": "object",
+      "required": ["evidence_id", "content_digest"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/stable_id"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "evidence_evaluation": {
+      "type": "object",
+      "required": [
+        "evidence_ref",
+        "subject_binding",
+        "freshness",
+        "reasons",
+        "invalidating_changes",
+        "required_requalification_evidence_kinds"
+      ],
+      "properties": {
+        "evidence_ref": {"$ref": "#/$defs/evidence_ref"},
+        "subject_binding": {"enum": ["bound", "unbound"]},
+        "freshness": {"$ref": "#/$defs/freshness_state"},
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "invalidating_changes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "subject_digest_change",
+              "environment_digest_change",
+              "tool_digest_change",
+              "profile_digest_change",
+              "rule_digest_change"
+            ]
+          }
+        },
+        "required_requalification_evidence_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/evidence_kind"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_locator": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "human_acceptance_record": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "status",
+        "assessment_id",
+        "subject_manifest_ref",
+        "target_basis_digest",
+        "decided_by",
+        "decision_maker_identity",
+        "decision_maker_kind",
+        "external_to_semantic_guard",
+        "decided_at",
+        "record_ref"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "decision_kind": {"const": "accept_state_assessment"},
+        "status": {"enum": ["accept", "request_revision", "defer"]},
+        "assessment_id": {"$ref": "#/$defs/stable_id"},
+        "subject_manifest_ref": {"$ref": "#/$defs/subject_manifest_ref"},
+        "target_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "decided_by": {"$ref": "#/$defs/stable_id"},
+        "decision_maker_identity": {"$ref": "#/$defs/identity_binding"},
+        "decision_maker_kind": {"const": "human"},
+        "external_to_semantic_guard": {"const": true},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "record_ref": {"$ref": "#/$defs/digest_bound_locator"}
+      },
+      "unevaluatedProperties": false
+    },
+    "requalification_plan": {
+      "type": "object",
+      "required": [
+        "required",
+        "reasons",
+        "invalidated_evidence_refs",
+        "required_evidence_kinds",
+        "requirements",
+        "next_assessment_trigger"
+      ],
+      "properties": {
+        "required": {"type": "boolean"},
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "invalidated_evidence_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence_ref"}
+        },
+        "required_evidence_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/evidence_kind"}
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["reason", "evidence_kinds"],
+            "properties": {
+              "reason": {"type": "string", "minLength": 1},
+              "evidence_kinds": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {"$ref": "#/$defs/evidence_kind"}
+              }
+            },
+            "unevaluatedProperties": false
+          }
+        },
+        "next_assessment_trigger": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"required": {"const": true}},
+            "required": ["required"]
+          },
+          "then": {
+            "properties": {
+              "reasons": {"minItems": 1},
+              "required_evidence_kinds": {"minItems": 1},
+              "requirements": {"minItems": 1}
+            }
+          },
+          "else": {
+            "properties": {
+              "reasons": {"maxItems": 0},
+              "invalidated_evidence_refs": {"maxItems": 0},
+              "required_evidence_kinds": {"maxItems": 0},
+              "requirements": {"maxItems": 0}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

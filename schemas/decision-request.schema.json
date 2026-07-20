@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/decision-request.schema.json",
+  "title": "semantic-guard v1 decision request",
+  "description": "Audit material for an unresolved decision. It is not a routing command, authority grant, human question, or acceptance decision.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "decision_request_id",
+    "audit_ref",
+    "subject_ref",
+    "affected_obligation_refs",
+    "issue_class",
+    "epistemic_state",
+    "detected_by",
+    "decision_need",
+    "resolution_conditions",
+    "agent_work_candidates",
+    "audit_holds",
+    "question_material",
+    "interpretations",
+    "coverage",
+    "residual_risks",
+    "source_spans",
+    "provenance",
+    "authority_effects",
+    "routing_boundary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "decision-request/v0"
+    },
+    "decision_request_id": {
+      "$ref": "common.schema.json#/$defs/stable_id"
+    },
+    "audit_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
+    },
+    "subject_ref": {
+      "$ref": "common.schema.json#/$defs/entity_reference"
+    },
+    "affected_obligation_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+    },
+    "issue_class": {
+      "type": "string",
+      "enum": [
+        "missing_evidence",
+        "ambiguous_interpretation",
+        "conflicting_evidence",
+        "applicability_unknown",
+        "record_boundary_unknown",
+        "provider_failure",
+        "provider_authority_insufficient",
+        "integrity_failure",
+        "unobserved_scope",
+        "owner_unknown",
+        "intent_or_scope_choice",
+        "risk_acceptance",
+        "policy_exception",
+        "external_or_irreversible_effect",
+        "final_acceptance",
+        "authority_expansion",
+        "other"
+      ]
+    },
+    "epistemic_state": {
+      "type": "string",
+      "enum": ["observed", "derived", "hypothesis", "unknown", "conflict", "invalid"]
+    },
+    "detected_by": {
+      "type": "object",
+      "required": ["stage_ref", "provider_ref", "result", "authority_rights"],
+      "properties": {
+        "stage_ref": {"$ref": "common.schema.json#/$defs/entity_reference"},
+        "provider_ref": {
+          "oneOf": [
+            {"$ref": "common.schema.json#/$defs/entity_reference"},
+            {"type": "null"}
+          ]
+        },
+        "result": {
+          "type": "string",
+          "enum": ["unknown", "challenge", "conflict", "hold", "invalid"]
+        },
+        "authority_rights": {"$ref": "common.schema.json#/$defs/authority_rights"}
+      },
+      "unevaluatedProperties": false
+    },
+    "decision_need": {
+      "type": "object",
+      "required": ["resolution_kind", "proposition", "required_authority"],
+      "properties": {
+        "resolution_kind": {
+          "type": "string",
+          "enum": [
+            "acquire_evidence",
+            "interpret_contract",
+            "select_interpretation",
+            "resolve_source_conflict",
+            "identify_owner",
+            "change_intent_or_scope",
+            "accept_residual_risk",
+            "grant_or_expand_authority",
+            "authorize_external_effect",
+            "final_acceptance",
+            "defer",
+            "other"
+          ]
+        },
+        "proposition": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "required_authority": {
+          "type": "string",
+          "enum": [
+            "evidence_acquisition",
+            "bounded_technical_interpretation",
+            "source_owner",
+            "requester_intent",
+            "risk_acceptance",
+            "policy_exception",
+            "authority_grant",
+            "external_effect_authorization",
+            "final_acceptance"
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "resolution_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+    },
+    "agent_work_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["candidate_id", "action", "required_authority", "side_effect_class", "reaudit_required"],
+        "properties": {
+          "candidate_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+          "action": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "required_authority": {
+            "type": "string",
+            "enum": ["read_only", "edit_limited", "external_effect", "human_only"]
+          },
+          "side_effect_class": {
+            "type": "string",
+            "enum": ["none", "reversible_local", "persistent_local", "external", "irreversible_or_unknown"]
+          },
+          "reaudit_required": {"const": true}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "audit_holds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/hold"}
+    },
+    "question_material": {
+      "type": "object",
+      "description": "Material from which an external caller may later formulate a question after bounded evidence work.",
+      "required": ["facts", "unknowns", "options", "tradeoffs", "recommended_question"],
+      "properties": {
+        "facts": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        },
+        "unknowns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        },
+        "options": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        },
+        "tradeoffs": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+        },
+        "recommended_question": {
+          "type": ["string", "null"]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "interpretations": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/interpretation"}
+    },
+    "coverage": {
+      "$ref": "common.schema.json#/$defs/coverage"
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/residual_risk"}
+    },
+    "source_spans": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/source_span"}
+    },
+    "provenance": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/provenance_record"}
+    },
+    "authority_effects": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/authority_effect"}
+    },
+    "routing_boundary": {
+      "type": "object",
+      "required": ["semantic_guard_role", "routing_owner", "is_control_decision", "is_authority_grant", "is_human_question"],
+      "properties": {
+        "semantic_guard_role": {"const": "emit_audit_material_only"},
+        "routing_owner": {"const": "external_caller_or_control_plane"},
+        "is_control_decision": {"const": false},
+        "is_authority_grant": {"const": false},
+        "is_human_question": {"const": false}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "issue_class": {"const": "final_acceptance"}
+        },
+        "required": ["issue_class"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {
+              "resolution_kind": {"const": "final_acceptance"},
+              "required_authority": {"const": "final_acceptance"}
+            },
+            "required": ["resolution_kind", "required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {"resolution_kind": {"const": "final_acceptance"}},
+            "required": ["resolution_kind"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {"required_authority": {"const": "final_acceptance"}},
+            "required": ["required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {"resolution_kind": {"const": "change_intent_or_scope"}},
+            "required": ["resolution_kind"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {"required_authority": {"const": "requester_intent"}},
+            "required": ["required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {"resolution_kind": {"const": "accept_residual_risk"}},
+            "required": ["resolution_kind"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {"required_authority": {"const": "risk_acceptance"}},
+            "required": ["required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {"resolution_kind": {"const": "grant_or_expand_authority"}},
+            "required": ["resolution_kind"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {"required_authority": {"const": "authority_grant"}},
+            "required": ["required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {"resolution_kind": {"const": "authorize_external_effect"}},
+            "required": ["resolution_kind"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "decision_need": {
+            "properties": {"required_authority": {"const": "external_effect_authorization"}},
+            "required": ["required_authority"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_need": {
+            "properties": {
+              "required_authority": {
+                "enum": [
+                  "requester_intent",
+                  "risk_acceptance",
+                  "policy_exception",
+                  "authority_grant",
+                  "external_effect_authorization",
+                  "final_acceptance"
+                ]
+              }
+            },
+            "required": ["required_authority"]
+          }
+        },
+        "required": ["decision_need"]
+      },
+      "then": {
+        "properties": {
+          "agent_work_candidates": {
+            "items": {
+              "properties": {
+                "required_authority": {"enum": ["read_only", "human_only"]}
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

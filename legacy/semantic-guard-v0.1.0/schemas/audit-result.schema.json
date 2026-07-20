@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/schemas/audit-result.schema.json",
+  "title": "semantic-guard audit result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "phase",
+    "status",
+    "score",
+    "findings",
+    "missing",
+    "next_actions",
+    "details"
+  ],
+  "properties": {
+    "phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pass", "warn", "block"]
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "missing": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "severity",
+        "category",
+        "basis",
+        "evidence",
+        "finding",
+        "suggested_fix",
+        "needs_human_decision",
+        "warning_class"
+      ],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["blocker", "major", "minor", "info"]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "finding": {
+          "type": "string",
+          "minLength": 1
+        },
+        "suggested_fix": {
+          "type": "string"
+        },
+        "needs_human_decision": {
+          "type": "boolean"
+        },
+        "warning_class": {
+          "type": "string",
+          "enum": ["actionable", "generic caution", "possible false positive"]
+        },
+        "nearest_candidates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "semantic_boundaries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rule_id": {
+          "type": "string"
+        },
+        "repair": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "match_status": {
+          "type": "string",
+          "enum": ["matched", "partial", "rejected", "missing", "not_applicable", "unknown"]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "ambiguity_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "candidate_matches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "derivation": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    }
+  }
+}

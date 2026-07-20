@@ -1,0 +1,445 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/repair-cycle.schema.json",
+  "title": "semantic-guard bounded repair cycle",
+  "description": "A replayable finding-to-repair-to-reaudit record. It measures only the declared local re-audit effect and does not execute work, accept risk, or establish field repair effectiveness.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "cycle_id",
+    "subject_ref",
+    "before_audit_ref",
+    "findings",
+    "repair_attempt",
+    "after_audit_ref",
+    "effect_assessment",
+    "authority_boundary",
+    "cycle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "repair-cycle/v2"},
+    "cycle_id": {"$ref": "#/$defs/stable_id"},
+    "subject_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+    "before_audit_ref": {"$ref": "#/$defs/digest_ref"},
+    "findings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "repair_attempt": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/repair_attempt"}
+      ]
+    },
+    "after_audit_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/digest_ref"}
+      ]
+    },
+    "effect_assessment": {"$ref": "#/$defs/effect_assessment"},
+    "authority_boundary": {
+      "type": "object",
+      "required": [
+        "semantic_guard_role",
+        "execution_owner",
+        "sequencing_owner",
+        "final_acceptance_owner",
+        "executes_repair",
+        "accepts_result"
+      ],
+      "properties": {
+        "semantic_guard_role": {"const": "audit_and_reaudit_only"},
+        "execution_owner": {"const": "external_caller_or_control_plane"},
+        "sequencing_owner": {"const": "external_caller_or_control_plane"},
+        "final_acceptance_owner": {"const": "human"},
+        "executes_repair": {"const": false},
+        "accepts_result": {"const": false}
+      },
+      "unevaluatedProperties": false
+    },
+    "cycle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "effect_assessment": {
+            "properties": {"status": {"const": "evaluated"}},
+            "required": ["status"]
+          }
+        },
+        "required": ["effect_assessment"]
+      },
+      "then": {
+        "properties": {
+          "repair_attempt": {"$ref": "#/$defs/repair_attempt"},
+          "after_audit_ref": {"$ref": "#/$defs/digest_ref"}
+        }
+      },
+      "else": {
+        "properties": {
+          "after_audit_ref": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "non_empty": {"type": "string", "minLength": 1},
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_ref": {
+      "type": "object",
+      "required": ["entity_id", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "versioned_digest_ref": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"$ref": "#/$defs/non_empty"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "record_ref": {
+      "type": "object",
+      "required": ["record_id", "record_locator", "record_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "record_locator": {"$ref": "#/$defs/non_empty"},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "cycle_identity_ref": {
+      "type": "object",
+      "required": ["cycle_id", "cycle_basis_digest"],
+      "properties": {
+        "cycle_id": {"$ref": "#/$defs/stable_id"},
+        "cycle_basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "independent_review_record": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "review_id",
+        "reviewer_identity",
+        "reviewer_kind",
+        "relationship_to_subject",
+        "external_to_semantic_guard",
+        "target_cycle_ref",
+        "target_after_audit_ref",
+        "target_effect_basis_digest",
+        "status",
+        "reviewed_at",
+        "authenticity_status",
+        "evidence_refs",
+        "record_ref",
+        "limitations",
+        "review_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "repair-independent-review/v1"},
+        "review_id": {"$ref": "#/$defs/stable_id"},
+        "reviewer_identity": {"$ref": "#/$defs/versioned_digest_ref"},
+        "reviewer_kind": {"const": "human"},
+        "relationship_to_subject": {"const": "independent"},
+        "external_to_semantic_guard": {"const": true},
+        "target_cycle_ref": {"$ref": "#/$defs/cycle_identity_ref"},
+        "target_after_audit_ref": {"$ref": "#/$defs/digest_ref"},
+        "target_effect_basis_digest": {"$ref": "#/$defs/digest"},
+        "status": {"const": "accepted"},
+        "reviewed_at": {"type": "string", "format": "date-time"},
+        "authenticity_status": {"const": "unverified"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/digest_ref"}
+        },
+        "record_ref": {"$ref": "#/$defs/record_ref"},
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "review_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "finding_id",
+        "obligation_id",
+        "before_outcome",
+        "evidence_refs",
+        "limitations",
+        "repair_target",
+        "responsibility_material_ref"
+      ],
+      "properties": {
+        "finding_id": {"$ref": "#/$defs/stable_id"},
+        "obligation_id": {"$ref": "#/$defs/stable_id"},
+        "before_outcome": {"enum": ["unresolved", "refuted", "challenged", "invalid"]},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/digest_ref"}
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "repair_target": {"$ref": "#/$defs/repair_target"},
+        "responsibility_material_ref": {"$ref": "#/$defs/digest_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repair_target": {
+      "type": "object",
+      "required": [
+        "target_id",
+        "target_ref",
+        "locator",
+        "defect_hypothesis",
+        "intended_effect",
+        "success_criteria",
+        "regression_guards",
+        "prohibited_shortcuts"
+      ],
+      "properties": {
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+        "locator": {"$ref": "#/$defs/non_empty"},
+        "defect_hypothesis": {"$ref": "#/$defs/non_empty"},
+        "intended_effect": {"$ref": "#/$defs/non_empty"},
+        "success_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "regression_guards": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "prohibited_shortcuts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "actor_ref": {
+      "type": "object",
+      "required": ["actor_id", "actor_class", "identity_evidence_ref"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/stable_id"},
+        "actor_class": {"enum": ["coding_agent", "human", "automation"]},
+        "identity_evidence_ref": {"$ref": "#/$defs/digest_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repair_attempt": {
+      "type": "object",
+      "required": [
+        "attempt_id",
+        "executed_by",
+        "authority_evidence_ref",
+        "started_at",
+        "completed_at",
+        "before_subject_digest",
+        "after_subject_digest",
+        "change_evidence_refs",
+        "self_report_ref",
+        "stop_condition_result",
+        "attempt_digest"
+      ],
+      "properties": {
+        "attempt_id": {"$ref": "#/$defs/stable_id"},
+        "executed_by": {"$ref": "#/$defs/actor_ref"},
+        "authority_evidence_ref": {"$ref": "#/$defs/digest_ref"},
+        "started_at": {"type": "string", "format": "date-time"},
+        "completed_at": {"type": "string", "format": "date-time"},
+        "before_subject_digest": {"$ref": "#/$defs/digest"},
+        "after_subject_digest": {"$ref": "#/$defs/digest"},
+        "change_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/digest_ref"}
+        },
+        "self_report_ref": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/digest_ref"}
+          ]
+        },
+        "stop_condition_result": {"enum": ["not_triggered", "satisfied", "violated", "unknown"]},
+        "attempt_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "finding_result": {
+      "type": "object",
+      "required": ["finding_id", "before_outcome", "after_outcome", "effect", "after_audit_result_ref", "reaudit_evidence_refs"],
+      "properties": {
+        "finding_id": {"$ref": "#/$defs/stable_id"},
+        "before_outcome": {"enum": ["unresolved", "refuted", "challenged", "invalid"]},
+        "after_outcome": {"enum": ["supported", "unresolved", "refuted", "challenged", "invalid", "unknown"]},
+        "effect": {"enum": ["resolved", "unchanged", "worsened", "unknown"]},
+        "after_audit_result_ref": {"$ref": "#/$defs/after_audit_result_ref"},
+        "reaudit_evidence_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/digest_ref"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "regression_result": {
+      "type": "object",
+      "required": ["guard_id", "outcome", "execution_result_ref", "evidence_refs"],
+      "properties": {
+        "guard_id": {"$ref": "#/$defs/stable_id"},
+        "outcome": {"enum": ["passed", "failed", "unknown"]},
+        "execution_result_ref": {"$ref": "#/$defs/regression_execution_result_ref"},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/digest_ref"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "after_audit_result_ref": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "audit_ref",
+        "subject_ref",
+        "obligation_id",
+        "outcome",
+        "result_locator",
+        "result_digest"
+      ],
+      "properties": {
+        "result_id": {"$ref": "#/$defs/stable_id"},
+        "audit_ref": {"$ref": "#/$defs/digest_ref"},
+        "subject_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+        "obligation_id": {"$ref": "#/$defs/stable_id"},
+        "outcome": {"enum": ["supported", "unresolved", "refuted", "challenged", "invalid", "unknown"]},
+        "result_locator": {"$ref": "#/$defs/non_empty"},
+        "result_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "regression_execution_result_ref": {
+      "type": "object",
+      "required": [
+        "result_id",
+        "audit_ref",
+        "subject_ref",
+        "guard_id",
+        "outcome",
+        "result_locator",
+        "result_digest"
+      ],
+      "properties": {
+        "result_id": {"$ref": "#/$defs/stable_id"},
+        "audit_ref": {"$ref": "#/$defs/digest_ref"},
+        "subject_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+        "guard_id": {"$ref": "#/$defs/stable_id"},
+        "outcome": {"enum": ["passed", "failed", "unknown"]},
+        "result_locator": {"$ref": "#/$defs/non_empty"},
+        "result_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "effect_assessment": {
+      "type": "object",
+      "required": [
+        "status",
+        "claim_scope",
+        "field_repair_effect",
+        "finding_results",
+        "regression_results",
+        "escalation_result",
+        "overall_effect",
+        "unresolved_remainder",
+        "effect_basis_digest",
+        "independent_review_refs",
+        "limitations"
+      ],
+      "properties": {
+        "status": {"enum": ["not_assessed", "evaluated"]},
+        "claim_scope": {"const": "declared_local_reaudit_only"},
+        "field_repair_effect": {"const": "not_evaluated"},
+        "finding_results": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/finding_result"}
+        },
+        "regression_results": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/regression_result"}
+        },
+        "escalation_result": {"enum": ["not_assessed", "not_required", "correct", "missed", "unnecessary", "unknown"]},
+        "overall_effect": {"enum": ["not_assessed", "indeterminate", "improved", "regressed", "mixed", "no_change"]},
+        "unresolved_remainder": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "effect_basis_digest": {"$ref": "#/$defs/digest"},
+        "independent_review_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/independent_review_record"}
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "not_assessed"}},
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "finding_results": {"maxItems": 0},
+              "regression_results": {"maxItems": 0},
+              "escalation_result": {"const": "not_assessed"},
+              "overall_effect": {"const": "not_assessed"},
+              "independent_review_refs": {"maxItems": 0}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

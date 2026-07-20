@@ -1,0 +1,83 @@
+{
+  "schema_version": "semantic-guard-legacy-baseline/v0",
+  "pin_profile": "semantic-guard-requirement-relations-legacy/v0",
+  "captured_at": "2026-07-15T23:59:54+09:00",
+  "version_control_state": {
+    "status": "unavailable",
+    "reason": "source root is not a Git repository"
+  },
+  "source_digests": [
+    {
+      "path": "docs/prototypes/origin-requirement.md",
+      "sha256": "9d50a8a53cdadae3ef98f8e50a2450324c7f396aa97d5b669d0112a7c236d1f3"
+    },
+    {
+      "path": "docs/prototypes/requirement-relation-audit-charter-2026-07-12.md",
+      "sha256": "9591ca7d325ef2a1b3cb833f7da18a754685b880d6d4bd1b8481763da3cfcb37"
+    },
+    {
+      "path": "src/semantic_guard/semantic_assertions.py",
+      "sha256": "54274c017cbef1ceb9d366cf8755ea800019b7d627d2c12f13a7a5a4b43b10e7"
+    },
+    {
+      "path": "src/semantic_guard/requirement_relations.py",
+      "sha256": "8906bd29291897c4c3c32f57e6a8d81cc94d6f2da05a8662dbc80f1222085921"
+    },
+    {
+      "path": "src/semantic_guard/request_audit.py",
+      "sha256": "64d624e80001a8e5cfbbd0c8c9d0ca37bd43aae627a4272de6172e11225bd757"
+    },
+    {
+      "path": "src/semantic_guard/result_builder.py",
+      "sha256": "f784a73a1dfb935832b0f3d62365116343c827abc5a6ae14e4f972ac7f85d59f"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "28b2699f782838357198eef11c6e7c2085225bcd4910008dd2aa266447bb8dde"
+    },
+    {
+      "path": "vnext/scripts/legacy_request_adapter.py",
+      "sha256": "3263d96efd368ecd2c57673e3c6553e3e442576e614b286e9c9a5b8388003819"
+    }
+  ],
+  "verification": [
+    {
+      "command": "uv run --python 3.13 --project . python -m unittest discover -s tests -v",
+      "exit_code": 1,
+      "summary": "334 tests ran; 332 passed and 2 failed"
+    },
+    {
+      "command": "uv run --python 3.13 --project . semantic-guard doctor",
+      "exit_code": 0,
+      "summary": "doctor reported pass with 9 passing checks"
+    },
+    {
+      "command": "uv run --python 3.13 --project . semantic-guard evaluate-fixtures",
+      "exit_code": 0,
+      "summary": "54 of 54 local fixtures passed; local calibration only"
+    },
+    {
+      "command": "uv run --python 3.13 --project . python -m compileall -q src tests",
+      "exit_code": 0,
+      "summary": "legacy source and tests compiled"
+    }
+  ],
+  "known_test_failures": [
+    {
+      "test": "test_public_summary_includes_bounded_source_excerpts",
+      "observed": "verification excerpt included the full method sentence instead of the expected bounded terms"
+    },
+    {
+      "test": "test_asserted_verification_dimension_mismatch_is_derived_and_not_satisfied",
+      "observed": "verification mismatch status was candidate instead of derived"
+    }
+  ],
+  "known_semantic_failures": [
+    "top-level pass can coexist with unknown relation applicability and open-text coverage",
+    "quoted, reported, unadopted, or negated structured values can be treated as satisfied",
+    "the unresolved decision is global rather than obligation-scoped",
+    "morphology, dependency, and LLM stages do not re-evaluate obligation outcomes",
+    "provider output cannot release or apply a hold through a versioned policy"
+  ],
+  "interpretation": "This record is a migration observation, not a correctness oracle or release approval."
+}

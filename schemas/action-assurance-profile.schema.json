@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/action-assurance-profile.schema.json",
+  "title": "semantic-guard v1 action assurance and threat profile",
+  "description": "Human-adopted policy boundary for bounded action-evidence claims. It defines required claim classes and evidence conditions but does not grant authority, dispatch work, or accept an action.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_version",
+    "adoption_state",
+    "human_decision_ref",
+    "required_claim_classes",
+    "occurrence_capable_evidence_kinds",
+    "observer_policy",
+    "time_policy",
+    "authority_policy",
+    "procedure_policy",
+    "artifact_policy",
+    "authenticity_policy",
+    "causality_policy",
+    "threat_assumptions",
+    "limitations",
+    "profile_basis_digest",
+    "profile_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "action-assurance-profile/v1"},
+    "profile_id": {"$ref": "#/$defs/stable_id"},
+    "profile_version": {"type": "string", "minLength": 1},
+    "adoption_state": {"enum": ["pending", "adopted", "retired"]},
+    "human_decision_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/human_decision_ref"}]
+    },
+    "required_claim_classes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/claim_class"}
+    },
+    "occurrence_capable_evidence_kinds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "observer_attestation",
+          "trusted_execution_log",
+          "signed_event"
+        ]
+      }
+    },
+    "observer_policy": {
+      "type": "object",
+      "required": [
+        "accepted_trust_classes",
+        "allowed_observers",
+        "independence_required_for",
+        "self_observation_max_trust"
+      ],
+      "properties": {
+        "accepted_trust_classes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/trust_class"}
+        },
+        "allowed_observers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "independence_required_for": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/claim_class"}
+        },
+        "self_observation_max_trust": {"const": "self_reported"}
+      },
+      "unevaluatedProperties": false
+    },
+    "time_policy": {
+      "type": "object",
+      "required": [
+        "trusted_time_required_for",
+        "max_event_age_seconds",
+        "untrusted_time_result",
+        "allowed_clock_identities",
+        "allowed_trust_roots"
+      ],
+      "properties": {
+        "trusted_time_required_for": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/claim_class"}
+        },
+        "max_event_age_seconds": {"type": "integer", "minimum": 1},
+        "untrusted_time_result": {"const": "unproved"},
+        "allowed_clock_identities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "allowed_trust_roots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/trust_root_ref"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "authority_policy": {
+      "type": "object",
+      "required": [
+        "explicit_grant_required",
+        "grant_record_digest_required",
+        "signed_grant_required",
+        "allowed_grantors"
+      ],
+      "properties": {
+        "explicit_grant_required": {"const": true},
+        "grant_record_digest_required": {"const": true},
+        "signed_grant_required": {"type": "boolean"},
+        "allowed_grantors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "procedure_policy": {
+      "type": "object",
+      "required": ["required_stages", "stop_conditions"],
+      "properties": {
+        "required_stages": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["stage_id", "order", "description"],
+            "properties": {
+              "stage_id": {"$ref": "#/$defs/stable_id"},
+              "order": {"type": "integer", "minimum": 0},
+              "description": {"type": "string", "minLength": 1}
+            },
+            "unevaluatedProperties": false
+          }
+        },
+        "stop_conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["condition_id", "description", "required_response"],
+            "properties": {
+              "condition_id": {"$ref": "#/$defs/stable_id"},
+              "description": {"type": "string", "minLength": 1},
+              "required_response": {"const": "stop"}
+            },
+            "unevaluatedProperties": false
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "artifact_policy": {
+      "type": "object",
+      "required": [
+        "required_input_roles",
+        "required_output_roles",
+        "allowed_digest_algorithms"
+      ],
+      "properties": {
+        "required_input_roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "required_output_roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "allowed_digest_algorithms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"const": "sha256"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "authenticity_policy": {
+      "type": "object",
+      "required": [
+        "signature_required",
+        "verified_signature_required",
+        "external_trust_root_required",
+        "external_clock_required",
+        "allowed_signers",
+        "allowed_verifiers",
+        "allowed_signature_algorithms"
+      ],
+      "properties": {
+        "signature_required": {"const": true},
+        "verified_signature_required": {"const": true},
+        "external_trust_root_required": {"const": true},
+        "external_clock_required": {"const": true},
+        "allowed_signers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "allowed_verifiers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/identity_binding"}
+        },
+        "allowed_signature_algorithms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "causality_policy": {
+      "type": "object",
+      "required": [
+        "explicit_observation_required",
+        "accepted_methods",
+        "independent_observer_required"
+      ],
+      "properties": {
+        "explicit_observation_required": {"const": true},
+        "accepted_methods": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "controlled_replay",
+              "trace_link",
+              "independent_observation",
+              "formal_derivation"
+            ]
+          }
+        },
+        "independent_observer_required": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "threat_assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "profile_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+    "profile_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_root_ref": {
+      "type": "object",
+      "required": ["root_id", "root_version", "locator", "content_digest"],
+      "properties": {
+        "root_id": {"$ref": "#/$defs/stable_id"},
+        "root_version": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "claim_class": {
+      "enum": [
+        "occurrence",
+        "identity",
+        "authority",
+        "procedure",
+        "artifact_provenance",
+        "authenticity",
+        "causality"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "self_reported",
+        "locally_observed",
+        "tool_reported",
+        "independently_observed",
+        "signed",
+        "formally_verified",
+        "unknown"
+      ]
+    },
+    "human_decision_ref": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "target_id",
+        "target_version",
+        "target_basis_digest",
+        "status",
+        "locator",
+        "content_digest",
+        "decided_by",
+        "decision_maker_identity",
+        "decision_maker_kind",
+        "external_to_semantic_guard",
+        "decided_at"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "decision_kind": {"const": "adopt_action_assurance_profile"},
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_version": {"type": "string", "minLength": 1},
+        "target_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "status": {"const": "accepted"},
+        "locator": {"type": "string", "minLength": 1},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "decided_by": {"$ref": "#/$defs/stable_id"},
+        "decision_maker_identity": {"$ref": "#/$defs/identity_binding"},
+        "decision_maker_kind": {"const": "human"},
+        "external_to_semantic_guard": {"const": true},
+        "decided_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"adoption_state": {"const": "adopted"}},
+        "required": ["adoption_state"]
+      },
+      "then": {
+        "properties": {
+          "human_decision_ref": {"$ref": "#/$defs/human_decision_ref"}
+        }
+      },
+      "else": {
+        "properties": {"human_decision_ref": {"type": "null"}}
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

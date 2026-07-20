@@ -1,0 +1,424 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/transition-plan.schema.json",
+  "title": "semantic-guard v1 governed transition plan",
+  "description": "Closed sidecar-to-retirement transition-gate evidence. The record reports eligibility or externally recorded human authorization only and never changes a default, deploys, schedules, accepts risk, disposes artifacts, or retires a predecessor.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "plan_id",
+    "plan_version",
+    "predecessor_ref",
+    "successor_ref",
+    "deployment_envelope_ref",
+    "operational_qualification_ref",
+    "scope_digest",
+    "stage_sequence",
+    "abort_criteria",
+    "compatibility_window",
+    "migration_plan_refs",
+    "rollback_recovery_plan_ref",
+    "disposal_retirement_plan_ref",
+    "plan_configuration_digest",
+    "adoption_state",
+    "adoption_decision_ref",
+    "retirement_decision_ref",
+    "target_stage",
+    "stage_history",
+    "gate_evidence",
+    "abort_observations",
+    "assessed_at",
+    "time_trust",
+    "gate_set_digest",
+    "retirement_basis_digest",
+    "cutover_decision_ref",
+    "irreversibility_decision_ref",
+    "outcome",
+    "limitations",
+    "authority_boundary",
+    "transition_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "transition-plan/v0"},
+    "plan_id": {"$ref": "#/$defs/stable_id"},
+    "plan_version": {"$ref": "#/$defs/non_empty_string"},
+    "predecessor_ref": {"$ref": "#/$defs/identity_binding"},
+    "successor_ref": {"$ref": "#/$defs/identity_binding"},
+    "deployment_envelope_ref": {"$ref": "#/$defs/envelope_ref"},
+    "operational_qualification_ref": {"$ref": "#/$defs/qualification_ref"},
+    "scope_digest": {"$ref": "#/$defs/sha256_digest"},
+    "stage_sequence": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/stage_definition"}
+    },
+    "abort_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/abort_criterion"}
+    },
+    "compatibility_window": {"$ref": "#/$defs/compatibility_window"},
+    "migration_plan_refs": {"$ref": "#/$defs/migration_plan_refs"},
+    "rollback_recovery_plan_ref": {"$ref": "#/$defs/artifact_ref"},
+    "disposal_retirement_plan_ref": {"$ref": "#/$defs/artifact_ref"},
+    "plan_configuration_digest": {"$ref": "#/$defs/sha256_digest"},
+    "adoption_state": {"enum": ["pending", "adopted", "retired"]},
+    "adoption_decision_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/external_human_decision"}]
+    },
+    "retirement_decision_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/external_human_decision"}]
+    },
+    "target_stage": {"$ref": "#/$defs/stage"},
+    "stage_history": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/stage_completion"}
+    },
+    "gate_evidence": {
+      "type": "array",
+      "minItems": 5,
+      "items": {"$ref": "#/$defs/gate_evidence"}
+    },
+    "abort_observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/abort_observation"}
+    },
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "time_trust": {"enum": ["trusted", "untrusted"]},
+    "gate_set_digest": {"$ref": "#/$defs/sha256_digest"},
+    "retirement_basis_digest": {"$ref": "#/$defs/sha256_digest"},
+    "cutover_decision_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/external_human_decision"}]
+    },
+    "irreversibility_decision_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/external_human_decision"}]
+    },
+    "outcome": {"enum": ["eligible", "not_eligible", "human_authorized"]},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/non_empty_string"}
+    },
+    "authority_boundary": {"$ref": "#/$defs/authority_boundary"},
+    "transition_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "non_empty_string": {"type": "string", "minLength": 1},
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "identity_binding": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"$ref": "#/$defs/non_empty_string"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "artifact_ref": {
+      "type": "object",
+      "required": ["artifact_id", "artifact_version", "locator", "content_digest"],
+      "properties": {
+        "artifact_id": {"$ref": "#/$defs/stable_id"},
+        "artifact_version": {"$ref": "#/$defs/non_empty_string"},
+        "locator": {"$ref": "#/$defs/non_empty_string"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "external_record_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"$ref": "#/$defs/non_empty_string"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "stage": {
+      "enum": ["sidecar", "opt_in", "shadow", "default", "predecessor_retired"]
+    },
+    "gate_kind": {
+      "enum": [
+        "field_validity",
+        "operational_qualification",
+        "human_use_validation",
+        "security_assessment",
+        "register_readiness",
+        "compatibility_migration",
+        "shadow_observation",
+        "rollback_recovery_rehearsal",
+        "independent_observation"
+      ]
+    },
+    "external_human_decision": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "decision_source",
+        "actor_kind",
+        "decided_by",
+        "decided_at",
+        "status",
+        "target_id",
+        "target_version",
+        "target_stage",
+        "target_digest",
+        "trust_class",
+        "record_ref",
+        "acknowledgements"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "decision_kind": {
+          "enum": [
+            "adopt_transition_plan",
+            "retire_transition_plan",
+            "authorize_cutover_stage",
+            "authorize_irreversible_predecessor_retirement"
+          ]
+        },
+        "decision_source": {"const": "external_human_record"},
+        "actor_kind": {"const": "human"},
+        "decided_by": {"$ref": "#/$defs/stable_id"},
+        "decided_at": {"type": "string", "format": "date-time"},
+        "status": {"const": "accepted"},
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_version": {"$ref": "#/$defs/non_empty_string"},
+        "target_stage": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/stage"}]
+        },
+        "target_digest": {"$ref": "#/$defs/sha256_digest"},
+        "trust_class": {"enum": ["independently_observed", "signed"]},
+        "record_ref": {"$ref": "#/$defs/external_record_ref"},
+        "acknowledgements": {
+          "type": "object",
+          "required": ["rollback_unavailable", "predecessor_recovery_unavailable"],
+          "properties": {
+            "rollback_unavailable": {"type": "boolean"},
+            "predecessor_recovery_unavailable": {"type": "boolean"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "envelope_ref": {
+      "type": "object",
+      "required": ["envelope_id", "envelope_version", "envelope_digest", "selected_mode", "selection_state", "selected_at"],
+      "properties": {
+        "envelope_id": {"$ref": "#/$defs/stable_id"},
+        "envelope_version": {"$ref": "#/$defs/non_empty_string"},
+        "envelope_digest": {"$ref": "#/$defs/sha256_digest"},
+        "selected_mode": {"enum": ["local", "ci", "sidecar", "service", "external_provider"]},
+        "selection_state": {"enum": ["pending", "selected"]},
+        "selected_at": {
+          "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "profile_digest", "adoption_state", "adopted_at", "max_evidence_age_seconds"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"$ref": "#/$defs/non_empty_string"},
+        "profile_digest": {"$ref": "#/$defs/sha256_digest"},
+        "adoption_state": {"enum": ["pending", "adopted", "retired"]},
+        "adopted_at": {
+          "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
+        },
+        "max_evidence_age_seconds": {"type": "integer", "minimum": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "qualification_ref": {
+      "type": "object",
+      "required": ["qualification_id", "qualification_version", "qualification_digest", "scope_digest", "profile_ref", "deployment_envelope_ref"],
+      "properties": {
+        "qualification_id": {"$ref": "#/$defs/stable_id"},
+        "qualification_version": {"$ref": "#/$defs/non_empty_string"},
+        "qualification_digest": {"$ref": "#/$defs/sha256_digest"},
+        "scope_digest": {"$ref": "#/$defs/sha256_digest"},
+        "profile_ref": {"$ref": "#/$defs/profile_ref"},
+        "deployment_envelope_ref": {"$ref": "#/$defs/envelope_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "entry_criterion_ref": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_version", "gate_kind", "criterion_digest"],
+      "properties": {
+        "criterion_id": {"$ref": "#/$defs/stable_id"},
+        "criterion_version": {"$ref": "#/$defs/non_empty_string"},
+        "gate_kind": {"$ref": "#/$defs/gate_kind"},
+        "criterion_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "abort_criterion_ref": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_version", "criterion_digest"],
+      "properties": {
+        "criterion_id": {"$ref": "#/$defs/stable_id"},
+        "criterion_version": {"$ref": "#/$defs/non_empty_string"},
+        "criterion_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "stage_definition": {
+      "type": "object",
+      "required": ["stage", "ordinal", "entry_criteria_refs", "abort_criterion_refs", "rollback_recovery_plan_ref"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/stage"},
+        "ordinal": {"type": "integer", "minimum": 0, "maximum": 4},
+        "entry_criteria_refs": {
+          "type": "array",
+          "minItems": 5,
+          "items": {"$ref": "#/$defs/entry_criterion_ref"}
+        },
+        "abort_criterion_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/abort_criterion_ref"}
+        },
+        "rollback_recovery_plan_ref": {"$ref": "#/$defs/artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "abort_criterion": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_version", "metric", "comparator", "threshold_value", "unit", "trigger_action", "criterion_digest"],
+      "properties": {
+        "criterion_id": {"$ref": "#/$defs/stable_id"},
+        "criterion_version": {"$ref": "#/$defs/non_empty_string"},
+        "metric": {"$ref": "#/$defs/non_empty_string"},
+        "comparator": {"enum": ["lte", "lt", "gte", "gt", "eq"]},
+        "threshold_value": {"type": "number"},
+        "unit": {"$ref": "#/$defs/non_empty_string"},
+        "trigger_action": {"const": "abort_and_rollback"},
+        "criterion_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "compatibility_window": {
+      "type": "object",
+      "required": ["window_id", "window_version", "starts_at", "ends_at", "predecessor_ref", "successor_ref", "compatibility_evidence_ref", "window_digest"],
+      "properties": {
+        "window_id": {"$ref": "#/$defs/stable_id"},
+        "window_version": {"$ref": "#/$defs/non_empty_string"},
+        "starts_at": {"type": "string", "format": "date-time"},
+        "ends_at": {"type": "string", "format": "date-time"},
+        "predecessor_ref": {"$ref": "#/$defs/identity_binding"},
+        "successor_ref": {"$ref": "#/$defs/identity_binding"},
+        "compatibility_evidence_ref": {"$ref": "#/$defs/artifact_ref"},
+        "window_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "migration_plan_refs": {
+      "type": "object",
+      "required": ["configuration_migration_ref", "data_migration_ref", "interface_migration_ref", "evidence_migration_ref", "register_update_ref"],
+      "properties": {
+        "configuration_migration_ref": {"$ref": "#/$defs/artifact_ref"},
+        "data_migration_ref": {"$ref": "#/$defs/artifact_ref"},
+        "interface_migration_ref": {"$ref": "#/$defs/artifact_ref"},
+        "evidence_migration_ref": {"$ref": "#/$defs/artifact_ref"},
+        "register_update_ref": {"$ref": "#/$defs/artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "stage_completion": {
+      "type": "object",
+      "required": ["stage", "completed_at", "status", "scope_digest", "completion_ref", "evidence_origin", "completion_digest"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/stage"},
+        "completed_at": {"type": "string", "format": "date-time"},
+        "status": {"const": "completed"},
+        "scope_digest": {"$ref": "#/$defs/sha256_digest"},
+        "completion_ref": {"$ref": "#/$defs/artifact_ref"},
+        "evidence_origin": {"enum": ["synthetic_fixture", "controlled_execution", "operational_observation"]},
+        "completion_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "gate_evidence": {
+      "type": "object",
+      "required": ["gate_id", "gate_kind", "target_stage", "artifact_ref", "scope_digest", "execution_id", "status", "observed_at", "expires_at", "time_trust", "trust_class", "evidence_origin", "before_state_digest", "after_state_digest", "evidence_digest"],
+      "properties": {
+        "gate_id": {"$ref": "#/$defs/stable_id"},
+        "gate_kind": {"$ref": "#/$defs/gate_kind"},
+        "target_stage": {"$ref": "#/$defs/stage"},
+        "artifact_ref": {"$ref": "#/$defs/artifact_ref"},
+        "scope_digest": {"$ref": "#/$defs/sha256_digest"},
+        "execution_id": {"$ref": "#/$defs/stable_id"},
+        "status": {"enum": ["passed", "failed", "not_run", "out_of_scope"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "time_trust": {"enum": ["trusted", "untrusted"]},
+        "trust_class": {"enum": ["self_reported", "tool_reported", "independently_observed", "signed"]},
+        "evidence_origin": {"enum": ["synthetic_fixture", "controlled_execution", "operational_observation"]},
+        "before_state_digest": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256_digest"}]
+        },
+        "after_state_digest": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256_digest"}]
+        },
+        "evidence_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "abort_observation": {
+      "type": "object",
+      "required": ["observation_id", "criterion_ref", "target_stage", "scope_digest", "execution_id", "observed_at", "triggered", "response", "evidence_origin", "evidence_ref", "observation_digest"],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/stable_id"},
+        "criterion_ref": {"$ref": "#/$defs/abort_criterion_ref"},
+        "target_stage": {"$ref": "#/$defs/stage"},
+        "scope_digest": {"$ref": "#/$defs/sha256_digest"},
+        "execution_id": {"$ref": "#/$defs/stable_id"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "triggered": {"type": "boolean"},
+        "response": {"enum": ["not_triggered", "aborted_and_rollback_started", "continued"]},
+        "evidence_origin": {"enum": ["synthetic_fixture", "controlled_execution", "operational_observation"]},
+        "evidence_ref": {"$ref": "#/$defs/artifact_ref"},
+        "observation_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "authority_boundary": {
+      "type": "object",
+      "required": ["semantic_guard_role", "deploy", "schedule", "change_default", "accept_risk", "dispose", "retire", "final_decision_owner"],
+      "properties": {
+        "semantic_guard_role": {"const": "audit_transition_eligibility_only"},
+        "deploy": {"const": false},
+        "schedule": {"const": false},
+        "change_default": {"const": false},
+        "accept_risk": {"const": false},
+        "dispose": {"const": false},
+        "retire": {"const": false},
+        "final_decision_owner": {"const": "human"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

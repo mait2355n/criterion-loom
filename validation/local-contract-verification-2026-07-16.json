@@ -1,0 +1,112 @@
+{
+  "schema_version": "semantic-guard-vnext-local-contract-verification/v0",
+  "recorded_at": "2026-07-16T16:08:13+09:00",
+  "subject": {
+    "description": "semantic-guard vNext local contract, adversarial fixture, canonical-register, real-parser smoke, and built-wheel distribution checks after the impact-ordered implementation run",
+    "working_tree_manifest_status": "not_created",
+    "evidence_freshness": "unbound",
+    "reason": "This observation records commands and selected artifact digests but is not bound to a closed manifest of every current source, test, environment, and dependency artifact."
+  },
+  "checks": {
+    "unit_and_contract_tests": {
+      "command": "uv run --locked python -m unittest discover -s tests -p 'test_*.py'",
+      "total": 569,
+      "passed": 569,
+      "failed": 0
+    },
+    "json_and_schema_integrity": {
+      "json_files_checked_including_this_record": 35,
+      "draft_2020_12_schemas_checked": 27,
+      "duplicate_key_check": "passed",
+      "schema_self_validation": "passed"
+    },
+    "static_and_syntax_checks": {
+      "ruff_version": "0.15.21",
+      "ruff_command": "uvx ruff check src tests scripts",
+      "ruff_status": "passed",
+      "compileall_status": "passed",
+      "lock_status": "passed"
+    },
+    "verification_register": {
+      "status": "passed",
+      "verification_items": 17,
+      "unresolved_items": 17,
+      "resolution_obligations": 52,
+      "resolution_paths": 19,
+      "gap_records": 65,
+      "source_sha256": "ea8ebd50e40e76e26b89d47c00bd5daf239ec87320df95a5eaabbb9556011fdc",
+      "projection_sha256": "cecb81dd1ece479d907915779886f4f7f2329c5e40a8563c55c9b5a3f944edd4",
+      "gap_register_sha256": "6dedb7144041e2cf046d713ecac3490b983107f94665ffcdd4fb225d7e38d546"
+    },
+    "engineering_rule_pack": {
+      "status": "passed",
+      "sources": 5,
+      "profile_obligations": 11,
+      "local_direct_rules": 11,
+      "candidate_rules": 11,
+      "runtime_authority": "none",
+      "human_adoption": "pending",
+      "candidate_sha256": "ef19b8e287d2a80f529c462b0bbc4e3623118e2d8b44e5aba10f0fb7a255da57"
+    },
+    "operational_outcome_contract": {
+      "target_tests_passed": 54,
+      "internal_independent_replay_matrix": {
+        "normal_cases": 2,
+        "adversarial_cases": 25,
+        "expected_results_observed": 27,
+        "unexpected_raw_exceptions": 0
+      },
+      "claim_scope": "declared records only; no real participant or organizational validity claim"
+    },
+    "real_japanese_analyzers": {
+      "mode": "assurance",
+      "workflow": "block",
+      "morphology": {
+        "provider": "Sudachi",
+        "status": "ok",
+        "fulfilled_capabilities": ["tokenization", "lemma", "part_of_speech"]
+      },
+      "dependency": {
+        "provider": "GiNZA",
+        "status": "partial",
+        "fulfilled_capabilities": ["dependency", "scope", "predicate_argument", "polarity_scope", "modality_scope", "coordination"],
+        "missing_capabilities": ["coreference_candidate"]
+      },
+      "llm_candidate": {
+        "status": "not_configured",
+        "missing_capabilities": ["interpretation_candidates", "countercondition_candidates"]
+      },
+      "interpretation": "Required analyzer and candidate gaps remained visible and prevented a positive workflow result. This is one smoke case, not a field-accuracy estimate."
+    },
+    "built_wheel": {
+      "status": "passed",
+      "filename": "semantic_guard_vnext-0.1.0a0-py3-none-any.whl",
+      "sha256": "f4289463fe7b25556778da797f01642440b828b6185d265f575bae60752cf938",
+      "size_bytes": 326790,
+      "verifier_sha256": "925483467ca100113f03b53b0caf1815e02fea7f6c3c397f1f83a9778a35e37c",
+      "public_schemas": 23,
+      "mcp_schema_resources": 23,
+      "cli_schema_names": 23,
+      "lifecycle_profiles": 10,
+      "engineering_rules": 11,
+      "adjacent_resource_decoys_rejected": true,
+      "installed_console_entrypoint_checked": true
+    }
+  },
+  "acceptance_state": {
+    "local_contract_verification": "passed_for_recorded_commands",
+    "field_validity": "not_established",
+    "external_action_authenticity": "not_established",
+    "operational_qualification": "not_established",
+    "human_acceptance": "pending",
+    "default_route_cutover": "not_authorized"
+  },
+  "limitations": [
+    "This historical observation format has no separately registered JSON Schema; duplicate-key parsing was checked, but the record envelope is not independently schema-validated.",
+    "The observation is not current/bound evidence under state-assessment/v2 because no closed subject manifest covers the full working tree, runtime, dependencies, commands, and raw logs.",
+    "Internal adversarial review is not a substitute for domain-independent engineering review, real participants, external identity, signatures, trusted time, or an external evidence ledger.",
+    "The wheel verifier imports trusted local package code in a temporary virtual environment; it is not an operating-system sandbox for untrusted wheels and dependency resolution remains index- and time-dependent.",
+    "One real-parser smoke case establishes fail-closed visibility for the observed capabilities only; it does not estimate requirement discovery recall, precision, or catastrophic false-satisfaction rate.",
+    "No result in this record grants execution authority, adopts a rule pack or lifecycle profile, accepts residual risk, or performs cutover."
+  ]
+}

@@ -1,0 +1,619 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/common.schema.json",
+  "title": "semantic-guard v1 common contract types",
+  "description": "Shared closed types for bounded semantic audit records. These types do not grant execution control or final acceptance authority.",
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "non_empty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["sha256", "sha512", "blake3", "other"]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"algorithm": {"const": "sha256"}},
+            "required": ["algorithm"]
+          },
+          "then": {
+            "properties": {"value": {"pattern": "^[0-9A-Fa-f]{64}$"}}
+          }
+        },
+        {
+          "if": {
+            "properties": {"algorithm": {"const": "sha512"}},
+            "required": ["algorithm"]
+          },
+          "then": {
+            "properties": {"value": {"pattern": "^[0-9A-Fa-f]{128}$"}}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "entity_reference": {
+      "type": "object",
+      "description": "Expanded identity-safe form. reference_kind distinguishes identity, tentative identity, and lineage.",
+      "required": ["reference_kind", "entity_id", "label_hint"],
+      "properties": {
+        "reference_kind": {
+          "type": "string",
+          "enum": ["ref", "candidate_ref", "derived_from"]
+        },
+        "entity_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "label_hint": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "entity_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "source_span": {
+      "type": "object",
+      "description": "Half-open source coordinates. Cross-field validation must enforce end_exclusive >= start.",
+      "required": [
+        "span_id",
+        "source_ref",
+        "coordinate_unit",
+        "start",
+        "end_exclusive",
+        "excerpt",
+        "excerpt_verification",
+        "source_digest"
+      ],
+      "properties": {
+        "span_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/entity_reference"
+        },
+        "coordinate_unit": {
+          "type": "string",
+          "enum": ["unicode_code_point", "utf8_byte", "token_index", "record_index"]
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_exclusive": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excerpt": {
+          "type": "string"
+        },
+        "excerpt_verification": {
+          "description": "The projector asserted this excerpt from its invocation text. The standalone public validator has no source text and therefore does not reverify excerpt content.",
+          "const": "not_reverified_without_source_text"
+        },
+        "source_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "provenance_record": {
+      "type": "object",
+      "required": [
+        "provenance_id",
+        "kind",
+        "source_ref",
+        "recorded_at",
+        "trust_class",
+        "trust_assumptions"
+      ],
+      "properties": {
+        "provenance_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "input",
+            "self_report",
+            "tool_output",
+            "filesystem_observation",
+            "ci_result",
+            "human_testimony",
+            "signed_attestation",
+            "rule_derivation",
+            "model_output",
+            "other"
+          ]
+        },
+        "source_ref": {
+          "$ref": "#/$defs/entity_reference"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trust_class": {
+          "type": "string",
+          "enum": [
+            "self_reported",
+            "locally_observed",
+            "tool_reported",
+            "independently_observed",
+            "signed",
+            "formally_verified",
+            "unknown"
+          ]
+        },
+        "trust_assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/non_empty_string"
+          },
+          "uniqueItems": true
+        },
+        "content_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "authority_rights": {
+      "type": "object",
+      "description": "Independent rights; complexity or agreement never raises a stage's rights implicitly.",
+      "required": ["support", "challenge", "hold_apply", "hold_release"],
+      "properties": {
+        "support": {"type": "boolean"},
+        "challenge": {"type": "boolean"},
+        "hold_apply": {"type": "boolean"},
+        "hold_release": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "authority_effect": {
+      "type": "object",
+      "required": ["effect_id", "kind", "actor_ref", "authority_snapshot", "scope_refs", "basis"],
+      "properties": {
+        "effect_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["support", "challenge", "hold_apply", "hold_release"]
+        },
+        "actor_ref": {
+          "$ref": "#/$defs/entity_reference"
+        },
+        "authority_snapshot": {
+          "$ref": "#/$defs/authority_rights"
+        },
+        "scope_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "basis": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/non_empty_string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "support"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "authority_snapshot": {
+                "properties": {"support": {"const": true}},
+                "required": ["support"]
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "challenge"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "authority_snapshot": {
+                "properties": {"challenge": {"const": true}},
+                "required": ["challenge"]
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "hold_apply"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "authority_snapshot": {
+                "properties": {"hold_apply": {"const": true}},
+                "required": ["hold_apply"]
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "hold_release"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "authority_snapshot": {
+                "properties": {"hold_release": {"const": true}},
+                "required": ["hold_release"]
+              }
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "interpretation": {
+      "type": "object",
+      "required": [
+        "interpretation_id",
+        "proposition",
+        "status",
+        "source_spans",
+        "supporting_evidence_refs",
+        "challenging_evidence_refs",
+        "derived_from"
+      ],
+      "properties": {
+        "interpretation_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "proposition": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["candidate", "adopted", "rejected", "undetermined"]
+        },
+        "source_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_span"
+          }
+        },
+        "supporting_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "challenging_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "derived_from": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "unobserved_range": {
+      "type": "object",
+      "required": ["range_id", "description", "reason", "source_spans"],
+      "properties": {
+        "range_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "description": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "reason": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "source_spans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_span"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "status",
+        "scope_refs",
+        "evaluated_item_refs",
+        "not_evaluated_item_refs",
+        "unobserved_ranges",
+        "required_analyzer_refs",
+        "completed_analyzer_refs",
+        "failed_analyzer_refs"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete", "partial", "not_evaluated", "failed"]
+        },
+        "scope_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "evaluated_item_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "not_evaluated_item_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "unobserved_ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unobserved_range"
+          }
+        },
+        "required_analyzer_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "completed_analyzer_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "failed_analyzer_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "residual_risk": {
+      "type": "object",
+      "required": [
+        "risk_id",
+        "category",
+        "severity",
+        "description",
+        "affected_refs",
+        "basis_evidence_refs",
+        "disposition"
+      ],
+      "properties": {
+        "risk_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "category": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "unknown"]
+        },
+        "description": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "affected_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "basis_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "disposition": {
+          "type": "string",
+          "enum": ["open", "mitigated", "deferred", "accepted_externally", "unknown"]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "shadow_observation": {
+      "type": "object",
+      "description": "Analysis material retained from shadow execution. It is excluded from the effective conclusion, assurance derivation, and hold state.",
+      "required": [
+        "observation_id",
+        "reason_code",
+        "category",
+        "detected_by_ref",
+        "next_route",
+        "source_spans",
+        "limitations",
+        "decision_influence"
+      ],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/stable_id"},
+        "reason_code": {"$ref": "#/$defs/stable_id"},
+        "category": {"$ref": "#/$defs/non_empty_string"},
+        "detected_by_ref": {"$ref": "#/$defs/entity_reference"},
+        "next_route": {"$ref": "#/$defs/non_empty_string"},
+        "source_spans": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/source_span"}
+        },
+        "limitations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/non_empty_string"},
+          "uniqueItems": true
+        },
+        "decision_influence": {"const": "none"}
+      },
+      "unevaluatedProperties": false
+    },
+    "hold": {
+      "type": "object",
+      "required": [
+        "hold_id",
+        "status",
+        "effect_scope",
+        "affected_refs",
+        "reason",
+        "applied_by",
+        "release_conditions",
+        "release_evidence_refs"
+      ],
+      "properties": {
+        "hold_id": {
+          "$ref": "#/$defs/stable_id"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "released"]
+        },
+        "effect_scope": {
+          "type": "string",
+          "enum": [
+            "satisfaction_claim",
+            "integration",
+            "external_effect",
+            "acceptance",
+            "all_processing"
+          ]
+        },
+        "affected_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "reason": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "applied_by": {
+          "$ref": "#/$defs/authority_effect",
+          "properties": {
+            "kind": {"const": "hold_apply"}
+          }
+        },
+        "release_conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/non_empty_string"
+          }
+        },
+        "released_by": {
+          "$ref": "#/$defs/authority_effect",
+          "properties": {
+            "kind": {"const": "hold_release"}
+          }
+        },
+        "release_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"status": {"const": "released"}},
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["released_by"],
+            "properties": {
+              "release_evidence_refs": {"minItems": 1}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"status": {"const": "open"}},
+            "required": ["status"]
+          },
+          "then": {
+            "not": {"required": ["released_by"]},
+            "properties": {
+              "release_evidence_refs": {"maxItems": 0}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "rule_reference": {
+      "type": "object",
+      "required": [
+        "rule_ref",
+        "rule_version",
+        "applicability",
+        "counterconditions",
+        "required_evidence_refs",
+        "proof_effect"
+      ],
+      "properties": {
+        "rule_ref": {
+          "$ref": "#/$defs/entity_reference"
+        },
+        "rule_version": {
+          "$ref": "#/$defs/non_empty_string"
+        },
+        "applicability": {
+          "type": "string",
+          "enum": ["applicable", "not_applicable", "unknown", "conflict"]
+        },
+        "counterconditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/non_empty_string"
+          }
+        },
+        "required_evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/entity_reference"
+          }
+        },
+        "proof_effect": {
+          "type": "string",
+          "enum": ["support", "refute", "challenge", "hold", "none"]
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

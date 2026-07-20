@@ -1,0 +1,434 @@
+{
+  "$schema": "./engineering-rule-pack.schema.json",
+  "schema_version": "semantic-guard-engineering-rule-pack/v0",
+  "pack_id": "engineering-rule-pack.functional-requirement-record",
+  "version": "candidate-2026-07-16",
+  "title": "Functional requirement relation engineering-basis candidate register",
+  "purpose": "Expose the proposed engineering basis, local implementation mapping, non-applicability conditions, evidence needs, and adoption boundary for every functional-requirement relation obligation.",
+  "scope": "The eleven obligations in functional-requirement-record/v1 and the eleven direct-rule identifiers currently used to assess them.",
+  "created_at": "2026-07-16T13:47:09+09:00",
+  "profile": {
+    "profile_id": "functional-requirement-record",
+    "version": "v1",
+    "local_locator": "src/semantic_guard/profiles.py"
+  },
+  "status": "candidate_pending_human_adoption",
+  "runtime_authority": "none",
+  "standards_conformance_claimed": false,
+  "sources": [
+    {
+      "source_id": "source.iso-iec-ieee-29148.2018",
+      "title": "ISO/IEC/IEEE 29148:2018 Systems and software engineering — Life cycle processes — Requirements engineering",
+      "version": "Edition 2, 2018-11; confirmed 2024; revision stage 90.92 dated 2026-02-16",
+      "status": "published_current_to_be_revised",
+      "official_locator": "https://www.iso.org/standard/72089.html",
+      "section_locators": [
+        "Public abstract (processes, information items, and formats); licensed clause text not acquired",
+        "Lifecycle status 90.92 and replacement link"
+      ],
+      "acquisition": {
+        "state": "official_locator_metadata_only",
+        "exact_source_text_acquired": false,
+        "observed_at": "2026-07-16T13:47:09+09:00",
+        "content_digest": {"state": "not_computed", "algorithm": "sha256"},
+        "notes": [
+          "Only the official product-page metadata and public abstract were inspected.",
+          "No licensed clause text was copied into this repository or digested."
+        ]
+      },
+      "copyright_limit": "ISO material is copyright protected; this register keeps only a short locator and an original paraphrase, and does not reproduce clauses.",
+      "review_triggers": [
+        "Publication of ISO/IEC/IEEE DIS 29148 or another replacement requires source replacement and fresh human review.",
+        "A change to stage 90.92, edition, confirmation status, or official locator requires metadata re-verification.",
+        "Licensed clause-text acquisition requires a new content digest and clause-level mapping review."
+      ]
+    },
+    {
+      "source_id": "source.nasa-se-handbook.technical-requirements-definition",
+      "title": "NASA Systems Engineering Handbook web reference: 4.2 Technical Requirements Definition",
+      "version": "Official NASA web rendition observed 2026-07-16; handbook edition not asserted by the page",
+      "status": "official_guidance_web_currentness_unasserted",
+      "official_locator": "https://www.nasa.gov/reference/4-2-technical-requirements-definition/",
+      "section_locators": [
+        "4.2 overview",
+        "4.2.1.2.1 Define Constraints, Functional and Behavioral Expectations",
+        "4.2.1.2.2 Define Requirements"
+      ],
+      "acquisition": {
+        "state": "official_web_page_observed_not_archived",
+        "exact_source_text_acquired": false,
+        "observed_at": "2026-07-16T13:47:09+09:00",
+        "content_digest": {"state": "not_computed", "algorithm": "sha256"},
+        "notes": [
+          "The official page and named headings were inspected but no immutable source snapshot was archived.",
+          "The page alone does not establish a stable handbook edition identifier."
+        ]
+      },
+      "copyright_limit": "No page text is reproduced; mappings are original paraphrases tied to heading locators.",
+      "review_triggers": [
+        "NASA changes the official page, heading structure, or underlying handbook edition.",
+        "A stable, dated handbook edition is acquired and digested.",
+        "A mapping is promoted beyond candidate status."
+      ]
+    },
+    {
+      "source_id": "source.nasa-se-handbook.good-requirement-checklist",
+      "title": "NASA Systems Engineering Handbook web reference: Appendix C How to Write a Good Requirement",
+      "version": "Official NASA web rendition observed 2026-07-16; handbook edition not asserted by the page",
+      "status": "official_guidance_web_currentness_unasserted",
+      "official_locator": "https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/",
+      "section_locators": [
+        "C.2 Editorial Checklist",
+        "C.4 Requirements Validation Checklist — Clarity",
+        "C.4 Requirements Validation Checklist — Completeness",
+        "C.4 Requirements Validation Checklist — Performance",
+        "C.4 Requirements Validation Checklist — Verifiability/Testability"
+      ],
+      "acquisition": {
+        "state": "official_web_page_observed_not_archived",
+        "exact_source_text_acquired": false,
+        "observed_at": "2026-07-16T13:47:09+09:00",
+        "content_digest": {"state": "not_computed", "algorithm": "sha256"},
+        "notes": [
+          "The official page and named checklist headings were inspected but no immutable source snapshot was archived.",
+          "Checklist interpretation remains distinct from the local eleven-relation profile."
+        ]
+      },
+      "copyright_limit": "No checklist wording is reproduced; mappings use original paraphrases and heading locators only.",
+      "review_triggers": [
+        "NASA changes the official checklist, heading structure, or underlying handbook edition.",
+        "A stable, dated handbook edition is acquired and digested.",
+        "An organizational tailoring decision accepts, rejects, or alters a checklist interpretation."
+      ]
+    },
+    {
+      "source_id": "source.nasa-se-handbook.requirements-verification-matrix",
+      "title": "NASA Systems Engineering Handbook web reference: Appendix D Requirements Verification Matrix",
+      "version": "Official NASA web rendition observed 2026-07-16; handbook edition not asserted by the page",
+      "status": "official_guidance_web_currentness_unasserted",
+      "official_locator": "https://www.nasa.gov/reference/appendix-d-requirements-verification-matrix/",
+      "section_locators": [
+        "Appendix D introductory guidance and Table D-1 locator"
+      ],
+      "acquisition": {
+        "state": "official_web_page_observed_not_archived",
+        "exact_source_text_acquired": false,
+        "observed_at": "2026-07-16T13:47:09+09:00",
+        "content_digest": {"state": "not_computed", "algorithm": "sha256"},
+        "notes": [
+          "The official introductory guidance and table locator were inspected but the matrix image was not transcribed or archived.",
+          "The page supports planning traceability, not proof that a particular verification was executed."
+        ]
+      },
+      "copyright_limit": "No matrix or page text is reproduced; the register retains only the heading locator and original paraphrases.",
+      "review_triggers": [
+        "NASA changes the matrix guidance, table structure, or underlying handbook edition.",
+        "The matrix fields are mapped at clause or column level from an acquired, digested edition.",
+        "A local verification contract changes."
+      ]
+    },
+    {
+      "source_id": "source.ears.re-2009.9",
+      "title": "Easy Approach to Requirements Syntax (EARS)",
+      "version": "Mavin, Wilkinson, Harwood, and Novak; RE 2009; DOI 10.1109/RE.2009.9",
+      "status": "published_research_metadata_verified",
+      "official_locator": "https://doi.org/10.1109/RE.2009.9",
+      "section_locators": [
+        "Public abstract (full paper sections not acquired)",
+        "Bibliographic record and DOI 10.1109/RE.2009.9"
+      ],
+      "acquisition": {
+        "state": "official_locator_metadata_only",
+        "exact_source_text_acquired": false,
+        "observed_at": "2026-07-16T13:47:09+09:00",
+        "content_digest": {"state": "not_computed", "algorithm": "sha256"},
+        "notes": [
+          "The DOI and University of Manchester bibliographic record and abstract were inspected.",
+          "The full paper and its exact template definitions were not acquired or digested."
+        ]
+      },
+      "copyright_limit": "No paper text or template is reproduced; this register records bibliographic metadata and an original high-level interpretation only.",
+      "review_triggers": [
+        "The full paper is lawfully acquired and a section-level digest and mapping become available.",
+        "A later authoritative EARS version or erratum is selected.",
+        "A local rule claims conformance to an EARS template rather than loose conceptual influence."
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "engineering.functional.applies-to",
+      "version": "v0",
+      "profile_obligation_refs": ["func.applies_to"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.dimension.applies-to/v2", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "A functional requirement should identify the system or responsible product context to which the required behavior applies.",
+      "interpretation": "The local purpose-to-user relation is a repository-specific proxy for a bounded applicable actor or system context; neither field co-presence nor lexical overlap alone proves applicability.",
+      "applicability": ["Structured functional-requirement records that declare both a purpose and a user or system actor."],
+      "counterconditions": ["The input contract already provides a separately validated and uniquely identified system-of-interest relation."],
+      "required_evidence": ["Located purpose and actor fields, their record boundary, and an assertion-capable relation basis or an unresolved result."],
+      "limitations": ["NASA guidance discusses system scope and interaction, but does not define this local purpose-to-user edge.", "The rule does not establish stakeholder acceptance or system-of-interest correctness."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.technical-requirements-definition", "section_locator": "4.2.1.2.1 Define Constraints, Functional and Behavioral Expectations", "mapping_rationale": "The guidance situates functional and behavioral expectations within a defined system boundary and anticipated interactions; the local edge is only a candidate operationalization."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "The source edition, heading, or local interpretation changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.performs",
+      "version": "v0",
+      "profile_obligation_refs": ["func.performs"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.actor-scenario/v2", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "A functional requirement should make the responsible product or actor and its required action explicit enough to distinguish agent from object or merely mentioned participant.",
+      "interpretation": "The local rule accepts only a narrow active actor assertion and routes passive, causative, reported, nominal, or ambiguous forms onward; this is stricter and more language-specific than the source checklist.",
+      "applicability": ["Structured functional-requirement scenarios whose declared user or system actor is expected to perform the behavior."],
+      "counterconditions": ["Responsibility is intentionally assigned through a separately validated formal behavior model rather than the scenario sentence."],
+      "required_evidence": ["Actor field, scenario span, grammatical or deterministic assertion basis, voice and quotation guards, and any unresolved reason."],
+      "limitations": ["The direct matcher covers only narrow Japanese and English forms.", "An active grammatical subject is not by itself proof of authorized or actual action."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.2 Editorial Checklist", "mapping_rationale": "The checklist distinguishes a responsible product or party and an active required action; the local parser-specific test remains an unadopted interpretation."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Supported language, voice, or dependency policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.acts-on",
+      "version": "v0",
+      "profile_obligation_refs": ["func.acts_on"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.object-marker/v0", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "When a required behavior operates on a distinct object, that object relation should be explicit or remain unresolved.",
+      "interpretation": "The local Japanese object-marker pattern is a discovery heuristic for an optional behavior-to-object relation, not a general definition of a good functional requirement.",
+      "applicability": ["Scenarios in which the behavior has a distinct domain object, input, record, or resource."],
+      "counterconditions": ["The behavior is intransitive or its complete object is defined by a separately validated interface or data model."],
+      "required_evidence": ["Located object candidate, governing behavior candidate, attachment basis, and explicit applicability decision."],
+      "limitations": ["The source checklist does not prescribe the local Japanese object-marker regex.", "Implicit, coordinated, topicalized, and cross-sentence objects are not established by the direct rule."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.2 Editorial Checklist", "mapping_rationale": "The checklist asks that the required action and what is to be done be stated; the local object edge is one candidate decomposition of that guidance."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Object attachment or supported-language policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.triggered-by",
+      "version": "v0",
+      "profile_obligation_refs": ["func.triggered_by"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.condition-marker/v0", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "When behavior is conditional, the triggering context should be identifiable and attached to that behavior.",
+      "interpretation": "The local condition-marker rule detects only candidate condition presence. The EARS record establishes structural-template research at a high level, but its exact conditional templates were not acquired and are not claimed as implemented.",
+      "applicability": ["Event-driven, state-driven, optional-feature, exception, and other conditional functional requirements."],
+      "counterconditions": ["The behavior is genuinely unconditional within the closed record scope or the trigger is provided by a separately validated state model."],
+      "required_evidence": ["Condition marker or formal trigger, behavior attachment, scope and polarity guards, and a not-applicable rationale where no condition is required."],
+      "limitations": ["A lexical marker does not prove the condition boundary or attachment.", "No EARS conformance claim is made without the full paper and template-level review."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.technical-requirements-definition", "section_locator": "4.2.1.2.1 Define Constraints, Functional and Behavioral Expectations", "mapping_rationale": "Anticipated-use and use-case context motivates retaining conditional behavior context."},
+        {"source_id": "source.ears.re-2009.9", "section_locator": "Public abstract (full paper sections not acquired)", "mapping_rationale": "The public abstract establishes a small structural-template approach only; detailed trigger syntax remains unverified and unadopted."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "The full EARS paper or a later authoritative version is acquired.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.produces",
+      "version": "v0",
+      "profile_obligation_refs": ["func.produces"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.scenario-result-alignment/v2", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "A functional behavior should lead to an identifiable expected output, state transition, or other observable result.",
+      "interpretation": "The local scenario-to-result alignment is a bounded lexical consistency check; it must not infer causality from field adjacency or a generic shared word.",
+      "applicability": ["Functional requirements whose satisfaction is expected to create, return, preserve, change, or expose an observable result."],
+      "counterconditions": ["The requirement defines only a persistent state or invariant and its observation contract is separately validated."],
+      "required_evidence": ["Scenario and expected-result spans, a specific shared endpoint or compatible transition basis, and contradiction checks."],
+      "limitations": ["Lexical alignment cannot establish real causal production.", "Compound and implicit transitions require dependency or semantic reassessment."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.technical-requirements-definition", "section_locator": "4.2 overview", "mapping_rationale": "The guidance calls for requirements to describe inputs, outputs, and required relationships; the local scenario-result edge is a candidate bounded projection."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Result-transition or contradiction policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.constrained-by",
+      "version": "v0",
+      "profile_obligation_refs": ["func.constrained_by"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.result-criterion-alignment/v1", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "An acceptance criterion should constrain the same expected result or performance dimension that the requirement promises.",
+      "interpretation": "The local rule requires a specific shared anchor and treats generic co-occurrence as unresolved; it does not prove that the criterion is sufficient, feasible, or accepted.",
+      "applicability": ["Functional or performance requirements with a distinct expected result and acceptance-criteria field."],
+      "counterconditions": ["A separately validated formal acceptance specification binds criteria to the result by stable identifiers."],
+      "required_evidence": ["Expected-result and acceptance-criterion spans, target or dimension alignment, and conflict observations."],
+      "limitations": ["Textual alignment is weaker than semantic equivalence.", "No completeness claim is available for omitted acceptance dimensions."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.4 Requirements Validation Checklist — Verifiability/Testability", "mapping_rationale": "The checklist connects precise requirements to test success criteria; the local relation makes target alignment explicit as a candidate rule."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Acceptance-target or semantic-alignment policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.uses-metric",
+      "version": "v0",
+      "profile_obligation_refs": ["func.uses_metric"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.metric-marker/v0", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "Where acceptance depends on performance or another measurable quality, the criterion should expose a metric, threshold, tolerance, or comparable measurable scale.",
+      "interpretation": "The local marker only detects a small set of numeric and comparative forms and treats metric use as conditional; it does not judge whether the metric is valid or economically justified.",
+      "applicability": ["Requirements with latency, throughput, availability, accuracy, reliability, capacity, or other quantitatively assessable acceptance dimensions."],
+      "counterconditions": ["The requirement is legitimately verified by a binary inspection or demonstration with no quantitative acceptance dimension."],
+      "required_evidence": ["Acceptance-criterion span, metric or threshold marker, unit or scale where applicable, and an applicability rationale."],
+      "limitations": ["Marker detection misses domain-specific units and qualitative ordinal scales.", "A present number may be irrelevant, infeasible, or attached to the wrong target."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.4 Requirements Validation Checklist — Performance", "mapping_rationale": "The checklist calls attention to measurable performance specifications and margins; the local optional metric edge is a candidate operationalization."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Metric vocabulary, unit, or applicability policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.verified-by",
+      "version": "v0",
+      "profile_obligation_refs": ["func.verified_by"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.dimension.verified-by/v2", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "Each requirement should identify an appropriate verification approach traceable to the requirement being assessed.",
+      "interpretation": "The local purpose-to-method alignment is only a lexical target check. A method name does not prove procedure adequacy, execution, independence, or result validity.",
+      "applicability": ["Structured requirements intended to support a verification plan or bounded verification claim."],
+      "counterconditions": ["A separately validated verification matrix already binds the requirement identifier to its method and procedure."],
+      "required_evidence": ["Requirement or purpose locator, verification-method locator, method classification, and target-alignment basis."],
+      "limitations": ["The NASA matrix guidance is an example and requires project tailoring.", "The public ISO abstract does not supply a clause-level rule for this local edge."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.requirements-verification-matrix", "section_locator": "Appendix D introductory guidance and Table D-1 locator", "mapping_rationale": "The matrix guidance associates uniquely identified requirements with verification approaches; the local relation exposes that association as a candidate obligation."},
+        {"source_id": "source.iso-iec-ieee-29148.2018", "section_locator": "Public abstract (processes, information items, and formats); licensed clause text not acquired", "mapping_rationale": "The public abstract provides lifecycle and requirements-information-item context only; no clause conformance is asserted."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "ISO/IEC/IEEE 29148 replacement or DIS publication requires re-review before use.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.verifies",
+      "version": "v0",
+      "profile_obligation_refs": ["func.verifies"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.verification-target-alignment/v1", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "A verification method should be explicitly capable of evaluating the acceptance criterion it is claimed to verify.",
+      "interpretation": "The local rule checks method-to-criterion target alignment and adds a target-alignment guard; it cannot infer actual procedure capability or execution from shared words.",
+      "applicability": ["Requirements that declare both a verification method and an acceptance criterion."],
+      "counterconditions": ["A separately validated procedure specification binds method steps and observables to the criterion by stable identifiers."],
+      "required_evidence": ["Method and criterion spans, target alignment, measurement or observation capability, and procedure reference."],
+      "limitations": ["Lexical target alignment does not establish sensitivity, accuracy, repeatability, or coverage.", "No verification result is implied."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.4 Requirements Validation Checklist — Verifiability/Testability", "mapping_rationale": "The checklist asks whether a means exists to assess the requirement and state verification criteria; the local edge is an unadopted target-binding interpretation."},
+        {"source_id": "source.nasa-se-handbook.requirements-verification-matrix", "section_locator": "Appendix D introductory guidance and Table D-1 locator", "mapping_rationale": "The matrix guidance motivates an explicit requirement-to-verification mapping but does not prove method capability."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Verification capability or target-alignment policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.measures",
+      "version": "v0",
+      "profile_obligation_refs": ["func.measures"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.metric-target-alignment/v1", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "When a criterion uses a metric, the declared verification method should measure or derive that metric at the required target and scale.",
+      "interpretation": "The local method-to-criterion alignment is conditional on a metric marker and remains unresolved without target evidence; it does not validate instrumentation or statistical design.",
+      "applicability": ["Requirements whose acceptance criterion contains a metric, threshold, tolerance, rate, duration, count, or quantitative scale."],
+      "counterconditions": ["No metric is applicable, or a separately validated measurement model binds the method, measurand, unit, and criterion."],
+      "required_evidence": ["Metric and target locators, method capability, unit or scale, sampling or aggregation rule where relevant, and calibration or analysis assumptions."],
+      "limitations": ["The direct rule does not distinguish measured, calculated, simulated, or inferred quantities.", "It does not establish calibration, uncertainty, or statistical adequacy."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.4 Requirements Validation Checklist — Verifiability/Testability", "mapping_rationale": "The checklist connects verification with a means of measurement; the local metric relation is a candidate, narrower interpretation."},
+        {"source_id": "source.nasa-se-handbook.good-requirement-checklist", "section_locator": "C.4 Requirements Validation Checklist — Performance", "mapping_rationale": "Performance specifications and margins motivate binding the method to the same measurand and target."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "Metric, unit, uncertainty, or method-capability policy changes.", "A human records adoption, rejection, or tailoring."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    },
+    {
+      "rule_id": "engineering.functional.produces-evidence",
+      "version": "v0",
+      "profile_obligation_refs": ["func.produces_evidence"],
+      "local_implementation_rule_refs": [
+        {"rule_id": "direct.structured.method-evidence-alignment/v1", "locator": "src/semantic_guard/direct_rules.py", "mapping_status": "candidate_semantic_correspondence"}
+      ],
+      "engineering_proposition": "A verification method should identify the evidence artifact or record by which its execution and result can later be inspected.",
+      "interpretation": "This is chiefly a semantic-guard auditability extension: NASA matrix guidance supports planned traceability but does not by itself prescribe this exact method-to-evidence-artifact edge.",
+      "applicability": ["Verification claims that must be replayed, independently inspected, or bound into an assurance graph."],
+      "counterconditions": ["A separately validated verification system automatically emits a content-addressed record and the requirement references that contract."],
+      "required_evidence": ["Method locator, evidence-artifact type and locator, subject binding, provenance, digest where available, and retention or access condition."],
+      "limitations": ["Naming an artifact does not prove it exists, is authentic, or contains the claimed observation.", "The external sources support verification planning more directly than evidence authenticity or provenance."],
+      "source_refs": [
+        {"source_id": "source.nasa-se-handbook.requirements-verification-matrix", "section_locator": "Appendix D introductory guidance and Table D-1 locator", "mapping_rationale": "The matrix guidance motivates durable requirement-source and verification-method traceability; semantic-guard adds an explicit evidence-artifact edge for audit replay."},
+        {"source_id": "source.iso-iec-ieee-29148.2018", "section_locator": "Public abstract (processes, information items, and formats); licensed clause text not acquired", "mapping_rationale": "The abstract establishes requirements-related information-item context only; it does not authorize the local evidence schema or a conformance claim."}
+      ],
+      "adoption_state": "candidate_pending_human_adoption",
+      "runtime_authority": "none",
+      "adoption_evidence_refs": [],
+      "independent_review_evidence_refs": [],
+      "review_triggers": ["The profile obligation or mapped direct-rule version changes.", "ISO/IEC/IEEE 29148 replacement or DIS publication requires re-review before use.", "Evidence provenance or assurance-graph contract changes."],
+      "supersession": {"supersedes": [], "superseded_by": null, "policy": "Replacement requires a new version, explicit old-to-new mapping, independent review, and human disposition."}
+    }
+  ],
+  "governance": {
+    "independent_review": {"status": "not_performed", "evidence_refs": [], "authority_ref": null},
+    "human_adoption": {"status": "not_performed", "evidence_refs": [], "authority_ref": null},
+    "change_control": {
+      "requires_new_version": ["Any engineering proposition, interpretation, applicability, countercondition, required evidence, limitation, source mapping, or local rule mapping changes."],
+      "requires_revalidation": ["Any profile obligation, direct-rule identifier, source edition or status, source acquisition state, content digest, adoption evidence, or runtime authority changes."],
+      "exception_expiry_required": true
+    },
+    "authority_boundary": {"audit_owner": "semantic-guard", "adoption_owner": "human", "final_acceptance_owner": "human"}
+  },
+  "limitations": [
+    "This candidate register is not an adopted engineering rule pack, a standards-conformance statement, or evidence that the runtime rules are correct.",
+    "Exact source texts are not content-addressed in this repository and no independent domain review or human adoption has occurred.",
+    "The eleven obligations are a repository-specific functional-requirement profile; other requirement classes and lifecycle surfaces need separate governed packs.",
+    "Local lexical and structural rules remain subject to false positives, false negatives, language coverage limits, and field-validation requirements."
+  ]
+}

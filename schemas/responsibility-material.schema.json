@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/responsibility-material.schema.json",
+  "title": "semantic-guard responsibility-correct material",
+  "description": "Role-specific audit material. It contains repair candidates or a human decision question, but never performs routing, grants authority, or fills a decision.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "material_id",
+    "material_kind",
+    "audience",
+    "policy_ref",
+    "audit_ref",
+    "subject_ref",
+    "issue_class",
+    "observed_facts",
+    "evidence_refs",
+    "limitations",
+    "unresolved_scope",
+    "repair_targets",
+    "decision_questions",
+    "available_actions",
+    "stop_conditions",
+    "escalation_conditions",
+    "prohibited_decisions",
+    "routing_boundary",
+    "material_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "responsibility-material/v0"},
+    "material_id": {"$ref": "#/$defs/stable_id"},
+    "material_kind": {"enum": ["agent_repair", "human_decision"]},
+    "audience": {
+      "type": "object",
+      "required": ["role_id", "actor_class"],
+      "properties": {
+        "role_id": {"$ref": "#/$defs/stable_id"},
+        "actor_class": {"$ref": "#/$defs/actor_class"}
+      },
+      "unevaluatedProperties": false
+    },
+    "policy_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+    "audit_ref": {"$ref": "#/$defs/digest_ref"},
+    "subject_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+    "issue_class": {"$ref": "#/$defs/issue_class"},
+    "observed_facts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/digest_ref"}
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "unresolved_scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "repair_targets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/repair_target"}
+    },
+    "decision_questions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/decision_question"}
+    },
+    "available_actions": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/action_candidate"}
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "escalation_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "prohibited_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/decision_right"}
+    },
+    "routing_boundary": {
+      "type": "object",
+      "required": [
+        "semantic_guard_role",
+        "routing_owner",
+        "is_command",
+        "is_authority_grant",
+        "is_human_decision"
+      ],
+      "properties": {
+        "semantic_guard_role": {"const": "emit_audit_material_only"},
+        "routing_owner": {"const": "external_caller_or_control_plane"},
+        "is_command": {"const": false},
+        "is_authority_grant": {"const": false},
+        "is_human_decision": {"const": false}
+      },
+      "unevaluatedProperties": false
+    },
+    "material_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"material_kind": {"const": "agent_repair"}},
+        "required": ["material_kind"]
+      },
+      "then": {
+        "properties": {
+          "audience": {
+            "properties": {"actor_class": {"const": "coding_agent"}},
+            "required": ["actor_class"]
+          },
+          "repair_targets": {"minItems": 1},
+          "decision_questions": {"maxItems": 0},
+          "available_actions": {"minItems": 1}
+        }
+      },
+      "else": {
+        "properties": {
+          "audience": {
+            "properties": {
+              "actor_class": {
+                "enum": ["human_requester", "human_reviewer", "human_approver"]
+              }
+            },
+            "required": ["actor_class"]
+          },
+          "decision_questions": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "non_empty": {"type": "string", "minLength": 1},
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_ref": {
+      "type": "object",
+      "required": ["entity_id", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "versioned_digest_ref": {
+      "type": "object",
+      "required": ["entity_id", "entity_version", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stable_id"},
+        "entity_version": {"$ref": "#/$defs/non_empty"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "actor_class": {
+      "enum": [
+        "coding_agent",
+        "human_requester",
+        "human_reviewer",
+        "human_approver",
+        "external_control_plane"
+      ]
+    },
+    "decision_right": {
+      "enum": [
+        "acquire_evidence",
+        "bounded_technical_interpretation",
+        "propose_repair",
+        "execute_authorized_repair",
+        "run_reaudit",
+        "schedule_or_delegate",
+        "change_intent_or_scope",
+        "accept_residual_risk",
+        "grant_or_expand_authority",
+        "authorize_external_effect",
+        "final_acceptance"
+      ]
+    },
+    "issue_class": {
+      "enum": [
+        "missing_evidence",
+        "ambiguous_interpretation",
+        "conflicting_evidence",
+        "implementation_defect",
+        "verification_failure",
+        "scope_or_intent_choice",
+        "risk_acceptance",
+        "authority_change",
+        "external_or_irreversible_effect",
+        "final_acceptance",
+        "other"
+      ]
+    },
+    "repair_target": {
+      "type": "object",
+      "required": [
+        "target_id",
+        "target_ref",
+        "locator",
+        "defect_hypothesis",
+        "intended_effect",
+        "success_criteria",
+        "regression_guards",
+        "prohibited_shortcuts"
+      ],
+      "properties": {
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_ref": {"$ref": "#/$defs/versioned_digest_ref"},
+        "locator": {"$ref": "#/$defs/non_empty"},
+        "defect_hypothesis": {"$ref": "#/$defs/non_empty"},
+        "intended_effect": {"$ref": "#/$defs/non_empty"},
+        "success_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "regression_guards": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "prohibited_shortcuts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "decision_question": {
+      "type": "object",
+      "required": ["question_id", "proposition", "required_right", "options", "tradeoffs"],
+      "properties": {
+        "question_id": {"$ref": "#/$defs/stable_id"},
+        "proposition": {"$ref": "#/$defs/non_empty"},
+        "required_right": {"$ref": "#/$defs/decision_right"},
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "tradeoffs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/non_empty"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "action_candidate": {
+      "type": "object",
+      "required": [
+        "action_id",
+        "description",
+        "required_right",
+        "side_effect_class",
+        "reaudit_required"
+      ],
+      "properties": {
+        "action_id": {"$ref": "#/$defs/stable_id"},
+        "description": {"$ref": "#/$defs/non_empty"},
+        "required_right": {"$ref": "#/$defs/decision_right"},
+        "side_effect_class": {
+          "enum": ["none", "reversible_local", "persistent_local", "external", "irreversible_or_unknown"]
+        },
+        "reaudit_required": {"const": true}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

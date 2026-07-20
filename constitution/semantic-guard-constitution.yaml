@@ -1,0 +1,339 @@
+schema_version: semantic-guard-constitution/v0
+notation_profile: entity-reference-notation/v0
+constitution_id: constitution.semantic-guard.r0
+version: 0.2.0-draft
+status: implementation_baseline_pending_human_acceptance
+recorded_at: 2026-07-16T00:00:00+09:00
+
+identity:
+  product_ref: semantic-guard v1・product.semantic-guard
+  canonical_implementation_ref: semantic-guard v1・implementation.semantic-guard.v1
+  derived_from: semantic-guard vNext candidate・implementation.semantic-guard.vnext
+  legacy_predecessor_ref: semantic-guard v0.1.0・implementation.semantic-guard.v0.1.0
+  audit_owner: semantic-guard
+  control_owner: external_caller_or_resource_control_plane
+  final_acceptance_owner: human
+
+origin:
+  - ref: 原点要求・document.prototype-origin-requirement.v2
+    path: docs/prototypes/origin-requirement.md
+    content_digest:
+      algorithm: sha256
+      value: 5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f
+    strengthens: [OR-01, OR-02, OR-03]
+  - ref: 要求関係監査試作憲章・document.requirement-relation-audit-charter.v0
+    path: docs/prototypes/requirement-relation-audit-charter-2026-07-12.md
+    content_digest:
+      algorithm: sha256
+      value: 9591ca7d325ef2a1b3cb833f7da18a754685b880d6d4bd1b8481763da3cfcb37
+    strengthens: [OR-01, OR-02, OR-03]
+
+purpose:
+  statement: >-
+    AI エージェントが関与する開発工程の要求、計画、行為、変更、検証、完了主張を、
+    版を固定した体系知、証拠、反適用条件、信頼前提、未観測範囲へ追跡し、支持、
+    反証、未決定、競合、残余危険を外部から再検査できる形へ戻す。
+  value_test: >-
+    出力が後続エージェントの修正と人間の受理、差戻し、保留判断に使用できること。
+  optimization_target: catastrophic_false_satisfaction_first
+
+bounded_correctness:
+  definition: >-
+    対象命題、適用範囲、規則版、証拠、導出、信頼前提、反証条件、被覆、未証明範囲、
+    残余危険を再検査可能にした条件付き保証であり、無条件の真理確定ではない。
+  required_dimensions:
+    - subject
+    - proposition
+    - scope
+    - rule_versions
+    - evidence
+    - derivation
+    - trust_assumptions
+    - counterconditions
+    - coverage
+    - unproven_scope
+    - residual_risks
+    - provenance
+  claim_classes_kept_separate:
+    - description_completeness
+    - requirement_conformance
+    - action_occurrence
+    - actor_identity
+    - authority
+    - procedure_conformance
+    - artifact_generation
+    - artifact_provenance
+    - verification_result
+    - validation_result
+    - authenticity
+    - causality
+  elevated_claim_rule: >-
+    formally_proved、authenticated、actor_identity、causality は、対応する形式模型、
+    検証器、信頼根、署名又は来歴機構と、その前提及び限界が記録された場合だけ使用する。
+
+canonical_semantic_model:
+  obligation_outcome:
+    enum: [satisfied, refuted, undetermined, not_applicable, invalid]
+  finality:
+    enum: [provisional, terminal, invalid]
+  challenge:
+    enum: [none, open, conflict]
+  coverage:
+    enum: [complete, partial, not_evaluated, failed]
+  workflow_disposition:
+    enum: [pass, warn, block]
+    semantics: pass_is_not_human_acceptance
+  presentation_projection:
+    fields: [met, not_met, undetermined, contested, not_applicable, not_evaluated]
+    canonical: false
+    source_of_truth: obligation_results
+  interpretation_policy:
+    retain_multiple_candidates: true
+    candidate_ref_is_not_ref: true
+    derived_from_is_not_identity: true
+    forced_single_interpretation_forbidden: true
+
+authority_model:
+  independent_rights: [support, challenge, hold_apply, hold_release]
+  implicit_authority_escalation_forbidden: true
+  agreement_does_not_raise_authority: true
+  stages:
+    - stage_ref: 型付き呼出構造・stage.typed-structure
+      maximum_authority: assertion_capable
+      rights: {support: true, challenge: true, hold_apply: true, hold_release: true}
+    - stage_ref: 作用域防護付き直接規則・stage.scope-guarded-direct-rule
+      maximum_authority: assertion_capable
+      rights: {support: true, challenge: true, hold_apply: true, hold_release: true}
+    - stage_ref: 形態素解析・stage.morphology
+      maximum_authority: signal_only
+      rights: {support: false, challenge: false, hold_apply: false, hold_release: false}
+    - stage_ref: 依存構造解析束・stage.dependency-analysis-bundle
+      maximum_authority: candidate_only
+      rights: {support: false, challenge: true, hold_apply: false, hold_release: false}
+    - stage_ref: LLM候補・stage.llm-candidate
+      maximum_authority: candidate_only
+      rights: {support: false, challenge: true, hold_apply: false, hold_release: false}
+    - stage_ref: 版付き残余危険方針・stage.versioned-residual-risk-policy
+      maximum_authority: policy_only
+      rights: {support: false, challenge: true, hold_apply: true, hold_release: false}
+    - stage_ref: 版付き決定論的導出規則・stage.versioned-lifting-rule
+      maximum_authority: assertion_capable
+      rights: {support: true, challenge: true, hold_apply: true, hold_release: true}
+  release_rule: >-
+    解析器の信号又は候補を根拠に challenge や hold を実際に適用する権限は版付き方針側に置く。
+    保留を解除できるのは、保留条件に対応する証拠を消費し、適用規則と由来を記録する
+    assertion-capable な段階だけである。候補不在又は解析器間合意だけでは解除できない。
+
+pipeline:
+  execution_order:
+  - order: 0
+    stage_ref: 入力契約と記録境界・stage.input-boundary
+    always_run: true
+  - order: 1
+    stage_ref: 義務別仮判定・stage.provisional-direct-audit
+    always_run: true
+  - order: 2
+    stage_ref: 独立残余危険門・stage.residual-risk-gate
+    always_run: true
+  - order: 3
+    stage_ref: 形態素解析・stage.morphology
+    run_when: assurance_or_shadow_mode_or_scoped_challenge
+  - order: 4
+    stage_ref: 依存構造解析束・stage.dependency-analysis-bundle
+    run_when: assurance_or_shadow_mode_or_unresolved_after_morphology
+  - order: 5
+    stage_ref: 版付き決定論的導出規則・stage.versioned-lifting-rule
+    run_when: provider_candidates_available
+  - order: 6
+    stage_ref: LLM候補・stage.llm-candidate
+    run_when: explicitly_enabled_and_assurance_or_shadow_mode_or_prior_unresolved_classification
+  - order: 7
+    stage_ref: 義務別再集約・stage.obligation-reaggregation
+    always_run: true
+  - order: 8
+    stage_ref: 決定要求生成・stage.decision-request-materialization
+    run_when: unresolved_or_human_authority_needed
+  dependency_analysis_bundle_requires:
+    - token_and_source_offsets
+    - sentence_and_record_boundaries
+    - clause_or_bunsetsu_boundaries
+    - dependency_edges
+    - predicate_argument_candidates
+    - negation_modality_condition_quotation_reporting_scope
+    - coordination
+    - coreference_candidates
+    - provider_version_and_diagnostics
+
+residual_risk_gate:
+  independent_from_positive_match_rules: true
+  required_checks:
+    - unaccounted_semantic_spans
+    - negation
+    - modality
+    - condition
+    - quotation
+    - reporting_or_hearsay
+    - historical_or_metalinguistic_use
+    - non_adoption
+    - coordination
+    - ambiguous_attachment
+    - ambiguous_reference
+    - multiple_record_or_requirement_boundary
+    - profile_applicability
+    - counterconditions
+    - provider_health_and_integrity
+    - cross_field_causal_and_constraint_alignment
+
+aggregation_invariants:
+  - invariant_id: INV-VN-001
+    statement: active かつ required な義務の unknown、conflict、invalid、被覆不足を上位 pass が捨てない。
+    required_effect: unresolved_required_obligation_ids_nonempty_prevents_pass
+  - invariant_id: INV-VN-002
+    statement: 直接規則による satisfied は残余危険門を通過するまで provisional である。
+    required_effect: provisional_cannot_project_to_pass
+  - invariant_id: INV-VN-003
+    statement: terminal satisfied は complete coverage、challenge none、open hold なし、支持証拠ありを要する。
+    required_effect: terminal_satisfaction_requires_closed_support
+  - invariant_id: INV-VN-004
+    statement: 必須解析器の未実行、利用不能、失敗、不正出力は silent success にしない。
+    required_effect: required_provider_failure_emits_unknown_or_invalid_and_hold
+  - invariant_id: INV-VN-005
+    statement: 候補解析器は義務を直接 satisfied にせず、候補不在だけで hold を解除しない。
+    required_effect: candidate_only_cannot_support_or_release
+  - invariant_id: INV-VN-006
+    statement: 字句存在、引用、例示、歴史記述、伝聞、未採用、否定を現在の肯定命題へ自動昇格しない。
+    required_effect: scope_defeater_prevents_affirmative_promotion
+  - invariant_id: INV-VN-007
+    statement: 開いた自由文又は適用可能性不明から missing を断定しない。
+    required_effect: open_boundary_yields_undetermined
+  - invariant_id: INV-VN-008
+    statement: 人間の危険受容は監査上の欠陥、反証、未観測範囲を削除しない。
+    required_effect: external_acceptance_is_recorded_without_mutating_audit_facts
+  - invariant_id: INV-VN-009
+    statement: 単一 score を正しさ確率として扱わない。
+    required_effect: legacy_score_is_explicitly_non_probabilistic_projection
+  - invariant_id: INV-VN-010
+    statement: schema 不適合、digest 不一致、由来欠落は invalid 又は block へ写し、pass にしない。
+    required_effect: integrity_failure_prevents_pass
+  - invariant_id: INV-VN-011
+    statement: >-
+      同一分野語の共有だけを、因果、制約、検証対象又は証拠生成関係の成立証明へ昇格しない。
+      produces では特定対象の一致に加えて結果作用の整合を要し、保存対削除のような単純な逆向き作用を
+      refuted、複合作用又は作用遷移不明を undetermined とする。
+    required_effect: lexical_overlap_requires_specific_anchor_and_compatible_result_transition
+  - invariant_id: INV-VN-012
+    statement: 解析器の ok は要求範囲の被覆と要求能力ごとの実施記録を要し、部分被覆又は能力欠落を完全実行へ写さない。
+    required_effect: provider_accounting_requires_span_and_capability_closure
+  - invariant_id: INV-VN-013
+    statement: 公開結果の結論、被覆、競合、未解決義務一覧、保留は義務実体から再集約可能で、相互矛盾する payload を受理しない。
+    required_effect: public_contract_reaggregation_detects_tampering_or_serialization_defect
+  - invariant_id: INV-VN-014
+    statement: 入力内容の同一性と監査実行の同一性を分け、解析条件又は観測時点が異なる実行に同じ audit identity を与えない。
+    required_effect: occurrence_identity_binds_configuration_and_observation
+
+pass_preconditions:
+  audit_conclusion_outcome: [satisfied, not_applicable]
+  audit_conclusion_finality: terminal
+  audit_conclusion_challenge: none
+  coverage: complete
+  unresolved_required_obligation_count: 0
+  open_hold_count: 0
+  blocking_residual_risk_count: 0
+  integrity_failure_count: 0
+  required_provider_failure_count: 0
+  open_decision_request_count: 0
+
+decision_boundary:
+  semantic_guard_may:
+    - emit_decision_request_material
+    - identify_required_authority_class
+    - apply_audit_holds_within_declared_rights
+    - propose_bounded_evidence_work
+  semantic_guard_must_not:
+    - grant_authority
+    - route_or_delegate_work_as_control_owner
+    - authorize_external_effects
+    - accept_residual_risk_for_the_human
+    - make_final_acceptance
+  agent_resolvable_conditions:
+    - observable_or_contractual_or_testable
+    - within_existing_authority
+    - no_change_to_purpose_scope_non_goals_or_risk_policy
+    - no_unapproved_external_or_irreversible_effect
+    - result_can_be_reaudited
+  human_authority_required_for:
+    - latent_intent_purpose_scope_or_acceptance_choice
+    - value_or_risk_tradeoff
+    - residual_risk_acceptance
+    - policy_exception
+    - external_or_irreversible_authorization
+    - equal_authority_source_conflict
+    - authority_expansion
+    - final_acceptance
+  owner_unknown_is_human_required: false
+
+evaluation_contract:
+  development_execution: all_items_shadow_analysis
+  pre_acceptance_public_default: assurance_analysis_required
+  optimization_after_evidence: conditional_analysis_by_risk_profile
+  metrics_kept_separate:
+    - catastrophic_false_satisfaction
+    - false_defect
+    - abstention_or_undetermined_rate
+    - silent_coverage_gap
+    - challenge_capture
+    - source_span_fidelity
+    - repair_effect
+  evidence_layers:
+    - invariant_and_metamorphic_tests
+    - reference_interpretations_with_disagreement_preserved
+    - operational_shadow_use_on_real_artifacts
+  fixture_pass_proves_generality: false
+  old_implementation_is_ground_truth_oracle: false
+
+non_goals:
+  - unconditional_correctness_or_complete_natural_language_understanding
+  - human_final_judgment_replacement
+  - execution_control_priority_or_durable_ledger_ownership
+  - LLM_only_approval_rejection_or_hold_release
+  - standards_conformance_claim_without_clause_complete_mapping_and_review
+  - formal_proof_authenticity_identity_causality_or_tamper_resistance_without_mechanisms
+  - proof_of_unrecorded_events_or_unobserved_absence
+  - implicit_change_to_existing_public_CLI_MCP_or_schema
+
+hollow_success_conditions:
+  - graph_exists_but_edges_lack_scope_and_source_evidence
+  - more_analyzers_run_but_authority_and_disagreement_are_hidden
+  - unknown_or_provider_failure_is_projected_to_pass
+  - morphology_or_dependency_is_presented_as_semantic_proof
+  - old_output_is_copied_as_expected_truth_despite_known_false_satisfaction
+  - action_description_is_treated_as_action_occurrence
+  - signed_but_semantically_wrong_claim_is_presented_as_correct
+  - report_exists_but_cannot_drive_repair_or_human_review
+
+contract_refs:
+  common: ../schemas/common.schema.json
+  assurance_claim: ../schemas/assurance-claim.schema.json
+  obligation_result: ../schemas/obligation-result.schema.json
+  analysis_provider: ../schemas/analysis-provider.schema.json
+  decision_request: ../schemas/decision-request.schema.json
+  audit_result: ../schemas/audit-result.schema.json
+
+change_control:
+  compatibility_mode: canonical_v1_with_archived_legacy
+  repository_canonicalization:
+    status: canonical_source_layout
+    effect: locator_and_product_identity_rebase_only
+    does_not_imply:
+      - candidate_rule_adoption
+      - field_validation
+      - operational_qualification
+      - human_final_acceptance
+  existing_core_mutation_authorized: false
+  existing_public_contract_mutation_authorized: false
+  schema_change_requires:
+    - version_change_or_explicit_compatible_addition
+    - conformance_test_update
+    - migration_explanation
+    - origin_trace_review
+  final_adoption_status: pending_human_acceptance

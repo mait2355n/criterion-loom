@@ -1,5 +1,5 @@
-name: Fixture or rule gap
-description: Propose a calibration example, false positive, false negative, or detector gap.
+name: Requirement relation or rule gap
+description: Propose a conformance example, false satisfaction, false refutation, abstention, or rule gap.
 title: "[calibration]: "
 labels: ["calibration"]
 body:
@@ -8,9 +8,11 @@ body:
     attributes:
       label: Gap kind
       options:
-        - good warning to preserve
-        - noisy warning or likely false positive
-        - missed warning or likely false negative
+        - correct obligation result to preserve
+        - likely false satisfaction
+        - likely false refutation
+        - missed challenge or unresolved obligation
+        - analyzer coverage or provenance gap
         - rule wording or documentation issue
     validations:
       required: true
@@ -26,13 +28,13 @@ body:
     id: expected_review
     attributes:
       label: Expected review
-      description: What should the tool warn about, suppress, or classify differently?
+      description: Which obligation, outcome, challenge, coverage, or unresolved state should differ?
     validations:
       required: true
   - type: textarea
     id: why
     attributes:
       label: Engineering obligation
-      description: Tie the example to public contract, rollback, evidence, identity, failure handling, operations, concurrency, retention, destructive operation, time-dependent source, or human decision boundary.
+      description: Tie the example to a versioned rule, engineering source, applicability condition, counter-condition, required evidence, and limitation where possible.
     validations:
       required: false

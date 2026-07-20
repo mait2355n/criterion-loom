@@ -1,0 +1,2632 @@
+{
+  "$schema": "../schemas/lifecycle-profile-registry.schema.json",
+  "schema_version": "lifecycle-profile-registry/v0",
+  "registry_id": "lifecycle-profile-registry.semantic-guard",
+  "version": "candidate-2026-07-16",
+  "status": "candidate",
+  "purpose": "依頼から完了主張までの十工程について、成果物名ではなく必須意味、関係、義務、証拠、未決定、人間判断境界を候補契約として閉じる。",
+  "authority_boundary": {
+    "adoption_owner": "human",
+    "semantic_guard_adoption_authority": "none",
+    "agent_adoption_authority": "none",
+    "runtime_authority": "none",
+    "final_acceptance_owner": "human"
+  },
+  "stage_order": [
+    "request",
+    "exploration",
+    "requirement",
+    "decision",
+    "plan",
+    "action",
+    "realization",
+    "diff",
+    "verification",
+    "completion"
+  ],
+  "profiles": [
+    {
+      "profile_id": "lifecycle-profile.request",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "request",
+      "lifecycle_trace_stage": "request",
+      "purpose": "依頼者の必要、対象、望む変化、範囲、制約、未知を、解決手段や推測と混ぜず監査可能な起点へする。",
+      "entry_conditions": [
+        {
+          "condition_id": "request.source.identifiable",
+          "statement": "依頼又は依頼の観測記録を識別できる。",
+          "evidence_requirement": "依頼本文又は由来付き観測記録"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "request.meaning.externalized",
+          "statement": "依頼者、必要、対象、望む変化、範囲、制約、未知、非目標が区別される。",
+          "evidence_requirement": "構造化依頼記録と原文対応"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "request.stakeholder",
+          "meaning": "必要と受理判断を持つ主体。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "request.need",
+          "meaning": "解くべき問題又は得るべき価値。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "request.subject",
+          "meaning": "監査と変更の対象。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "request.desired_outcome",
+          "meaning": "対象に求める観測可能な変化。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "request.boundary",
+          "meaning": "範囲、制約、非目標、未知。",
+          "required": true,
+          "absence_effect": "unresolved"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "request.stakeholder_requests_outcome",
+          "subject_role": "stakeholder",
+          "predicate": "requests",
+          "object_role": "desired_outcome",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "request.need_justifies_outcome",
+          "subject_role": "need",
+          "predicate": "justifies",
+          "object_role": "desired_outcome",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "request.boundary_constrains_subject",
+          "subject_role": "boundary",
+          "predicate": "constrains",
+          "object_role": "subject",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.request.engineering_audit_basis",
+          "statement": "依頼の明確性、必要性、範囲、検証可能性を採択済み工学規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "rule_trace",
+            "source_span"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.request.bounded_claim_basis",
+          "statement": "依頼に含まれる事実、推測、仮説、未決定を別命題として記録する。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "structured_request_record",
+            "proposition_trace"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.request.repair_and_human_material",
+          "statement": "曖昧さと不足を修正質問及び人間判断材料へ変換できる。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "unresolved_register",
+            "human_review_material"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "依頼文から実装手段又は優先順位を自動決定すること。",
+        "依頼記録の存在を依頼者の最終受理と見なすこと。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "request.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "依頼票は存在するが必要、対象、望む変化、境界が結び付いていない。"
+        },
+        {
+          "condition_id": "request.hollow.lexical",
+          "condition_kind": "lexical_match_only",
+          "statement": "要求語彙の出現だけを明確な依頼命題と見なす。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "structured_request_record",
+          "supports": "必須意味欄の外部化。",
+          "does_not_establish": "依頼者本人性又は要求の妥当性。"
+        },
+        {
+          "evidence_type": "source_span_trace",
+          "supports": "構造化欄と観測原文の対応。",
+          "does_not_establish": "記録外の意図の不存在。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "request.material.record",
+          "kind": "structured_record",
+          "purpose": "依頼意味欄と未決定の検査。",
+          "required": true
+        },
+        {
+          "material_id": "request.material.rule_trace",
+          "kind": "rule_trace",
+          "purpose": "依頼監査基準の根拠と反適用条件の検査。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "request.acceptance.intent",
+          "question": "記録された必要、対象、望む変化、範囲はアナタの依頼意図を保っているか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.request.intent_completeness",
+          "question": "記録外の重要な意図又は利害関係者が残っていないか。",
+          "owner": "human",
+          "blocking_effect": "後続工程の意味分母が暫定になる。",
+          "resolution_evidence": "依頼者による確認又は修正記録"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [],
+        "inputs_carried": [
+          "原点要求",
+          "依頼原文又は観測記録"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "exploration"
+        ],
+        "outputs_carried": [
+          "対象付き依頼命題",
+          "制約",
+          "未知",
+          "人間確認点"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "request.requal.intent_change",
+          "condition": "依頼者が必要、対象、望む変化又は範囲を修正した。",
+          "invalidates": [
+            "request profile assessment",
+            "downstream meaning trace"
+          ],
+          "required_action": "依頼記録を再作成し全下流traceを再評価する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "b6daf1856b4463b58a672dac5d57312a24b9b1fcd02e1690e74a930586e7390a"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.exploration",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "exploration",
+      "lifecycle_trace_stage": "exploration_question",
+      "purpose": "既知、観測、推論、仮説、未知、未決定を分離し、要求化の前に問うべき事項と判断所有者を明らかにする。",
+      "entry_conditions": [
+        {
+          "condition_id": "exploration.request.bound",
+          "statement": "対象付き依頼命題と少なくとも一つの未知又は検討課題がある。",
+          "evidence_requirement": "request profile refとunresolved ref"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "exploration.knowledge.partitioned",
+          "statement": "既知事実、推論、仮説、未知、未決定及び質問の判断先が区別される。",
+          "evidence_requirement": "由来付き探索記録"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "exploration.question",
+          "meaning": "答えが範囲又は後続判断を変える問い。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "exploration.known_facts",
+          "meaning": "所在証拠を持つ観測済み事実。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "exploration.hypotheses",
+          "meaning": "反証条件を持つ暫定説明。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "exploration.unknowns",
+          "meaning": "未観測又は証拠不足の範囲。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "exploration.decision_owner",
+          "meaning": "問い又は価値判断を決められる主体。",
+          "required": true,
+          "absence_effect": "blocked"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "exploration.question_targets_unknown",
+          "subject_role": "question",
+          "predicate": "targets",
+          "object_role": "unknown",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "exploration.evidence_tests_hypothesis",
+          "subject_role": "evidence",
+          "predicate": "supports_or_refutes",
+          "object_role": "hypothesis",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "exploration.owner_decides_question",
+          "subject_role": "decision_owner",
+          "predicate": "owns",
+          "object_role": "question",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.exploration.engineering_elicitation",
+          "statement": "探索問いを要求抽出、範囲、利害関係者、危険又は検証設計の工学観点へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "rule_trace",
+            "question_rationale"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.exploration.epistemic_partition",
+          "statement": "観測、推論、仮説、未知を混同せず証拠と反証条件を付す。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "epistemic_state_record",
+            "evidence_locator"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.exploration.decision_handoff",
+          "statement": "問いを答えられる人間又は外部観測へ渡し、要求修正に戻せる。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "question_owner_map",
+            "unresolved_register"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "仮説を要求又は事実へ自動昇格すること。",
+        "探索量の多さを網羅性又は受理の証拠とすること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "exploration.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "質問一覧は存在するが各問いが未知、影響、所有者へ結び付かない。"
+        },
+        {
+          "condition_id": "exploration.hollow.self_report",
+          "condition_kind": "self_report_only",
+          "statement": "エージェントの『十分探索した』という申告だけで探索十分性を閉じる。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "epistemic_state_record",
+          "supports": "事実、推論、仮説、未知の明示的区分。",
+          "does_not_establish": "未知が全て列挙されたこと。"
+        },
+        {
+          "evidence_type": "question_answer_trace",
+          "supports": "問いと回答、証拠、後続変更の対応。",
+          "does_not_establish": "回答者の権限又は回答の真実性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "exploration.material.state",
+          "kind": "structured_record",
+          "purpose": "認識状態と問いの対応を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "exploration.material.review",
+          "kind": "independent_review",
+          "purpose": "重要な反例、別利害、欠落問いの候補を得る。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "exploration.acceptance.material_unknowns",
+          "question": "未決定と未知は、アナタが決める事項と外部に調べさせる事項へ正しく分かれているか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.exploration.sufficiency",
+          "question": "対象領域で致命的になり得る未探索観点は何か。",
+          "owner": "domain_expert",
+          "blocking_effect": "要求分母の網羅性を主張できない。",
+          "resolution_evidence": "独立領域査読又は追加調査記録"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "request"
+        ],
+        "inputs_carried": [
+          "依頼命題",
+          "対象",
+          "制約",
+          "未知"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "requirement"
+        ],
+        "outputs_carried": [
+          "確認済み事実",
+          "未反証仮説",
+          "未知",
+          "決定所有者"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "exploration.requal.new_evidence",
+          "condition": "新証拠、反証又は新利害関係者が現れた。",
+          "invalidates": [
+            "epistemic partition",
+            "question sufficiency"
+          ],
+          "required_action": "認識状態を再分類し要求候補への影響を再評価する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "c210bf5f24e85ab7b88f3265049c0d02f360f8eeb711cea0ddd75a41998b6228"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.requirement",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "requirement",
+      "lifecycle_trace_stage": "requirement",
+      "purpose": "主体、規範強度、行為、対象、条件、期待結果、根拠、評価尺度を結び、工学規則に照らせる検証可能な要求命題を作る。",
+      "entry_conditions": [
+        {
+          "condition_id": "requirement.intent.and_unknowns.available",
+          "statement": "依頼意図、探索結果、未決定及び適用候補規則を参照できる。",
+          "evidence_requirement": "request/exploration refsとrule-pack ref"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "requirement.proposition.verifiable",
+          "statement": "各要求の主体、規範、行為、対象、条件、結果、根拠、評価尺度、優先度、由来が結合される。",
+          "evidence_requirement": "構造化要求記録と関係trace"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "requirement.actor",
+          "meaning": "義務又は能力を担う主体。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "requirement.modality",
+          "meaning": "shall、should、may等の規範強度。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "requirement.behavior",
+          "meaning": "主体に要求する行為又は状態遷移。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "requirement.object",
+          "meaning": "行為が作用する対象。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "requirement.conditions",
+          "meaning": "発火、運用、例外、反適用の条件。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "requirement.acceptance_measure",
+          "meaning": "期待結果を判定する尺度、閾値、観測方法。",
+          "required": true,
+          "absence_effect": "blocked"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "requirement.actor_performs_behavior",
+          "subject_role": "actor",
+          "predicate": "performs",
+          "object_role": "behavior",
+          "cardinality": "exactly_one",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "requirement.behavior_acts_on_object",
+          "subject_role": "behavior",
+          "predicate": "acts_on",
+          "object_role": "object",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "requirement.condition_constrains_behavior",
+          "subject_role": "condition",
+          "predicate": "constrains",
+          "object_role": "behavior",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "requirement.measure_evaluates_outcome",
+          "subject_role": "acceptance_measure",
+          "predicate": "evaluates",
+          "object_role": "expected_outcome",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.requirement.engineering_quality",
+          "statement": "原子性、明確性、一意性、必要性、実現可能性、検証可能性、追跡性を採択済み規則で監査する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "engineering_rule_trace",
+            "countercondition_record"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.requirement.bounded_relation_proof",
+          "statement": "actor/performs/behavior/acts_on/object/condition/measure関係を原文範囲、解析由来、未証明範囲と共に示す。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "relation_derivation",
+            "source_span",
+            "provider_receipt"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.requirement.repair_material",
+          "statement": "欠落関係、矛盾、未決定を要求修正案と人間受理質問へ戻す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "finding_to_repair_map",
+            "human_review_material"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "実現方法を必要性なしに要求へ固定すること。",
+        "構文解析又は字句一致だけで要求妥当性を確定すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "requirement.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "要求票は存在するが主体、行為、対象、条件、評価尺度の関係が欠ける。"
+        },
+        {
+          "condition_id": "requirement.hollow.lexical",
+          "condition_kind": "lexical_match_only",
+          "statement": "必須語の出現を肯定要求命題の成立と見なす。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "requirement_relation_derivation",
+          "supports": "限定された主体・行為・対象・条件関係の導出。",
+          "does_not_establish": "要求の業務価値又は実世界での完全性。"
+        },
+        {
+          "evidence_type": "engineering_rule_trace",
+          "supports": "規則根拠、適用、反適用、限界との対応。",
+          "does_not_establish": "規格適合又は規則集合の完全性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "requirement.material.rule_trace",
+          "kind": "rule_trace",
+          "purpose": "工学基準と導出根拠を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "requirement.material.domain_review",
+          "kind": "independent_review",
+          "purpose": "要求の必要性、業務語義、反例を別視点で検査する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "requirement.acceptance.intent_and_priority",
+          "question": "これらの要求命題、優先度、非目標、未決定は依頼意図と価値判断を保っているか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.requirement.relation_completeness",
+          "question": "対象領域で必要な主体―行為―対象―条件―評価関係を全て列挙できているか。",
+          "owner": "domain_expert",
+          "blocking_effect": "要求集合の完全性と実務妥当性を主張できない。",
+          "resolution_evidence": "領域査読、現場例、反例を含む要求妥当性確認記録"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "exploration"
+        ],
+        "inputs_carried": [
+          "依頼意図",
+          "確認済み事実",
+          "仮説",
+          "未知",
+          "決定所有者"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "decision"
+        ],
+        "outputs_carried": [
+          "版付き要求命題",
+          "規則trace",
+          "検証義務",
+          "未決定",
+          "優先度候補"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "requirement.requal.intent_rule_or_domain_change",
+          "condition": "依頼意図、領域事実、適用規則、優先度又は評価尺度が変わった。",
+          "invalidates": [
+            "requirement relation assessment",
+            "verification obligation mapping"
+          ],
+          "required_action": "要求を再導出し全下流判断への影響を追跡する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "3acdab6870670b62e0055cf995d739bf9e5d823cf2e23b236f7ed704cf3e0b0a"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.decision",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "decision",
+      "lifecycle_trace_stage": "decision",
+      "purpose": "選択、棄却、保留又は延期を、権限ある人間、対象範囲、代替案、基準、根拠、残余未決定へ結合する。",
+      "entry_conditions": [
+        {
+          "condition_id": "decision.alternatives.and_authority.available",
+          "statement": "判断対象、代替案、基準、証拠、未決定及び判断権限を識別できる。",
+          "evidence_requirement": "要求候補、代替案記録、外部人間権限記録"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "decision.human_record.located",
+          "statement": "権限ある人間の処分、適用範囲、理由、根拠、時点、残余未決定を所在付き記録へ結合する。",
+          "evidence_requirement": "human decision record"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "decision.human_decider",
+          "meaning": "判断を実際に所有する人間。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "decision.authority_scope",
+          "meaning": "判断者の権限根拠と有効範囲。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "decision.alternatives",
+          "meaning": "比較された選択肢、棄却案、現状維持。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "decision.criteria",
+          "meaning": "価値、制約、危険、証拠の評価基準。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "decision.disposition",
+          "meaning": "accept、request_revision、defer又はreject等の人間処分。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "decision.rationale_and_residuals",
+          "meaning": "根拠、反対材料、残余未決定、再検討条件。",
+          "required": true,
+          "absence_effect": "unresolved"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "decision.human_selects_disposition",
+          "subject_role": "human_decider",
+          "predicate": "selects",
+          "object_role": "disposition",
+          "cardinality": "exactly_one",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "decision.disposition_resolves_or_defers",
+          "subject_role": "disposition",
+          "predicate": "resolves_or_defers",
+          "object_role": "decision_subject_or_unresolved",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "decision.rationale_cites_evidence",
+          "subject_role": "rationale",
+          "predicate": "cites",
+          "object_role": "evidence_and_criteria",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.decision.engineering_decision_quality",
+          "statement": "代替案、基準、危険、前提、可逆性、再検討条件の明示を工学規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "decision_rule_trace",
+            "alternative_comparison"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.decision.bounded_authority_proof",
+          "statement": "人間判断の記録、権限範囲、対象、時点を結合し、監査結果から判断を推定しない。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "human_authority_record",
+            "decision_record_digest"
+          ],
+          "absence_effect": "blocked"
+        },
+        {
+          "obligation_id": "obligation.decision.downstream_and_repair",
+          "statement": "処分と残余未決定を計画、修正又は保留へ明示的に引き渡す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "decision_handoff",
+            "unresolved_register"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "監査pass、LLM提案又はagent合意を人間判断へ昇格すること。",
+        "判断記録から実行権限又は行動発生を推定すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "decision.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "決定票は存在するが人間判断者、権限範囲、対象又は処分が結合されない。"
+        },
+        {
+          "condition_id": "decision.hollow.audit",
+          "condition_kind": "audit_pass_only",
+          "statement": "監査結果だけで採択又は差戻しが決まったと扱う。"
+        },
+        {
+          "condition_id": "decision.hollow.authority",
+          "condition_kind": "authority_inference",
+          "statement": "agent又はsemantic-guardが人間決定を代理生成する。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "located_human_decision_record",
+          "supports": "記録された人間処分と対象範囲の結合。",
+          "does_not_establish": "判断者本人性、強迫不存在又は判断品質。"
+        },
+        {
+          "evidence_type": "alternative_comparison",
+          "supports": "検討した代替案、基準、危険の可視化。",
+          "does_not_establish": "代替案集合の完全性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "decision.material.human_record",
+          "kind": "human_decision",
+          "purpose": "人間所有、権限範囲、処分、対象を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "decision.material.review",
+          "kind": "independent_review",
+          "purpose": "代替案、基準、反対証拠、再検討条件の欠落を点検する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "decision.acceptance.actual_disposition",
+          "question": "この処分、範囲、根拠、残余危険はアナタ自身の判断記録として正しいか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.decision.external_authority_authenticity",
+          "question": "判断者の本人性と組織上の権限は外部でどのように確認されるか。",
+          "owner": "human",
+          "blocking_effect": "記録構造を越えた権限真正性を立証できない。",
+          "resolution_evidence": "外部権限台帳、署名又は責任者確認"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "requirement"
+        ],
+        "inputs_carried": [
+          "版付き要求",
+          "代替案",
+          "基準",
+          "証拠",
+          "未決定"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "plan"
+        ],
+        "outputs_carried": [
+          "人間処分",
+          "有効範囲",
+          "採択又は保留された要求",
+          "残余未決定",
+          "再検討条件"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "decision.requal.basis_or_authority_change",
+          "condition": "要求、証拠、基準、危険、判断権限又は有効範囲が変わった。",
+          "invalidates": [
+            "decision applicability",
+            "downstream planning authority"
+          ],
+          "required_action": "元の判断を保持したまま新しい人間再判断を要求する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "human_only",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_decision",
+          "agent_infers_human_decision",
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "4236a47dfc5ed9d5e4a449c3a18ec9602396deab62fd6e498311999e09c84599"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.plan",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "plan",
+      "lifecycle_trace_stage": "plan",
+      "purpose": "採択又は保留された要求と決定を、作業包、依存、責任、危険、検証、停止、復旧、人間判断門へ写す。",
+      "entry_conditions": [
+        {
+          "condition_id": "plan.requirements.and_decisions.bound",
+          "statement": "有効な要求版、人間決定範囲、制約、未決定及び利用可能資源を参照できる。",
+          "evidence_requirement": "requirement refs、decision refs、resource observations"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "plan.work_and_evidence.closed",
+          "statement": "各作業包が要求、依存、責任、権限、危険、検証、停止条件、復旧、人間門へ対応する。",
+          "evidence_requirement": "型付き計画と追跡行列"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "plan.objective_and_non_goals",
+          "meaning": "達成状態と明示的非目標。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "plan.work_packages",
+          "meaning": "成果、境界、責任、返却条件を持つ作業単位。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "plan.dependencies_and_order",
+          "meaning": "先行条件、並列可能性、判断門、停止条件。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "plan.risks_and_assumptions",
+          "meaning": "失敗形、前提、検出、緩和、所有者。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "plan.verification_validation",
+          "meaning": "作業結果の検証と目的妥当性確認の方法。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "plan.rollback_and_recovery",
+          "meaning": "中止、破棄、復旧、再開の方法。",
+          "required": true,
+          "absence_effect": "unresolved"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "plan.package_satisfies_obligation",
+          "subject_role": "work_package",
+          "predicate": "addresses",
+          "object_role": "requirement_or_obligation",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "plan.dependency_precedes_package",
+          "subject_role": "dependency",
+          "predicate": "precedes_or_gates",
+          "object_role": "work_package",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "plan.verification_checks_output",
+          "subject_role": "verification_method",
+          "predicate": "checks",
+          "object_role": "work_package_output",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.plan.engineering_completeness",
+          "statement": "分解、依存、危険、資源、検証、変更管理、復旧、判断門を採択済み計画規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "plan_rule_trace",
+            "requirement_work_map"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.plan.bounded_feasibility_basis",
+          "statement": "各作業包が前提、権限、入力、期待出力、検証、未証明範囲を持つ。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "work_package_contract",
+            "dependency_trace"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.plan.repair_and_human_gates",
+          "statement": "失敗を再計画へ戻す条件と、人間だけが決める判断門を明示する。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "stop_and_repair_map",
+            "human_gate_refs"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "計画記録を実行又は権限付与と見なすこと。",
+        "全作業包の存在を目的達成又は受理と見なすこと。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "plan.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "計画書は存在するが要求、依存、検証、停止、復旧への対応がない。"
+        },
+        {
+          "condition_id": "plan.hollow.local",
+          "condition_kind": "local_test_only",
+          "statement": "局所試験予定だけで妥当性確認、運用、回復又は人間判断を省く。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "requirement_work_verification_map",
+          "supports": "要求、作業包、検証義務の対応。",
+          "does_not_establish": "作業が実行可能又は実際に実行されたこと。"
+        },
+        {
+          "evidence_type": "risk_dependency_review",
+          "supports": "既知危険、依存、順序、緩和の点検。",
+          "does_not_establish": "未知危険の不存在。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "plan.material.rule_trace",
+          "kind": "rule_trace",
+          "purpose": "計画工学規則と各欄の対応を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "plan.material.review",
+          "kind": "independent_review",
+          "purpose": "依存、失敗形、検証、復旧、判断門の欠落を検査する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "plan.acceptance.risk_and_order",
+          "question": "作業順、危険の引受け、判断門、停止、復旧はアナタの責任範囲と意図に適うか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.plan.external_feasibility",
+          "question": "外部依存、運用環境、資源、権限の実現可能性は誰がどの証拠で確認するか。",
+          "owner": "operator",
+          "blocking_effect": "計画の実務実行可能性を主張できない。",
+          "resolution_evidence": "環境・資源・権限の外部確認記録"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "decision"
+        ],
+        "inputs_carried": [
+          "有効要求",
+          "人間処分",
+          "制約",
+          "未決定",
+          "再検討条件"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "action"
+        ],
+        "outputs_carried": [
+          "作業包",
+          "権限要求",
+          "停止条件",
+          "入力期待",
+          "検証義務",
+          "復旧路"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "plan.requal.requirement_resource_or_risk_change",
+          "condition": "要求、決定範囲、依存、資源、危険、検証法又は運用環境が変わった。",
+          "invalidates": [
+            "work package sufficiency",
+            "dependency order",
+            "risk treatment"
+          ],
+          "required_action": "影響作業包を再計画し、必要な人間判断門へ戻す。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "d30d5b48a7f9d86b2b6c7c413b6a2522652d14dd5bdd31caf4627ff5a170516b"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.action",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "action",
+      "lifecycle_trace_stage": "action",
+      "purpose": "説明文ではなく、権限ある主体が特定環境で操作を行ったという事象を、観測者、時刻、入出力、停止条件、由来、限界と分離して記録する。",
+      "entry_conditions": [
+        {
+          "condition_id": "action.plan_authority_and_scope.bound",
+          "statement": "作業包、対象、明示的権限、環境、入力、停止条件、許可操作を識別できる。",
+          "evidence_requirement": "plan ref、external authority record、subject/environment manifests"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "action.event.externally_observed",
+          "statement": "事象ID、主体、権限、操作、対象、時刻、環境、観測者、入出力digest、結果、逸脱、停止状態を結合する。",
+          "evidence_requirement": "action evidence envelopeとobserver receipt"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "action.event_identity",
+          "meaning": "一回の行動発生を他の記述と区別する識別子。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "action.actor_and_authority",
+          "meaning": "実行主体、主体種別、権限記録、許可範囲。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "action.operation_and_subject",
+          "meaning": "行われた操作、作用対象、作業包との対応。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "action.observer_and_trust",
+          "meaning": "観測者、主体との関係、信頼水準、観測限界。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "action.time_environment_io",
+          "meaning": "時刻、環境、入力、出力、成果物digest。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "action.stop_and_deviation",
+          "meaning": "停止条件、実際の停止状態、逸脱、失敗、未観測範囲。",
+          "required": true,
+          "absence_effect": "unresolved"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "action.actor_executes_operation",
+          "subject_role": "actor",
+          "predicate": "executes",
+          "object_role": "operation_on_subject",
+          "cardinality": "exactly_one",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "action.authority_permits_actor_scope",
+          "subject_role": "authority_record",
+          "predicate": "permits",
+          "object_role": "actor_operation_scope",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "action.observer_observes_event",
+          "subject_role": "observer",
+          "predicate": "observes",
+          "object_role": "event",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "action.output_derived_from_input",
+          "subject_role": "output_or_artifact",
+          "predicate": "derived_from",
+          "object_role": "input_and_event",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.action.process_conformance",
+          "statement": "計画、手順、停止、変更管理、証拠取得への適合を工学規則で監査する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "procedure_rule_trace",
+            "plan_action_map"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.action.occurrence_and_authority",
+          "statement": "行動発生、主体、権限、観測者、入出力、成果物関係、信頼前提を別命題として限定立証する。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "action_event_record",
+            "authority_record",
+            "observer_receipt",
+            "provenance_digest"
+          ],
+          "absence_effect": "blocked"
+        },
+        {
+          "obligation_id": "obligation.action.repair_and_human_escalation",
+          "statement": "逸脱、失敗、停止、未観測を再計画、再実行又は人間判断へ戻す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "deviation_record",
+            "repair_target",
+            "human_escalation_ref"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "計画、命令、説明又は自己申告から行動発生を推定すること。",
+        "監査結果が実行権限を付与し、主体本人性又は真正性を自動保証すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "action.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "成果物は存在するが主体、権限、観測事象、入出力、由来が結合されない。"
+        },
+        {
+          "condition_id": "action.hollow.self_report",
+          "condition_kind": "self_report_only",
+          "statement": "エージェントの行動説明だけで発生、成功又は因果関係を成立させる。"
+        },
+        {
+          "condition_id": "action.hollow.authority",
+          "condition_kind": "authority_inference",
+          "statement": "監査pass又は計画記載を実行許可へ昇格する。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "independently_observed_action_event",
+          "supports": "観測範囲内の行動発生と時刻、主体表示、操作、入出力。",
+          "does_not_establish": "観測外行為の不存在、主体本人性又は権限真正性。"
+        },
+        {
+          "evidence_type": "content_addressed_provenance",
+          "supports": "入力、事象、出力、成果物のdigest対応。",
+          "does_not_establish": "意味的正しさ、因果性又は耐改竄性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "action.material.event",
+          "kind": "execution_evidence",
+          "purpose": "行動発生、観測、時刻、環境、入出力を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "action.material.authority",
+          "kind": "human_decision",
+          "purpose": "外部権限記録と許可範囲を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "action.material.provenance",
+          "kind": "provenance_record",
+          "purpose": "事象と成果物の由来対応を検査する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "action.acceptance.authority_and_evidence",
+          "question": "この主体にこの操作を許可したか。また観測証拠の信頼前提と未観測範囲を受け入れられるか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.action.observer_trust",
+          "question": "観測者、時計、環境、権限記録、digest取得路の真正性を何が担保するか。",
+          "owner": "operator",
+          "blocking_effect": "構造的整合を越えた行動真正性と本人性を主張できない。",
+          "resolution_evidence": "独立観測、署名、信頼根、透明性記録又は外部監査"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "plan"
+        ],
+        "inputs_carried": [
+          "作業包",
+          "対象",
+          "権限要求",
+          "入力",
+          "停止条件",
+          "検証義務"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "realization"
+        ],
+        "outputs_carried": [
+          "観測行動事象",
+          "主体と権限",
+          "入出力digest",
+          "成果物由来",
+          "逸脱",
+          "未観測範囲"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "action.requal.event_basis_change",
+          "condition": "主体、権限、対象、入力、出力、観測者、時刻、環境又は証拠digestが変化又は失効した。",
+          "invalidates": [
+            "occurrence claim",
+            "authority claim",
+            "provenance claim"
+          ],
+          "required_action": "旧記録を保持し、新しい観測と権限に基づいて行動立証を再構成する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "external_authority_record_required",
+        "execution_authority": "external_authority_record_required",
+        "occurrence_evidence_required": true,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "description_implies_occurrence",
+          "audit_result_grants_execution_authority",
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "770189412ab2227602afb055a07b71191a516ed74fbfdf3d89c2f8b83da22bf3"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.realization",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "realization",
+      "lifecycle_trace_stage": "realization",
+      "purpose": "行動出力から得た実現物を、対象snapshot、要求、計画、機構、由来、逸脱、既知限界へ結び、存在と意味的実現を分ける。",
+      "entry_conditions": [
+        {
+          "condition_id": "realization.action_output.and_targets.bound",
+          "statement": "観測行動出力、対象snapshot、要求、計画、実現方針を参照できる。",
+          "evidence_requirement": "action event/provenance refsとrequirement/plan refs"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "realization.artifact.traceable",
+          "statement": "実現物identity/digest、基準状態、機構、要求対応、由来、逸脱、限界が結合される。",
+          "evidence_requirement": "realization recordとcontent-addressed provenance"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "realization.artifact_identity",
+          "meaning": "実現物の所在、版、snapshot、digest。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "realization.baseline_and_inputs",
+          "meaning": "実現前の基準状態と入力由来。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "realization.mechanism",
+          "meaning": "要求を具現化すると主張する設計・実装機構。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "realization.requirement_plan_mapping",
+          "meaning": "実現物要素と要求、決定、作業包の対応。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "realization.provenance_and_deviations",
+          "meaning": "行動出力由来、逸脱、代替、既知限界。",
+          "required": true,
+          "absence_effect": "unresolved"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "realization.artifact_realizes_requirement",
+          "subject_role": "artifact_element",
+          "predicate": "realizes",
+          "object_role": "requirement_or_plan_obligation",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "realization.artifact_derived_from_action",
+          "subject_role": "artifact_snapshot",
+          "predicate": "derived_from",
+          "object_role": "action_output",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "realization.deviation_refs_decision",
+          "subject_role": "deviation",
+          "predicate": "authorized_or_unresolved_by",
+          "object_role": "decision_or_unresolved",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.realization.engineering_mapping",
+          "statement": "設計・実装機構、界面、品質属性、制約、変更影響を採択済み工学規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "realization_rule_trace",
+            "requirement_artifact_map"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.realization.provenance_and_claim",
+          "statement": "実現物identity、行動由来、要求対応、逸脱、未証明範囲を限定主張として結合する。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "artifact_digest",
+            "provenance_record",
+            "mapping_derivation"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.realization.repair_material",
+          "statement": "欠落対応、逸脱、限界を再実装、再計画又は人間判断へ戻す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "gap_to_repair_map",
+            "deviation_decision_ref"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "成果物の存在を行動発生又は要求充足の証拠とすること。",
+        "実現記録だけで検証成功又は人間受理を主張すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "realization.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "実現物は存在するが要求、計画、行動由来、逸脱へ追跡できない。"
+        },
+        {
+          "condition_id": "realization.hollow.self_report",
+          "condition_kind": "self_report_only",
+          "statement": "実装説明だけで要求を実現したと扱う。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "content_addressed_artifact_snapshot",
+          "supports": "検査対象となる実現物版の固定。",
+          "does_not_establish": "意味的正しさ又は由来真正性。"
+        },
+        {
+          "evidence_type": "requirement_artifact_provenance_map",
+          "supports": "要求、実現要素、行動出力の明示的対応。",
+          "does_not_establish": "対応主張の業務妥当性又は動作成功。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "realization.material.provenance",
+          "kind": "provenance_record",
+          "purpose": "実現物、入力、行動出力の由来を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "realization.material.rule_trace",
+          "kind": "rule_trace",
+          "purpose": "要求対応と実装工学規則を検査する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "realization.acceptance.intent_preservation",
+          "question": "実現方針、逸脱、非実現範囲は採択要求とアナタの意図を保っているか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.realization.semantic_equivalence",
+          "question": "要求と実現機構の対応が語彙一致でなく意味的に妥当であることをどう確認するか。",
+          "owner": "domain_expert",
+          "blocking_effect": "実現物存在を要求実現へ昇格できない。",
+          "resolution_evidence": "領域査読、設計根拠、動作検証及び反例"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "action"
+        ],
+        "inputs_carried": [
+          "行動事象",
+          "入出力digest",
+          "作業包",
+          "要求",
+          "逸脱"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "diff"
+        ],
+        "outputs_carried": [
+          "実現物snapshot",
+          "要求対応",
+          "由来",
+          "逸脱",
+          "既知限界"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "realization.requal.artifact_or_dependency_change",
+          "condition": "実現物、基準状態、依存、生成工程、要求対応又は由来証拠が変化した。",
+          "invalidates": [
+            "artifact identity",
+            "requirement mapping",
+            "provenance"
+          ],
+          "required_action": "新snapshotを固定し対応と由来を再構成する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "aac276420ba3a8338bf50a50eb1958640ef667ac93a7b9dbe57f2ff802b1e72f"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.diff",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "diff",
+      "lifecycle_trace_stage": "diff",
+      "purpose": "基準snapshotと候補snapshotの変化を、意図、要求、決定、影響面、非変更主張、検証義務、残余危険へ型付きで結ぶ。",
+      "entry_conditions": [
+        {
+          "condition_id": "diff.baseline_candidate_and_intent.bound",
+          "statement": "基準と候補のsnapshot/digest、変更意図、要求・決定・実現物対応がある。",
+          "evidence_requirement": "content-addressed snapshotsとchange intent refs"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "diff.change_impact.externalized",
+          "statement": "各変更、意図対応、影響面、非変更範囲、必要検証、移行、残余危険が明示される。",
+          "evidence_requirement": "typed diff and impact record"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "diff.baseline_and_candidate",
+          "meaning": "比較する二つの対象snapshotとdigest。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "diff.typed_changes",
+          "meaning": "追加、削除、置換、移動、契約変更、意味変更の分類。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "diff.intent_requirement_decision_trace",
+          "meaning": "各変更の意図、要求、判断根拠。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "diff.affected_surfaces",
+          "meaning": "API、schema、永続化、保安、運用、性能、文書等への影響。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "diff.verification_and_residual_risk",
+          "meaning": "必要試験、未検証、退行、移行、残余危険。",
+          "required": true,
+          "absence_effect": "blocked"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "diff.change_transforms_baseline",
+          "subject_role": "change",
+          "predicate": "transforms",
+          "object_role": "baseline_into_candidate",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "diff.change_traces_to_intent",
+          "subject_role": "change",
+          "predicate": "traces_to",
+          "object_role": "requirement_or_decision",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "diff.impact_affects_surface",
+          "subject_role": "change_impact",
+          "predicate": "affects",
+          "object_role": "dependent_surface",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.diff.engineering_change_audit",
+          "statement": "意味保存、界面、品質属性、互換性、保安、運用、移行、試験影響を工学規則で監査する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "diff_rule_trace",
+            "impact_analysis"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.diff.bounded_change_proof",
+          "statement": "基準、候補、変更、由来、影響、非変更主張、未観測範囲をcontent-addressedに結合する。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "baseline_digest",
+            "candidate_digest",
+            "typed_change_trace"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.diff.repair_and_review",
+          "statement": "意図外変更、退行危険、未検証を修正対象と人間査読点へ戻す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "change_to_repair_map",
+            "human_review_material"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "文字差分の存在又は小ささを意味保存や正しさの証拠とすること。",
+        "差分監査passを公開、移行又は受理の許可とすること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "diff.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "diffは存在するが対象snapshot、意図、要求、影響、検証へ追跡できない。"
+        },
+        {
+          "condition_id": "diff.hollow.local",
+          "condition_kind": "local_test_only",
+          "statement": "局所試験通過だけで互換性、運用、保安又は移行影響を閉じる。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "content_addressed_typed_diff",
+          "supports": "固定した基準と候補間の宣言変更。",
+          "does_not_establish": "生成物、実行時状態又は外部系の全変化。"
+        },
+        {
+          "evidence_type": "change_impact_trace",
+          "supports": "変更と要求、契約、依存、試験の対応。",
+          "does_not_establish": "影響面の完全性又は実運用無害性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "diff.material.record",
+          "kind": "structured_record",
+          "purpose": "型付き変更と意味対応を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "diff.material.regression",
+          "kind": "regression_result",
+          "purpose": "変更に結び付く退行検査結果を確認する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "diff.acceptance.intended_change",
+          "question": "この変化は意図した範囲か。意図外変更、移行危険、未検証をどこまで引き受けるか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.diff.hidden_effects",
+          "question": "生成物、設定、永続データ、実行環境、外部提供者に隠れた影響がないことをどう調べるか。",
+          "owner": "maintainer",
+          "blocking_effect": "差分の影響完全性と運用安全性を主張できない。",
+          "resolution_evidence": "生成物比較、設定・schema移行検査、統合及び運用観測"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "realization"
+        ],
+        "inputs_carried": [
+          "実現物snapshot",
+          "基準状態",
+          "要求対応",
+          "由来",
+          "逸脱"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "verification"
+        ],
+        "outputs_carried": [
+          "型付き変更",
+          "対象命題",
+          "影響面",
+          "検証義務",
+          "未検証",
+          "残余危険"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "diff.requal.snapshot_or_intent_change",
+          "condition": "基準、候補、変更意図、要求、決定、依存又は影響模型が変わった。",
+          "invalidates": [
+            "typed diff",
+            "impact analysis",
+            "verification obligation map"
+          ],
+          "required_action": "snapshotを再固定し差分、影響、検証義務を再生成する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "e80ba5f0a15f0d9b1d256d630fee3cea1d38e7fc9ca87e993af189603f4d015d"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.verification",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "verification",
+      "lifecycle_trace_stage": "verification",
+      "purpose": "対象命題と義務ごとに、方法、oracle、環境、被覆、結果、証拠、信頼、反証、限界を結び、支持・反証・未証明・矛盾を区別する。",
+      "entry_conditions": [
+        {
+          "condition_id": "verification.targets_methods_and_oracles.bound",
+          "statement": "対象snapshot、命題、義務、方法、oracle、閾値、環境、必要証拠を識別できる。",
+          "evidence_requirement": "verification plan、target digest、rule/profile refs"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "verification.results.bounded",
+          "statement": "各命題を支持、反証、未証明又は矛盾へ分類し、証拠、被覆、信頼前提、限界、未実施を結合する。",
+          "evidence_requirement": "content-addressed verification result and evidence"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "verification.target_proposition",
+          "meaning": "検証する対象snapshot、命題、義務、範囲。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "verification.method_and_oracle",
+          "meaning": "手順、入力、期待、閾値、判定器、版。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "verification.environment_and_observer",
+          "meaning": "実行環境、時刻、観測者、信頼前提。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "verification.result_state",
+          "meaning": "supports、refutes、unproven又はcontradictory。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "verification.coverage_and_limitations",
+          "meaning": "観測被覆、未実施、反証条件、一般化限界。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "verification.evidence_refs",
+          "meaning": "結果、ログ、fixture、corpus、査読、digestの所在。",
+          "required": true,
+          "absence_effect": "blocked"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "verification.procedure_tests_proposition",
+          "subject_role": "procedure_and_oracle",
+          "predicate": "tests",
+          "object_role": "proposition_or_obligation",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "verification.result_supports_or_refutes",
+          "subject_role": "result",
+          "predicate": "supports_refutes_or_leaves_unproven",
+          "object_role": "proposition",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "verification.evidence_observes_result",
+          "subject_role": "evidence",
+          "predicate": "observes",
+          "object_role": "result_in_environment",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.verification.engineering_adequacy",
+          "statement": "検証法、妥当性確認、独立性、再現性、被覆、退行、運用条件を採択済み工学規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "verification_rule_trace",
+            "coverage_map"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.verification.bounded_assurance",
+          "statement": "同じ対象、規則、方法、証拠から対象命題の支持・反証・未証明・矛盾を再演できる。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "verification_receipt",
+            "evidence_digest",
+            "derivation_graph"
+          ],
+          "absence_effect": "blocked"
+        },
+        {
+          "obligation_id": "obligation.verification.repair_and_human_material",
+          "statement": "失敗、証拠不足、被覆不足、矛盾を修正対象と人間判断材料へ戻す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "finding_to_repair_map",
+            "acceptance_review_material"
+          ],
+          "absence_effect": "unresolved"
+        }
+      ],
+      "non_goals": [
+        "局所試験通過を任意入力、現場妥当性又は人間受理へ一般化すること。",
+        "検証器自身が証拠真正性、本人性又は最終判断を生成すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "verification.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "試験結果は存在するが対象命題、oracle、環境、証拠、被覆、限界へ結び付かない。"
+        },
+        {
+          "condition_id": "verification.hollow.local",
+          "condition_kind": "local_test_only",
+          "statement": "人工fixture又は局所unittestだけで実務妥当性を主張する。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "replayable_verification_receipt",
+          "supports": "固定対象、方法、oracle、環境、結果の再演。",
+          "does_not_establish": "入力母集団の代表性又は証拠取得路の真正性。"
+        },
+        {
+          "evidence_type": "independent_field_or_domain_review",
+          "supports": "局所試験外の妥当性、反例、理解可能性の材料。",
+          "does_not_establish": "普遍的正しさ又は未来環境での無事故。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "verification.material.regression",
+          "kind": "regression_result",
+          "purpose": "対象命題、試験、結果、退行の再演を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "verification.material.field",
+          "kind": "field_evaluation",
+          "purpose": "意図母集団、費用、閾値、被覆、抽出器寄与を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "verification.material.review",
+          "kind": "independent_review",
+          "purpose": "oracle、被覆、反例、証拠限界を独立に点検する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "verification.acceptance.evidence_sufficiency",
+          "question": "この証拠被覆、反証、未証明範囲、信頼前提は意図した利用判断に十分か。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.verification.external_validity",
+          "question": "対象母集団、現場条件、観測者、oracle、証拠取得路の外的妥当性をどう確立するか。",
+          "owner": "independent_reviewer",
+          "blocking_effect": "局所検証から実務性能又は真正性へ一般化できない。",
+          "resolution_evidence": "採択済み評価方針、独立holdout、運用観測、信頼根"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "diff"
+        ],
+        "inputs_carried": [
+          "対象snapshot",
+          "変更命題",
+          "要求義務",
+          "影響面",
+          "検証計画",
+          "残余危険"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [
+          "completion"
+        ],
+        "outputs_carried": [
+          "命題別結果",
+          "証拠",
+          "被覆",
+          "反証",
+          "未証明",
+          "矛盾",
+          "限界",
+          "修正対象"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "verification.requal.target_method_or_evidence_change",
+          "condition": "対象、規則、方法、oracle、閾値、環境、証拠、被覆又は信頼状態が変わった。",
+          "invalidates": [
+            "verification result",
+            "bounded assurance claim",
+            "completion evidence"
+          ],
+          "required_action": "影響命題を再検証し下流完了材料を再構成する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "human_or_explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "audit_result_implies_final_acceptance"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "0d834a579a972e319ca88c57f2e4a828ee607dd5856dd866829b510b81d89619"
+      }
+    },
+    {
+      "profile_id": "lifecycle-profile.completion",
+      "version": "0.1.0-candidate",
+      "status": "pending_human_adoption",
+      "stage": "completion",
+      "lifecycle_trace_stage": "completion_claim",
+      "purpose": "完了主張を、対象snapshot、要求・義務、検証結果、残余未証明、矛盾、修正効果、限界、人間最終判断へ結合し、主張と受理を分ける。",
+      "entry_conditions": [
+        {
+          "condition_id": "completion.verification_and_residuals.available",
+          "statement": "対象snapshot、全必須義務、検証結果、未解決、反証、矛盾、修正結果、限界を参照できる。",
+          "evidence_requirement": "connected lifecycle trace and verification refs"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "condition_id": "completion.claim.and_human_gate.separated",
+          "statement": "権限ある主体の完了主張と、人間のpending/accept/request_revision/defer判断記録を別欄と別権限に保つ。",
+          "evidence_requirement": "acceptance bundle and located human decision when non-pending"
+        }
+      ],
+      "required_semantic_fields": [
+        {
+          "field_id": "completion.claim_subject_and_snapshot",
+          "meaning": "誰がどの対象版について何を完了と主張するか。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "completion.obligation_trace",
+          "meaning": "全必須要求・義務の支持、反証、未証明、矛盾状態。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "completion.verification_evidence",
+          "meaning": "各状態の検証、証拠、規則、被覆、信頼前提。",
+          "required": true,
+          "absence_effect": "blocked"
+        },
+        {
+          "field_id": "completion.residual_unproven_scope",
+          "meaning": "未解決、未観測、限界、残余危険、反証条件。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "completion.repair_and_regression",
+          "meaning": "修正試行、再監査、退行結果、未改善範囲。",
+          "required": true,
+          "absence_effect": "unresolved"
+        },
+        {
+          "field_id": "completion.human_final_decision",
+          "meaning": "人間のpending、accept、request_revision又はdeferと所在記録。",
+          "required": true,
+          "absence_effect": "blocked"
+        }
+      ],
+      "required_relationships": [
+        {
+          "relationship_id": "completion.claim_aggregates_verification",
+          "subject_role": "completion_claim",
+          "predicate": "aggregates",
+          "object_role": "verified_obligation_states",
+          "cardinality": "one_or_more",
+          "absence_effect": "blocked"
+        },
+        {
+          "relationship_id": "completion.residual_qualifies_claim",
+          "subject_role": "residual_unproven_scope",
+          "predicate": "qualifies",
+          "object_role": "completion_claim",
+          "cardinality": "one_or_more",
+          "absence_effect": "unresolved"
+        },
+        {
+          "relationship_id": "completion.human_evaluates_bundle",
+          "subject_role": "human_acceptance_owner",
+          "predicate": "accepts_revises_or_defers",
+          "object_role": "acceptance_bundle",
+          "cardinality": "exactly_one",
+          "absence_effect": "blocked"
+        }
+      ],
+      "obligation_templates": [
+        {
+          "obligation_id": "obligation.completion.engineering_closure",
+          "statement": "要求、計画、差分、検証、運用、移行、文書、残余危険の完了条件を採択済み工学規則へ追跡する。",
+          "origin_trace": [
+            "OR-01"
+          ],
+          "required_evidence_types": [
+            "completion_rule_trace",
+            "obligation_coverage"
+          ],
+          "absence_effect": "unresolved"
+        },
+        {
+          "obligation_id": "obligation.completion.bounded_assurance_closure",
+          "statement": "対象、命題、義務、規則、証拠、導出、反証、未証明を再演し、完了主張の限界を保持する。",
+          "origin_trace": [
+            "OR-02"
+          ],
+          "required_evidence_types": [
+            "assurance_graph",
+            "lifecycle_trace",
+            "verification_receipts"
+          ],
+          "absence_effect": "blocked"
+        },
+        {
+          "obligation_id": "obligation.completion.repair_and_human_acceptance",
+          "statement": "差戻し時の修正対象と再検証を示し、最終処分を人間だけに残す。",
+          "origin_trace": [
+            "OR-03"
+          ],
+          "required_evidence_types": [
+            "repair_cycle",
+            "acceptance_bundle",
+            "human_decision_record"
+          ],
+          "absence_effect": "blocked"
+        }
+      ],
+      "non_goals": [
+        "agent又はsemantic-guardが自らの完了主張を最終受理すること。",
+        "試験通過、監査pass、成果物存在又は未解決削除だけで完了を確定すること。"
+      ],
+      "hollow_success_conditions": [
+        {
+          "condition_id": "completion.hollow.artifact",
+          "condition_kind": "artifact_presence_only",
+          "statement": "完了報告は存在するが対象版、義務、証拠、残余、人間門へ結び付かない。"
+        },
+        {
+          "condition_id": "completion.hollow.local",
+          "condition_kind": "local_test_only",
+          "statement": "局所試験通過だけで実務妥当性、運用、保安、人間受理を閉じる。"
+        },
+        {
+          "condition_id": "completion.hollow.audit",
+          "condition_kind": "audit_pass_only",
+          "statement": "監査passを最終acceptへ昇格する。"
+        },
+        {
+          "condition_id": "completion.hollow.unresolved",
+          "condition_kind": "unresolved_erasure",
+          "statement": "未解決を削除して成功状態を作る。"
+        }
+      ],
+      "verification_evidence_types": [
+        {
+          "evidence_type": "replayable_acceptance_bundle",
+          "supports": "完了主張、義務、検証、残余、限界、人間質問の結合。",
+          "does_not_establish": "人間のaccept、外部真正性又は将来無事故。"
+        },
+        {
+          "evidence_type": "located_human_final_decision",
+          "supports": "記録された人間処分と対象範囲。",
+          "does_not_establish": "判断品質、本人性、権限組織の妥当性。"
+        }
+      ],
+      "validation_materials": [
+        {
+          "material_id": "completion.material.bundle",
+          "kind": "structured_record",
+          "purpose": "義務被覆、証拠、残余、限界、修正結果を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "completion.material.human",
+          "kind": "human_decision",
+          "purpose": "非pending処分の人間所有と対象範囲を検査する。",
+          "required": true
+        },
+        {
+          "material_id": "completion.material.review",
+          "kind": "independent_review",
+          "purpose": "過大主張、証拠漏れ、残余洗浄を独立点検する。",
+          "required": true
+        }
+      ],
+      "human_acceptance_questions": [
+        {
+          "question_id": "completion.acceptance.final_disposition",
+          "question": "証拠、反証、未証明範囲、残余危険、限界を踏まえ、accept、request_revision、deferのどれをアナタが選ぶか。",
+          "owner": "human",
+          "required": true
+        }
+      ],
+      "unresolved": [
+        {
+          "unresolved_id": "unresolved.completion.human_final_decision",
+          "question": "人間はこの版、この証拠束、この残余危険について最終的にどう処分するか。",
+          "owner": "human",
+          "blocking_effect": "最終受理はpendingのままであり、semantic-guard又はagentは閉じられない。",
+          "resolution_evidence": "対象と範囲が一致する所在付き人間最終判断記録"
+        }
+      ],
+      "upstream_trace": {
+        "origin_requirements": [
+          "OR-01",
+          "OR-02",
+          "OR-03"
+        ],
+        "stage_refs": [
+          "verification"
+        ],
+        "inputs_carried": [
+          "対象snapshot",
+          "義務状態",
+          "検証証拠",
+          "反証",
+          "未証明",
+          "矛盾",
+          "修正結果",
+          "限界"
+        ]
+      },
+      "downstream_trace": {
+        "stage_refs": [],
+        "outputs_carried": [
+          "限定された完了主張",
+          "受理材料",
+          "残余危険",
+          "人間処分又はpending",
+          "差戻し修正対象"
+        ]
+      },
+      "requalification_triggers": [
+        {
+          "trigger_id": "completion.requal.any_bound_basis_change",
+          "condition": "対象、要求、決定、計画、行動証拠、実現物、差分、検証、規則、profile、残余又は人間処分のいずれかが変化又は失効した。",
+          "invalidates": [
+            "completion claim",
+            "acceptance bundle",
+            "prior non-pending applicability"
+          ],
+          "required_action": "完了主張をpendingへ戻し、影響義務を再監査・再検証して人間へ再提示する。"
+        }
+      ],
+      "authority_boundary": {
+        "claim_owner": "explicitly_authorized_actor",
+        "semantic_guard_role": "audit_material_validation_only",
+        "decision_authority": "not_applicable",
+        "execution_authority": "not_applicable",
+        "occurrence_evidence_required": false,
+        "final_acceptance_authority": "human_only",
+        "prohibited_promotions": [
+          "local_tests_imply_final_acceptance",
+          "audit_result_implies_final_acceptance",
+          "agent_infers_human_decision"
+        ]
+      },
+      "profile_digest": {
+        "algorithm": "sha256",
+        "value": "0fbe933a66e021e5a2c1e47377fa354099163ef8ae03423887e3475eb473083d"
+      }
+    }
+  ],
+  "limitations": [
+    "本登録簿は十工程の候補意味契約であり、人間採択前にはruntime authorityを持たない。",
+    "schema、digest、閉鎖分母及びsummary再演は内部整合を検査するが、規則の工学的正しさ、証拠真正性、主体本人性又は現場妥当性を証明しない。",
+    "既存lifecycle-trace/v0とのprofile参照及びnode検証への接続は未統合である。",
+    "人間のaccept、request_revision、defer、権限付与及び最終受理をsemantic-guard又はagentが生成してはならない。"
+  ],
+  "registry_digest": {
+    "algorithm": "sha256",
+    "value": "30a49c01ef601aa19c4103e9ecb67daaafe18e55a62d61ad40cf1df3e59acb14"
+  },
+  "summary": {
+    "schema_version": "lifecycle-profile-registry-summary/v0",
+    "registry_id": "lifecycle-profile-registry.semantic-guard",
+    "registry_version": "candidate-2026-07-16",
+    "registry_digest": {
+      "algorithm": "sha256",
+      "value": "30a49c01ef601aa19c4103e9ecb67daaafe18e55a62d61ad40cf1df3e59acb14"
+    },
+    "profile_count": 10,
+    "stage_order": [
+      "request",
+      "exploration",
+      "requirement",
+      "decision",
+      "plan",
+      "action",
+      "realization",
+      "diff",
+      "verification",
+      "completion"
+    ],
+    "profile_refs": [
+      {
+        "stage": "request",
+        "profile_id": "lifecycle-profile.request",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "b6daf1856b4463b58a672dac5d57312a24b9b1fcd02e1690e74a930586e7390a"
+        }
+      },
+      {
+        "stage": "exploration",
+        "profile_id": "lifecycle-profile.exploration",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "c210bf5f24e85ab7b88f3265049c0d02f360f8eeb711cea0ddd75a41998b6228"
+        }
+      },
+      {
+        "stage": "requirement",
+        "profile_id": "lifecycle-profile.requirement",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "3acdab6870670b62e0055cf995d739bf9e5d823cf2e23b236f7ed704cf3e0b0a"
+        }
+      },
+      {
+        "stage": "decision",
+        "profile_id": "lifecycle-profile.decision",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "4236a47dfc5ed9d5e4a449c3a18ec9602396deab62fd6e498311999e09c84599"
+        }
+      },
+      {
+        "stage": "plan",
+        "profile_id": "lifecycle-profile.plan",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "d30d5b48a7f9d86b2b6c7c413b6a2522652d14dd5bdd31caf4627ff5a170516b"
+        }
+      },
+      {
+        "stage": "action",
+        "profile_id": "lifecycle-profile.action",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "770189412ab2227602afb055a07b71191a516ed74fbfdf3d89c2f8b83da22bf3"
+        }
+      },
+      {
+        "stage": "realization",
+        "profile_id": "lifecycle-profile.realization",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "aac276420ba3a8338bf50a50eb1958640ef667ac93a7b9dbe57f2ff802b1e72f"
+        }
+      },
+      {
+        "stage": "diff",
+        "profile_id": "lifecycle-profile.diff",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "e80ba5f0a15f0d9b1d256d630fee3cea1d38e7fc9ca87e993af189603f4d015d"
+        }
+      },
+      {
+        "stage": "verification",
+        "profile_id": "lifecycle-profile.verification",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "0d834a579a972e319ca88c57f2e4a828ee607dd5856dd866829b510b81d89619"
+        }
+      },
+      {
+        "stage": "completion",
+        "profile_id": "lifecycle-profile.completion",
+        "version": "0.1.0-candidate",
+        "profile_digest": {
+          "algorithm": "sha256",
+          "value": "0fbe933a66e021e5a2c1e47377fa354099163ef8ae03423887e3475eb473083d"
+        }
+      }
+    ],
+    "origin_coverage": {
+      "OR-01": [
+        "lifecycle-profile.action",
+        "lifecycle-profile.completion",
+        "lifecycle-profile.decision",
+        "lifecycle-profile.diff",
+        "lifecycle-profile.exploration",
+        "lifecycle-profile.plan",
+        "lifecycle-profile.realization",
+        "lifecycle-profile.request",
+        "lifecycle-profile.requirement",
+        "lifecycle-profile.verification"
+      ],
+      "OR-02": [
+        "lifecycle-profile.action",
+        "lifecycle-profile.completion",
+        "lifecycle-profile.decision",
+        "lifecycle-profile.diff",
+        "lifecycle-profile.exploration",
+        "lifecycle-profile.plan",
+        "lifecycle-profile.realization",
+        "lifecycle-profile.request",
+        "lifecycle-profile.requirement",
+        "lifecycle-profile.verification"
+      ],
+      "OR-03": [
+        "lifecycle-profile.action",
+        "lifecycle-profile.completion",
+        "lifecycle-profile.decision",
+        "lifecycle-profile.diff",
+        "lifecycle-profile.exploration",
+        "lifecycle-profile.plan",
+        "lifecycle-profile.realization",
+        "lifecycle-profile.request",
+        "lifecycle-profile.requirement",
+        "lifecycle-profile.verification"
+      ]
+    },
+    "adoption_counts": {
+      "pending_human_adoption": 10,
+      "adopted": 0
+    },
+    "authority_statement": "All lifecycle profiles remain pending human adoption; semantic-guard validates candidate material only and holds no adoption, execution, or final-acceptance authority.",
+    "summary_digest": {
+      "algorithm": "sha256",
+      "value": "a47aa0ac6ed442adc9f1329e42846db39a8c6f775acc604a606e979b56a6016c"
+    }
+  }
+}

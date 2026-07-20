@@ -1,0 +1,45 @@
+{
+  "schema_version": "semantic-guard-vnext-shadow-validation/v0",
+  "recorded_at": "2026-07-16T00:00:00+09:00",
+  "record_status": "superseded_baseline_observation",
+  "legacy_baseline_ref": "vnext/migration/legacy-baseline-2026-07-15.json",
+  "legacy_baseline_schema_version": "semantic-guard-legacy-baseline/v0",
+  "superseded_by": "vnext/migration/legacy-baseline-2026-07-16.json",
+  "legacy_baseline_status": "matched",
+  "legacy_checked_file_count": 8,
+  "cases": [
+    {
+      "case_id": "defeater.reported-speech",
+      "legacy_workflow": "warn",
+      "vnext_workflow": "warn",
+      "delta_subject": "func.verifies",
+      "assessment": "legacy_known_defect",
+      "basis_kind": "constitution_invariant",
+      "unresolved_difference_count": 0
+    },
+    {
+      "case_id": "defeater.quoted-unadopted",
+      "legacy_workflow": "warn",
+      "vnext_workflow": "warn",
+      "delta_subject": "func.verifies",
+      "assessment": "legacy_known_defect",
+      "basis_kind": "constitution_invariant",
+      "unresolved_difference_count": 0
+    },
+    {
+      "case_id": "defeater.negated-criterion",
+      "legacy_workflow": "warn",
+      "vnext_workflow": "warn",
+      "delta_subject": "func.verifies",
+      "assessment": "legacy_known_defect",
+      "basis_kind": "constitution_invariant",
+      "unresolved_difference_count": 0
+    }
+  ],
+  "interpretation": "The identical top-level warn state hides an obligation-level legacy false satisfaction. The classification is based on INV-VN-006, not on vNext disagreement alone.",
+  "limitations": [
+    "The eight-file v0 baseline did not close the legacy execution and characterization asset set; it is retained only as historical evidence.",
+    "These are engineered conformance cases, not adjudicated production records.",
+    "No general accuracy or cutover claim follows from three known-defect reproductions."
+  ]
+}

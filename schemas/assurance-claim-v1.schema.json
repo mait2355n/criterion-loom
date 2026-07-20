@@ -1,0 +1,557 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/assurance-claim-v1.schema.json",
+  "title": "semantic-guard v1 proof-obligation assurance claim",
+  "description": "An opt-in assurance-claim/v1 wrapper that binds one validated v0 audit snapshot to typed proof obligations and an acyclic derivation graph. It is not action authenticity, execution authority, or human acceptance.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "claim_id",
+    "basis_snapshot",
+    "base_claim",
+    "runtime_derivation",
+    "claim_profile_ref",
+    "proof_obligations",
+    "derivation_graph",
+    "limitations",
+    "authority_boundary"
+  ],
+  "properties": {
+    "schema_version": {"const": "assurance-claim/v1"},
+    "claim_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+    "basis_snapshot": {
+      "type": "object",
+      "required": ["schema_version", "public_audit", "snapshot_digest"],
+      "properties": {
+        "schema_version": {"const": "assurance-basis-snapshot/v1"},
+        "public_audit": {"$ref": "audit-result.schema.json"},
+        "snapshot_digest": {
+          "allOf": [
+            {"$ref": "common.schema.json#/$defs/digest"},
+            {"properties": {"algorithm": {"const": "sha256"}}}
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "base_claim": {"$ref": "assurance-claim.schema.json"},
+    "runtime_derivation": {"$ref": "#/$defs/runtime_derivation"},
+    "claim_profile_ref": {"$ref": "common.schema.json#/$defs/entity_reference"},
+    "proof_obligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/proof_obligation_result"}
+    },
+    "derivation_graph": {"$ref": "#/$defs/derivation_graph"},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+      "uniqueItems": true
+    },
+    "authority_boundary": {
+      "type": "object",
+      "required": ["semantic_guard_role", "execution_owner", "final_acceptance_owner"],
+      "properties": {
+        "semantic_guard_role": {"const": "validate_bounded_assurance_material"},
+        "execution_owner": {"const": "external_caller_or_control_plane"},
+        "final_acceptance_owner": {"const": "human"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "$defs": {
+    "digest_string": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "runtime_span": {
+      "type": "object",
+      "required": ["start", "end", "role"],
+      "properties": {
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 0},
+        "role": {"type": "string"}
+      },
+      "unevaluatedProperties": false
+    },
+    "analysis_token": {
+      "type": "object",
+      "required": ["surface", "lemma", "normalized", "part_of_speech", "start", "end", "features"],
+      "properties": {
+        "surface": {"type": "string"},
+        "lemma": {"type": "string"},
+        "normalized": {"type": "string"},
+        "part_of_speech": {"type": "array", "items": {"type": "string"}},
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 0},
+        "features": {"type": "object", "additionalProperties": {"type": "string"}}
+      },
+      "unevaluatedProperties": false
+    },
+    "analysis_relation": {
+      "type": "object",
+      "required": ["relation_kind", "from_span", "to_span", "confidence", "interpretation_id", "rationale"],
+      "properties": {
+        "relation_kind": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "from_span": {"$ref": "#/$defs/runtime_span"},
+        "to_span": {"$ref": "#/$defs/runtime_span"},
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "interpretation_id": {"type": "string"},
+        "rationale": {"type": "string"}
+      },
+      "unevaluatedProperties": false
+    },
+    "analysis_scope": {
+      "type": "object",
+      "required": ["scope_kind", "cue_span", "target_span", "confidence"],
+      "properties": {
+        "scope_kind": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "cue_span": {"$ref": "#/$defs/runtime_span"},
+        "target_span": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/runtime_span"}
+          ]
+        },
+        "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "analysis_attempt": {
+      "type": "object",
+      "required": [
+        "schema_version", "attempt_id", "output_digest", "stage", "provider_id",
+        "provider_version", "resource_version", "status", "authority", "requested_capabilities",
+        "fulfilled_capabilities", "covered_spans", "tokens", "relations", "scopes",
+        "upstream_usage", "diagnostics"
+      ],
+      "properties": {
+        "schema_version": {"const": "provider-analysis-attempt/v0"},
+        "attempt_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "output_digest": {"$ref": "#/$defs/digest_string"},
+        "stage": {"enum": ["morphology", "dependency_parse", "llm_candidate"]},
+        "provider_id": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "provider_version": {"type": "string"},
+        "resource_version": {"type": "string"},
+        "status": {"enum": ["ok", "partial", "failed", "not_configured"]},
+        "authority": {
+          "type": "object",
+          "required": ["support", "challenge_signal", "apply_hold", "release_hold"],
+          "properties": {
+            "support": {"type": "boolean"},
+            "challenge_signal": {"type": "boolean"},
+            "apply_hold": {"type": "boolean"},
+            "release_hold": {"type": "boolean"}
+          },
+          "unevaluatedProperties": false
+        },
+        "requested_capabilities": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "fulfilled_capabilities": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "covered_spans": {"type": "array", "items": {"$ref": "#/$defs/runtime_span"}},
+        "tokens": {"type": "array", "items": {"$ref": "#/$defs/analysis_token"}},
+        "relations": {"type": "array", "items": {"$ref": "#/$defs/analysis_relation"}},
+        "scopes": {"type": "array", "items": {"$ref": "#/$defs/analysis_scope"}},
+        "upstream_usage": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "diagnostics": {"type": "array", "items": {"type": "string"}}
+      },
+      "unevaluatedProperties": false
+    },
+    "provider_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version", "receipt_id", "source_digest", "request_digest",
+        "output_digest", "provider_id", "provider_version", "resource_version",
+        "stage", "status", "target_spans", "covered_spans",
+        "requested_capabilities", "fulfilled_capabilities", "upstream_digest",
+        "upstream_usage"
+      ],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-provider-execution-receipt/v0"},
+        "receipt_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "source_digest": {"$ref": "#/$defs/digest_string"},
+        "request_digest": {"$ref": "#/$defs/digest_string"},
+        "output_digest": {"$ref": "#/$defs/digest_string"},
+        "provider_id": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "provider_version": {"type": "string"},
+        "resource_version": {"type": "string"},
+        "stage": {"const": "dependency_parse"},
+        "status": {"const": "ok"},
+        "target_spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/runtime_span"}},
+        "covered_spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/runtime_span"}},
+        "requested_capabilities": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "fulfilled_capabilities": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "upstream_digest": {"$ref": "#/$defs/digest_string"},
+        "upstream_usage": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "analyzer_qualification": {
+      "type": "object",
+      "required": [
+        "schema_version", "qualification_id", "provider_id", "provider_version",
+        "resource_version", "capabilities", "policy_scope", "qualification_basis"
+      ],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-analyzer-qualification/v0"},
+        "qualification_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "provider_id": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "provider_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "resource_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "capabilities": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "coordination"},
+            {"const": "dependency"},
+            {"const": "predicate_argument"}
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "policy_scope": {"type": "string", "pattern": "^obligation-reassessment-policy/v0:func\\.(performs|acts_on)$"},
+        "qualification_basis": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+      },
+      "unevaluatedProperties": false
+    },
+    "dependency_projection": {
+      "type": "object",
+      "required": [
+        "projection_id", "rule_id", "provider_id", "provider_version",
+        "resource_version", "receipt_id", "source_relation_kinds", "candidate"
+      ],
+      "properties": {
+        "projection_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "rule_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "provider_id": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "provider_version": {"type": "string"},
+        "resource_version": {"type": "string"},
+        "receipt_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "source_relation_kinds": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "candidate": {
+          "type": "object",
+          "required": ["relation_kind", "from_span", "to_span", "confidence", "interpretation_id", "rationale"],
+          "properties": {
+            "relation_kind": {"type": "string", "enum": ["performs", "acts_on"]},
+            "from_span": {"$ref": "#/$defs/runtime_span"},
+            "to_span": {"$ref": "#/$defs/runtime_span"},
+            "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+            "interpretation_id": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+            "rationale": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "prior_assessment": {
+      "type": "object",
+      "required": ["obligation_id", "outcome", "rule_id", "from_field", "to_field", "evidence_spans", "basis", "unknown_reasons"],
+      "properties": {
+        "obligation_id": {"type": "string", "enum": ["func.performs", "func.acts_on"]},
+        "outcome": {"const": "unresolved"},
+        "rule_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "from_field": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "to_field": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "evidence_spans": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {"type": "integer", "minimum": 0},
+              {"type": "integer", "minimum": 0}
+            ],
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "basis": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "unknown_reasons": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "initial_unresolved": {
+      "type": "object",
+      "required": [
+        "schema_version", "unresolved_id", "source_id", "profile_id", "profile_version",
+        "obligation_id", "relation_kind", "direct_rule_id", "direct_rule_version",
+        "direct_outcome", "direct_reasons", "direct_unknown_reasons", "required_guards",
+        "signal_ids", "reason_routing", "target_spans"
+      ],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-unresolved-routing/v0"},
+        "unresolved_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "source_id": {"$ref": "#/$defs/digest_string"},
+        "profile_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "profile_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "obligation_id": {"type": "string", "enum": ["func.performs", "func.acts_on"]},
+        "relation_kind": {"type": "string", "enum": ["performs", "acts_on"]},
+        "direct_rule_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "direct_rule_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "direct_outcome": {"const": "unresolved"},
+        "direct_reasons": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "direct_unknown_reasons": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "required_guards": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "signal_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/stable_id"}, "uniqueItems": true},
+        "reason_routing": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["reason_code", "requested_route"],
+            "properties": {
+              "reason_code": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+              "requested_route": {"$ref": "common.schema.json#/$defs/non_empty_string"}
+            },
+            "unevaluatedProperties": false
+          }
+        },
+        "target_spans": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/runtime_span"}}
+      },
+      "unevaluatedProperties": false
+    },
+    "obligation_reassessment": {
+      "type": "object",
+      "required": [
+        "reassessment_id", "source_id", "profile_id", "profile_version", "obligation_id",
+        "unresolved_id", "unresolved_digest", "prior_assessment_digest", "original_rule_id",
+        "original_outcome", "decision", "effective_outcome", "policy_rule_id", "receipt_ids",
+        "qualification_ids", "projection_ids", "evidence_spans", "reasons", "route_status", "resolved_by"
+      ],
+      "properties": {
+        "reassessment_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "source_id": {"$ref": "#/$defs/digest_string"},
+        "profile_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "profile_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "obligation_id": {"type": "string", "enum": ["func.performs", "func.acts_on"]},
+        "unresolved_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "unresolved_digest": {"$ref": "#/$defs/digest_string"},
+        "prior_assessment_digest": {"$ref": "#/$defs/digest_string"},
+        "original_rule_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "original_outcome": {"const": "unresolved"},
+        "decision": {"const": "supported"},
+        "effective_outcome": {"const": "supported"},
+        "policy_rule_id": {"const": "obligation-reassessment-policy/v0"},
+        "receipt_ids": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/stable_id"}, "uniqueItems": true},
+        "qualification_ids": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/stable_id"}, "uniqueItems": true},
+        "projection_ids": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/stable_id"}, "uniqueItems": true},
+        "evidence_spans": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start", "end"], "properties": {"start": {"type": "integer", "minimum": 0}, "end": {"type": "integer", "minimum": 0}}, "unevaluatedProperties": false}},
+        "reasons": {"type": "array", "minItems": 1, "items": {"$ref": "common.schema.json#/$defs/non_empty_string"}, "uniqueItems": true},
+        "route_status": {"const": "resolved_by_reassessment"},
+        "resolved_by": {"const": "obligation-reassessment-policy/v0"}
+      },
+      "unevaluatedProperties": false
+    },
+    "reassessment_basis": {
+      "type": "object",
+      "required": [
+        "schema_version", "source_id", "source_text", "analysis_mode", "profile_id", "profile_version", "analysis_attempts", "provider_receipts",
+        "analyzer_qualifications", "dependency_projections", "prior_assessments",
+        "initial_unresolved_obligations", "obligation_reassessments", "basis_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "reassessment-basis/v1"},
+        "source_id": {"$ref": "#/$defs/digest_string"},
+        "source_text": {"type": ["string", "null"]},
+        "analysis_mode": {"type": ["string", "null"], "enum": ["assurance", "conditional", "shadow_all", null]},
+        "profile_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "profile_version": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "analysis_attempts": {"type": "array", "items": {"$ref": "#/$defs/analysis_attempt"}},
+        "provider_receipts": {"type": "array", "items": {"$ref": "#/$defs/provider_receipt"}},
+        "analyzer_qualifications": {"type": "array", "items": {"$ref": "#/$defs/analyzer_qualification"}},
+        "dependency_projections": {"type": "array", "items": {"$ref": "#/$defs/dependency_projection"}},
+        "prior_assessments": {"type": "array", "items": {"$ref": "#/$defs/prior_assessment"}},
+        "initial_unresolved_obligations": {"type": "array", "items": {"$ref": "#/$defs/initial_unresolved"}},
+        "obligation_reassessments": {"type": "array", "items": {"$ref": "#/$defs/obligation_reassessment"}},
+        "basis_digest": {"allOf": [{"$ref": "common.schema.json#/$defs/digest"}, {"properties": {"algorithm": {"const": "sha256"}}}]}
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_derivation": {
+      "type": "object",
+      "required": ["schema_version", "reassessment_basis", "runtime_derivation_digest"],
+      "properties": {
+        "schema_version": {"const": "assurance-runtime-derivation/v1"},
+        "reassessment_basis": {"$ref": "#/$defs/reassessment_basis"},
+        "runtime_derivation_digest": {"allOf": [{"$ref": "common.schema.json#/$defs/digest"}, {"properties": {"algorithm": {"const": "sha256"}}}]}
+      },
+      "unevaluatedProperties": false
+    },
+    "proof_obligation_result": {
+      "type": "object",
+      "required": [
+        "obligation_id",
+        "obligation_kind",
+        "required",
+        "status",
+        "basis_node_refs",
+        "result_locator",
+        "limitations"
+      ],
+      "properties": {
+        "obligation_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "obligation_kind": {
+          "type": "string",
+          "enum": [
+            "subject_binding",
+            "proposition_derivation",
+            "rule_closure",
+            "evidence_closure",
+            "authority_closure",
+            "aggregation_closure",
+            "unresolved_preservation",
+            "runtime_derivation_closure",
+            "graph_closure"
+          ]
+        },
+        "required": {"const": true},
+        "status": {"type": "string", "enum": ["satisfied", "undetermined", "invalid"]},
+        "basis_node_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "common.schema.json#/$defs/entity_reference"}
+        },
+        "result_locator": {"type": "string", "pattern": "^/"},
+        "limitations": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+          "uniqueItems": true
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "derivation_node": {
+      "type": "object",
+      "required": ["node_id", "node_kind", "label", "payload_digest"],
+      "properties": {
+        "node_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "node_kind": {
+          "type": "string",
+          "enum": [
+            "subject_snapshot",
+            "claim_profile",
+            "proposition",
+            "rule",
+            "evidence",
+            "obligation_result",
+            "coverage",
+            "hold",
+            "provenance",
+            "authority_effect",
+            "runtime_derivation",
+            "runtime_source",
+            "analysis_attempt",
+            "provider_receipt",
+            "analyzer_qualification",
+            "dependency_projection",
+            "prior_assessment",
+            "unresolved_route",
+            "obligation_reassessment",
+            "aggregation",
+            "bounded_claim"
+          ]
+        },
+        "label": {"$ref": "common.schema.json#/$defs/non_empty_string"},
+        "payload_digest": {
+          "allOf": [
+            {"$ref": "common.schema.json#/$defs/digest"},
+            {"properties": {"algorithm": {"const": "sha256"}}}
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "derivation_edge": {
+      "type": "object",
+      "required": [
+        "edge_id",
+        "edge_kind",
+        "from_node_ref",
+        "to_node_ref",
+        "proof_obligation_ref"
+      ],
+      "properties": {
+        "edge_id": {"$ref": "common.schema.json#/$defs/stable_id"},
+        "edge_kind": {
+          "type": "string",
+          "enum": [
+            "binds_subject",
+            "interprets_under",
+            "defines_proposition",
+            "applies_rule",
+            "supports",
+            "refutes",
+            "challenges",
+            "records_provenance",
+            "constrains_authority",
+            "qualifies_execution",
+            "observes_runtime_source",
+            "materializes_receipt",
+            "records_execution",
+            "projects_dependency",
+            "reassesses_prior",
+            "resolves_unresolved",
+            "derives_support",
+            "records_runtime_derivation",
+            "binds_runtime_derivation",
+            "preserves_hold",
+            "aggregates",
+            "derives"
+          ]
+        },
+        "from_node_ref": {"$ref": "common.schema.json#/$defs/entity_reference"},
+        "to_node_ref": {"$ref": "common.schema.json#/$defs/entity_reference"},
+        "proof_obligation_ref": {"$ref": "common.schema.json#/$defs/entity_reference"}
+      },
+      "unevaluatedProperties": false
+    },
+    "derivation_graph": {
+      "type": "object",
+      "required": ["schema_version", "nodes", "edges", "root_node_ref", "graph_digest"],
+      "properties": {
+        "schema_version": {"const": "assurance-derivation-graph/v1"},
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/derivation_node"}
+        },
+        "edges": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/derivation_edge"}
+        },
+        "root_node_ref": {"$ref": "common.schema.json#/$defs/entity_reference"},
+        "graph_digest": {
+          "allOf": [
+            {"$ref": "common.schema.json#/$defs/digest"},
+            {"properties": {"algorithm": {"const": "sha256"}}}
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "base_claim": {
+            "properties": {
+              "outcome": {"const": "satisfied"},
+              "finality": {"const": "terminal"}
+            },
+            "required": ["outcome", "finality"]
+          }
+        },
+        "required": ["base_claim"]
+      },
+      "then": {
+        "properties": {
+          "proof_obligations": {
+            "items": {"properties": {"status": {"const": "satisfied"}}}
+          }
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}
