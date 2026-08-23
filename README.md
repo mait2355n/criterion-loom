@@ -159,6 +159,4 @@ uv run --locked python scripts/verify_packaged_contracts.py \
 - 利用支援: [SUPPORT.md](SUPPORT.md)
 - Companion Skill: [`skills/semantic-implementation/`](skills/semantic-implementation/)
 
-Companion Skill はrepository資料であり、1.1.0 wheel/sdistには同梱しない。利用する場合は内容を確認してから `$CODEX_HOME/skills/semantic-implementation/` へ明示的に同期する。
-
 ライセンスは [MIT](LICENSE)。
