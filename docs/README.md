@@ -11,6 +11,7 @@
 - [Canonical migration classification map](../migration/migration-map.md)
 - [v1.0.0 canonicalization audit](audits/canonicalization-audit-v1.0.0-2026-07-17.md)
 - [v1.1.0 direction-binding GitHub integration evidence](audits/direction-binding-integration-2026-08-23.md)
+- [Repository unification record, 2026-08-24](repository-unification-2026-08-24.md)
 
 ## Status and lineage
 
@@ -43,6 +44,11 @@ and paths may change; the UUID on the right of `・` is the identity authority.
 ## Historical and prototype material
 
 Files whose names contain a date, and files under `docs/prototypes/`, record the state or design intent at their stated time. Canonical promotion does not rewrite them. They may contain former candidate names and paths; use current contracts and the migration guide for present commands.
+
+Repository owner/name changes follow the same rule. Historical GitHub URLs are
+not rewritten as though an earlier event occurred under a later owner label;
+see the [repository unification record](repository-unification-2026-08-24.md)
+for the repository-ID mapping and redirect boundary.
 
 The historical full evaluation under `docs/audits/semantic-guard-full-evaluation-2026-07-11.md` remains a digest-bound source referenced by the verification register. It is not the v1.0.0 canonicalization audit.
 

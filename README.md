@@ -124,6 +124,8 @@ uv run --locked semantic-guard-mcp
 - [方向拘束監査 schema](schemas/direction-binding-audit.schema.json)
 - [方向拘束監査の意味と限界](docs/direction-binding-audit.md)
 - [方向拘束移植の由来記録](migration/direction-binding-source-map-2026-08-23.json)
+- [GitHub repository 統一記録](docs/repository-unification-2026-08-24.md)
+- [repository 統一機械記録](migration/repository-unification-2026-08-24.json)
 - [検証要求・状態正本](validation/verification-source.json)
 - [実装状態](docs/implementation-status.md)
 - [運用手引](docs/operations.md)

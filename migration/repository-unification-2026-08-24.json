@@ -1,0 +1,111 @@
+{
+  "schema_version": "criterion-loom-repository-unification/v0",
+  "record_kind": "repository_unification_record",
+  "entity_id": "c6174227-aa6e-417f-a829-fa7c3a41b26d",
+  "label": "criterion-loom repository unification",
+  "status": "pre_transfer",
+  "recorded_at": "2026-08-24T01:03:56+09:00",
+  "canonical_project_ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+  "identity_rule": "GitHub numeric repository ID identifies a repository object; owner/name is a mutable label.",
+  "repositories": {
+    "canonical_source": {
+      "ref": "canonical repository object・51d473df-7d86-466d-a9f4-47a01ff70d44",
+      "github_repository_id": 1270877024,
+      "name_before_transfer": "morie-lene/criterion-loom",
+      "planned_name_after_transfer": "mait2355n/criterion-loom",
+      "baseline_main": "b3848e8691c1a805d42e178f37a2d4b2c2d54851",
+      "baseline_tree": "4ad14bcaf412c08cd669f221ad950bd70981b0f2",
+      "role": "Preserve this repository object and its GitHub-native assets."
+    },
+    "legacy": {
+      "ref": "legacy repository object・540faebe-44e4-4a86-9030-389e5c888eb7",
+      "github_repository_id": 1284490044,
+      "name_before_transfer": "mait2355n/criterion-loom",
+      "planned_temporary_name": "mait2355n/criterion-loom-legacy-20260824",
+      "baseline_main": "f07209d380ae680c51d34eb6e491cc4b6bdde623",
+      "baseline_tree": "c7ba301e313c96b17a4e52b8fae3266e4ab95b71",
+      "role": "Preserve its Git history, then delete only after the post-transfer gate passes."
+    }
+  },
+  "history_bridge": {
+    "ref": "legacy history bridge・47d6800e-2b5a-460b-a992-a2effa49feac",
+    "commit": "7c82228f16b02606644e6ba57e1df4986d225f86",
+    "parents": [
+      "b3848e8691c1a805d42e178f37a2d4b2c2d54851",
+      "f07209d380ae680c51d34eb6e491cc4b6bdde623"
+    ],
+    "tree": "4ad14bcaf412c08cd669f221ad950bd70981b0f2",
+    "strategy": "ours",
+    "meaning": "Connect the unrelated legacy history without adopting its tree as current content."
+  },
+  "archive_tag": {
+    "name": "legacy-mait2355n-main-before-unification-2026-08-24",
+    "peeled_commit": "f07209d380ae680c51d34eb6e491cc4b6bdde623"
+  },
+  "change_scope": {
+    "git_graph": "Add the legacy tip as the second parent of an ours-strategy merge.",
+    "tracked_content": "Add this migration record and documentation links after the tree-preserving bridge.",
+    "runtime_code": "unchanged",
+    "dependencies_and_lockfile": "unchanged",
+    "ci_workflow": "unchanged",
+    "authentication_authorization_and_secrets": "No repository policy or secret value is changed or copied by these commits; live owner and security settings are a separate transfer gate."
+  },
+  "pre_transfer_backup": {
+    "derived_from": "criterion-loom repository unification backup・4e009755-94ac-45b1-a66e-10c4f2110ccb",
+    "source_bundle_sha256": "933b8fbed339a6082cd4397be4023b39c0bf47ec3a2efba813b4f923bf354289",
+    "legacy_bundle_sha256": "600acf36a48fa879edf05919f9f45712d6e60dab578e3248579d82a6a30e70d4",
+    "source_actions_artifacts_downloaded": 11,
+    "source_actions_artifact_bytes": 7124080,
+    "storage": "operator-local archive outside this repository"
+  },
+  "preserved_historical_identifiers": [
+    {
+      "surface": "historical pull-request and Actions URLs",
+      "handling": "Keep their recorded morie-lene URLs as historical evidence; rely on GitHub transfer redirects after migration."
+    },
+    {
+      "surface": "https://morie-lene.github.io/criterion-loom/schemas/direction-binding-audit.schema.json",
+      "handling": "Keep the schema $id stable. It is a public identifier, not a claim about the current repository owner."
+    }
+  ],
+  "non_goals": [
+    "Rename the semantic-guard Python package, CLI, or MCP surfaces.",
+    "Adopt the legacy repository tree as the current implementation.",
+    "Rewrite dated historical evidence as though it originally occurred under mait2355n."
+  ],
+  "transfer_gate": {
+    "status": "closed",
+    "interpretation_rule": "A surface is not accepted merely because it was checked. It must match the recorded baseline and required behavior, or the exact discrepancy and consequence must have an explicit human acceptance record.",
+    "required_before_legacy_deletion": [
+      "mait2355n/criterion-loom resolves to GitHub repository ID 1270877024",
+      "canonical main contains both baseline main commits as ancestors",
+      "local verification and hosted CI pass",
+      "branches, tags, pull requests, release, Actions history, redirects, and security settings match the recorded baseline and required behavior after transfer",
+      "every mismatch, unavailable owner-only surface, or accepted loss has either been resolved or has a separate explicit human acceptance record naming the exact consequence",
+      "all available pre-transfer Actions run records, job records, logs, and unexpired artifacts are in a verified backup, with source-unavailable bytes recorded as unavailable rather than backed up",
+      "the verified backup has been copied to a separate storage volume and its checksum receipt matches",
+      "the deletion target is re-read as GitHub repository ID 1284490044 immediately before deletion",
+      "a recorded human destructive-operation authorization identifies repository ID 1284490044 and remains applicable to the exact final evidence state"
+    ]
+  },
+  "destructive_operation_authorization": {
+    "decision_owner": "human",
+    "status": "conditionally_authorized",
+    "recorded_at": "2026-08-24",
+    "target_repository_id": 1284490044,
+    "authorized_action": "Delete the temporarily renamed legacy repository only after every transfer_gate prerequisite has an acceptable result.",
+    "basis": "The user accepted the documented transfer-preserving route and its verification-before-cleanup sequence before execution.",
+    "invalidated_by": [
+      "target repository ID mismatch",
+      "unresolved or unaccepted data loss",
+      "failed verification or hosted CI",
+      "missing independent backup receipt",
+      "material scope change"
+    ],
+    "not_final_result_acceptance": true
+  },
+  "final_human_decision": {
+    "owner": "human",
+    "status": "pending"
+  }
+}
