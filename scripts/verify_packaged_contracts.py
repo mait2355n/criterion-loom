@@ -68,9 +68,9 @@ _ALLOWED_SDIST_ROOTS = frozenset(
         "validation",
     }
 )
-_CANONICAL_SDIST_ROOT = "semantic_guard-1.0.0"
+_CANONICAL_SDIST_ROOT = "semantic_guard-1.1.0"
 _CANONICAL_WHEEL_ROOTS = frozenset(
-    {"semantic_guard", "semantic_guard-1.0.0.dist-info"}
+    {"semantic_guard", "semantic_guard-1.1.0.dist-info"}
 )
 
 
@@ -132,6 +132,7 @@ from semantic_guard.lifecycle_profiles import (
     validate_lifecycle_profile_registry,
 )
 from semantic_guard.mcp_server import (
+    audit_direction_binding_service,
     audit_requirement_relations_service,
     mcp,
     semantic_guard_schema_resource,
@@ -144,7 +145,7 @@ require(
     installed_distribution.metadata["Name"] == "semantic-guard",
     "installed distribution name is not canonical",
 )
-require(installed_distribution.version == "1.0.0", "installed distribution is not v1.0.0")
+require(installed_distribution.version == "1.1.0", "installed distribution is not v1.1.0")
 require(__version__ == installed_distribution.version, "package and distribution versions differ")
 require(mcp.name == "semantic-guard", "MCP server name is not canonical")
 mcp_tools = asyncio.run(mcp.list_tools())
@@ -153,6 +154,7 @@ mcp_resource_templates = asyncio.run(mcp.list_resource_templates())
 require(
     {tool.name for tool in mcp_tools}
     == {
+        "audit_direction_binding_tool",
         "audit_requirement_relations_tool",
         "semantic_guard_schema_tool",
         "shadow_compare_legacy_tool",
@@ -191,7 +193,7 @@ present_names = {
     for path in selected_schema_directory.glob("*.schema.json")
 }
 known_names = set(KNOWN_SCHEMA_NAMES)
-require(len(known_names) == 23, f"expected 23 public schemas, found {len(known_names)}")
+require(len(known_names) == 24, f"expected 24 public schemas, found {len(known_names)}")
 require(present_names == known_names, "KNOWN_SCHEMA_NAMES and packaged schemas differ")
 
 loaded = {}
@@ -208,6 +210,16 @@ subparsers_action = next(
     if isinstance(action, argparse._SubParsersAction)
 )
 schema_parser = subparsers_action.choices["schema"]
+canonical_cli_commands = {
+    "audit-requirement",
+    "audit-direction-binding",
+    "shadow-compare",
+    "schema",
+}
+require(
+    set(subparsers_action.choices) == canonical_cli_commands,
+    "canonical CLI command surface differs from the four-command contract",
+)
 schema_name_action = next(action for action in schema_parser._actions if action.dest == "name")
 require(set(schema_name_action.choices) == known_names, "CLI schema choices differ from public schemas")
 
@@ -278,8 +290,38 @@ producer_records = [
 ]
 require(len(producer_records) == 1, "public audit does not identify exactly one producer")
 require(
-    producer_records[0]["source_ref"].get("entity_version") == "1.0.0",
-    "public audit producer version is not v1.0.0",
+    producer_records[0]["source_ref"].get("entity_version") == "1.1.0",
+    "public audit producer version is not v1.1.0",
+)
+direction_payload = audit_direction_binding_service(
+    "横一列で、Aの次の項目はどれですか？",
+    recorded_at="2026-08-23T00:00:00Z",
+)
+require(
+    direction_payload["primary_rule_evaluation"]["state"] == "indeterminate",
+    "provider-free direction audit did not fail closed",
+)
+require(
+    direction_payload["workflow_disposition"]["status"] == "warn",
+    "provider-free direction audit has the wrong workflow disposition",
+)
+Draft202012Validator(
+    loaded["direction-binding-audit"],
+    format_checker=FormatChecker(),
+).validate(direction_payload)
+direction_tool_content, direction_tool_payload = asyncio.run(
+    mcp.call_tool(
+        "audit_direction_binding_tool",
+        {
+            "text": "横一列で、Aの次の項目はどれですか？",
+            "recorded_at": "2026-08-23T00:00:00Z",
+        },
+    )
+)
+require(direction_tool_content, "direction-binding MCP dispatch returned no content")
+require(
+    direction_tool_payload == direction_payload,
+    "direction-binding MCP dispatch differs from the service projection",
 )
 
 print(json.dumps({
@@ -289,6 +331,7 @@ print(json.dumps({
         "public_schemas": len(loaded),
         "mcp_schema_resources": len(loaded),
         "cli_schema_names": len(schema_name_action.choices),
+        "cli_commands": len(subparsers_action.choices),
         "lifecycle_profiles": len(lifecycle_registry["profiles"]),
         "engineering_rules": len(engineering_candidate["rules"]),
         "mcp_tools": len(mcp_tools),
@@ -302,17 +345,36 @@ print(json.dumps({
         "public_schema_surface_closed",
         "mcp_schema_resources_match",
         "cli_schema_names_match",
+        "canonical_cli_surface",
         "lifecycle_candidate_valid",
         "engineering_rule_pack_valid",
         "operational_empty_object_rejected",
         "canonical_distribution_identity",
         "canonical_mcp_surface",
         "public_audit_producer_version",
+        "direction_binding_provider_free_fail_closed",
+        "direction_binding_mcp_dispatch",
     ],
     "digests": {
         "state_assessment_schema_sha256": hashlib.sha256(
             json.dumps(
                 loaded["state-assessment"],
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+        "direction_binding_schema_sha256": hashlib.sha256(
+            json.dumps(
+                loaded["direction-binding-audit"],
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+        "direction_binding_payload_sha256": hashlib.sha256(
+            json.dumps(
+                direction_payload,
                 ensure_ascii=False,
                 sort_keys=True,
                 separators=(",", ":"),
@@ -475,7 +537,7 @@ def _wheel_member_crosses_distribution_boundary(parts: tuple[str, ...]) -> bool:
         return True
     if "semantic-guard-v0.1.0" in parts:
         return True
-    if parts[0] == "semantic_guard-1.0.0.dist-info":
+    if parts[0] == "semantic_guard-1.1.0.dist-info":
         if len(parts) == 2:
             return parts[1] not in {"METADATA", "RECORD", "WHEEL", "entry_points.txt"}
         return not (
@@ -904,10 +966,10 @@ def verify_wheel(
             phase="audit_console_version",
         )
         _require_success(version_result, phase="audit_console_version")
-        if version_result.stdout != "semantic-guard 1.0.0\n" or version_result.stderr:
+        if version_result.stdout != "semantic-guard 1.1.0\n" or version_result.stderr:
             raise VerificationFailure(
                 "console_version_mismatch",
-                "installed console version does not identify semantic-guard 1.0.0",
+                "installed console version does not identify semantic-guard 1.1.0",
                 phase="audit_console_version",
                 details={
                     "stdout": version_result.stdout[-4096:],
@@ -954,16 +1016,140 @@ def verify_wheel(
                 phase="audit_console_entrypoint",
             )
 
+        direction_schema_result = _run_process(
+            [str(console_script), "schema", "direction-binding-audit"],
+            allowed_executables=frozenset({console_script}),
+            cwd=root,
+            env=installed_environment,
+            timeout_seconds=_remaining(
+                deadline,
+                phase="audit_direction_schema_entrypoint",
+            ),
+            phase="audit_direction_schema_entrypoint",
+        )
+        _require_success(
+            direction_schema_result,
+            phase="audit_direction_schema_entrypoint",
+        )
+        if direction_schema_result.stderr:
+            raise VerificationFailure(
+                "direction_schema_entrypoint_stderr_not_empty",
+                "installed direction schema command wrote unexpected standard error",
+                phase="audit_direction_schema_entrypoint",
+                details={"stderr": direction_schema_result.stderr[-4096:]},
+            )
+        try:
+            direction_schema = json.loads(direction_schema_result.stdout)
+        except json.JSONDecodeError as exc:
+            raise VerificationFailure(
+                "direction_schema_entrypoint_output_invalid",
+                "installed direction schema command did not return one JSON value",
+                phase="audit_direction_schema_entrypoint",
+            ) from exc
+        expected_direction_schema_digest = installed_audit.get("digests", {}).get(
+            "direction_binding_schema_sha256"
+        )
+        if (
+            not isinstance(expected_direction_schema_digest, str)
+            or _canonical_json_sha256(direction_schema)
+            != expected_direction_schema_digest
+        ):
+            raise VerificationFailure(
+                "direction_schema_entrypoint_mismatch",
+                "installed direction schema differs from load_public_schema",
+                phase="audit_direction_schema_entrypoint",
+            )
+
+        direction_command = [
+            str(console_script),
+            "audit-direction-binding",
+            "--text",
+            "横一列で、Aの次の項目はどれですか？",
+            "--recorded-at",
+            "2026-08-23T00:00:00Z",
+        ]
+        direction_result = _run_process(
+            direction_command,
+            allowed_executables=frozenset({console_script}),
+            cwd=root,
+            env=installed_environment,
+            timeout_seconds=_remaining(
+                deadline,
+                phase="audit_direction_console_entrypoint",
+            ),
+            phase="audit_direction_console_entrypoint",
+        )
+        _require_success(direction_result, phase="audit_direction_console_entrypoint")
+        if direction_result.stderr:
+            raise VerificationFailure(
+                "direction_console_entrypoint_stderr_not_empty",
+                "installed direction audit wrote unexpected standard error",
+                phase="audit_direction_console_entrypoint",
+                details={"stderr": direction_result.stderr[-4096:]},
+            )
+        try:
+            direction_payload = json.loads(direction_result.stdout)
+        except json.JSONDecodeError as exc:
+            raise VerificationFailure(
+                "direction_console_entrypoint_output_invalid",
+                "installed direction audit did not return one JSON value",
+                phase="audit_direction_console_entrypoint",
+            ) from exc
+        expected_direction_payload_digest = installed_audit.get("digests", {}).get(
+            "direction_binding_payload_sha256"
+        )
+        if (
+            not isinstance(expected_direction_payload_digest, str)
+            or _canonical_json_sha256(direction_payload)
+            != expected_direction_payload_digest
+        ):
+            raise VerificationFailure(
+                "direction_console_entrypoint_mismatch",
+                "installed direction audit differs from MCP/service projection",
+                phase="audit_direction_console_entrypoint",
+            )
+
+        fail_on_result = _run_process(
+            [*direction_command, "--fail-on", "warn"],
+            allowed_executables=frozenset({console_script}),
+            cwd=root,
+            env=installed_environment,
+            timeout_seconds=_remaining(
+                deadline,
+                phase="audit_direction_console_fail_on",
+            ),
+            phase="audit_direction_console_fail_on",
+        )
+        if (
+            fail_on_result.returncode != 3
+            or fail_on_result.stderr
+            or _canonical_json_sha256(json.loads(fail_on_result.stdout))
+            != expected_direction_payload_digest
+        ):
+            raise VerificationFailure(
+                "direction_console_fail_on_mismatch",
+                "installed --fail-on changed payload or did not return status 3",
+                phase="audit_direction_console_fail_on",
+                details={
+                    "returncode": fail_on_result.returncode,
+                    "stderr": fail_on_result.stderr[-4096:],
+                },
+            )
+
     checks = [
         *installed_audit["checks"],
         "installed_cli_version_match",
         "installed_cli_schema_match",
+        "installed_direction_schema_match",
+        "installed_direction_cli_projection_match",
+        "installed_direction_cli_fail_on_match",
         "installed_mcp_console_entrypoint_present",
     ]
     counts = {
         **installed_audit["counts"],
         "console_entrypoints": 2,
-        "console_entrypoint_schemas": 1,
+        "console_entrypoint_schemas": 2,
+        "direction_cli_invocations": 2,
     }
     return {
         "schema_version": SCHEMA_VERSION,

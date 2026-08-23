@@ -2,17 +2,19 @@
 
 ## Scope
 
-This reference describes the canonical `semantic-guard 1.0.0` execution surface used by the companion Skill. Machine-readable field and enum definitions remain authoritative in `schemas/`.
+This reference describes the `semantic-guard 1.1.0` source execution surface used by the companion Skill. Machine-readable field and enum definitions remain authoritative in `schemas/`. Installed wheel and sdist behavior must still be verified against the packaged artifacts selected by the operator.
 
 Public CLI commands:
 
 - `audit-requirement`
+- `audit-direction-binding`
 - `shadow-compare`
 - `schema`
 
 Public MCP tools:
 
 - `audit_requirement_relations_tool`
+- `audit_direction_binding_tool`
 - `shadow_compare_legacy_tool`
 - `semantic_guard_schema_tool`
 
@@ -42,6 +44,34 @@ Inputs:
 The public result must validate against the selected closed schema. `legacy-compat` is lossy projection, not execution of the predecessor.
 
 Analyzer authority ceilings are invariant: morphology is signal-only; dependency and LLM are candidate-only.
+
+## Direction-binding audit
+
+CLI:
+
+```sh
+semantic-guard audit-direction-binding --text "..." --morphology sudachi
+semantic-guard audit-direction-binding --file prompt.txt --context "..."
+```
+
+MCP: `audit_direction_binding_tool`
+
+Inputs:
+
+- one of text, UTF-8 file, or standard input for the CLI;
+- optional current `context`, appended after one newline and included in the source digest;
+- `morphology`: `none` or `sudachi`;
+- optional RFC 3339 `recorded_at`.
+
+The direct result validates against `semantic-guard-direction-binding-audit/v1`. It contains `decision-frame-summary/v3`, `direction-binding-summary/v1`, one `primary_rule_evaluation`, and a typed `workflow_disposition`. The two summaries have disjoint primary-emission scopes. Morphology remains `signal_only`, and numeric evidence is auxiliary and non-decisional.
+
+The primary operation frame must be wholly inside the `text` input region. `context` is digest-bound auxiliary material; a context-only question or example cannot become the primary operation, and a postposed context phrase does not replace direct source attachment.
+
+For strict replay in Python, pass the known `text` and `context` separately to `validate_direction_binding_audit`. Passing only their combined `source_text` checks source and self-declared region consistency, but cannot prove the original role boundary against relabeling.
+
+`morphology=none`, partial coverage, provider failure, or an invalid provider contract remains visible in `execution` and cannot be converted into a direction finding. The machine result never chooses a direction and keeps `acceptance_owner.acceptance_status=pending`.
+
+This is an independent additive contract. It does not add fields to `audit-result/v0`, change requirement-relation obligations, or make the direction result part of requirement assurance.
 
 ## Shadow comparison
 
@@ -73,12 +103,13 @@ CLI:
 
 ```sh
 semantic-guard schema audit-result
+semantic-guard schema direction-binding-audit
 semantic-guard schema llm-candidate-input
 ```
 
 MCP: `semantic_guard_schema_tool(name)`
 
-The name must be one of the closed known schema names. Path selection and unknown names are rejected. Schema availability does not imply that a sidecar has a public end-to-end runtime workflow.
+The name must be one of the 24 closed known schema names in the 1.1.0 source registry. Path selection and unknown names are rejected. `direction-binding-audit` has a matching CLI and MCP runtime; availability of any other sidecar schema still does not imply a public end-to-end workflow.
 
 ## Exit and transport behavior
 
@@ -88,6 +119,7 @@ The name must be one of the closed known schema names. Path selection and unknow
 - `--require-legacy` makes an unavailable, unpinned, schema-invalid, or incomplete legacy execution fail the shadow command.
 - MCP transport errors and tool exceptions are distinct from `pass`, `warn`, or `block` in an audit payload.
 - Standard output belongs to machine-readable results; diagnostics belong on standard error.
+- An unexpected internal exception that produces no schema-valid public JSON is a process/tool failure, not an audit `block`. A common structured internal-error envelope is outside the 1.1.0 contract and remains future work.
 
 ## Evidence and non-inference
 

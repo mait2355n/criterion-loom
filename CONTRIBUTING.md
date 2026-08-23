@@ -35,7 +35,7 @@ uv run --locked python scripts/validate_engineering_rule_pack.py
 uv build
 uv run --locked python scripts/verify_packaged_contracts.py \
   --wheel dist/semantic_guard-*.whl \
-  --sdist dist/semantic_guard-1.0.0.tar.gz
+  --sdist dist/semantic_guard-1.1.0.tar.gz
 ```
 
 For documentation changes, verify paths, examples, command names, contract versions, claim/evidence/limitation triples, and the distinction between canonicalization and adoption.

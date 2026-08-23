@@ -1,9 +1,23 @@
-# semantic-guard 1.0.0 実装状態
+# semantic-guard 1.1.0 実装状態
 
-更新日: 2026-07-21
-判定: 要求関係監査の局所契約を正本へ昇格し、Codex 局所環境の対応済み監査は v1 を唯一の既定経路へ切替済み。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択、外部配備切替及び不可逆な旧版廃止は未完。
+更新日: 2026-08-23
+判定: 現作業木の源では、要求関係監査に加え、独立した方向拘束監査の閉契約、CLI、MCP、Schema 及び回帰試験が実装済みである。1.1.0 の選択した wheel/sdist の配布契約と、fresh wheel 上の実 Sudachi 222組も局所検証済みである。GitHub CI、対象枝の merge、人間受理、実務妥当性及び外部配備は未成立である。
+
+この文書の `1.1.0` は現在の源契約を指す。GitHub上の merge済み状態、公開配布物又は運用既定化と同一視しない。policy、profile、各Schemaの `v1` / `v2` は各契約の意味版であり、package版へ一括置換しない。
+
+## 歴史的 1.0.0 基線
+
+2026-07-21 判定: 要求関係監査の局所契約を正本へ昇格し、Codex 局所環境の対応済み監査は v1 を唯一の既定経路へ切替済み。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択、外部配備切替及び不可逆な旧版廃止は未完。
 
 この正本化はリポジトリ、配布物、CLI、MCPの同一性判断である。後述する2026-07-16の試験値とwheel値は候補時点の歴史的観測であり、1.0.0へ束縛した新証拠ではない。
+
+## 1.1.0 源候補: 方向拘束監査の独立公開切片
+
+`direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4` は、`canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4` の現作業木へ選択統合した別 entity である。源には `semantic-guard-direction-binding-audit/v1`、CLI `audit-direction-binding`、MCP `audit_direction_binding_tool` 及び閉 Schema `direction-binding-audit` が存在する。既存 `audit-requirement`、`audit-result/v0` の字段形状、要求関係規則及び監査識別子の生成規則は変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。
+
+監査の一次判断は、同一対象・同一操作について、方向を開く表現へ方向を限定する表現が直接付着しているかである。scalar の `decision-frame-summary/v3` と六軸 non-scalar の `direction-binding-summary/v1` は発行範囲を分け、形態素解析は `signal_only`、数値は任意の影響証拠に限る。方向選択、一般自然言語理解、実務妥当性及び人間受理はこの局所契約に含めない。
+
+源泉は `local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895` から五ファイルだけを選択する `derived_from` とし、[source map](../migration/direction-binding-source-map-2026-08-23.json) に digest と移植先を固定した。`frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631` は変更せず、`candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0` は保留する。源実装、選択した1.1.0配布物及びfresh wheel上の実Sudachi 222組は局所で成立したが、GitHub上の統合、実務母集団の妥当性又は人間受理の証拠へは昇格させない。
 
 ## 原点要求との対応
 
@@ -34,7 +48,8 @@
 | 修復・人間利用効果 | `operational-outcome-evaluation.schema.json`, `operational_outcomes.py` | v1で権限不変条件、arm由来、封印task/enrollment分母、参加者・群単位、脱落、盲検裁定、Wilson/Hoeffdingを閉じる。肯定値も供給記録内に限定する |
 | 安全運用 | `secure-operation.schema.json`, `secure_operation.py` | v1で最新採択/廃止、scope、流路、保持、削除、再起動、証拠種別、資源上限を検査する。強い正判定は廃止し、内部整合状態と未立証claimを分ける |
 | 運用資格・移行 | `operational-qualification.schema.json`, `transition-plan.schema.json` | 12運用場面、配備包絡、再資格、sidecarからretirementまでの門、中止・rollbackを契約化する。実運用試験や切替判断は未実施 |
-| 呼出面 | `cli.py`, `mcp_server.py`, `schema_access.py` | 構造化要求監査、旧版影比較、全23契約schema取得、wheel同梱schema解決まで実装する。上記sidecar群を合成する実務workflowは未実装 |
+| 方向拘束公開切片 | `direction_binding_audit.py`, `request_decision_frame.py`, `request_direction_binding.py`, `direction-binding-audit.schema.json` | 同一対象・同一操作への明示方向付着をscalar 14族・49軸・56尺度語とnon-scalar六軸で検査する。形態素は`signal_only`、数値は補助のみ、人間受理は外部に残す |
+| 呼出面 | `cli.py`, `mcp_server.py`, `schema_access.py` | CLI四命令、MCP四工具、全24契約schema取得を源で実装する。1.1.0 wheel/sdistを構築し、選択wheelの隔離検証20件、方向CLI・Schema・`--fail-on`・MCP dispatchを再演済み。上記sidecar群を合成する実務workflowは未実装 |
 
 ## 層別準備度
 
@@ -42,8 +57,8 @@
 | --- | --- | --- |
 | A. 局所構造・意味契約 | schema、digest再演、参照閉包、権限境界、敵対fixture | 強い。ただし全て供給資料と局所規則の範囲内 |
 | B. v1内部合成 | requirement route、proof graph、state、trace、action、repair、評価、運用契約を個別APIで利用可能 | 部分成立。共通workflowと失効伝播は未統合 |
-| C. 公開CLI/MCP縦断 | requirement relation監査とassurance-v1は利用可能 | 部分成立。十工程・action・repair・評価・運用sidecarは未接続 |
-| D. 実務妥当性 | 評価protocolと閾値計算器は存在 | 未成立。実母集団、独立標識、実参加者、実provider、実運用観測が無い |
+| C. 公開CLI/MCP縦断 | requirement relation監査と独立direction-binding監査を源及び選択した1.1.0配布物から呼出可能 | 局所配布契約まで部分成立。GitHub CI/merge、十工程・action・repair・評価・運用sidecar接続は未成立 |
+| D. 実務妥当性 | 評価protocolと閾値計算器が存在し、fresh wheel上の実Sudachi 222組を再演済み | 未成立。222組は登録語彙の接続と限定契約の証拠に過ぎず、実母集団、独立標識、実参加者及び実運用観測が無い |
 | E. 外部真正性 | digestと型付き参照で内部差替えを検出 | 未成立。署名、本人性、信頼時刻、外部台帳、証拠保管庫を検証しない |
 | F. 人間採択・既定切替 | 判断対象をbasis digestへ結ぶ契約が存在し、Codex 局所環境の要求関係監査は v1 へ既定切替済み | 局所構成だけ成立。rule-pack、profile、評価方針、運用包絡、外部配備切替及びretirementは未採択 |
 
@@ -63,7 +78,17 @@
 
 各反例はv1/v2契約又は敵対試験へ移し、局所通過から外した。配布物はpackage資源を先に解決し、source fallbackをsource layout identityへ拘束した。これらは、試験数より試験分母の完全性が重要であることを示す。
 
-## 最終局所観測
+## 局所観測
+
+### 1.1.0 局所統合観測
+
+2026-08-23 の統合対象作業木では、敵対的査読で追加した引用範囲、未知尺度方向、入力役割、provider被覆、細粒度token分割及びCLI説明の回帰試験を含む unit test suite 608件が成立した。CPython 3.13 の局所環境では `Ran 608 tests in 44.866s`、隔離した CPython 3.11 環境では `Ran 608 tests in 46.528s` で、いずれも `OK` となった。時間値は当該実行の観測であり、性能保証ではない。
+
+同日の局所buildでは、1.1.0 の wheel と sdist の構築に成功し、選択wheelの配布契約検証20件が全て通過した。検証器は `public_schemas=24`、`cli_commands=4`、`mcp_tools=4` を記録し、導入済み配布物からの方向CLI、Schema取得、`--fail-on`及びMCP dispatchも通過した。
+
+fresh wheelへ`nlp-ja`を導入した隔離環境では、SudachiPy 0.6.11、SudachiDict-core 20260428、split mode Cを記録した。全56尺度語についてgap / high-pole bound / low-pole boundの168組、全18方向基底語についてgap / 二方向boundの54組、合計222組を公開監査と厳格source検証の双方へ通した。これは選択した局所artifactの登録語彙、配布契約及び解析器接続を示すが、GitHub CI、merge済みcommit、公開索引上の配布物、未登録表現、実務母集団又は人間受理の証拠ではない。
+
+### 1.0.0 歴史観測
 
 2026-07-16 16:08 JST時点の再実行では、単体・契約試験569件、JSON 35ファイルの重複鍵検査、Draft 2020-12 schema 27件の自己検査、`compileall`、Ruff、lock検査、検証正本の六検査、工学規則台帳の三検査が通過した。運用成果評価は対象54試験に加え、別agentによる正常2・既出反例25の再現行列で27件全て期待結果となった。
 
@@ -84,6 +109,9 @@
 ## 現段階で許される主張
 
 - 版付き限定規則で構造化機能要求の関係義務を監査できる。
+- 版付き限定規則で、登録済みscalar/non-scalar方向表現の直接拘束を独立契約として監査できる源実装がある。
+- 選択した1.1.0のwheel/sdistを構築でき、そのwheelで24 Schema、四CLI命令、四MCP工具を含む配布契約検証20件が通過した。
+- fresh wheel上の指定Sudachi版・辞書版・split modeで、登録済み56尺度語と18方向基底語のgap及び両方向bound、合計222組を再演できた。
 - 未解決理由、解析能力、候補由来、証拠効果、権限境界を再演可能な内部記録へ残せる。
 - 行為、状態、修復、評価、運用について、過大な成功主張を拒む候補契約と敵対試験が存在する。
 - 正本の全値投影driftを機械検出できる。
@@ -94,6 +122,8 @@
 - 任意の開発工程を体系知に照らして十分な精度で監査する。
 - AIエージェントの行為発生、本人性、真正性又は因果性を実証した。
 - 実務母集団で修復効果又は人間利用価値が成立した。
+- 別build又は公開索引上の1.1.0配布物、GitHub CI若しくはmerge済みGitHub状態が検証済みである。
+- 実Sudachi 222組から、未登録表現、実務母集団の妥当性、一般自然言語理解又は運用資格が成立した。
 - `pass`、局所試験、内部整合又はdigest一致が人間受理を意味する。
 - 局所切替記録だけを根拠に、別の運用環境の既定CLI/MCP経路へ切替えてよい。
 

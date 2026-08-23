@@ -1,0 +1,192 @@
+{
+  "schema_version": "semantic-guard-direction-binding-source-map/v1",
+  "notation_profile": "entity-reference-notation/v0",
+  "recorded_on": "2026-08-23",
+  "subject": {
+    "entity_id": "245dad95-accf-581c-8b0a-ae1c1f557de4",
+    "label": "direction-binding public slice",
+    "role": "additive_public_slice_integration",
+    "placement": {
+      "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+      "role": "integration_target"
+    },
+    "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+    "candidate_ref": "local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0"
+  },
+  "entities": {
+    "11c55966-ff12-50b9-b069-7bec6ed37cc4": {
+      "label": "canonical current",
+      "kind": "repository_state",
+      "status": "current"
+    },
+    "3fd59352-b0d9-58f6-8279-9309c8960631": {
+      "label": "frozen legacy archive",
+      "kind": "archive",
+      "status": "frozen"
+    },
+    "2b62dfa0-6d90-5c31-ae2d-34ec55c94895": {
+      "label": "local feature source snapshot",
+      "kind": "source_snapshot",
+      "status": "local_only_selective_source"
+    },
+    "32646741-8cec-5fe3-b9f3-2971a8a787f0": {
+      "label": "local vnext candidate",
+      "kind": "candidate_tree",
+      "status": "experimental_deferred"
+    },
+    "245dad95-accf-581c-8b0a-ae1c1f557de4": {
+      "label": "direction-binding public slice",
+      "kind": "public_contract_slice",
+      "status": "integration_candidate"
+    }
+  },
+  "identity_policy": {
+    "statement": "Entity identity is determined by entity_id, not by label, role, path, or content equality.",
+    "content_hash_semantics": "A content_hash is SHA-256 equality evidence for one selected file. It is not entity identity or human acceptance.",
+    "absolute_paths_allowed": false
+  },
+  "source_root": {
+    "ref": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+    "role": "local-only/selective-source",
+    "locator_policy": "All source paths in this record are relative to the identified source snapshot; this record does not publish a host path.",
+    "selection_rule": "Only the five digest-bound source files listed in adoptions are authorized for this slice. The source root is not authorized for wholesale copy."
+  },
+  "adoptions": [
+    {
+      "disposition": "adopt",
+      "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+      "source": {
+        "path": "src/semantic_guard/direction_binding_core.py",
+        "content_hash": {
+          "algorithm": "sha256",
+          "value": "96b0642b1dfd7743cb3ee257e96a1dd3c7e2ffa0b4730601efa6a4e3590e5af9"
+        }
+      },
+      "target": {
+        "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+        "path": "src/semantic_guard/direction_binding_core.py",
+        "expected_content_hash": "96b0642b1dfd7743cb3ee257e96a1dd3c7e2ffa0b4730601efa6a4e3590e5af9"
+      }
+    },
+    {
+      "disposition": "adopt",
+      "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+      "source": {
+        "path": "src/semantic_guard/direction_spaces.py",
+        "content_hash": {
+          "algorithm": "sha256",
+          "value": "6eab5a8534b074c7fc746da7652916213e171044cdb636695ec51a452ca66848"
+        }
+      },
+      "target": {
+        "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+        "path": "src/semantic_guard/direction_spaces.py",
+        "expected_content_hash": "6eab5a8534b074c7fc746da7652916213e171044cdb636695ec51a452ca66848"
+      }
+    },
+    {
+      "disposition": "adopt",
+      "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+      "source": {
+        "path": "src/semantic_guard/decision_frame_scales.py",
+        "content_hash": {
+          "algorithm": "sha256",
+          "value": "12c31bec44b096665537a48ef3bf0ca1e9c7b9ccb64b092274462751d0d4ea8c"
+        }
+      },
+      "target": {
+        "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+        "path": "src/semantic_guard/decision_frame_scales.py",
+        "expected_content_hash": "12c31bec44b096665537a48ef3bf0ca1e9c7b9ccb64b092274462751d0d4ea8c"
+      }
+    },
+    {
+      "disposition": "adopt",
+      "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+      "source": {
+        "path": "src/semantic_guard/request_decision_frame.py",
+        "content_hash": {
+          "algorithm": "sha256",
+          "value": "7f51fda673253351b93e9371c7b87a1747f89264d99460a688be50b25bff1265"
+        }
+      },
+      "target": {
+        "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+        "path": "src/semantic_guard/request_decision_frame.py",
+        "expected_content_hash": "7f51fda673253351b93e9371c7b87a1747f89264d99460a688be50b25bff1265"
+      }
+    },
+    {
+      "disposition": "adopt",
+      "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
+      "source": {
+        "path": "src/semantic_guard/request_direction_binding.py",
+        "content_hash": {
+          "algorithm": "sha256",
+          "value": "1bbe2d0a146709c04ef1ede2d073136270bb243ca7bb26b7d8b0083f35f45e69"
+        }
+      },
+      "target": {
+        "ref": "canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4",
+        "path": "src/semantic_guard/request_direction_binding.py",
+        "expected_content_hash": "1bbe2d0a146709c04ef1ede2d073136270bb243ca7bb26b7d8b0083f35f45e69"
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "disposition": "defer",
+      "candidate_ref": "local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0",
+      "source": {
+        "path": "vnext/",
+        "content_hash": {
+          "status": "not_captured_by_this_map",
+          "reason": "The candidate tree is outside the selected source set and is not an integration input."
+        }
+      },
+      "target": {
+        "status": "none",
+        "path": null
+      },
+      "reason": "Possible future relation only; do not merge identity, copy files, or infer adoption."
+    }
+  ],
+  "excluded": [
+    {
+      "disposition": "exclude",
+      "ref": "frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631",
+      "source": {
+        "path": "legacy/semantic-guard-v0.1.0/",
+        "content_hash": {
+          "status": "not_recomputed_by_this_map",
+          "evidence_ref": "migration/legacy-baseline-2026-07-17.json"
+        }
+      },
+      "target": {
+        "status": "none",
+        "path": null
+      },
+      "reason": "The predecessor remains frozen and may be used only through an explicit compatibility or comparison boundary."
+    }
+  ],
+  "integration_boundaries": [
+    "Do not move source directories or publish host-absolute paths.",
+    "Do not copy the local source root wholesale.",
+    "Do not modify or transparently invoke the frozen legacy archive.",
+    "Do not import the deferred vnext candidate.",
+    "Keep the direction-binding public slice independent from audit-result/v0 and the requirement-relation public contract.",
+    "Keep morphology authority at signal_only and numeric evidence auxiliary.",
+    "Keep final human acceptance external and pending."
+  ],
+  "verification": {
+    "source_digest_check": "Recompute each selected source content_hash before integration and compare it byte-for-byte with this map.",
+    "target_digest_check": "Recompute each target after selective copy and require equality with expected_content_hash before intentional adaptation.",
+    "absolute_path_check": "Reject this record if any path begins with a host root or home-directory marker.",
+    "public_contract_check": "Verify CLI, MCP, schema retrieval, installed artifacts, unknown/error semantics, and regression isolation separately."
+  },
+  "human_acceptance": {
+    "status": "pending",
+    "owner": "external_human",
+    "statement": "This map records selected lineage and dispositions; it does not accept the public slice or authorize release."
+  }
+}

@@ -9,6 +9,7 @@ from typing import Sequence
 from ._version import __version__
 from .assurance_graph import public_assurance_claim_v1
 from .compat import project_legacy_result
+from .direction_binding_audit import audit_direction_binding
 from .engine import audit_requirement_relations
 from .japanese_dependency import GinzaDependencyProvider
 from .japanese_morphology import SudachiMorphologyProvider
@@ -32,9 +33,13 @@ EXIT_LEGACY_REQUIRED = 4
 MAX_LLM_CANDIDATE_BUNDLE_BYTES = 1_048_576
 
 
-def _add_input(parser: argparse.ArgumentParser) -> None:
+def _add_input(
+    parser: argparse.ArgumentParser,
+    *,
+    text_help: str = "Requirement record text.",
+) -> None:
     source = parser.add_mutually_exclusive_group()
-    source.add_argument("--text", help="Requirement record text.")
+    source.add_argument("--text", help=text_help)
     source.add_argument("--file", type=Path, help="UTF-8 file. Reads stdin when omitted.")
 
 
@@ -107,6 +112,28 @@ def build_parser() -> argparse.ArgumentParser:
         "--recorded-at",
         help="RFC 3339 observation time for reproducible public records.",
     )
+
+    direction = subparsers.add_parser(
+        "audit-direction-binding",
+        help="Audit one bounded scalar or non-scalar direction-open expression.",
+    )
+    _add_input(direction, text_help="Direction-open expression text.")
+    direction.add_argument(
+        "--context",
+        default="",
+        help="Optional current context, appended after one newline and digest-bound.",
+    )
+    direction.add_argument(
+        "--morphology",
+        choices=("none", "sudachi"),
+        default="none",
+        help="Explicit source-aligned morphology provider; none yields indeterminate.",
+    )
+    direction.add_argument(
+        "--recorded-at",
+        help="RFC 3339 observation time for a reproducible public record.",
+    )
+    _add_fail_on(direction)
 
     shadow = subparsers.add_parser(
         "shadow-compare",
@@ -233,6 +260,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     text = _read_text(args, parser)
+    if args.command == "audit-direction-binding":
+        morphology = (
+            SudachiMorphologyProvider() if args.morphology == "sudachi" else None
+        )
+        try:
+            payload = audit_direction_binding(
+                text,
+                context=args.context,
+                morphology_provider=morphology,
+                recorded_at=args.recorded_at,
+            )
+        except (TypeError, ValueError) as exc:
+            parser.error(str(exc))
+        _write(payload)
+        return _disposition_exit(
+            payload["workflow_disposition"]["status"],
+            args.fail_on,
+        )
+
     morphology, dependency, llm = _providers(args, parser)
     report = audit_requirement_relations(
         text,

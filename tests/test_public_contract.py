@@ -195,7 +195,7 @@ class PublicContractTests(unittest.TestCase):
             if item["source_ref"].get("role") == "audit_producer"
         )
 
-        self.assertEqual(__version__, "1.0.0")
+        self.assertEqual(__version__, "1.1.0")
         self.assertEqual(producer["source_ref"]["entity_id"], "semantic-guard")
         self.assertEqual(producer["source_ref"]["entity_version"], __version__)
         validate_public_audit(payload)

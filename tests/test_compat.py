@@ -47,7 +47,7 @@ class LegacyProjectionTests(unittest.TestCase):
             projection["details"]["score_semantics"],
             "compatibility_ordinal_not_correctness_probability",
         )
-        self.assertEqual(projection["details"]["canonical_producer_version"], "1.0.0")
+        self.assertEqual(projection["details"]["canonical_producer_version"], "1.1.0")
 
     def test_projection_does_not_hide_canonical_uncertainty(self) -> None:
         text = COMPLETE.replace(

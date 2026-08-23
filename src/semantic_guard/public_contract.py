@@ -48,6 +48,7 @@ KNOWN_SCHEMA_NAMES = frozenset(
         "audit-result",
         "common",
         "decision-request",
+        "direction-binding-audit",
         "evidence-validity-policy",
         "field-evaluation",
         "lifecycle-profile-registry",

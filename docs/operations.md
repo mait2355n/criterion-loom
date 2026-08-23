@@ -1,6 +1,6 @@
-# semantic-guard 1.0.0 運用手引
+# semantic-guard 1.1.0 運用手引
 
-## 入力契約
+## 要求関係入力契約
 
 最初の縦断実装は、一件の構造化機能要求を対象にする。次の七欄を一行ずつ `label: value` で与える。
 
@@ -16,21 +16,39 @@
 
 CLI と MCP が一回に受け取る要求本文は UTF-8 で 262,144 bytes 以下とする。この縦断実装は一件の構造化要求を対象にしており、文書束を一要求に偽装して投入してはならない。上限超過は解析前に拒否する。
 
+## 方向拘束入力契約
+
+`audit-direction-binding` / `audit_direction_binding_tool` は要求関係監査から独立し、一件の方向を開く表現と、それへ直接付着する現在の方向限定条件だけを対象にする。CLI は `--text`、UTF-8 `--file` 又は標準入力を受け、任意の `--context` を一改行の後へ結合する。MCP は `text` と任意の `context` を受ける。結合後の入力は同じ 262,144 bytes 上限と SHA-256 拘束を持つ。ただし主操作のframeは`source_text`領域内に必要であり、`context`内だけの別質問や例を主発行器にしない。
+
+```sh
+uv run --locked semantic-guard audit-direction-binding \
+  --text '体重が重い順に並べたとき、Cの次に体重が重い人は誰か。' \
+  --context '候補集合は現在の表だけを使う。' \
+  --morphology sudachi
+uv run --locked semantic-guard schema direction-binding-audit
+```
+
+形態素解析は `signal_only` で、数値投影は補助証拠に限る。`morphology=none`、部分被覆、失敗又は契約不整合を方向拘束の成立へ洗浄しない。方向監査は `semantic-guard-direction-binding-audit/v1` を返し、既存 `audit-result/v0` へ字段を追加しない。
+
 ## Wheel 配布契約の隔離検証
 
-正本repository rootを作業directoryとし、信頼済みの局所作業木から wheel を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。検証器は隣接する偽 `schemas/` と `validation/` を置いた上で、包内23 schema、CLI/MCP schema面、生活周期候補10件、工学規則候補11件とそのschema、空objectを拒む運用成果schemaを再演する。
+正本repository rootを作業directoryとし、信頼済みの局所作業木から wheel を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。検証器は隣接する偽 `schemas/` と `validation/` を置いた上で、包内24 schema、CLI四命令、MCP四工具、生活周期候補10件、工学規則候補11件とそのschema、空objectを拒む運用成果schemaを再演する。
 
 ```sh
 uv build --out-dir dist .
 uv run --locked python scripts/verify_packaged_contracts.py \
-  --wheel dist/semantic_guard-1.0.0-*.whl \
-  --sdist dist/semantic_guard-1.0.0.tar.gz \
+  --wheel dist/semantic_guard-1.1.0-*.whl \
+  --sdist dist/semantic_guard-1.1.0.tar.gz \
   --timeout-seconds 180
 ```
 
 `dist/` には対象 wheel 一個だけを置く。標準出力は機械可読 JSON 一個で、`status=pass` の時だけ終了符号 `0`、入力、導入、資源上限、経路又は契約検証の不成立は非零となる。検証器は外部の Python、監査program又は資源pathを引数で選ばせず、wheel量、展開量、全体時限、子過程CPU、出力量、生成file量及びfile descriptor数を制限する。Darwinでは有限 `RLIMIT_AS` を受理しないため、住所空間上限だけは適用せず結果の限界へ明記する。
 
 これは未知の wheel を安全に実行する隔離器ではない。wheelのimport自体が符号実行なので、アナタが信頼する局所buildだけを対象にする。依存解決には二進配布物だけを許すが、索引、通信及びその時点の互換依存版には依存する。成功しても、同梱資源と局所契約の再演を示すだけで、実地妥当性、運用資格、外部真正性、保安認証又は人間受理にはならない。
+
+2026-08-23 の局所統合観測では、1.1.0 の wheel と sdist を構築し、選択した wheel に対する隔離検証20件が全て通過した。検証結果は `public_schemas=24`、`cli_commands=4`、`mcp_tools=4` を記録し、導入済み配布物からの方向拘束 CLI、Schema 取得、`--fail-on` 及び MCP dispatchも通過した。これは当該局所buildの配布契約を再演した証拠であり、別build、公開索引上の配布物、GitHub上のcommit又は人間受理へ一般化しない。
+
+同じ fresh wheel へ `nlp-ja` を導入した隔離環境では、SudachiPy 0.6.11、SudachiDict-core 20260428、split mode C を記録した。全56尺度語の gap / high-pole bound / low-pole bound 168組と、全18方向基底語の gap / 二方向bound 54組、合計222組を公開監査と厳格source検証の双方で再演した。この222組は package された登録語彙、方向拘束契約及び解析器接続の限定的な実行証拠であり、未登録表現、実務母集団の妥当性、運用資格又は外部真正性を示さない。
 
 ## 解析系列
 
@@ -65,6 +83,7 @@ CLI の終了符号 `0` は JSON 生成と契約検証が成功したことを�
 - `conditional` で必要になった解析器が未構成、失敗、部分被覆なら `pass` にはならない。
 - `shadow_all` の未構成解析器は観測として残るが、実効判定を変えない。
 - Sudachi と GiNZA は任意依存であり、導入していない環境では障害が明示される。
+- 方向拘束監査では Sudachi だけを選択できる。未構成、部分被覆、失敗又は能力・split mode 不整合は `primary_rule_evaluation.state=indeterminate|invalid` として残り、形態素だけから方向を導出しない。
 - `partial` な解析器出力は全てを成功扱いにも全てを廃棄にもせず、充足能力だけを候補専用経路で使う。係り受け投影は `dependency`、条件作用域の限定導出は `dependency` と `scope` の充足を要する。欠落能力がある実行は、候補を使えても完全被覆又は `pass` にはならない。
 - GiNZA の生候補は `dependency:*` 名前空間に留める。そのうち主語、目的語、原文整列した条件作用域だけを、版付き規則で `performs`、`acts_on`、`triggered_by` の意味関係候補へ投影する。これは差分検知用候補であり支持ではない。
 
@@ -138,6 +157,7 @@ root は絶対 path で、`.venv/bin/python`、固定位置の `vnext/scripts/le
 
 ## 切替禁止条件
 
+- GitHub CI の成功と対象枝の merge を確認していない。
 - 重大誤満足率を実務資料で測っていない。
 - 未解決差分が残る。
 - 公開 schema と実体の適合試験が失敗する。
