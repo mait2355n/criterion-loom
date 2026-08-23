@@ -9,17 +9,17 @@
 | Field | Value |
 | --- | --- |
 | `context` | 方向拘束監査を既存要求関係監査から独立した公開切片として選択移植する |
-| `current_state` | 1.1.0 源の公開候補実装。閉Schema、CLI、MCP、源試験、選択配布物の隔離検証及び実Sudachi 222組が存在する |
+| `current_state` | 1.1.0 公開切片はGitHub mainのmerge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d`へ統合済み。閉Schema、CLI、MCP、源試験、選択配布物の隔離検証及び実Sudachi 222組が存在する |
 | `schema_version` | `semantic-guard-direction-binding-audit/v1` |
 | `repository_id` | `canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4` |
 | `repository_profile` | 新しい global profile は導入しない。この契約を `repository_id` と下記三公開面だけへ局限する |
 | `public_surfaces` | CLI `audit-direction-binding`、MCP `audit_direction_binding_tool`、Schema `direction-binding-audit` |
 | `output_shape` | `schema_version` を持つ直接 JSON object。字段要約は後述する |
-| `next_action` | GitHub CI、対象枝merge、実務母集団及び人間受理を別々に検証する |
-| `detail_refs` | [source map](../migration/direction-binding-source-map-2026-08-23.json)、[direction-binding Schema](../schemas/direction-binding-audit.schema.json) |
-| `evidence_source` | digest 付き source map と正本作業木。推測又は実地証拠ではない |
+| `next_action` | 実務母集団、人間受理、公開索引配布及び運用採択を別々に検証する |
+| `detail_refs` | [source map](../migration/direction-binding-source-map-2026-08-23.json)、[direction-binding Schema](../schemas/direction-binding-audit.schema.json)、[GitHub統合証拠](audits/direction-binding-integration-2026-08-23.md) |
+| `evidence_source` | digest付きsource map、局所検証及びmerge SHAへ束縛したhosted CI観測。実地妥当性又は人間受理の証拠ではない |
 | `record_time_policy` | 本資料の `recorded_on=2026-08-23` は ISO 8601 日付で時区なし。実行記録の `recorded_at` は RFC 3339 の時差付き日時 |
-| `inference_status` | 源実装、選択した1.1.0配布物及び実Sudachi 222組は局所成立。GitHub統合、実務妥当性及び人間受理は未立証 |
+| `inference_status` | 源実装、選択した1.1.0配布物、実Sudachi 222組、GitHub統合及びmerge後main CIは成立。実務妥当性、公開配布及び人間受理は未立証 |
 | `pending_decision` | 公開契約の最終受理及び人間採択 |
 | `exceptions` | 既存要求関係監査、凍結旧版、vnext 候補及び一般自然言語理解は対象外 |
 | `non_goals` | 方向選択、暗黙方向の生成、実務性能主張及び人間受理。詳細は「非目的」節 |
@@ -48,7 +48,7 @@ uv run --locked semantic-guard audit-direction-binding \
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-この切片を `audit-requirement` の任意 field へ後付けせず、既存の `audit-result/v0` の字段形状、要求関係規則及び監査識別子の生成規則を変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。CLI、MCP、Schema の源実装と回帰試験に加え、選択wheel上の公開面同等性と実Sudachi 222組は局所で成立した。別build、公開索引、GitHub CI/merge、未登録表現、実務母集団又は人間受理までは、この限定証拠から推論しない。
+この切片を `audit-requirement` の任意 field へ後付けせず、既存の `audit-result/v0` の字段形状、要求関係規則及び監査識別子の生成規則を変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。CLI、MCP、Schema の源実装と回帰試験に加え、選択wheel上の公開面同等性と実Sudachi 222組は局所で成立した。実装はPR #3でmainへmergeされ、merge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` のhosted CI四jobも成功した。公開索引上の配布物、hosted artifactと局所wheelのbyte同一性、未登録表現、実務母集団又は人間受理までは、この限定証拠から推論しない。
 
 ## 機械出力契約の要約
 
@@ -161,8 +161,13 @@ content hash は選択源泉と移植対象の内容一致証拠であり、enti
 5. 1.1.0のwheel/sdistを構築し、選択wheelの配布契約検証20件、24 Schema、四CLI命令、四MCP工具、方向CLI・Schema・`--fail-on`・MCP dispatchを再演した。
 6. fresh wheelと`nlp-ja`で、SudachiPy 0.6.11、SudachiDict-core 20260428、split mode Cを記録した。全56尺度語のgap / high-pole bound / low-pole bound 168組と、全18方向基底語のgap / 二方向bound 54組、合計222組を公開監査及び厳格source検証で再演した。
 
+GitHubで成立したもの:
+
+7. [PR #3](https://github.com/morie-lene/criterion-loom/pull/3)は実装commit `c10ba59f8ab16659b50e9cbf13da07c9889ed195`をmerge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d`へ統合し、PR CI四jobが成功した。
+8. merge後mainの[run 32646816407](https://github.com/morie-lene/criterion-loom/actions/runs/32646816407)はsubject SHA `a77c3cbdc69295572e90333e2a6e9da690fbbb6d`に対して、Python 3.11、Python 3.13、凍結0.1.0煙試験、wheel及び導入済み公開面の四jobを成功させた。詳細は[統合証拠](audits/direction-binding-integration-2026-08-23.md)へ分離した。
+
 なお未成立のもの:
 
-1. GitHub CIの成功、対象枝のmerge及びmerge後SHAへの証拠束縛。
-2. 実務母集団での妥当性、運用資格及び外部真正性。
+1. 実務母集団での妥当性、運用資格及び外部真正性。
+2. 公開索引上の1.1.0配布、release/tag及びhosted artifactと局所wheelのbyte同一性。
 3. `acceptance_owner.acceptance_status=pending` を変更する外部人間の受理記録。

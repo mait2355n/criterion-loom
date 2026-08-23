@@ -50,6 +50,8 @@ uv run --locked python scripts/verify_packaged_contracts.py \
 
 同じ fresh wheel へ `nlp-ja` を導入した隔離環境では、SudachiPy 0.6.11、SudachiDict-core 20260428、split mode C を記録した。全56尺度語の gap / high-pole bound / low-pole bound 168組と、全18方向基底語の gap / 二方向bound 54組、合計222組を公開監査と厳格source検証の双方で再演した。この222組は package された登録語彙、方向拘束契約及び解析器接続の限定的な実行証拠であり、未登録表現、実務母集団の妥当性、運用資格又は外部真正性を示さない。
 
+実装commit `c10ba59f8ab16659b50e9cbf13da07c9889ed195` は [PR #3](https://github.com/morie-lene/criterion-loom/pull/3) でmergeされ、mainのsubject SHAは `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` となった。PR CIとmerge後mainの [run 32646816407](https://github.com/morie-lene/criterion-loom/actions/runs/32646816407)は、Python 3.11、Python 3.13、凍結0.1.0煙試験、wheel及び導入済み公開面を成功させた。hosted runはartifactをuploadしたが、本記録はそのdigestを再取得していないため局所wheelとのbyte同一性を主張しない。詳細は[統合証拠](audits/direction-binding-integration-2026-08-23.md)を参照する。
+
 ## 解析系列
 
 ```text
@@ -157,7 +159,7 @@ root は絶対 path で、`.venv/bin/python`、固定位置の `vnext/scripts/le
 
 ## 切替禁止条件
 
-- GitHub CI の成功と対象枝の merge を確認していない。
+- 導入対象を上記merge SHA又はそれを後継する明示commitへ束縛していない、又は、対応するhosted CIの成功を確認していない。
 - 重大誤満足率を実務資料で測っていない。
 - 未解決差分が残る。
 - 公開 schema と実体の適合試験が失敗する。
