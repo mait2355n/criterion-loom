@@ -11,7 +11,8 @@
       "role": "integration_target"
     },
     "derived_from": "local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895",
-    "candidate_ref": "local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0"
+    "candidate_ref": "local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0",
+    "integration_evidence_ref": "direction-binding hosted integration evidence・b811c797-d73c-459e-b44d-6299705fc613"
   },
   "entities": {
     "11c55966-ff12-50b9-b069-7bec6ed37cc4": {
@@ -37,7 +38,14 @@
     "245dad95-accf-581c-8b0a-ae1c1f557de4": {
       "label": "direction-binding public slice",
       "kind": "public_contract_slice",
-      "status": "integration_candidate"
+      "status": "integrated_public_slice"
+    },
+    "b811c797-d73c-459e-b44d-6299705fc613": {
+      "label": "direction-binding hosted integration evidence",
+      "kind": "hosted_integration_evidence",
+      "status": "observed",
+      "path": "docs/audits/direction-binding-integration-2026-08-23.md",
+      "subject_commit": "a77c3cbdc69295572e90333e2a6e9da690fbbb6d"
     }
   },
   "identity_policy": {

@@ -10,6 +10,7 @@
 - [Migration from 0.1.0](migration-v0.1.0-to-v1.0.0.md)
 - [Canonical migration classification map](../migration/migration-map.md)
 - [v1.0.0 canonicalization audit](audits/canonicalization-audit-v1.0.0-2026-07-17.md)
+- [v1.1.0 direction-binding GitHub integration evidence](audits/direction-binding-integration-2026-08-23.md)
 
 ## Status and lineage
 
