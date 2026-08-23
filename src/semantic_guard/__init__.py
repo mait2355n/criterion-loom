@@ -3,6 +3,10 @@
 from semantic_guard._version import __version__
 from semantic_guard.aggregation import aggregate_audit_result
 from semantic_guard.engine import RequirementAuditReport, audit_requirement_relations
+from semantic_guard.direction_binding_audit import (
+    audit_direction_binding,
+    validate_direction_binding_audit,
+)
 from semantic_guard.models import (
     AuditExecution,
     Challenge,
@@ -49,10 +53,12 @@ __all__ = [
     "Workflow",
     "aggregate_audit_result",
     "audit_requirement_relations",
+    "audit_direction_binding",
     "combined_challenge",
     "combined_coverage",
     "pass_invariants_hold",
     "load_public_schema",
     "public_audit_payload",
     "validate_public_audit",
+    "validate_direction_binding_audit",
 ]

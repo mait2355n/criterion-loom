@@ -23,7 +23,7 @@ body:
     attributes:
       label: Version and surface
       description: State the semantic-guard version and whether this is canonical v1 or frozen 0.1.0.
-      placeholder: "semantic-guard 1.0.0 / audit-requirement"
+      placeholder: "semantic-guard 1.1.0 / audit-direction-binding"
     validations:
       required: true
   - type: textarea

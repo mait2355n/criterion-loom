@@ -10,6 +10,20 @@ All notable repository and public-contract changes are recorded here. Package ve
 - Removed the frozen pre-v1 Skill backup from Codex Skill discovery while preserving it in the external archive.
 - Recorded the human-directed, reversible local-default decision separately from production qualification and irreversible predecessor retirement.
 
+## [1.1.0] - 2026-08-23
+
+### Added
+
+- Added the independent `audit-direction-binding` CLI command, `audit_direction_binding_tool` MCP tool, and closed `semantic-guard-direction-binding-audit/v1` contract.
+- Added bounded scalar direction coverage for 14 scale families and 49 axes, plus six non-scalar direction axes and twelve directions.
+- Added a digest-bound source map and documentation index without rewriting the frozen 0.1.0 archive or adopting the deferred `vnext` candidate tree.
+
+### Boundaries
+
+- Preserved `audit-requirement` and `semantic-guard-audit-result/v0` without semantic changes.
+- Kept morphology at `signal_only`; numeric projection remains auxiliary and cannot change the primary finding.
+- Kept field validity, unrestricted-language accuracy, operational qualification, and final human acceptance outside the release claim.
+
 ## [1.0.0] - 2026-07-17
 
 ### Canonicalized

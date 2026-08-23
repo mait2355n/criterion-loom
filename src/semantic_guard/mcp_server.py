@@ -11,6 +11,7 @@ from mcp.server.fastmcp import FastMCP
 
 from .assurance_graph import public_assurance_claim_v1
 from .compat import project_legacy_result
+from .direction_binding_audit import audit_direction_binding
 from .engine import audit_requirement_relations
 from .japanese_dependency import GinzaDependencyProvider
 from .japanese_morphology import SudachiMorphologyProvider
@@ -98,6 +99,47 @@ def audit_requirement_relations_tool(
         dependency=dependency,
         llm_candidate_bundle=llm_candidate_bundle,
         output=output,
+    )
+
+
+def audit_direction_binding_service(
+    text: str,
+    *,
+    context: str = "",
+    morphology: str = "none",
+    recorded_at: str | None = None,
+) -> dict[str, Any]:
+    """Run the independent direction-binding audit without changing v1 obligations."""
+
+    if morphology not in {"none", "sudachi"}:
+        raise ValueError("morphology must be none or sudachi")
+    provider = SudachiMorphologyProvider() if morphology == "sudachi" else None
+    return audit_direction_binding(
+        text,
+        context=context,
+        morphology_provider=provider,
+        recorded_at=recorded_at,
+    )
+
+
+@mcp.tool()
+def audit_direction_binding_tool(
+    text: str,
+    context: str = "",
+    morphology: str = "none",
+    recorded_at: str | None = None,
+) -> dict[str, Any]:
+    """Audit whether one direction-open expression has a directly bound direction.
+
+    Morphology is signal-only. Numeric witnesses cannot change the primary
+    evaluation, and machine workflow pass is not human acceptance.
+    """
+
+    return audit_direction_binding_service(
+        text,
+        context=context,
+        morphology=morphology,
+        recorded_at=recorded_at,
     )
 
 

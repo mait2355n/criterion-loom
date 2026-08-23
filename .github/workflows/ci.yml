@@ -117,27 +117,33 @@ jobs:
 
       - name: Verify packaged contracts
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0-*.whl' -print -quit)"
-          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0.tar.gz' -print -quit)"
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
+          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0.tar.gz' -print -quit)"
           test -n "$WHEEL"
           test -n "$SDIST"
           uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"
 
       - name: Verify installed CLI and MCP inventory
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.0.0-*.whl' -print -quit)"
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
           VENV="$RUNNER_TEMP/semantic-guard-installed"
           python -m venv "$VENV"
           "$VENV/bin/python" -m pip install --upgrade pip
           "$VENV/bin/python" -m pip install "$WHEEL"
           "$VENV/bin/semantic-guard" --help
           "$VENV/bin/semantic-guard" schema audit-result > "$RUNNER_TEMP/audit-result.schema.json"
+          "$VENV/bin/semantic-guard" schema direction-binding-audit > "$RUNNER_TEMP/direction-binding-audit.schema.json"
+          "$VENV/bin/semantic-guard" audit-direction-binding \
+            --text '横一列で、Aの次の項目はどれですか？' \
+            --recorded-at '2026-08-23T00:00:00Z' \
+            > "$RUNNER_TEMP/direction-binding-audit.json"
           test -x "$VENV/bin/semantic-guard-mcp"
           "$VENV/bin/python" - <<'PY'
           import asyncio
           from semantic_guard.mcp_server import mcp
 
           expected = {
+              "audit_direction_binding_tool",
               "audit_requirement_relations_tool",
               "shadow_compare_legacy_tool",
               "semantic_guard_schema_tool",
@@ -145,12 +151,23 @@ jobs:
           actual = {tool.name for tool in asyncio.run(mcp.list_tools())}
           if actual != expected:
               raise SystemExit(f"installed MCP inventory mismatch: {sorted(actual)}")
+          _, payload = asyncio.run(
+              mcp.call_tool(
+                  "audit_direction_binding_tool",
+                  {
+                      "text": "横一列で、Aの次の項目はどれですか？",
+                      "recorded_at": "2026-08-23T00:00:00Z",
+                  },
+              )
+          )
+          if payload["primary_rule_evaluation"]["state"] != "indeterminate":
+              raise SystemExit("installed direction-binding dispatch did not fail closed")
           PY
 
       - name: Upload wheel
         uses: actions/upload-artifact@v7
         with:
-          name: semantic-guard-1.0.0-distributions
+          name: semantic-guard-1.1.0-distributions
           path: |
             dist/*.whl
             dist/*.tar.gz

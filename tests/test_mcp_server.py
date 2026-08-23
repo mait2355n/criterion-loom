@@ -16,6 +16,7 @@ from semantic_guard.mcp_server import (
     _LEGACY_BASELINE,
     _LEGACY_BASELINE_SHA256,
     _fixed_legacy_shadow_paths,
+    audit_direction_binding_service,
     audit_requirement_relations_service,
     semantic_guard_constitution_resource,
     semantic_guard_schema_resource,
@@ -93,6 +94,7 @@ class McpServiceTests(unittest.TestCase):
             {item.name for item in asyncio.run(mcp.list_tools())},
             {
                 "audit_requirement_relations_tool",
+                "audit_direction_binding_tool",
                 "semantic_guard_schema_tool",
                 "shadow_compare_legacy_tool",
             },
@@ -127,6 +129,20 @@ class McpServiceTests(unittest.TestCase):
             payload["workflow_disposition"]["acceptance_owner"],
             "human_external_to_semantic_guard",
         )
+
+    def test_direction_binding_service_fails_closed_without_morphology(self) -> None:
+        payload = audit_direction_binding_service(
+            "横一列で、Aの次の項目はどれですか？",
+            recorded_at="2026-08-23T00:00:00Z",
+        )
+
+        self.assertEqual(
+            payload["schema_version"],
+            "semantic-guard-direction-binding-audit/v1",
+        )
+        self.assertEqual(payload["primary_rule_evaluation"]["state"], "indeterminate")
+        self.assertEqual(payload["workflow_disposition"]["status"], "warn")
+        self.assertEqual(payload["execution"]["authority"], "signal_only")
 
     def test_service_direct_short_circuit_is_explicit(self) -> None:
         payload = audit_requirement_relations_service(

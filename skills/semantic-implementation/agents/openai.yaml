@@ -1,12 +1,12 @@
 interface:
   display_name: "Semantic Implementation"
-  short_description: "Route work through bounded v1 requirement audits"
-  default_prompt: "Use $semantic-implementation to audit requirement relations, preserve uncertainty, and keep final human judgment explicit."
+  short_description: "Route work through bounded v1 requirement and direction audits"
+  default_prompt: "Use $semantic-implementation to audit requirement relations or independent direction binding, preserve uncertainty, and keep final human judgment explicit."
 dependencies:
   tools:
     - type: "mcp"
       value: "semantic_guard"
-      description: "Local semantic-guard MCP server exposing the three canonical v1 audit tools"
+      description: "Local semantic-guard MCP server exposing the four current source v1 audit tools"
       transport: "stdio"
 policy:
   allow_implicit_invocation: true

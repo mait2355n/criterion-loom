@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from semantic_guard.cli import main
+from semantic_guard.cli import build_parser, main
 from semantic_guard.legacy_runner import MAX_REQUIREMENT_INPUT_BYTES
 
 
@@ -73,7 +73,15 @@ class CliTests(unittest.TestCase):
                 main(("--version",))
 
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue(), "semantic-guard 1.0.0\n")
+        self.assertEqual(output.getvalue(), "semantic-guard 1.1.0\n")
+
+    def test_direction_input_help_names_the_direction_expression(self) -> None:
+        parser = build_parser()
+        subparsers = next(action for action in parser._actions if action.dest == "command")
+        help_text = subparsers.choices["audit-direction-binding"].format_help()
+
+        self.assertIn("Direction-open expression text.", help_text)
+        self.assertNotIn("Requirement record text.", help_text)
 
     def test_public_audit_safe_default_does_not_pass_without_required_providers(self) -> None:
         status, payload = self.invoke(

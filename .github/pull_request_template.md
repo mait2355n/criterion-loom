@@ -32,8 +32,8 @@ uv run --locked python scripts/render_verification_projection.py --check
 uv run --locked python scripts/validate_engineering_rule_pack.py
 uv build
 uv run --locked python scripts/verify_packaged_contracts.py \
-  --wheel dist/semantic_guard-1.0.0-py3-none-any.whl \
-  --sdist dist/semantic_guard-1.0.0.tar.gz
+  --wheel dist/semantic_guard-1.1.0-py3-none-any.whl \
+  --sdist dist/semantic_guard-1.1.0.tar.gz
 ```
 
 - Commands run and outcomes:

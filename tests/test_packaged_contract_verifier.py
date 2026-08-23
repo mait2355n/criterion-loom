@@ -30,11 +30,15 @@ class PackagedContractVerifierTests(unittest.TestCase):
         self.assertIn("canonical_distribution_identity", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_mcp_surface", verifier._AUDIT_PROGRAM)
         self.assertIn("public_audit_producer_version", verifier._AUDIT_PROGRAM)
+        self.assertIn("direction_binding_provider_free_fail_closed", verifier._AUDIT_PROGRAM)
+        self.assertIn("direction_binding_mcp_dispatch", verifier._AUDIT_PROGRAM)
+        self.assertIn("canonical_cli_surface", verifier._AUDIT_PROGRAM)
+        self.assertIn('"cli_commands": len(subparsers_action.choices)', verifier._AUDIT_PROGRAM)
 
     def test_wheel_manifest_includes_all_non_module_contract_resources(self) -> None:
         configuration = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         self.assertEqual(configuration["project"]["name"], "semantic-guard")
-        self.assertEqual(configuration["project"]["version"], "1.0.0")
+        self.assertEqual(configuration["project"]["version"], "1.1.0")
         self.assertEqual(
             set(configuration["project"]["scripts"]),
             {"semantic-guard", "semantic-guard-mcp"},
@@ -110,9 +114,9 @@ class PackagedContractVerifierTests(unittest.TestCase):
 
     def test_sdist_rejects_repository_only_archive_and_validation_history(self) -> None:
         forbidden_members = (
-            "semantic_guard-1.0.0/legacy/semantic-guard-v0.1.0/README.md",
-            "semantic_guard-1.0.0/docs/audits/internal.md",
-            "semantic_guard-1.0.0/validation/local-contract-verification.json",
+            "semantic_guard-1.1.0/legacy/semantic-guard-v0.1.0/README.md",
+            "semantic_guard-1.1.0/docs/audits/internal.md",
+            "semantic_guard-1.1.0/validation/local-contract-verification.json",
         )
         for member in forbidden_members:
             with self.subTest(member=member), tempfile.TemporaryDirectory() as directory:
