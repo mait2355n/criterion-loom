@@ -2,8 +2,9 @@
 
 ## Purpose
 
-Criterion Loom is a publishable v0.1 tool for meaning-first audits in Codex
-work. Discussion should stay useful, specific, and careful about public claims.
+Criterion Loom is the public project for meaning-first audits in Codex work.
+Its current canonical technical surface is `semantic-guard 1.1.0`. Discussion
+should stay useful, specific, and careful about public claims.
 
 ## Audience And Use
 
@@ -29,22 +30,17 @@ or documentation discussion in this repository.
 
 ## Reporting
 
-For ordinary conduct problems, open a GitHub issue with the smallest useful
-public description. Do not include private material.
+For a conduct concern, [open the repository issue
+chooser](https://github.com/mait2355n/criterion-loom/issues/new/choose) and
+select **Sensitive contact request**. The resulting issue is public. Select only
+a broad report kind and affected surface, provide the smallest non-sensitive
+summary, and request a private follow-up route.
 
-For sensitive reports, follow `SECURITY.md`. If private vulnerability reporting
-is enabled, use it. Otherwise, open a minimal public issue that withholds
-sensitive details and says that private details are available through an
-appropriate channel.
-
-Example public report shape:
-
-```text
-Summary: conduct concern in issue or pull request discussion
-Location: link to public issue, pull request, or comment
-Private material: none included
-Requested action: maintainer review
-```
+Do not publish names, personal information, private messages, private prompts,
+credentials, proprietary material, detailed allegations, or other sensitive
+evidence in that issue. If even a broad classification is unsafe to disclose,
+use the form's non-disclosure option and state only that private follow-up is
+needed. For suspected vulnerabilities, follow `SECURITY.md`.
 
 ## Enforcement
 

@@ -1,23 +1,27 @@
 # semantic-guard / Criterion Loom 全体評価 2026-07-11
 
+> 2026-07-11 の局所研究試作を対象にした歴史的評価であり、現行 1.1.0 の実装状態ではない。公開版では端末固有 path、私的対話の逐語的来歴、公開 tree に存在しない成果物の実行指示を除いている。
+
+本文中の bare path と行番号は評価時の対象を指す。公開用修復済みの旧版 archive に残る同名資料は `legacy/semantic-guard-v0.1.0/` 配下で参照できるが、原 byte の内容は annotated tag `v0.1.0` 又は commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` で確認する。
+
 ## 1. 評価目的
 
-本書は、現行 `semantic-guard` / Criterion Loom が次の二つをどこまで実現しているかを、実装、公開契約、試験、配布、運用の現物から評価する。
+本書は、2026-07-11 時点の `semantic-guard` / Criterion Loom が次の二つをどこまで実現していたかを、当時の実装、公開契約、試験、配布、運用の観測結果から評価した記録である。
 
 1. 開発各工程の要求、判断、計画、行動、実現方針、差分、検証、完了主張を、要求工学、計画工学、ソフトウェア／システム工学等の体系知に照らして監査し、正しさを主張する根拠と限界を明らかにするとともに、難点、欠落、矛盾、未決定、危険を露出する。
 2. AI エージェントの各工程行為について、記録された前提、要求、規則、権限、実行、成果物、検証証拠の範囲内で、限定的な証明を構成可能にする。
 
-後者は、2026-07-11 の対話で利用者が明示した中核要件である。現行の原要求にはまだ収載されていないため、本書では「評価対象となる確定意図」かつ「現行正本との差分」として扱う。
+後者は、本評価が追加前提として採用した中核要件である。2026-07-11 時点の原要求には収載されていなかったため、本書では評価前提と当時の正本との差分として扱う。後続版の原点要求における採否は [`../prototypes/origin-requirement.md`](../prototypes/origin-requirement.md) を参照する。
 
 ## 2. 評価範囲と非目的
 
 評価対象:
 
-- `semantic-implementation` skill と live skill の同期状態。
+- repository 内の `semantic-implementation` skill 文面。
 - `semantic-guard` MCP server、CLI、Python package。
 - 要求、計画、差分、完了、規約、判断状態、探索、追跡、LLM 補助査読、受理束。
 - 規則 catalog、論理導出、JSON Schema、fixture、field corpus、単体試験、CI、doctor。
-- wheel 配布、Codex MCP 有効化、局所導入状態。
+- wheel 生成と隔離環境への package 導入。
 - 実務運用、組織統治、情報統治、証拠来歴、改竄検出、再現性。
 
 非目的:
@@ -27,22 +31,14 @@
 - 監査結果による人間の最終受理の代替。
 - ISO、NIST、SLSA 等への適合宣言。
 
-今回追加するのは本評価書と構造化所見台帳だけである。
+公開 tree に含まれる本評価の成果物は本書である。作成時に参照した構造化所見台帳は公開 tree に存在しないため、それだけに依存する所見はこの repository から独立再検証できない。
 
 ### 2.1 成果物契約と使い方
 
-- 人間向け正本: `docs/audits/semantic-guard-full-evaluation-2026-07-11.md`。
-- 機械走査用所見: `docs/audits/semantic-guard-findings-2026-07-11.yaml`。
-- YAML schema識別子: `semantic-guard-full-evaluation/v1`。
+- 公開された人間向け記録: `docs/audits/semantic-guard-full-evaluation-2026-07-11.md`。
+- 非公開成果物への参照は、本書の公開読者向け検証手順として扱わない。
 - 公開CLI、MCP、package、既存schemaは変更しない。したがって本成果物独自の実行時error shape、stdout、stderr、exit codeは非適用である。
-- YAMLの`final_human_decision.status`は、人間が判断するまで`pending`を保つ。
-
-代表確認:
-
-```sh
-ruby -e 'require "yaml"; d=YAML.load_file("docs/audits/semantic-guard-findings-2026-07-11.yaml"); puts d.fetch("findings").length'
-rg -n '^### F-|^### P[0-9]-' docs/audits/semantic-guard-full-evaluation-2026-07-11.md
-```
+- 本書から最終人間受理を推定しない。公開された受理記録は確認できない。
 
 ## 3. 評価基準と証拠境界
 
@@ -60,11 +56,10 @@ rg -n '^### F-|^### P[0-9]-' docs/audits/semantic-guard-full-evaluation-2026-07-
 
 ### 3.2 証拠の優先順位
 
-1. live command と反証試験。
-2. 現行 code / schema / fixture / test の file-line evidence。
-3. 現行文書が明示する非目標と限界。
-4. 三つの独立した読取専用監査の一致。
-5. 外部基準との比較から得た推論。
+1. 評価時に実行した command と反証試験。
+2. 評価時点の code / schema / fixture / test の file-line evidence。
+3. 評価時点の文書が明示していた非目標と限界。
+4. 外部基準との比較から得た推論。
 
 文書の自己申告だけでは実装証拠としない。fixture 通過は局所退行証拠であり、実地精度ではない。暗号署名のない JSON は、内容の真正性を証明しない。
 
@@ -77,13 +72,21 @@ rg -n '^### F-|^### P[0-9]-' docs/audits/semantic-guard-full-evaluation-2026-07-
 - 評価前 manifest SHA-256: `f091bb0f371f38097a9f59c66086abffb587d3daa47a9e3a36122cf37cff0cc2`。
 - package version: `0.1.0`。
 
+### 3.4 所見尺度
+
+所見の重大度は、`critical`（中核命題又は権限境界を反転させ得る）、
+`high`（主要な技術結論又は利用判断を変え得る）、`medium`（限定範囲の契約、
+運用又は再現性を損なう）、`low`（結論を変えない明瞭性又は保守性の問題）の
+四区分で記録した。確信度 `high` は、評価時点の対象ファイル又は再現 command
+へ直接追跡できたという意味に限り、実地妥当性、現在性又は外部真正性を表さない。
+
 ## 4. 結論
 
-現行品は、**体系知を圧縮した決定論的な意味・構造監査を行い、そのJSON所見をAI エージェントの再計画・再実装・完了報告修正へ入力できる局所研究試作**としては成立している。CLI、MCP、skill、47規則、構造化出力、限定論理導出、LLM 補助査読、人間受理束が実働し、244件の単体試験と51件の局所fixtureが通る。wheel の生成・新規環境導入、live MCP 有効化、live skill 同期も確認できた。
+2026-07-11 の評価対象は、**体系知を圧縮した決定論的な意味・構造監査を行い、そのJSON所見をAI エージェントの再計画・再実装・完了報告修正へ入力できる局所研究試作**としては成立していた。当時の局所環境では、CLI、MCP、47規則、構造化出力、限定論理導出、LLM 補助査読、人間受理束の動作を観測し、244件の単体試験と51件の局所fixtureの通過結果を得た。wheel の生成と隔離環境への導入も確認した。これらは、現在の導入状態又は利用可能性を示す証拠ではない。
 
-しかし、**実務領域の監査製品**および**AI エージェント工程行為の限定証明基盤**としては未達である。
+しかし、2026-07-11 時点では、**実務領域の監査製品**および**AI エージェント工程行為の限定証明基盤**として未達であった。
 
-最大の断層は、現在監査している対象が主として「要求文、計画文、差分説明、完了報告」であるのに対し、証明したい対象は「実際に行われた行為、その主体・権限・入出力・成果物・検証・来歴」である点にある。現行の論理導出は監査判断の由来を説明できるが、行為事実を立証しない。
+評価時点の最大の断層は、監査対象が主として「要求文、計画文、差分説明、完了報告」であったのに対し、証明したい対象が「実際に行われた行為、その主体・権限・入出力・成果物・検証・来歴」であった点にある。当時の論理導出は監査判断の由来を説明できたが、行為事実を立証するものではなかった。
 
 しかも、否定文中の `受入基準` や `証拠` という字句を `present / confidence=high` として受理し、対応義務を `satisfied` にできる反例を再現した。誤った前提から整然とした導出記録を作れる状態で証明機能を強化すると、単なる誤警告より危険な「説明可能な誤証明」になる。
 
@@ -91,56 +94,56 @@ rg -n '^### F-|^### P[0-9]-' docs/audits/semantic-guard-full-evaluation-2026-07-
 
 ## 5. 成熟度評価
 
-単一の完成度点には還元しない。
+単一の完成度点又は未定義の成熟度語には還元せず、観測と未確認範囲を分ける。
 
-| 評価面 | 判定 | 現在言えること | まだ言えないこと |
-| --- | --- | --- | --- |
-| 原要求・責務境界 | `成立` | 自動承認、正式認証、人間判断代替を除外し、監査を修正材料へ戻す境界が明瞭。 | 限定的行為証明は原要求に未収載。 |
-| 局所決定論監査 | `repo-local ready` | 47規則、各工程入口、構造化所見、244試験、51 fixture が動く。 | 任意実務文書での精度と有効性。 |
-| skill 導線 | `live active` | repository版と `$CODEX_HOME` 版の全対象ファイルが SHA-256 一致。 | 更新・登録・session再読込の自動統治。 |
-| MCP 導入状態 | `live active` | Codex MCP 設定で enabled。実 tool 呼出し成功。 | 多人数・長時間・高負荷運用。 |
-| package 配布 | `local install ready` | wheel build、新規Python 3.13環境への導入、CLI/MCP import 成功。Python 3.11/3.13で244試験成功。 | 公開release、由来署名、SBOM、互換保証。 |
-| 工学知識基盤 | `partial` | 規則に工学領域、根拠、適用条件、反適用条件、証拠要求を持つ。 | 規格版・条項・翻案責任・承認・失効管理を持つ統制知識基盤。 |
-| 判断導出 | `限定実装` | 要求7規則に fact / obligation / countercondition / derivation がある。 | 計画、差分、完了、実行行為を同水準で導出すること。 |
-| 工程追跡 | `partial` | request / plan / diff / finish の欠落と語彙接続を出す。 | 安定IDによる因果的な充足・生成・検証関係。 |
-| 実地較正 | `unknown` | 局所fixture退行は制御できる。 | 外部holdout、領域別precision/recall、重大見逃し率、評定者間一致。 |
-| 限定的行為証明 | `初期骨格` | 監査判断の限定的導出と、自己申告の実行証拠欄がある。 | 行為事実、主体、権限、成果物、真正性、改竄耐性、因果鎖の立証。 |
-| 組織運用 | `未達` | dry-run既定、read-only LLM査読、timeout、schema検査がある。 | 資料分類、送信許可、伏字、永続job、同時数制御、監査log、組織profile。 |
-| 最終人間受理 | `境界成立 / 今回pending` | LLMと決定論監査を最終受理から分離する。 | 本評価書の受理は利用者判断前。 |
+| 評価面 | 評価時点で観測したこと | 未確認又は非立証の範囲 |
+| --- | --- | --- |
+| 原要求・責務境界 | 自動承認、正式認証及び人間判断代替を非目的とし、監査を修正材料へ戻す境界を文書が記述していた。 | 限定的行為証明は原要求に未収載。境界が全経路で強制されたこと。 |
+| 局所決定論監査 | 47規則、各工程入口、構造化所見、244試験及び51 fixture の動作を局所観測した。 | 任意実務文書での精度と有効性。 |
+| skill 文面 | repository 内の skill が作業経路と人間判断境界を記述していた。 | 外部環境への導入、同期、再読込又は運用状態。 |
+| MCP 実行面 | package の MCP import と tool 呼出しが局所評価で成功した。 | 外部環境への登録、多人数・長時間・高負荷運用。 |
+| package 配布 | wheel build、隔離したPython 3.13環境への導入及びCLI/MCP importが成功した。Python 3.11/3.13で244試験が成功した。 | 公開release、由来署名、SBOM、互換保証又は現在の導入可能性。 |
+| 工学知識基盤 | 規則に工学領域、根拠、適用条件、反適用条件及び証拠要求があった。 | 規格版・条項・翻案責任・承認・失効管理を持つ統制知識基盤。 |
+| 判断導出 | 要求7規則に fact / obligation / countercondition / derivation があった。 | 計画、差分、完了及び実行行為を同水準で導出すること。 |
+| 工程追跡 | request / plan / diff / finish の欠落と語彙接続を出力した。 | 安定IDによる因果的な充足・生成・検証関係。 |
+| 実地較正 | 51 fixture の局所退行実行を記録した。 | 外部holdout、領域別precision/recall、重大見逃し率及び評定者間一致。 |
+| 限定的行為証明 | 監査判断の限定的導出と、自己申告の実行証拠欄があった。 | 行為事実、主体、権限、成果物、真正性、改竄耐性及び因果鎖の立証。 |
+| 組織運用 | dry-run既定、read-only LLM査読、timeout及びschema検査があった。 | 資料分類、送信許可、伏字、永続job、同時数制御、監査log及び組織profile。 |
+| 最終人間受理 | LLM出力と決定論監査を最終受理から分離する文面があった。 | 本評価書について人間受理を示す公開記録。 |
 
-## 6. 強み
+## 6. 観測された実装特性
 
-### S-01 — 非目標と人間境界が正しい
+### O-01 — 非目標と人間判断境界を明示していた
 
-原要求は、監査出力を修正と人間判断へ接続し、`pass` を実務受理と同一視しない。`docs/prototypes/origin-requirement.md:13-17, 52-59, 88-98`。証明機能を育てる際にも、この境界は崩してはいけない。
+原要求は、監査出力を修正と人間判断へ接続し、`pass` を実務受理と同一視しないと記述していた。`docs/prototypes/origin-requirement.md:13-17, 52-59, 88-98`。これは記録された設計境界であり、全実行経路での強制を証明しない。
 
-### S-02 — 工程をまたぐ一貫した入口が既にある
+### O-02 — 複数工程の入口を実装していた
 
-探索、対象理解、要求、判断状態、計画、差分、完了、規約、追跡、査読、受理束がCLI/MCPから利用できる。`src/semantic_guard/cli.py:54-82`、`src/semantic_guard/mcp_server.py:43-392`。単一工程のlintに閉じていないことは明確な優位である。
+探索、対象理解、要求、判断状態、計画、差分、完了、規約、追跡、査読、受理束がCLI/MCPから利用できた。`src/semantic_guard/cli.py:54-82`、`src/semantic_guard/mcp_server.py:43-392`。当時の実装が複数工程の入口を公開していたことを示す。
 
-### S-03 — 規則模型が保守可能な形を持つ
+### O-03 — 規則模型に保守用の欄があった
 
 規則は識別子、工学領域、根拠、適用条件、反適用条件、必要証拠、重大度、指摘、修正方針を持つ。`src/semantic_guard/rules.py:17-53`。47規則と47 mappingが存在する。
 
-### S-04 — 不確実性を事実へ勝手に昇格しない設計意図がある
+### O-04 — 不確実性と確定事実を分ける状態欄があった
 
 `candidate`、`rejected`、`unknown`、`conflict` と `present` を分け、反適用条件と不足義務を構造化する。`src/semantic_guard/logic.py:239-419`。利用者へ出すべき「何が未証明か」の基礎になる。
 
-### S-05 — LLM補助査読の既定値が改変権限を抑えている
+### O-05 — LLM補助査読に改変権限の制限があった
 
 隔離査読は `--ephemeral`、利用者設定・規則無視、read-only sandbox、approval never、schema付き出力、timeoutを用いる。`src/semantic_guard/codex_exec_review.py:94-219`。LLM出力を最終承認へ直結しない。
 
-### S-06 — 局所退行検査が濃い
+### O-06 — 局所退行検査の記録があった
 
-244単体試験、51 fixture、47規則のlabel被覆、doctor 9/9 passを確認した。Python 3.11と3.13の双方で244試験が通る。これは実地精度ではないが、局所変更による退行を検知する土台としては強い。
+244単体試験、51 fixture、47規則のlabel被覆、doctor 9/9 passを確認した。Python 3.11と3.13の双方で244試験が通った。これは実地精度ではなく、記録対象の局所契約に対する退行検査である。
 
-### S-07 — 配布とlive activationが少なくとも局所で成立する
+### O-07 — wheel 生成と隔離導入を評価用局所環境で観測した
 
-256 KiB、117 entryのwheelを生成し、新規環境へ30依存を導入してCLIとMCP importを確認した。Codexの `semantic_guard` MCPはenabledで、repository skillとlive skillは一致している。
+2026-07-11 の評価では、256 KiB、117 entryのwheelを生成し、隔離した局所環境へ30依存を導入してCLIとMCP importを確認した。この一回の局所観測は、現在の導入可能性又は公開読者の環境での再現性を示さない。
 
-### S-08 — 自身の限界を既にかなり正直に書いている
+### O-08 — 非主張範囲を文書化していた
 
-READMEは字句依存、過警告・見逃し、score非形式性、論理導出の限定、traceの語彙重複、文書監査の浅さを明記する。`README.md:552-576`。この非誇張姿勢は製品信頼の資産である。
+当時の README は字句依存、過警告・見逃し、score非形式性、論理導出の限定、traceの語彙重複、文書監査の浅さを明記していた。`README.md:552-576`。これは当時の主張範囲を限定する記録である。
 
 ## 7. 主要問題
 
@@ -191,7 +194,7 @@ READMEは字句依存、過警告・見逃し、score非形式性、論理導出
 - 重大度: `high`
 - 確信度: `high`
 - 証拠: 較正報告自身が統計精度でないと明記する。`docs/calibration-report-2026-06-05.md:10-13`。field corpus 30件は local theme / dogfood中心で、試験は形と件数を検査するだけ。`tests/test_field_corpus.py:31-69`。
-- 補足: field corpusが参照する24規則IDのうち11個は現行catalog外で、将来候補と現行規則の機械的境界も薄い。
+- 補足: field corpusが参照していた24規則IDのうち11個は評価時点のcatalog外で、将来候補と当時の規則の機械的境界も薄かった。
 - 影響: 51/51を実務入力でのprecision/recallへ外挿できない。監査が手戻りを減らすか、警告疲労を増やすかも不明。
 - 改良方向: 匿名化実案件、複数領域・文体、holdout、敵対例、独立複数人ラベル、評定者間一致、規則別precision/recall、重大見逃し率、修正後効果を測る。
 
@@ -225,7 +228,8 @@ READMEは字句依存、過警告・見逃し、score非形式性、論理導出
 
 ### F-010 — LLM経路の資料・個人情報統治がない
 
-- 重大度: `high`（組織利用時）
+- 重大度: `high`
+- 適用範囲: 組織利用時
 - 確信度: `high`
 - 証拠: candidate、request、audit、context等をpromptへ含め、同期結果はprompt/stdout/stderrも保持・返却する。`src/semantic_guard/llm_review.py:122-185`、`src/semantic_guard/codex_exec_review.py:60-91`。
 - 影響: 要求、差分、秘密、契約資料、個人情報が外部model入力や二次logへ流れる可能性がある。read-only sandboxは送信統制ではない。
@@ -245,15 +249,16 @@ READMEは字句依存、過警告・見逃し、score非形式性、論理導出
 - 確信度: `high`
 - 証拠:
   - READMEは存在しない `docs/naming.md`、`docs/ja/naming.md`、`SECURITY.md` を参照する。`README.md:39-45`。
-  - `PUBLIC-SNAPSHOT.md:38-65` はそれらをincludedとする。
+  - `docs/audits/public-snapshot-v1.0.0-2026-07-17.md` の snapshot contents はそれらを含むと記録する。
   - `CHANGELOG.md:33-45` はsecurity policyや36/39規則時点を記すが、現物は47規則、51fixtureである。
-  - `docs/release/github-publication-summary-2026-07-02.md:26-31` はaudit-resultに`schema_version`とerror shapeがあるように書くが、現行schemaにはない。
+  - `docs/release/github-publication-summary-2026-07-02.md:26-31` はaudit-resultに`schema_version`とerror shapeがあるように書いていたが、評価時点のschemaにはなかった。
 - 影響: 利用者が存在しない契約、古い較正値、未実装の誤り形を信じる。
 - 改良方向: 現物生成のmanifest、リンク検査、schema由来の文書生成、release checklistをdoctor profileへ組み込む。
 
 ### F-013 — 規則知識と組織方針の統治がない
 
-- 重大度: `high`（組織利用時）
+- 重大度: `high`
+- 適用範囲: 組織利用時
 - 確信度: `high`
 - 証拠: 工学根拠は自由記述で、source edition、clause、interpretation owner、approved_at、review_at、validation casesを持たない。severity profileはコード固定5種。`src/semantic_guard/rules.py:27-38`、`src/semantic_guard/severity_profiles.py:8-140`。
 - 影響: 組織別必須規則、例外、免責、期限、再審査、規格更新を統制できない。
@@ -273,22 +278,22 @@ READMEは字句依存、過警告・見逃し、score非形式性、論理導出
 
 ## 8. 限定的行為証明の能力写像
 
-| 証明対象 | 現状 | 判定 | 必要な追加責務 |
-| --- | --- | --- | --- |
-| 行為事実 | 本文から抽出したfactとevidence spanは記録可能。実tool callや外部操作の観測ではない。 | `partial` | action event、observer、actor、time、input/output digest、environment。 |
-| 手続適合 | 申告された計画が検証、rollback、判断主体等を含むか監査できる。 | `partial` | 実行時権限、許可範囲、stop condition、通過工程の証拠。 |
-| 判断導出 | 要求7規則はfact、obligation、countercondition、derivationを持つ。 | `implemented in narrow scope` | 全工程へのpredicate coverage、抽出意味の健全化。 |
-| 工程追跡 | 工程欠落と語彙接続を出す。 | `partial` | 安定IDと型付き因果辺。 |
-| 結果充足 | 完了報告中の試験・受入証拠欠落を検出し、受理束を形検査する。 | `partial` | 原証拠照合、再実行、対象digest、独立観測者、真正性検査。 |
-| 未証明範囲 | unknown、conflict、未決定、証拠不足、残危険を保持する。 | `partial` | 規則・行為・証拠のcoverage manifestと、未観測領域の明示。 |
+| 証明対象 | 評価時点で観測した機構 | 未確認又は不足していた責務 |
+| --- | --- | --- |
+| 行為事実 | 本文から抽出したfactとevidence spanを記録した。実tool callや外部操作の観測ではなかった。 | action event、observer、actor、time、input/output digest、environment。 |
+| 手続適合 | 申告された計画が検証、rollback、判断主体等を含むか監査した。 | 実行時権限、許可範囲、stop condition、通過工程の証拠。 |
+| 判断導出 | 要求7規則がfact、obligation、countercondition、derivationを持っていた。 | 全工程へのpredicate coverage、抽出意味の健全化。 |
+| 工程追跡 | 工程欠落と語彙接続を出力した。 | 安定IDと型付き因果辺。 |
+| 結果充足 | 完了報告中の試験・受入証拠欠落を検出し、受理束を形検査した。 | 原証拠照合、再実行、対象digest、独立観測者、真正性検査。 |
+| 未証明範囲 | unknown、conflict、未決定、証拠不足及び残危険を保持する欄があった。 | 規則・行為・証拠のcoverage manifestと、未観測領域の明示。 |
 
 ここから導ける正確な表現は次である。
 
-> 現行 semantic-guard は、抽出器が受理した事実と局所規則を前提に、特定の監査判断がどう導かれたかを説明できる。AIエージェントの実行行為、その主体、権限、成果物、真正性、因果性を証明するものではない。
+> 2026-07-11 時点の semantic-guard は、抽出器が受理した事実と局所規則を前提に、特定の監査判断がどう導かれたかを説明できた。AIエージェントの実行行為、その主体、権限、成果物、真正性、因果性を証明するものではなかった。
 
 ## 9. 改良計画の優先順
 
-実装は今回行わない。以下は依存順に並べた改良programである。
+本評価の範囲に実装は含めない。以下は記録時点で依存順に並べた改良候補であり、後続作業への指示ではない。
 
 ### P0-A — 証明主張と信頼模型を固定する
 
@@ -333,7 +338,7 @@ READMEは字句依存、過警告・見逃し、score非形式性、論理導出
 
 ### P1-A — 語彙追跡から型付き因果追跡へ移る
 
-要求、判断、計画step、行為、変更、試験、証拠、成果物に安定IDを与え、明示辺を構成する。W3C PROV、in-toto、SLSAは語彙と信頼境界の参考にするが、そのまま巨大実装へ丸呑みしない。
+要求、判断、計画step、行為、変更、試験、証拠、成果物に安定IDを与え、明示辺を構成する。W3C PROV、in-toto、SLSAは語彙と信頼境界の参考にするが、適用範囲を定めず一体実装へ取り込まない。
 
 ### P1-B — 外部証拠readerと結果充足行列を作る
 
@@ -374,6 +379,8 @@ test、coverage、CI、SAST、dependency scan等を、原結果digestと対象di
 
 ## 12. 実行証拠
 
+以下は2026-07-11 の評価用局所環境で記録した結果である。現在の環境状態、外部からの再実行可能性又は公開読者の環境での再現性は示さない。
+
 | 検査 | 結果 |
 | --- | --- |
 | `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests -q` | Python 3.13.12、244 tests、OK。 |
@@ -382,8 +389,6 @@ test、coverage、CI、SAST、dependency scan等を、原結果digestと対象di
 | `.venv/bin/semantic-guard doctor --project-root <local-source-root>` | 9 pass、0 warn、0 block。 |
 | `uv build --wheel --out-dir /tmp/...` | wheel生成成功、117 entries、256 KiB。 |
 | fresh venv install + installed CLI/MCP import | 成功。source checkoutなしdoctorは6 pass、2 warn。 |
-| `codex mcp list --json` | `semantic_guard` enabled、repo rootをproject指定。 |
-| repository skillとlive skillの`diff -qr` / SHA-256 | 差分なし。 |
 | invalid file CLI smoke | exit 1、stdout 0 byte、stderrにPython traceback。 |
 | empty request CLI smoke | JSON `status=block`、exit 0。 |
 | fake acceptance bundle strict validation | `valid=true`を再現。 |
@@ -397,23 +402,23 @@ test、coverage、CI、SAST、dependency scan等を、原結果digestと対象di
 
 | 検査 | 結果 | 採否 |
 | --- | --- | --- |
-| YAML構文検査 | parse成功。`findings=14`、`improvement_program=9`。 | 採用。機械走査用正本の構文証拠。 |
+| YAML構文検査（当時の記録） | 当時の作業記録ではparse成功、`findings=14`、`improvement_program=9`。対象YAMLは公開treeに存在しない。 | `unavailable historical input`。公開treeから再検証できず、現在利用可能な機械走査用正本としては扱わない。 |
 | 既存対象manifest再計算 | 評価前と同じ `f091...cc2`。 | 採用。既存資産が不変である証拠。 |
 | `audit-diff` | `pass`。文書二点以外の変更主張なし。 | 採用。ただしnon-gitのため実差分証明ではなく、hashを主証拠とする。 |
 | 報告書 `audit-request --kind document` | `warn`、3件。Sigstore公式資料の説明、欠落能力の否定、`safety` profile誤指定の危険説明を過大主張として拾った。 | 3件とも棄却。リンク、非保証、反証証拠が本文にあり、能力を主張していない。 |
 | 報告書 `audit-conventions --kind document` | `warn`、11件。MCP、証拠、profile等の局所語に反応。 | runtime contractは非適用で2.1節に明記済み。表現findingは証拠参照を個別確認し、結論を変える曖昧さなし。検出器較正候補として保留。 |
-| YAMLの文書監査 | `warn`。見出し・実行例欠落とscope語への規約警告。 | 非適用。YAMLはMarkdown説明文ではなく、YAML parserとnamed fieldsを検証正本とする。 |
+| YAMLの文書監査（当時の記録） | 当時の作業記録では`warn`。見出し・実行例欠落とscope語への規約警告。対象YAMLは公開treeに存在しない。 | 当時の採否記録としてのみ保持する。公開treeから再検証できないため、現在の検証正本としては扱わない。 |
 | `finish-check` | 明示的な残リスク、未実行事項、secret scan、dependency/auth/input-output/log非変更を与えた再監査で`pass`。 | 採用。最初の散文入力が残リスク・保安証拠を拾えなかった事実は字句感度の追加証拠。 |
 | `trace-report` | `warn`だが`gap_count=0`、4 linksすべて`strong/high`、trace/vocabulary statusは`pass`。 | 接続証拠として採用。overall warnは埋込み監査の警告であり、意味充足証明には用いない。 |
 
-このtriage自体も、現行semantic-guardの長所と弱点を示す。所見を外へ出して個別に読める点は有用だが、`status`や`score`だけで自動修正・受理すると誤る。
+このtriage自体も、評価時点のsemantic-guardの長所と弱点を示していた。所見を外へ出して個別に読める点は有用であったが、`status`や`score`だけで自動修正・受理すると誤るという限界も観測した。
 
 ## 14. 最終受理境界
 
-この評価は、現行証拠から作った監査材料である。最終判断は次のいずれかとして人間が行う。
+この評価は、2026-07-11 時点で収集した証拠から作った歴史的監査材料である。当時想定した最終判断は、次のいずれかとして人間が行うものであった。
 
 - `accept`: 評価内容と優先順を今後の改良基準として受理する。
 - `request_revision`: 所見、重大度、範囲、優先順を差し戻す。
 - `defer`: 追加証拠または目標強度の決定まで保留する。
 
-`final_human_decision.status` は現時点で `pending` である。
+評価記録の終了時点では `final_human_decision.status` は `pending` であった。後続する人間判断の有無又は内容は本書から推定しない。

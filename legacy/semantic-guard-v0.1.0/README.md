@@ -1,5 +1,11 @@
 # Criterion Loom
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`. For the current project, return to
+> the [repository-root README](../../README.md).
+
 Criterion Loom is a meaning-first audit system for Codex work.
 
 Package, CLI, and MCP server name: `semantic-guard`.
@@ -7,7 +13,7 @@ Package, CLI, and MCP server name: `semantic-guard`.
 It externalizes checks that otherwise stay implicit in an agent's reasoning:
 
 - whether an open-ended idea has material ambiguities that should be asked before a spec exists
-- whether an LLM exploration pass can extract all visible information before asking every material missing question
+- whether an LLM exploration pass can attempt to extract information visible in the supplied input and context, then list the material gaps it finds, without guaranteeing exhaustive extraction or question coverage
 - whether the target is understood before requirements are refined
 - whether a request separates need, stakeholder/source, solution, scope, non-goals, measurable quality, priority, uncertainty, and verification
 - whether decided, undecided, hypothetical, inferred, value-judgment, and evidence-gap statements are explicitly separated
@@ -139,7 +145,7 @@ Use `--profile default|dogfood|exploratory|release|safety` on text audit command
 
 Use `explore-request` as a deterministic preflight for early ideas that are not ready to be audited as requirements. It returns the common audit-result JSON envelope to stdout with `phase`, `status`, `score`, `findings`, `missing`, `next_actions`, and `details`. `details.schema_version` is `request-exploration/v1`; typed detail fields include `audience_hypotheses`, `material_ambiguities`, `questions`, `question_policy`, `spec_outline`, and `non_decisions`. It adds no custom failure shape: CLI usage errors keep the existing argparse message on stderr and exit code 2, while audited-material warnings or blockers remain JSON `status` values on stdout. The command records hypotheses, inferred unknowns, and pending decisions as such; it does not turn them into requirements.
 
-Use `llm-explore-request` when exhaustive pre-spec elicitation is needed. It builds an isolated `codex exec` exploration reviewer prompt from the original text, optional context, and deterministic preflight output, then asks the LLM to extract all visible facts, inferences, hypotheses, unknowns, and pending human decisions before generating every material missing question. Dry-run is the default; use `--execute` to run Codex and validate JSON output against `schemas/request-exploration-review.schema.json`. A valid result uses `schema_version: "request-exploration-review/v1"` and includes `extracted_information`, `audience_hypotheses`, `material_ambiguities`, `questions`, `spec_outline`, `non_decisions`, and `limits`. This is still not approval, implementation planning, or final acceptance.
+Use `llm-explore-request` when a broader pre-spec elicitation pass is useful. It builds an isolated `codex exec` exploration reviewer prompt from the original text, optional context, and deterministic preflight output, then asks the LLM to attempt to extract facts, inferences, hypotheses, unknowns, and pending human decisions visible in the supplied input and context before listing the material gaps it finds as questions. The pass does not guarantee exhaustive extraction or question coverage. Dry-run is the default; use `--execute` to run Codex and validate JSON output against `schemas/request-exploration-review.schema.json`. A valid result uses `schema_version: "request-exploration-review/v1"` and includes `extracted_information`, `audience_hypotheses`, `material_ambiguities`, `questions`, `spec_outline`, `non_decisions`, and `limits`. This is still not approval, implementation planning, or final acceptance.
 
 MCP callers that need progress visibility for LLM exploration can use `llm_explore_request_start_tool` and then poll `llm_exploration_status_tool`. Exploration jobs are process-local and report `state`, `running`, `process_finished`, `exploration_received`, `response_state`, `valid`, `timed_out`, and `errors`.
 

@@ -1,5 +1,10 @@
 # Logical Audit Second Slice Readability Review 2026-06-02
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This document reviews whether the second logical-audit slice is readable in representative real-use output.

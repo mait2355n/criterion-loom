@@ -1,5 +1,10 @@
 # Changelog
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 All notable public-facing changes should be recorded here.
 
 This project does not yet have versioned public releases. Dates below describe publication snapshots, not release guarantees.
@@ -14,7 +19,7 @@ Use this file to understand what changed between public snapshots or future rele
 
 ## Status And Scope
 
-Current entries describe repository snapshots and unreleased work. They do not imply package publication, production readiness, or broad detector accuracy.
+Entries in this 0.1.0 record describe repository snapshots and unreleased work. They do not imply package publication, production readiness, or broad detector accuracy.
 
 ## Entry Contract
 

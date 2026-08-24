@@ -70,7 +70,7 @@ Reject or preserve as unresolved when:
 
 ## Broader lifecycle boundary
 
-The original product purpose covers requirements, plans, actions, realization methods, changes, verification, completion, and bounded action assurance. Canonical v1 exposes only the requirement-relation vertical slice. Treat plan, diff, finish, operation, and other lifecycle assessments as manual or frozen-legacy work until a corresponding v1 workflow is implemented and adopted.
+The original product purpose covers requirements, plans, actions, realization methods, changes, verification, completion, and bounded action assurance. Canonical v1 exposes only the requirement-relation vertical slice. Treat plan, diff, finish, operation, and other lifecycle assessments as manual work or as explicitly selected archived-runtime compatibility work until a corresponding v1 workflow is implemented and adopted.
 
 ## Final review
 

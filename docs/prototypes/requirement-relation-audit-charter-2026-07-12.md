@@ -1,8 +1,13 @@
 # Requirement Relation Audit Prototype Charter
 
+> Historical prototype charter recorded before the 1.0.0 canonicalization.
+> Its implementation-status wording is not current; use the root README and
+> `docs/implementation-status.md` for the 1.1.0 surface. The charter remains a
+> dated source for the prototype's intended boundaries, not a current work order.
+
 Date: 2026-07-12
 
-Status: implementation in progress; human acceptance pending
+Status at record time: implementation in progress; human acceptance pending
 
 Recorded at: `2026-07-12T23:56:26+09:00` (ISO 8601 with timezone)
 

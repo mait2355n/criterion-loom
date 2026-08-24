@@ -1,6 +1,8 @@
-# semantic-guard 1.1.0
+# Criterion Loom
 
-`semantic-guard` は、開発工程で作られた要求、計画、行動、実現方法、証拠の関係を、要求工学・計画工学・ソフトウェアシステム工学の知識に照らして監査可能な材料へ変えるための監査系である。AI エージェントの判断や行動についても、何が観測され、何が導出され、何が未立証かを分離し、後から検査できる形へ残すことを目指す。
+Criterion Loom は公開 project 名であり、配布 package、Python module、CLI 及び MCP server の技術名は `semantic-guard 1.1.0` である。
+
+`semantic-guard` は、開発工程で作られた要求、計画、行動、実現方法、証拠の関係を、要求工学・計画工学・ソフトウェアシステム工学の知識に照らして監査可能な材料へ変えるための監査系である。AI エージェントの判断や行動についても、何が観測され、何が導出され、何が未立証かを分離し、版付き JSON 契約として後から検査できる形へ残すことを目指す。
 
 1.0.0 は、この原点目的へ向けて再構成した局所契約と最初の要求監査縦断を、リポジトリ・配布物・CLI・MCP の正本へ昇格した版である。旧 `0.1.0` の振舞いを正解として写した版ではない。
 
@@ -30,7 +32,7 @@
 - 任意の実務文書に対する精度又は再現率が確認された。
 - 全開発工程が公開 workflow で監査できる。
 - AI エージェントが外部で実際に行為したこと又は行為主体の真正性が証明された。
-- 候補規則束又は生活周期 profile が人間に採択された。
+- 候補規則束又はライフサイクル profile が人間に採択された。
 - `pass` が人間受理、無条件の正しさ、保安認証又は運用資格を意味する。
 - リポジトリ正本化によって運用環境の既定経路まで切り替わった。
 
@@ -113,19 +115,21 @@ uv run --locked semantic-guard-mcp
 
 ## 旧版
 
-旧 `semantic-guard 0.1.0` の源一式は [`legacy/semantic-guard-v0.1.0/`](legacy/semantic-guard-v0.1.0/) に凍結保存する。旧 CLI の要求・計画・差分・完了・規約・査読機能は 1.x へ透過統合されていない。利用する場合は旧版を明示的に選び、現行監査結果と混同しないこと。
+旧 `semantic-guard 0.1.0` は [archive manifest](legacy/semantic-guard-v0.1.0/ARCHIVE-MANIFEST.md) の境界で保存する。公開上の誤読を避けるため旧文書には限定的な表現修復を施しており、元の byte snapshot は manifest が指す Git anchor に残る。旧 CLI の要求・計画・差分・完了・規約・査読機能は 1.x へ透過統合されていない。利用する場合は旧版を明示的に選び、現行監査結果と混同しないこと。
 
-リポジトリ内の凍結源は、そのまま `shadow-compare` が信頼する実行根ではない。影比較には、運用者が所有する外部旧版 root、固定された相対配置、実行環境、基準 manifest と要約値が必要である。詳しくは [移行手引](docs/migration-v0.1.0-to-v1.0.0.md) を参照する。
+リポジトリ内の公開用修復済み archive は、そのまま `shadow-compare` が信頼する実行根ではない。影比較には、運用者が所有する外部旧版 root、固定された相対配置、実行環境、基準 manifest と要約値が必要である。詳しくは [移行手引](docs/migration-v0.1.0-to-v1.0.0.md) を参照する。
 
 ## 正本と記録
 
 - [基幹憲法](constitution/semantic-guard-constitution.yaml)
+- [現行公開面の要約](PUBLIC-SNAPSHOT.md)
 - [公開監査結果 schema](schemas/audit-result.schema.json)
 - [方向拘束監査 schema](schemas/direction-binding-audit.schema.json)
 - [方向拘束監査の意味と限界](docs/direction-binding-audit.md)
 - [方向拘束移植の由来記録](migration/direction-binding-source-map-2026-08-23.json)
-- [GitHub repository 統一記録](docs/repository-unification-2026-08-24.md)
-- [repository 統一機械記録](migration/repository-unification-2026-08-24.json)
+- [GitHub repository 統一の移管前記録](docs/repository-unification-2026-08-24.md)
+- [repository 統一の移管前機械記録](migration/repository-unification-2026-08-24.json)
+- [移管後の公開観測](docs/audits/repository-transfer-observation-2026-08-24.md)
 - [検証要求・状態正本](validation/verification-source.json)
 - [実装状態](docs/implementation-status.md)
 - [運用手引](docs/operations.md)

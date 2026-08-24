@@ -1,23 +1,23 @@
 # semantic-guard 1.1.0 実装状態
 
-更新日: 2026-08-23
+更新日: 2026-08-24
 判定: 要求関係監査に加え、独立した方向拘束監査の閉契約、CLI、MCP、Schema及び回帰試験を実装し、GitHub mainのmerge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d`へ統合済みである。PR枝とmerge後mainのhosted CI四jobは成功した。1.1.0の選択したwheel/sdistの配布契約とfresh wheel上の実Sudachi 222組も局所検証済みである。人間受理、実務妥当性、公開索引配布及び外部配備は未成立である。
 
-この文書の `1.1.0` は上記merge commitへ統合した源契約を指す。公開索引上の配布物、hosted artifactと局所wheelのbyte同一性又は運用既定化と同一視しない。policy、profile、各Schemaの `v1` / `v2` は各契約の意味版であり、package版へ一括置換しない。
+この文書の `1.1.0` は merge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` へ統合した源契約を指す。公開索引上の配布物、hosted artifactと局所wheelのbyte同一性又は運用既定化と同一視しない。policy、profile、各Schemaの `v1` / `v2` は各契約の意味版であり、package版へ一括置換しない。
 
 ## 歴史的 1.0.0 基線
 
-2026-07-21 判定: 要求関係監査の局所契約を正本へ昇格し、Codex 局所環境の対応済み監査は v1 を唯一の既定経路へ切替済み。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択、外部配備切替及び不可逆な旧版廃止は未完。
+1.0.0 の正本化判断では、要求関係監査の局所契約をrepository root、配布物、CLI及びMCPの正本へ昇格した。全工程の公開縦断統合、実地妥当性、外部真正性、人間採択、外部配備切替及び不可逆な旧版廃止は未完であった。
 
 この正本化はリポジトリ、配布物、CLI、MCPの同一性判断である。後述する2026-07-16の試験値とwheel値は候補時点の歴史的観測であり、1.0.0へ束縛した新証拠ではない。
 
 ## 1.1.0 統合済み: 方向拘束監査の独立公開切片
 
-`direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4` は、`canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4` の現作業木へ選択統合した別 entity である。源には `semantic-guard-direction-binding-audit/v1`、CLI `audit-direction-binding`、MCP `audit_direction_binding_tool` 及び閉 Schema `direction-binding-audit` が存在する。既存 `audit-requirement`、`audit-result/v0` の字段形状、要求関係規則及び監査識別子の生成規則は変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。
+`direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4` は、`canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4` の現作業木へ選択統合した別 entity である。源には `semantic-guard-direction-binding-audit/v1`、CLI `audit-direction-binding`、MCP `audit_direction_binding_tool` 及び閉 Schema `direction-binding-audit` が存在する。既存 `audit-requirement`、`audit-result/v0` の欄構造、要求関係規則及び監査識別子の生成規則は変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。
 
 監査の一次判断は、同一対象・同一操作について、方向を開く表現へ方向を限定する表現が直接付着しているかである。scalar の `decision-frame-summary/v3` と六軸 non-scalar の `direction-binding-summary/v1` は発行範囲を分け、形態素解析は `signal_only`、数値は任意の影響証拠に限る。方向選択、一般自然言語理解、実務妥当性及び人間受理はこの局所契約に含めない。
 
-源泉は `local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895` から五ファイルだけを選択する `derived_from` とし、[source map](../migration/direction-binding-source-map-2026-08-23.json) に digest と移植先を固定した。`frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631` は変更せず、`candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0` は保留する。源実装は[GitHub統合証拠](audits/direction-binding-integration-2026-08-23.md)のmerge commitへ統合済みであり、選択した1.1.0配布物及びfresh wheel上の実Sudachi 222組は局所で成立した。いずれも実務母集団の妥当性又は人間受理の証拠へは昇格させない。
+源泉は `local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895` から五ファイルだけを選択する `derived_from` とし、[source map](../migration/direction-binding-source-map-2026-08-23.json) に digest と移植先を固定した。`frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631` は当該 1.1.0 統合時点で変更せず、`candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0` は保留した。2026-08-24 の後続 publication repair は旧版 archive の文書、companion Skill 文面及び archive manifest だけを変更し、runtime code、schema、試験及び fixture は変更していない。源実装は[GitHub統合証拠](audits/direction-binding-integration-2026-08-23.md)のmerge commitへ統合済みであり、選択した1.1.0配布物及びfresh wheel上の実Sudachi 222組は局所で成立した。いずれも実務母集団の妥当性又は人間受理の証拠へは昇格させない。
 
 ## 原点要求との対応
 
@@ -46,21 +46,21 @@
 | 修復循環 | `responsibility-policy.schema.json`, `repair-cycle.schema.json`, `repair_loop.py` | policy/cycle v2で責任方針basis、人間採択主体、型付き変更後監査・回帰結果、版付き効果遷移、対象拘束済み独立人間査読を閉じる |
 | Field評価 | `field-evaluation.schema.json`, `field_evaluation.py` | 同一case集合でrouteを比較し、偽充足・偽反証・棄権はWilson限界、費用は明示された比較根拠で扱う。実holdoutは未実施 |
 | 修復・人間利用効果 | `operational-outcome-evaluation.schema.json`, `operational_outcomes.py` | v1で権限不変条件、arm由来、封印task/enrollment分母、参加者・群単位、脱落、盲検裁定、Wilson/Hoeffdingを閉じる。肯定値も供給記録内に限定する |
-| 安全運用 | `secure-operation.schema.json`, `secure_operation.py` | v1で最新採択/廃止、scope、流路、保持、削除、再起動、証拠種別、資源上限を検査する。強い正判定は廃止し、内部整合状態と未立証claimを分ける |
+| 安全運用 | `secure-operation.schema.json`, `secure_operation.py` | v1で最新採択/廃止、scope、流路、保持、削除、再起動、証拠種別、資源上限を検査する。外部安全性を表す正判定は設けず、内部整合状態と未立証claimを分ける |
 | 運用資格・移行 | `operational-qualification.schema.json`, `transition-plan.schema.json` | 12運用場面、配備包絡、再資格、sidecarからretirementまでの門、中止・rollbackを契約化する。実運用試験や切替判断は未実施 |
 | 方向拘束公開切片 | `direction_binding_audit.py`, `request_decision_frame.py`, `request_direction_binding.py`, `direction-binding-audit.schema.json` | 同一対象・同一操作への明示方向付着をscalar 14族・49軸・56尺度語とnon-scalar六軸で検査する。形態素は`signal_only`、数値は補助のみ、人間受理は外部に残す |
-| 呼出面 | `cli.py`, `mcp_server.py`, `schema_access.py` | CLI四命令、MCP四工具、全24契約schema取得を源で実装する。1.1.0 wheel/sdistを構築し、選択wheelの隔離検証20件、方向CLI・Schema・`--fail-on`・MCP dispatchを再演済み。上記sidecar群を合成する実務workflowは未実装 |
+| 呼出面 | `cli.py`, `mcp_server.py`, `schema_access.py` | CLI四命令、MCP四工具、全24契約schema取得を源で実装する。1.1.0 wheel/sdistを構築し、選択wheelの隔離検証20件、方向CLI・Schema・`--fail-on`・MCP dispatchを再演済み。ライフサイクル、状態、行為、修復、評価及び運用のsidecar群を合成する実務workflowは未実装 |
 
 ## 層別準備度
 
 | 層 | 現在地 | 判定 |
 | --- | --- | --- |
-| A. 局所構造・意味契約 | schema、digest再演、参照閉包、権限境界、敵対fixture | 強い。ただし全て供給資料と局所規則の範囲内 |
+| A. 局所構造・意味契約 | schema、digest再演、参照閉包、権限境界、敵対fixture | schema適合、digest再演、参照閉包及び敵対fixtureを局所規則の範囲で検査済み。ただし全て供給資料内の観測に限る |
 | B. v1内部合成 | requirement route、proof graph、state、trace、action、repair、評価、運用契約を個別APIで利用可能 | 部分成立。共通workflowと失効伝播は未統合 |
 | C. 公開CLI/MCP縦断 | requirement relation監査と独立direction-binding監査を統合済みGitHub源及び選択した1.1.0配布物から呼出可能 | 方向拘束切片のGitHub CI/mergeまで成立。十工程・action・repair・評価・運用sidecar接続は未成立 |
 | D. 実務妥当性 | 評価protocolと閾値計算器が存在し、fresh wheel上の実Sudachi 222組を再演済み | 未成立。222組は登録語彙の接続と限定契約の証拠に過ぎず、実母集団、独立標識、実参加者及び実運用観測が無い |
 | E. 外部真正性 | digestと型付き参照で内部差替えを検出 | 未成立。署名、本人性、信頼時刻、外部台帳、証拠保管庫を検証しない |
-| F. 人間採択・既定切替 | 判断対象をbasis digestへ結ぶ契約が存在し、Codex 局所環境の要求関係監査は v1 へ既定切替済み | 局所構成だけ成立。rule-pack、profile、評価方針、運用包絡、外部配備切替及びretirementは未採択 |
+| F. 人間採択・既定切替 | 判断対象をbasis digestへ結ぶ契約が存在 | 人間判断記録の構造検査だけ成立。rule-pack、profile、評価方針、運用包絡、外部配備切替及びretirementは未採択 |
 
 ## 独立査読で見つけ、修正した誤通過
 
@@ -96,11 +96,11 @@ fresh wheelへ`nlp-ja`を導入した隔離環境では、SudachiPy 0.6.11、Sud
 
 2026-07-16 16:08 JST時点の再実行では、単体・契約試験569件、JSON 35ファイルの重複鍵検査、Draft 2020-12 schema 27件の自己検査、`compileall`、Ruff、lock検査、検証正本の六検査、工学規則台帳の三検査が通過した。運用成果評価は対象54試験に加え、別agentによる正常2・既出反例25の再現行列で27件全て期待結果となった。
 
-構築wheel `f4289463...cf938` は隔離仮想環境で、隣接する偽schema・候補台帳を無視し、公開schema 23件、MCP schema資源23件、CLI schema名23件、生活周期profile 10件、工学候補規則11件及び実console入口を再演した。実Sudachiは三能力を`ok`、実GiNZAは照応候補欠落を`partial`、LLM未構成を`not_configured`とし、既定assuranceは`block`した。
+構築wheel `f4289463...cf938` は隔離仮想環境で、隣接する偽schema・候補台帳を無視し、公開schema 23件、MCP schema資源23件、CLI schema名23件、lifecycle profile 10件、工学候補規則11件及び実console入口を再演した。実Sudachiは三能力を`ok`、実GiNZAは照応候補欠落を`partial`、LLM未構成を`not_configured`とし、既定assuranceは`block`した。
 
 詳細は [`local-contract-verification-2026-07-16.json`](../validation/local-contract-verification-2026-07-16.json) に固定した。ただし全作業木・runtime・依存・raw logを閉世界manifestへ拘束していないため、この観測自身の鮮度は`unbound`である。従って正本状態を`current`や人間受理へ自動昇格していない。
 
-## 残る本丸
+## 未成立の証拠・統合項目
 
 1. **規範採択** — rule-packと十工程profileを領域専門家と人間所有者が査読・採択する。
 2. **縦断統合** — lifecycle profile resolver、profile適合adapter、state/action/repair/assessmentの失効伝播、CLI/MCP入口を実装する。
@@ -108,7 +108,7 @@ fresh wheelへ`nlp-ja`を導入した隔離環境では、SudachiPy 0.6.11、Sud
 4. **行為・真正性連携** — runtime event、主体・権限snapshot、署名検証、信頼時刻、外部台帳、artifact provenanceを取得する。
 5. **人間利用評価** — 実参加者、真正な同意、独立盲検採点、脱落を含む実務studyを実行する。
 6. **運用資格** — 実配備で長時間、並行、負荷、枯渇、provider障害、restart、recovery、互換、事故を測る。
-7. **外部移行判断** — Codex 局所既定値は [2026-07-21 の切替記録](operational-default-cutover-2026-07-21.md) により v1 化した。外部配備は shadow、opt-in、rollback rehearsal、証拠移行を経て、人間がdefault化又はretirementを別々に判断する。
+7. **外部移行判断** — 外部配備は shadow、opt-in、rollback rehearsal、証拠移行を経て、人間がdefault化又はretirementを別々に判断する。
 
 ## 現段階で許される主張
 
@@ -130,6 +130,6 @@ fresh wheelへ`nlp-ja`を導入した隔離環境では、SudachiPy 0.6.11、Sud
 - 公開索引上の1.1.0配布物、release/tag、hosted artifactと局所wheelのbyte同一性又はmainと異なる任意buildが検証済みである。
 - 実Sudachi 222組から、未登録表現、実務母集団の妥当性、一般自然言語理解又は運用資格が成立した。
 - `pass`、局所試験、内部整合又はdigest一致が人間受理を意味する。
-- 局所切替記録だけを根拠に、別の運用環境の既定CLI/MCP経路へ切替えてよい。
+- 一つの運用環境の構成記録だけを根拠に、別の運用環境の既定CLI/MCP経路へ切替えてよい。
 
 運用詳細は [operations.md](operations.md)、正本化判断は [canonical-promotion-decision.md](canonical-promotion-decision.md)、移行は [migration-v0.1.0-to-v1.0.0.md](migration-v0.1.0-to-v1.0.0.md)、検証状態の正本は [verification-source.json](../validation/verification-source.json) を参照する。日付付きの [影響度と実行順](impact-and-execution-order-2026-07-16.md) は候補時点の歴史資料として保持する。

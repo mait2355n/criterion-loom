@@ -187,7 +187,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "request.acceptance.intent",
-          "question": "記録された必要、対象、望む変化、範囲はアナタの依頼意図を保っているか。",
+          "question": "記録された必要、対象、望む変化、範囲は依頼者の意図を保っているか。",
           "owner": "human",
           "required": true
         }
@@ -248,7 +248,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "b6daf1856b4463b58a672dac5d57312a24b9b1fcd02e1690e74a930586e7390a"
+          "value": "ade883da10824f8beac991aadfaa10b2dedaa7989489cbdb5ce7002905d63dcd"
       }
     },
     {
@@ -413,7 +413,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "exploration.acceptance.material_unknowns",
-          "question": "未決定と未知は、アナタが決める事項と外部に調べさせる事項へ正しく分かれているか。",
+          "question": "未決定と未知は、人間の判断者が決める事項と外部調査に委ねる事項へ正しく分かれているか。",
           "owner": "human",
           "required": true
         }
@@ -478,7 +478,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "c210bf5f24e85ab7b88f3265049c0d02f360f8eeb711cea0ddd75a41998b6228"
+          "value": "9fd274e67bb9d82b694888cdde46ab1cfe347a13185cd615675ad2846eba6477"
       }
     },
     {
@@ -901,7 +901,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "decision.acceptance.actual_disposition",
-          "question": "この処分、範囲、根拠、残余危険はアナタ自身の判断記録として正しいか。",
+          "question": "この処分、範囲、根拠、残余危険は、担当する人間の判断記録として正しいか。",
           "owner": "human",
           "required": true
         }
@@ -970,7 +970,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "4236a47dfc5ed9d5e4a449c3a18ec9602396deab62fd6e498311999e09c84599"
+          "value": "3d2a1dd28566314a7d5976ef675c6a975fe953e6a993cf297130528e56db4db5"
       }
     },
     {
@@ -1141,7 +1141,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "plan.acceptance.risk_and_order",
-          "question": "作業順、危険の引受け、判断門、停止、復旧はアナタの責任範囲と意図に適うか。",
+          "question": "作業順、危険の引受け、判断門、停止、復旧は、担当する人間の責任範囲と意図に適うか。",
           "owner": "human",
           "required": true
         }
@@ -1210,7 +1210,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "d30d5b48a7f9d86b2b6c7c413b6a2522652d14dd5bdd31caf4627ff5a170516b"
+          "value": "1c1865418cccd6983a3e6fea575f6e6e7639a4a5c0517e018f1f3bf84b4f30be"
       }
     },
     {
@@ -1641,7 +1641,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "realization.acceptance.intent_preservation",
-          "question": "実現方針、逸脱、非実現範囲は採択要求とアナタの意図を保っているか。",
+          "question": "実現方針、逸脱、非実現範囲は、採択要求と依頼者の意図を保っているか。",
           "owner": "human",
           "required": true
         }
@@ -1709,7 +1709,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "aac276420ba3a8338bf50a50eb1958640ef667ac93a7b9dbe57f2ff802b1e72f"
+          "value": "494b2969161c9e2e0e3c561422b4b268f2c9319220148428008c5cab98b1bdde"
       }
     },
     {
@@ -2383,7 +2383,7 @@
       "human_acceptance_questions": [
         {
           "question_id": "completion.acceptance.final_disposition",
-          "question": "証拠、反証、未証明範囲、残余危険、限界を踏まえ、accept、request_revision、deferのどれをアナタが選ぶか。",
+          "question": "証拠、反証、未証明範囲、残余危険、限界を踏まえ、人間の判断者はaccept、request_revision、deferのどれを選ぶか。",
           "owner": "human",
           "required": true
         }
@@ -2454,7 +2454,7 @@
       },
       "profile_digest": {
         "algorithm": "sha256",
-        "value": "0fbe933a66e021e5a2c1e47377fa354099163ef8ae03423887e3475eb473083d"
+          "value": "9c7bb04b22770577a7a89ef0e1a5fbcb007348e97b96bc615c115941c9b320f1"
       }
     }
   ],
@@ -2466,7 +2466,7 @@
   ],
   "registry_digest": {
     "algorithm": "sha256",
-    "value": "30a49c01ef601aa19c4103e9ecb67daaafe18e55a62d61ad40cf1df3e59acb14"
+    "value": "56754aa6a6ed2babb807fd3597ef01b786dd5dd600875b4f8c488bcb07a9ca69"
   },
   "summary": {
     "schema_version": "lifecycle-profile-registry-summary/v0",
@@ -2474,7 +2474,7 @@
     "registry_version": "candidate-2026-07-16",
     "registry_digest": {
       "algorithm": "sha256",
-      "value": "30a49c01ef601aa19c4103e9ecb67daaafe18e55a62d61ad40cf1df3e59acb14"
+      "value": "56754aa6a6ed2babb807fd3597ef01b786dd5dd600875b4f8c488bcb07a9ca69"
     },
     "profile_count": 10,
     "stage_order": [
@@ -2496,7 +2496,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "b6daf1856b4463b58a672dac5d57312a24b9b1fcd02e1690e74a930586e7390a"
+          "value": "ade883da10824f8beac991aadfaa10b2dedaa7989489cbdb5ce7002905d63dcd"
         }
       },
       {
@@ -2505,7 +2505,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "c210bf5f24e85ab7b88f3265049c0d02f360f8eeb711cea0ddd75a41998b6228"
+          "value": "9fd274e67bb9d82b694888cdde46ab1cfe347a13185cd615675ad2846eba6477"
         }
       },
       {
@@ -2523,7 +2523,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "4236a47dfc5ed9d5e4a449c3a18ec9602396deab62fd6e498311999e09c84599"
+          "value": "3d2a1dd28566314a7d5976ef675c6a975fe953e6a993cf297130528e56db4db5"
         }
       },
       {
@@ -2532,7 +2532,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "d30d5b48a7f9d86b2b6c7c413b6a2522652d14dd5bdd31caf4627ff5a170516b"
+          "value": "1c1865418cccd6983a3e6fea575f6e6e7639a4a5c0517e018f1f3bf84b4f30be"
         }
       },
       {
@@ -2550,7 +2550,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "aac276420ba3a8338bf50a50eb1958640ef667ac93a7b9dbe57f2ff802b1e72f"
+          "value": "494b2969161c9e2e0e3c561422b4b268f2c9319220148428008c5cab98b1bdde"
         }
       },
       {
@@ -2577,7 +2577,7 @@
         "version": "0.1.0-candidate",
         "profile_digest": {
           "algorithm": "sha256",
-          "value": "0fbe933a66e021e5a2c1e47377fa354099163ef8ae03423887e3475eb473083d"
+          "value": "9c7bb04b22770577a7a89ef0e1a5fbcb007348e97b96bc615c115941c9b320f1"
         }
       }
     ],
@@ -2626,7 +2626,7 @@
     "authority_statement": "All lifecycle profiles remain pending human adoption; semantic-guard validates candidate material only and holds no adoption, execution, or final-acceptance authority.",
     "summary_digest": {
       "algorithm": "sha256",
-      "value": "a47aa0ac6ed442adc9f1329e42846db39a8c6f775acc604a606e979b56a6016c"
+      "value": "934dbac22c088fccc0c555d139bee40dbfcc1d4c34712772c7677e9e4bb7a3b0"
     }
   }
 }

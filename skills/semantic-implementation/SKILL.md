@@ -1,6 +1,6 @@
 ---
 name: semantic-implementation
-description: Route non-trivial development work through the semantic-guard 1.1.0 requirement-relation and independent direction-binding audits while preserving intent, engineering basis, uncertainty, provenance, authority ceilings, compatibility boundaries, and final human judgment. Use when Codex clarifies or audits a structured functional requirement, checks whether a bounded direction-open expression has a directly attached direction, compares canonical v1 with the frozen 0.1.0 behavior, retrieves semantic-guard schemas, or works on design, implementation, migration, documentation, public contracts, durable evidence, and completion claims whose meaning could drift. Do not claim that v1 directly audits plans, diffs, finish evidence, every lifecycle phase, or unrestricted natural language.
+description: Route non-trivial development work through the semantic-guard 1.1.0 requirement-relation and independent direction-binding audits while preserving intent, engineering basis, uncertainty, provenance, authority ceilings, compatibility boundaries, and final human judgment. Use when Codex clarifies or audits a structured functional requirement, checks whether a bounded direction-open expression has a directly attached direction, compares canonical v1 with the publication-repaired 0.1.0 archive behavior, retrieves semantic-guard schemas, or works on design, implementation, migration, documentation, public contracts, durable evidence, and completion claims whose meaning could drift. Do not claim that v1 directly audits plans, diffs, finish evidence, every lifecycle phase, or unrestricted natural language.
 ---
 
 # Semantic Implementation
@@ -91,10 +91,10 @@ For plans, diffs, completion evidence, conventions, reviewer material, and other
 
 1. Perform ordinary engineering analysis and identify the requirement relations that can be audited by v1.
 2. Mark the rest as not integrated into the canonical v1 workflow.
-3. Use the frozen 0.1.0 implementation only when its historical heuristic is explicitly requested or materially useful.
+3. Use the archived 0.1.0 runtime only when its historical heuristic is explicitly requested or materially useful.
 4. Label every old result with the legacy version and never present it as v1 output or current truth.
 
-The frozen source lives at `legacy/semantic-guard-v0.1.0/` in the repository. Running it is an explicit compatibility action, not a transparent fallback. Repository source preservation alone does not satisfy the trust-root requirements of v1 `shadow-compare`.
+The publication-repaired archive lives at `legacy/semantic-guard-v0.1.0/` in the repository. Its runtime, schemas, and tests are unchanged by the publication repair, while its public prose is not the original byte snapshot; original 0.1.0 content is anchored by annotated tag `v0.1.0` and commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`. Running the archived runtime is an explicit compatibility action, not a transparent fallback. Repository preservation alone does not satisfy the trust-root requirements of v1 `shadow-compare`.
 
 ## Preserve decision ownership
 

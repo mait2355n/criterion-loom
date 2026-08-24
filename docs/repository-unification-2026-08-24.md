@@ -1,5 +1,7 @@
 # Repository unification record, 2026-08-24
 
+> Historical pre-transfer plan and evidence record. Its recorded state is `pre_transfer`; it is not the current repository-status page or executable authority for a destructive operation. A separate [post-transfer observation](audits/repository-transfer-observation-2026-08-24.md) records the later public state without rewriting this phase.
+
 This record separates the logical project, two GitHub repository objects, and
 their mutable owner/name labels. The full machine-readable record is
 [`migration/repository-unification-2026-08-24.json`](../migration/repository-unification-2026-08-24.json).
@@ -47,12 +49,13 @@ canonical first parent. The following content commit adds only this migration
 record and its documentation-map links. Live owner permissions and security
 settings remain external state and are checked again at the transfer gate.
 
-## Backup and transfer gate
+## Pre-transfer backup and transfer gate
 
-Before any GitHub rename or transfer, separate complete Git bundles, GitHub
-REST snapshots, and all 11 unexpired source Actions artifacts were stored in
-an operator-local archive and checked by SHA-256. The bundle digests are in the
-machine-readable record; the binary archive is intentionally not committed.
+This pre-transfer record states that complete Git bundles, GitHub REST snapshots,
+and 11 then-unexpired source Actions artifacts were stored outside the
+repository and checked by SHA-256. The bundle digests are in the machine-readable
+record; the backup bytes, their later availability, and the operator's external
+storage state are not verifiable from this public repository.
 
 The legacy GitHub repository must not be deleted until the transferred
 `mait2355n/criterion-loom` resolves to repository ID `1270877024`, both
@@ -61,34 +64,34 @@ checks pass, and the transferred GitHub-native surfaces are re-observed. The
 deletion target must then be re-read as ID `1284490044` immediately before the
 destructive operation.
 
-“Re-observed” is not a box-ticking loophole. Each branch, tag, pull request,
-release, Actions record, redirect, permission, and security setting must match
-its recorded baseline and required behavior. A missing, degraded, or
-owner-invisible surface keeps the gate closed unless it is repaired or a human
-separately accepts that exact discrepancy and consequence. All available run
-records, job records, logs, and artifacts must be in a verified backup copied
-to a separate storage volume; bytes unavailable from their source are recorded
-as unavailable, never described as backed up.
+Each branch, tag, pull request, release, Actions record, redirect, permission,
+and security setting requires its own recorded comparison with the baseline and
+required behavior. A missing, degraded, or owner-invisible surface keeps the
+gate closed unless it is repaired or an external human decision record accepts
+that exact discrepancy and consequence. Available run records, job records,
+logs, and artifacts must be covered by a verified backup on separate storage;
+source-unavailable bytes must remain recorded as unavailable.
 
-The user authorized deletion of repository ID `1284490044` only as the final
-operation of this transfer-preserving route and only when every listed gate has
-an acceptable result. That conditional destructive authorization is distinct
-from final acceptance of the completed migration, which remains pending. An ID
-mismatch, unresolved loss, failed check, absent independent-backup receipt, or
-material scope change invalidates the deletion authorization.
+Deletion of repository ID `1284490044` requires a separate human authorization
+record bound to that repository ID and to the final gate evidence. Private
+decision wording and evidence are not reproduced here. This public record is
+not executable authority, does not establish that such authorization remains
+applicable, and does not record final acceptance of the migration.
 
 ## Historical names and technical identity
 
 Dated evidence keeps its original `morie-lene/criterion-loom` URLs. Those URLs
 record where a pull request or Actions run actually occurred, and GitHub's
-transfer redirect is the appropriate compatibility layer. Rewriting them
-would make the historical record prettier and less true.
+transfer redirect is the appropriate compatibility layer. Rewriting them would
+attribute an earlier event to an owner/name label that was not recorded at the
+time.
 
 The `semantic-guard` package, CLI, and MCP names also remain unchanged.
 Likewise, the existing schema `$id` under `morie-lene.github.io` remains a
 stable public identifier in this migration. Repository ownership and technical
 contract identity are related, but they are not the same fact.
 
-Status at this commit: `pre_transfer`. A later evidence update must record the
-actual transferred repository ID, final main, hosted CI, redirect checks, and
-legacy deletion outcome. Human acceptance remains separate from those checks.
+Status represented by this record: `pre_transfer`. The linked post-transfer
+observation records a later repository-ID, owner/name, main, CI, and redirect
+check. The legacy repository disposition and final human acceptance remain
+separate, unresolved claims unless independently evidenced.

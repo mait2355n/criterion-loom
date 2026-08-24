@@ -1,5 +1,9 @@
 # Acceptance Review Bundle
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+
 `acceptance_review_bundle` は、最終成果物を人が評価するための束である。LLM reviewer の出力、決定的監査、採用した補填、採用しなかった補填、実行証拠、残リスク、人が見るべき判断点を一つに集める。
 
 ## Purpose
@@ -93,7 +97,7 @@ LLM reviewer 側も MCP から呼べる。
 - `llm_review_command_tool`: prompt、schema path、`codex exec` command を返すだけで実行しない。
 - `llm_review_run_tool`: 既定は dry-run。`execute=true` の時だけ `codex exec` を起動する。
 
-MCP tool では任意の `codex_binary` は受け取らない。実行入口を増やす以上、ここを開けると監査機構が雑な実行器になる。馬鹿げているのでやらない。
+MCP tool では任意の `codex_binary` は受け取らない。呼出側が任意の実行対象を選べる入口を公開すると、監査器が前提とする実行対象、権限、再現性及び失敗境界を保てなくなるためである。
 
 ## Example
 

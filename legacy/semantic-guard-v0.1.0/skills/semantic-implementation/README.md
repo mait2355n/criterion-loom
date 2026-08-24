@@ -1,5 +1,10 @@
 # Loom Guide Skill
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 This directory contains **Loom Guide**, the companion Codex skill for Criterion Loom.
 
 The technical skill directory remains `semantic-implementation`, and the deterministic audit package remains `semantic-guard`.
@@ -80,8 +85,9 @@ or when `SG_PROJECT` points at one.
   audit tool source.
 - Use `explore-request` or `explore_request_tool` for fast pre-spec preflight.
 - Use `llm-explore-request --execute` or `llm_explore_request_tool(execute=true)`
-  when the task needs the LLM to extract all visible information before asking
-  every material missing question.
+  when the task benefits from attempting to extract information visible in the
+  supplied input and context, then listing the material gaps found as questions.
+  It does not guarantee exhaustive extraction or question coverage.
 - Use `llm_explore_request_start_tool` plus `llm_exploration_status_tool` when
   LLM exploration should expose running/completed/failed/timed-out state instead
   of blocking until the command returns.

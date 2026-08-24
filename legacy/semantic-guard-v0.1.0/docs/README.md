@@ -1,5 +1,11 @@
 # Documentation Map
 
+> **Historical boundary (0.1.0 publication-repaired archive).** These documents
+> describe the predecessor as recorded for the 0.1.0 line; they are not current
+> 1.x state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`. Return to the
+> [repository-root README](../../../README.md) for the current project.
+
 This directory contains public-facing documents and working records for
 Criterion Loom.
 

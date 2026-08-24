@@ -1,5 +1,10 @@
 # Conflict Fix Plan 2026-06-02
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This document ranks the conflict findings from `docs/conflict-audit-2026-06-02.md` and turns them into an implementation order.
@@ -78,7 +83,7 @@ Execution order is not pure severity. A lower-severity guardrail can come first 
 | C09 | 5 | 5 | 4 | 4 | 3 | 21 |
 | C10 | 5 | 2 | 2 | 2 | 1 | 14 |
 
-Note: C10's raw responsibility score is high, but it is intentionally held back. The user already chose not to prioritize profile-specific escalation pressure, and implementing it early would amplify unresolved diagnostic ambiguity.
+Note: In this 2026-06-02 plan, C10's raw responsibility score is high, but it is intentionally held back. Profile-specific escalation pressure is outside this plan's priority, and implementing it early would amplify unresolved diagnostic ambiguity.
 
 ## Implementation Stages
 

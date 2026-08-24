@@ -1,9 +1,9 @@
 # v1 検証体系の可読投影
 
-投影時点: 2026-07-17T01:44:51+09:00
+投影時点: 2026-08-24T13:01:52+09:00
 正本: [`verification-source.json`](verification-source.json)
 正本 schema: [`verification-source.schema.json`](verification-source.schema.json)
-正本 SHA-256: `d4fc9da6c08244f190913450ebf9bbdcc777ae151aa2a8bc7781a89d683f520c`
+正本 SHA-256: `cd36b827bfea34fe5136a6e0677be400dabf62583bc325466050aeb271a19736`
 
 ## 役割
 
@@ -30,7 +30,7 @@
 | 派生元 | `semantic-guard vNext candidate・implementation.semantic-guard.vnext` | v1 正本の実装上の派生元。現正本ではない |
 | 旧版 | `semantic-guard v0.1.0・implementation.semantic-guard.v0.1.0` | 比較・移行・再現のために保存する旧実装 |
 
-repository canonicalization は locator と製品 identity の昇格に限る。これだけでは、`0.2.0-draft` の憲法候補、工学規則、実務妥当性、運用資格、人間の最終受理を採択したことにならない。`INV-VN-*` は内容同一の不変条件 identity として維持し、表示名や配置変更から別 identity を捏造しない。
+repository canonicalization は locator と製品 identity の昇格に限る。これだけでは、`0.2.0-draft` の憲法候補、工学規則、実務妥当性、運用資格、人間の最終受理を採択したことにならない。`INV-VN-*` は内容同一の不変条件 identity として維持し、表示名や配置変更だけを根拠に別 identity として扱わない。
 
 従来の `evidence / partial / missing` 一軸は廃止する。`evidence` は状態値ではなく、識別され、時点・対象・取得方法・信頼強度・限界を持つ観測実体である。
 
@@ -48,7 +48,7 @@ repository canonicalization は locator と製品 identity の昇格に限る。
 | resolution obligations | 52 |
 | resolution paths | 19 |
 
-この件数は正本の登録実体数であり、実装済み数、解消済み数、受理済み数ではない。今回追加した六検証項目はすべて `state.not-assessed`、対応する七未解決群（解析 route 群を含む）はすべて未解消である。
+この件数は正本の登録実体数であり、実装済み数、解消済み数、受理済み数ではない。2026-07-16 の実装作業で追加した六検証項目はすべて `state.not-assessed`、対応する七未解決群（解析 route 群を含む）はすべて未解消である。
 
 ## 独立状態軸
 
@@ -63,7 +63,7 @@ repository canonicalization は locator と製品 identity の昇格に限る。
 
 一つの軸から別の軸を推測しない。`implemented + passed` でも、妥当性確認、真正性、現行性、人間受理は成立しない。
 
-`terminal` は `current` な対象拘束、`satisfied` 又は `refuted`、`challenge=none`、`coverage=complete` が同時に成立する時だけ許す。`unbound` な状態は常に `provisional` かつ非完全被覆である。また `refuted` 又は `challenge=open/conflict` は、項目に位置付けた反証参照を必須とする。不確実というだけで `challenge` を捏造しない。
+`terminal` は `current` な対象拘束、`satisfied` 又は `refuted`、`challenge=none`、`coverage=complete` が同時に成立する時だけ許す。`unbound` な状態は常に `provisional` かつ非完全被覆である。また `refuted` 又は `challenge=open/conflict` は、項目に位置付けた反証参照を必須とする。不確実であることだけを根拠に `challenge` を生成しない。
 
 各行の人間受理は、再利用可能な技術状態 profile ではなく、正本頂上の `human_acceptance` を投影する。項目別の人間判断が将来必要になった場合は、人間所有の判断記録、時刻、対象参照を持つ別実体として追加する。
 
@@ -213,8 +213,8 @@ repository canonicalization は locator と製品 identity の昇格に限る。
 
 | 証拠 ID | 種別・信頼 | 対象拘束 / 鮮度 | 支持する範囲 | 支持しない範囲 |
 | --- | --- | --- | --- | --- |
-| `evidence.origin-requirement.snapshot.2026-07-17` | source_snapshot / locally_observed | bound / current | digest 固定した原点要求の記録内容 | 実装、効果 |
-| `evidence.constitution.snapshot.2026-07-17` | source_snapshot / locally_observed | bound / current | digest 固定した規範模型と状態語彙 | 実装、実務性能 |
+| `evidence.origin-requirement.snapshot.2026-08-24` | source_snapshot / locally_observed | bound / current | digest 固定した原点要求の記録内容 | 実装、効果 |
+| `evidence.constitution.snapshot.2026-08-24` | source_snapshot / locally_observed | bound / current | digest 固定した規範模型と状態語彙 | 実装、実務性能 |
 | `evidence.public-trust-basis-inspection.2026-07-17` | source_snapshot / locally_observed | bound / current | 公開 provenance schema の高信頼級に、観測者独立性・署名・信頼根・形式模型・検証器の条件拘束が無いという局所反証 | 実際の悪用、将来の修正、外部証拠真正性 |
 | `evidence.integrated-verification.2026-07-16` | test_execution / tool_reported | unbound / unbound | 日付付き記録が報告する局所試験、schema、配布、MCP、旧版比較 | 現 source snapshot への適用、実務性能、真正性、運用受理 |
 | `evidence.real-nlp-smoke.2026-07-16` | test_execution / tool_reported | unbound / unbound | 日付付き記録が報告する五例の実解析器経路、能力欠落 | 現解析器 source・資源への適用、母集団精度、一般化 |

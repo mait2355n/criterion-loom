@@ -1,5 +1,7 @@
 # 方向拘束公開切片の GitHub 統合証拠
 
+> 2026-08-23 時点の歴史的統合証拠である。owner/name、main、CI 及び配布状態の現況は、この文書から推定しない。
+
 - identity: `direction-binding hosted integration evidence・b811c797-d73c-459e-b44d-6299705fc613`
 - subject_ref: `direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4`
 - repository_ref: `canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4`

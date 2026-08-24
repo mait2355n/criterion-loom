@@ -1,5 +1,7 @@
 # Canonical promotion decision: semantic-guard 1.0.0
 
+> Historical decision record for the 1.0.0 promotion. It does not describe the current 1.1.0 command surface or current GitHub owner label.
+
 Decision id: `canonical-promotion.semantic-guard.v1.0.0`
 
 Decision date: 2026-07-17
@@ -11,7 +13,7 @@ Decision owner: repository owner
 - `context`: promote the contract-first audit kernel from a side-by-side candidate into the canonical repository and package identity while preserving the former implementation as a frozen predecessor.
 - `current_state`: implementation authority for repository canonicalization was given; release verification and final review still determine whether the resulting commit and artifacts are accepted.
 - `action`: canonicalize the v1 source and public names, freeze 0.1.0, regenerate post-promotion evidence, then submit the exact diff and verification results for final human review.
-- `detail_refs`: `README.md`, `CHANGELOG.md`, `PUBLIC-SNAPSHOT.md`, `docs/migration-v0.1.0-to-v1.0.0.md`, `docs/audits/canonicalization-audit-v1.0.0-2026-07-17.md`.
+- `detail_refs`: `README.md`, `CHANGELOG.md`, `docs/audits/public-snapshot-v1.0.0-2026-07-17.md`, `docs/migration-v0.1.0-to-v1.0.0.md`, `docs/audits/canonicalization-audit-v1.0.0-2026-07-17.md`.
 
 ## Decision
 

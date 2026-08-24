@@ -1,5 +1,9 @@
 # Codex Exec Reviewer Plan
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+
 `codex exec` reviewer は、`candidate_gap_reviewer` の prompt と schema を使い、別プロセスの Codex を隔離査読者として起動するための計画である。
 
 ## Purpose

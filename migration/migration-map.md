@@ -1,5 +1,11 @@
 # semantic-guard canonical v1 migration map
 
+> Historical map for the 0.1.0-to-1.0.0 canonicalization. The current 1.1.0
+> surface additionally includes the independent direction-binding audit; use
+> the root README and `PUBLIC-SNAPSHOT.md` for the current public inventory.
+> This map remains authoritative only for the difference classes and migration
+> boundaries recorded here.
+
 Status: the requirement-relation vertical slice is canonical in the 1.0.0
 repository and package identity. Practical-domain shadow adjudication,
 operational default cutover, policy adoption, and final human acceptance remain

@@ -2,8 +2,9 @@
 
 Recorded at: `2026-07-16T13:16:09+09:00`
 
-Status: implementation order adopted by the working agent; human final
-acceptance remains pending
+Status: historical candidate ordering recorded for the 2026-07-16 vNext work.
+It is not a current implementation instruction or adoption record; human final
+acceptance remained pending at the recorded time.
 
 ## Decision Frame
 
@@ -51,7 +52,7 @@ The previous order was:
 7. operational qualification and transition.
 
 That sequence preserved the main dependency direction but omitted two facts
-now demonstrated by current code and adversarial probes:
+demonstrated by the code and adversarial probes observed on 2026-07-16:
 
 1. the new denominator itself is not yet registered completely;
 2. the direct-rule path can terminally satisfy a reversed grammatical role,
@@ -63,7 +64,7 @@ the detector first without recording its route and proof basis would leave the
 new result difficult to audit. The two concerns must share the first priority
 band.
 
-## Adopted Execution Order
+## Recorded Candidate Execution Order
 
 ### P0-A — Fix the denominator before claiming progress
 
@@ -71,13 +72,13 @@ band.
    proof-graph soundness, register completeness, lifecycle trace/composition,
    operational qualification, transition/cutover, and human operational use.
 2. Add stable unresolved entries for morphology ablation, coreference and
-   dependency accuracy, lifting expansion, and LLM incremental value; these
-   currently appear only as free remaining-obligation text.
+   dependency accuracy, lifting expansion, and LLM incremental value; at the
+   record time these appeared only as free remaining-obligation text.
 3. Correct dependency edges so field evaluation cannot run before an accepted
    engineering basis, subject binding, secure-use boundary, and evaluation
    policy.
 
-### P0-B — Close current false-assurance paths
+### P0-B — Close the recorded false-assurance paths
 
 4. Add a versioned unresolved-route and stage-plan contract.
 5. Strengthen v0 cross-field validation for claim subject, proposition, rule,
@@ -148,7 +149,8 @@ action authenticity, operational readiness, or human acceptance.
 
 ## Execution Result
 
-The adopted dependency order was retained, with one deliberate pre-emption:
+The recorded candidate dependency order was used for the local implementation
+described in this historical record, with one deliberate pre-emption:
 every reproducible false satisfaction or fail-open condition discovered during
 independent review was moved ahead of the next feature band. This was not a
 change of purpose. It applied the stated stop rule that an apparently stronger
@@ -172,7 +174,7 @@ The resulting positive states remain deliberately weak: they describe internal
 consistency or conformance of supplied records, not real-world truth.
 
 This implementation therefore completes the locally executable contract work
-in the adopted order, but it does not complete practical validation, external
+in the recorded order, but it does not complete practical validation, external
 action proof, organizational adoption, or default-path transition. Those are
 evidence-producing activities and human decisions, not missing Boolean flags.
 
@@ -195,5 +197,5 @@ evidence-producing activities and human decisions, not missing Boolean flags.
 The durable observation is
 `validation/local-contract-verification-2026-07-16.json`. It deliberately
 declares its evidence freshness `unbound`: it is not a substitute for a closed
-current subject manifest, field evidence, external authenticity, independent
+subject manifest applicable to a later source, field evidence, external authenticity, independent
 operational observation, or human acceptance.

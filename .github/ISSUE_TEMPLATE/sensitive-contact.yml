@@ -1,0 +1,52 @@
+name: Sensitive contact request
+description: Request a private follow-up route without posting sensitive details.
+title: "[sensitive-contact]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form creates a public GitHub issue. Do not include credentials, tokens, private or proprietary documents, personal information, exploit or abuse details, reproduction steps, logs, private endpoints, or other sensitive material.
+
+        Use this form only to ask maintainers for an available private follow-up route.
+  - type: dropdown
+    id: report_kind
+    attributes:
+      label: Report kind
+      description: Choose only the broad category that is safe to disclose publicly.
+      options:
+        - Suspected vulnerability
+        - Conduct concern
+        - Other sensitive repository matter
+        - Not safe to classify publicly
+    validations:
+      required: true
+  - type: dropdown
+    id: affected_surface
+    attributes:
+      label: Affected surface
+      description: Choose a broad public surface without identifying a private target or system.
+      options:
+        - semantic-guard 1.x package or Python API
+        - CLI or MCP
+        - Repository, CI, or documentation
+        - semantic-guard 0.1.0 historical archive
+        - Repository participation or conduct
+        - Not safe to identify publicly
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: public_summary
+    attributes:
+      label: Minimal non-sensitive summary
+      description: In one or two sentences, state only why private follow-up is needed. Do not include reproduction steps, evidence, identities, endpoints, or technical details. If no summary is safe, state only that private follow-up is needed.
+      placeholder: Private follow-up is needed for a suspected issue affecting the CLI.
+    validations:
+      required: true
+  - type: checkboxes
+    id: private_follow_up
+    attributes:
+      label: Private follow-up
+      options:
+        - label: I need a private follow-up route, understand this issue is public, and have included no sensitive details.
+          required: true

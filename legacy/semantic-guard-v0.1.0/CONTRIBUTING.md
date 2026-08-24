@@ -1,5 +1,10 @@
 # Contributing
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 Criterion Loom's `semantic-guard` package is a small research prototype for meaning-first audits of Codex work. Contributions should preserve the public boundary: this is not a general natural-language understanding engine, a security scanner, or a replacement for human acceptance.
 
 ## Purpose

@@ -12,16 +12,16 @@
 | `current_state` | 1.1.0 公開切片はGitHub mainのmerge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d`へ統合済み。閉Schema、CLI、MCP、源試験、選択配布物の隔離検証及び実Sudachi 222組が存在する |
 | `schema_version` | `semantic-guard-direction-binding-audit/v1` |
 | `repository_id` | `canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4` |
-| `repository_profile` | 新しい global profile は導入しない。この契約を `repository_id` と下記三公開面だけへ局限する |
+| `repository_profile` | 新しい global profile は導入しない。この契約を `repository_id` と本表の三公開面だけへ局限する |
 | `public_surfaces` | CLI `audit-direction-binding`、MCP `audit_direction_binding_tool`、Schema `direction-binding-audit` |
-| `output_shape` | `schema_version` を持つ直接 JSON object。字段要約は後述する |
+| `output_shape` | `schema_version` を持つ直接 JSON object。主要欄の要約は後述する |
 | `next_action` | 実務母集団、人間受理、公開索引配布及び運用採択を別々に検証する |
 | `detail_refs` | [source map](../migration/direction-binding-source-map-2026-08-23.json)、[direction-binding Schema](../schemas/direction-binding-audit.schema.json)、[GitHub統合証拠](audits/direction-binding-integration-2026-08-23.md) |
 | `evidence_source` | digest付きsource map、局所検証及びmerge SHAへ束縛したhosted CI観測。実地妥当性又は人間受理の証拠ではない |
 | `record_time_policy` | 本資料の `recorded_on=2026-08-23` は ISO 8601 日付で時区なし。実行記録の `recorded_at` は RFC 3339 の時差付き日時 |
 | `inference_status` | 源実装、選択した1.1.0配布物、実Sudachi 222組、GitHub統合及びmerge後main CIは成立。実務妥当性、公開配布及び人間受理は未立証 |
 | `pending_decision` | 公開契約の最終受理及び人間採択 |
-| `exceptions` | 既存要求関係監査、凍結旧版、vnext 候補及び一般自然言語理解は対象外 |
+| `exceptions` | 既存要求関係監査、0.1.0 の歴史 archive、vnext 候補及び一般自然言語理解は対象外 |
 | `non_goals` | 方向選択、暗黙方向の生成、実務性能主張及び人間受理。詳細は「非目的」節 |
 
 ## 目的
@@ -40,6 +40,11 @@
 | MCP | `audit_direction_binding_tool` | CLI と同じ入力境界・状態・契約版を返す |
 | Schema | `direction-binding-audit` | `semantic-guard-direction-binding-audit/v1` の取得・検証契約 |
 
+Schema の `$id` に残る `morie-lene.github.io` URI は版付き識別子であり、
+HTTP 取得位置又は現在の owner 名を表す locator ではない。現行 schema は
+`semantic-guard schema direction-binding-audit`、導入済み package 資源、又は
+repository の `schemas/direction-binding-audit.schema.json` から取得する。
+
 ```sh
 uv run --locked semantic-guard audit-direction-binding \
   --text '体重が重い順に並べたとき、Cの次に体重が重い人は誰か。' \
@@ -48,11 +53,11 @@ uv run --locked semantic-guard audit-direction-binding \
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-この切片を `audit-requirement` の任意 field へ後付けせず、既存の `audit-result/v0` の字段形状、要求関係規則及び監査識別子の生成規則を変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。CLI、MCP、Schema の源実装と回帰試験に加え、選択wheel上の公開面同等性と実Sudachi 222組は局所で成立した。実装はPR #3でmainへmergeされ、merge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` のhosted CI四jobも成功した。公開索引上の配布物、hosted artifactと局所wheelのbyte同一性、未登録表現、実務母集団又は人間受理までは、この限定証拠から推論しない。
+この切片を `audit-requirement` の任意 field へ後付けせず、既存の `audit-result/v0` の欄構造、要求関係規則及び監査識別子の生成規則を変更しない。ただし producer package版は1.1.0へ上がるため、版を束縛する既存監査の具体的な識別子値まで不変とはしない。CLI、MCP、Schema の源実装と回帰試験に加え、選択wheel上の公開面同等性と実Sudachi 222組は局所で成立した。実装はPR #3でmainへmergeされ、merge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` のhosted CI四jobも成功した。公開索引上の配布物、hosted artifactと局所wheelのbyte同一性、未登録表現、実務母集団又は人間受理までは、この限定証拠から推論しない。
 
 ## 機械出力契約の要約
 
-成功時の payload は入れ子の `ok` wrapper を持たない、次の直接包絡である。完全な型、必須性、最大寸法及び入れ子構造は [`schemas/direction-binding-audit.schema.json`](../schemas/direction-binding-audit.schema.json) を正本とし、この節は第一読用の射影に限る。
+成功時の payload は入れ子の `ok` wrapper を持たず、次の直接 JSON object を返す。完全な型、必須性、最大寸法及び入れ子構造は [`schemas/direction-binding-audit.schema.json`](../schemas/direction-binding-audit.schema.json) を正本とし、この節は第一読用の射影に限る。
 
 | Field | 型又は列挙 | 役割 |
 | --- | --- | --- |
@@ -86,7 +91,7 @@ uv run --locked semantic-guard schema direction-binding-audit
 
 主操作のframeは`input_regions.role=source_text`内に全て収まらなければならない。`context`は原文要約値へ束縛される補助範囲だが、それ自体に置いた別質問や例だけを主発行器へ昇格させない。方向を限定する必須表現を後置contextへ逃がしても、直接付着条件の代用にはならない。
 
-Python検証函数で呼出時の役割境界まで再演する場合は、結合済み`source_text`だけでなく、既知の`text`と`context`を別引数で渡す。結合文字列だけを渡す検証は、要約値、範囲及び自己申告された領域の内部整合を検査できるが、同じ文字列を別の`text/context`境界へ再標識していないという外部来歴までは立証しない。provider識別子、token lemma、品詞及び生診断は宣言されたreceipt材料であり、この検証函数はproviderを再実行せず、それらの外部真正性を認証しない。別引数を渡しても署名、発行者真正性又は信頼時刻になるわけではない。
+Python検証関数で呼出時の役割境界まで再演する場合は、結合済み`source_text`だけでなく、既知の`text`と`context`を別引数で渡す。結合文字列だけを渡す検証は、要約値、範囲及び自己申告された領域の内部整合を検査できるが、同じ文字列を別の`text/context`境界へ再標識していないという外部来歴までは立証しない。provider識別子、token lemma、品詞及び生診断は宣言されたreceipt材料であり、この検証関数はproviderを再実行せず、それらの外部真正性を認証しない。別引数を渡しても署名、発行者真正性又は信頼時刻になるわけではない。
 
 ### CLI と MCP の誤り境界
 
@@ -95,7 +100,7 @@ Python検証函数で呼出時の役割境界まで再演する場合は、結�
 - 不正 option、入力読取、UTF-8 又は寸法の誤りは標準誤出力へ診断を出し、終了値2で終わり、正常 payload を出さない。
 - MCP は正常時に同じ payload object を返す。不正な `morphology` 値は `ValueError` とし、正常監査へ洗浄しない。
 - provider の未構成、部分結果及び通常の解析失敗は輸送誤りではなく、`execution` と `primary_rule_evaluation` に記録して返す。
-- 内部 Schema 検証失敗又は想定外依存失敗は、有効な公開 JSON を出力せず、CLIは非零で終了し、MCPは工具例外を返す。共通の構造化 error envelope は1.1.0契約に含めず将来課題とする。この非包絡境界自体は今回の源統合の阻止条件ではないが、呼出側は非零終了や工具例外を監査上の `block` と読み替えてはならない。
+- 内部 Schema 検証失敗又は想定外依存失敗は、有効な公開 JSON を出力せず、CLIは非零で終了し、MCPは工具例外を返す。共通の構造化 error envelope は1.1.0契約に含めず将来課題とする。この共通包絡を設けない境界自体は 1.1.0 方向拘束公開切片の源統合を阻止する条件ではないが、呼出側は非零終了や工具例外を監査上の `block` と読み替えてはならない。
 
 源試験には代表CLI/MCP実行とSchema検査が含まれるが、手書きのpayloadは本資料へ固定しない。選択配布物と実Sudachiの代表実行は局所で成立した。永続的な完了証拠に使う場合は、対象artifact又はSHAへ束縛した別の検証記録に保存する。
 
@@ -132,9 +137,9 @@ Python検証函数で呼出時の役割境界まで再演する場合は、結�
 - 利用者に代わって採用方向を選ぶ。
 - 自由形式の形容詞、任意の尺度又は一般自然言語を理解したと主張する。
 - 慣例、常識、候補結果又は数値を入力として、方向拘束 field を生成する。
-- 既存の要求関係監査、保証 graph 又は生活周期 workflow を統合し直す。
+- 既存の要求関係監査、保証 graph 又はライフサイクル workflow を統合し直す。
 - 実務母集団での適合率、再現率、便益又は安全性を立証する。
-- 凍結旧版を現在の truth oracle として再導入する。
+- 0.1.0 の歴史 archive を現在の truth oracle として再導入する。
 - local vnext 候補を暗黙に採択又は正本化する。
 - `pass` を人間受理、領域正解、配備許可又は運用資格へ読み替える。
 
@@ -146,7 +151,7 @@ Python検証函数で呼出時の役割境界まで再演する場合は、結�
 
 この公開切片は `local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895` からの `derived_from` であり、同じ entity への参照ではない。選択した五つの源泉だけを digest で束縛し、正本へ移植する。完全な対応表は [direction-binding source map](../migration/direction-binding-source-map-2026-08-23.json) に置く。
 
-`local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0` は `candidate_ref` に留め、今回の移植元にしない。`frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631` は凍結資料として除外し、移動、改稿又は透過 fallback 化しない。
+`local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0` は `candidate_ref` に留め、1.1.0 方向拘束公開切片の移植元にしない。`frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631` は当該 1.1.0 統合時点の源対象から除外し、移動、改稿又は透過 fallback 化しなかった。2026-08-24 の後続 publication repair は旧版 archive の文書、companion Skill 文面及び archive manifest だけを変更し、runtime code、schema、試験及び fixture は変更していない。
 
 content hash は選択源泉と移植対象の内容一致証拠であり、entity identity ではない。label、役割、配置 path 又は同一内容だけから entity の同一性を推定しない。
 

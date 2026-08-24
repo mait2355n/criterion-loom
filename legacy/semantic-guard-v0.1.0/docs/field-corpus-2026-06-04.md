@@ -1,10 +1,15 @@
 # Field Corpus 2026-06-04
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 This corpus is a review backlog for semantic-guard's next calibration step. It is not counted as fixture accuracy, and it is not statistical evidence of general field robustness.
 
 ## Purpose
 
-The deterministic fixtures prove that the current local expectation catalog still passes. The field corpus serves a different purpose: it keeps examples that should guide future detector design before they are promoted into hard pass/fail fixtures.
+The deterministic fixture run recorded for 2026-06-04 showed that the then-current local expectation catalog passed; that evidence is limited to the recorded run. The field corpus serves a different purpose: it keeps examples that should guide future detector design before they are promoted into hard pass/fail fixtures.
 
 ## Audience and Use
 
@@ -12,13 +17,13 @@ This file is for maintainers who decide whether a warning should be kept, weaken
 
 ## Corpus shape
 
-The current corpus is `tests/field-corpus/corpus-2026-06-04.json`.
+The corpus recorded by this document is `tests/field-corpus/corpus-2026-06-04.json`.
 
 - `good_warning`: warnings that should remain warnings.
 - `noisy_warning`: examples that should stay quiet, or whose warning should be weakened.
 - `miss`: likely blind spots where a future detector or stricter rule should be considered.
 
-Current balance:
+Recorded balance:
 
 - 10 good-warning entries.
 - 10 noisy-warning entries.

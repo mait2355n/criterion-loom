@@ -508,7 +508,7 @@ class VerificationSourceValidatorTests(unittest.TestCase):
     def test_shared_upstream_and_evidence_identity_requires_same_content(self) -> None:
         source = self._source()
         old_id = "evidence.real-nlp-smoke.2026-07-16"
-        shared_id = "document.prototype-origin-requirement.v2"
+        shared_id = "document.prototype-origin-requirement.v3"
 
         def replace_identity(value: object) -> object:
             if isinstance(value, dict):

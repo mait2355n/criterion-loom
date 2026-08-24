@@ -1,5 +1,10 @@
 # Logical Audit Design
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This document defines the first logical-audit vocabulary for `semantic-guard`.
@@ -576,7 +581,7 @@ Dependencies:
 
 Resource basis:
 
-- The first implementation should use the current local Python codebase.
+- The first implementation should use the Python codebase recorded with this design.
 - No external parser, NLP dependency, proof solver, or network service is assumed.
 - The first implementation owner is the maintainer/Codex worker for this repository.
 - The first estimate basis is a narrow one-rule vertical slice, not a whole-catalog migration.

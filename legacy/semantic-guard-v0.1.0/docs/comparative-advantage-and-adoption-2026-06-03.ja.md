@@ -1,11 +1,15 @@
-# 比較優位と隣接実装候補 2026-06-03
+# 比較軸と隣接実装候補 2026-06-03
+
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
 
 ## 目的
 
 この文書は、公開状態で確認できる同系統の MCP サーバ、agent skill、仕様監査・保安走査系の実装を `semantic-guard` と比較し、次を切り分ける。
 
-- `semantic-guard` が相対的に優位な点。
-- `semantic-guard` が相対的に不利な点。
+- 各対象で観測できた機構と、比較軸ごとの差分。
+- `semantic-guard` に無い機構、または同条件で未検証の範囲。
 - `semantic-guard` の監査機能とは統合せず、隣接実装する価値がある仕組み。
 - 監査 core に取り込むべきでない仕組み。
 
@@ -17,7 +21,7 @@
 
 調査対象:
 
-- `semantic-guard`: local checkout of this repository
+- `semantic-guard`: この 2026-06-03 比較で調査した repository checkout
 - Spec Kit: `github.com/github/spec-kit`, snapshot `7bab0568c5612ae50310fa341b0161d2e4babd26`
 - Harness MCP: `github.com/harness/harness-mcp`, snapshot `3a37d886f2434d9c6ca97930eca799dd18999ee8`
 - Semgrep agent / MCP sources: `github.com/semgrep/semgrep`, snapshot `15f510ede866353d84f0193769e854c47e4a0fe9`
@@ -28,26 +32,26 @@
 
 - Snyk、Semgrep、Harness には公開 repository から見える範囲外の商用機能がある。ここでは確認できた実装と文書だけを比較する。
 - Planu は npm package 展開物から見た比較であり、非公開の運用や hosted feature は評価していない。
-- Spec Kit は 2026-06-03 時点で workflow engine が追加されており、以前の「command template 中心」という評価より強い workflow 面を持つ。
+- Spec Kit では 2026-06-03 時点で workflow engine、state persistence、human gate が観測され、以前の「command template 中心」という記述より広い workflow 面を持っていた。
 
 ## 結論
 
-`semantic-guard` の優位は、単独領域の専門性ではない。
+この調査は、比較対象を網羅した順位付けでも、同一 use case・data・評価尺度による優越性試験でもない。
 
-優位は、要求、計画、差分、完了、受入材料をまたいで、agent 作業の意味を外部化し、監査可能な JSON として残す点にある。
+調査した snapshot 群では、`semantic-guard` に要求、計画、差分、完了、受入材料をまたいで agent 作業の意味を外部化し、JSON として残す機構が観測された。この機構の有用性や他実装より優れるかは、本比較では検証していない。
 
-逆に、個別領域では普通に負ける。
+各対象では、`semantic-guard` に無い別の機構が観測された。
 
-- 保安走査は Semgrep / Snyk が強い。
-- 仕様準備度、受入条件品質、coverage gap は Planu が強い。
-- workflow 実行、再開、人間 gate は現行 Spec Kit が強い。
-- 平台操作の audit log、危険度、elicitation は Harness MCP が強い。
+- Semgrep / Snyk: code、依存関係、供給網・保安対象を走査する実行面。
+- Planu: 仕様準備度、受入条件品質、coverage gap を扱う採点・検査面。
+- Spec Kit: workflow 実行、再開、human gate、state persistence。
+- Harness MCP: 平台操作の audit log、危険度、elicitation。
 
 したがって採るべき戦略は、競争ではなく隣接実装である。ただし engine を丸ごと輸入したり、既存の監査相へ直接混ぜたりはしない。外部道具から得られる証拠、規則、境界情報を sidecar artifact として生成し、必要な時だけ人間または上位 workflow が参照する。
 
 この方針では、既存の `audit-request`、`audit-plan`、`audit-diff`、`finish-check`、`trace-report` の出力契約を変えない。追加するのは、監査 core の外側にある companion command、schema、report generator である。
 
-## `semantic-guard` の現在地
+## 2026-06-03 に観測した `semantic-guard`
 
 `semantic-guard` は次の相を持つ。
 
@@ -61,7 +65,7 @@
 | `trace-report` | request / plan / diff / finish / evidence の対応と gap を出す |
 | `acceptance-review-bundle` | 決定論監査、LLM 補助、人間確認点、残留危険を束ねる |
 
-現行実装上の特徴:
+調査した checkout で観測した機構:
 
 - `audit_request` は input kind を分け、文書、計画、差分要約へ分岐する。
 - `audit_plan` は日本語見出しや同義語を含む計画項目を診断する。
@@ -77,26 +81,26 @@
 
 ## 比較表
 
-| 対象 | 内部の主機構 | 相手側の強み | `semantic-guard` の優位 | `semantic-guard` の不利 |
+| 対象 | 内部の主機構 | 対象側で観測した範囲 | `semantic-guard` で観測した異なる範囲 | 未実装または未検証の境界 |
 | --- | --- | --- | --- | --- |
-| Spec Kit | command template、spec / plan / tasks 手順、YAML workflow engine、state persistence、human gate | 仕様駆動開発の一連実行、再開、gate、shell/prompt/command step | 特定 workflow に縛られず、要求、計画、差分、完了の意味監査を横断できる | workflow 実行、resume、gate の運用面は弱い |
-| Planu | spec format validator、readiness score、quality score、EARS / BDD、AC gap、coverage gap、drift、challenge-spec | 受入条件の粒度、準備度採点、仕様と test/code の対応 | 仕様平台に縛られず、外部成果物や dogfood 文書も監査できる。誤警告診断と人間判断境界が濃い | 受入条件の品質採点、coverage gap、drift 検出、対立質問が弱い |
-| Semgrep | CLI/RPC 静的走査、post-tool hook、finding elicitation、既定方針の prompt injection | code 入力に対する静的規則照合、agent 編集直後の block、規則集合 | 意味、範囲、検証、完了証拠の監査であり、特定の規則照合に限らない | 実 code への規則照合能力は持たない。hook による即時阻止もない |
-| Snyk Studio MCP | JSON tool registry、CLI 実行、trust/auth 確認、output mapper、scan tool profiles | SCA / SAST / IaC / container / SBOM / package health などの供給網・保安実行 | vendor 非依存で、code が無い段階の要求や計画も見られる | trust model、auth、scanner adapter、結果正規化は未整備 |
-| Harness MCP | registry dispatch、operation policy、risk level、elicitation、structured audit event | 平台 API 操作の統制、危険度別確認、操作 audit log | API 操作履歴ではなく、作業成果物の意味と完了証拠を監査できる | `semantic-guard` 自身の CLI/MCP 呼び出し履歴や危険度記録は薄い |
+| Spec Kit | command template、spec / plan / tasks 手順、YAML workflow engine、state persistence、human gate | 仕様駆動開発の実行、再開、gate、shell/prompt/command step | 特定 workflow を内包せず、要求、計画、差分、完了を別の監査相として扱う | workflow 実行、resume、gate を持たず、同一条件の運用比較もしていない |
+| Planu | spec format validator、readiness score、quality score、EARS / BDD、AC gap、coverage gap、drift、challenge-spec | 受入条件の粒度、準備度採点、仕様と test/code の対応 | 仕様形式外の成果物や dogfood 文書も入力対象にし、誤警告診断と人間判断境界を出力する | 受入条件の品質採点、coverage gap、drift 検出、対立質問を同等条件で評価していない |
+| Semgrep | CLI/RPC 静的走査、post-tool hook、finding elicitation、既定方針の prompt injection | code 入力に対する静的規則照合、agent 編集直後の block、規則集合 | 意味、範囲、検証、完了証拠を文書段階から監査対象にする | 実 code への規則照合と hook による即時阻止を実装していない |
+| Snyk Studio MCP | JSON tool registry、CLI 実行、trust/auth 確認、output mapper、scan tool profiles | SCA / SAST / IaC / container / SBOM / package health などの供給網・保安実行 | vendor 固有 scan を内包せず、code 前段階の要求や計画も入力対象にする | trust model、auth、scanner adapter、結果正規化を実装していない |
+| Harness MCP | registry dispatch、operation policy、risk level、elicitation、structured audit event | 平台 API 操作の統制、危険度別確認、操作 audit log | API 操作履歴ではなく、作業成果物の意味と完了証拠を監査対象にする | `semantic-guard` 自身の CLI/MCP 呼び出し履歴や危険度記録を十分に実装・評価していない |
 
-## 優位性
+## `semantic-guard` で観測した差分
 
 ### 1. 相をまたぐ意味の外部化
 
-多くの同系統道具は、どこか一相に強い。
+調査対象は、それぞれ異なる主対象を持つ。
 
 - Spec Kit は仕様駆動 workflow。
 - Planu は仕様準備度と受入条件。
 - Semgrep / Snyk は code と依存関係の走査。
 - Harness は API 操作統制。
 
-`semantic-guard` は、要求、計画、差分、完了を別々に扱い、その間の trace gap を出せる。ここが最も独自に近い。
+`semantic-guard` は、要求、計画、差分、完了を別々に扱い、その間の trace gap を出す。この比較対象群では観測された差分だが、網羅的な市場比較や独自性の証明ではない。
 
 実装上は、`trace-report` が request / plan / diff / finish / evidence を束ね、監査状態と trace 状態を分ける。単に「その場の回答が妥当か」ではなく、「前に言った目的と後の完了主張がつながっているか」を見られる。
 
@@ -106,49 +110,47 @@ Semgrep の hook は findings が出ると block できる。Harness は危険�
 
 一方、意味監査で同じことをやると危ない。要求や設計の良否は、文脈、事業判断、受入者の価値判断を含むからだ。
 
-`semantic-guard` は、LLM review を補助に留め、`acceptance-review-bundle` の `final_human_decision` を `pending / accept / request_revision / defer` として人間側に残す。この境界は強い。面倒だが健全だ。
+`semantic-guard` は、LLM review を補助に留め、`acceptance-review-bundle` の `final_human_decision` を `pending / accept / request_revision / defer` として人間側に残す。この人間判断境界は実装上確認できるが、判断品質への効果や他方式との比較は未検証である。
 
 ### 3. 誤警告を監査対象に含める
 
 Planu や走査器は score や findings を出すが、`semantic-guard` は `nearest_candidates`、`match_status`、`confidence`、`warning_class`、`non_emitted_rules`、logical derivation で「なぜ出たか」「なぜ出なかったか」も出そうとしている。
 
-これは heuristic system としては重要である。規則が荒い時、利用者が見るべきなのは警告そのものだけでなく、規則の弱さである。
+この診断面は、警告だけでなく規則の限界を観測可能にするために置かれている。利用結果を改善するかは本比較では検証していない。
 
 ### 4. code が無い段階でも効く
 
-Semgrep / Snyk は code、依存、container、IaC が無いと力を出しにくい。Planu は仕様形式があるほど強い。
+Semgrep / Snyk の観測対象は code、依存、container、IaC であり、Planu は仕様形式と受入条件を主対象にする。
 
-`semantic-guard` は、まだ code もテストも無い段階で、要求の達成条件、検証方法、証拠形式、非目標、未決点を要求できる。agent 作業ではここが効く。実装前の意味 drift は、あとから test だけで戻せない。
+`semantic-guard` は、まだ code もテストも無い段階の文書を入力にして、要求の達成条件、検証方法、証拠形式、非目標、未決点を指摘対象にできる。これは想定利用範囲の差であり、実地での改善効果は本比較では測っていない。
 
-## 不利性
+## 未実装・未検証の範囲
 
-### 1. 専門 engine が薄い
+### 1. 専門 engine を内包しない
 
-保安は Semgrep / Snyk に勝てない。仕様準備度は Planu に勝てない。workflow 実行は Spec Kit に勝てない。操作監査は Harness に勝てない。
-
-これは恥ではないが、誤魔化すと破綻する。`semantic-guard` は横断監査層であって、各専門 engine の代替ではない。
+`semantic-guard` は、Semgrep / Snyk の保安走査、Planu の仕様準備度採点、Spec Kit の workflow 実行、Harness の操作監査を実装していない。同一 use case と尺度による性能比較も実施していないため、ここでは順位を主張しない。`semantic-guard` は横断監査層であって、各専門 engine の代替ではない。
 
 ### 2. score が局所較正に留まる
 
-fixture は役に立つが、任意文書への precision / recall を証明しない。Planu のような readiness / quality score も、Semgrep のような rule corpus も、Snyk のような脆弱性知識基盤もない。
+fixture は記録済み回帰例の比較に使われるが、任意文書への precision / recall を証明しない。Planu のような readiness / quality score も、Semgrep のような rule corpus も、Snyk のような脆弱性知識基盤もない。
 
 したがって公開時は、fixture pass rate を「任意文書でも同じ品質で判定できる」という主張へ飛躍させてはいけない。
 
-### 3. 外部証拠の隣接生成・参照口が未成熟
+### 3. 外部証拠の隣接生成・参照口が未実装または未検証
 
 現在の `finish-check` は「検証したか」「証拠があるか」を見るが、Semgrep JSON、Snyk JSON、coverage report、test report、workflow gate result などを、監査 core から独立した証拠 report として正規化する schema がまだない。
 
-このせいで、外部道具の強みを「監査の材料」として横に置きにくい。
+この記録時点では、外部道具の出力を「監査の材料」として同じ形で参照する経路が無い。
 
-### 4. workflow と操作監査が弱い
+### 4. workflow と操作監査を実装していない
 
 Spec Kit は YAML workflow を実行し、gate で止め、state を保存して resume する。Harness は registry-mediated API call に対して audit event を発行する。
 
-`semantic-guard` は監査結果そのものの JSON は持つが、監査実行の操作履歴、危険度、確認方法、再開可能な監査 workflow はまだ薄い。
+`semantic-guard` は監査結果そのものの JSON は持つが、監査実行の操作履歴、危険度、確認方法、再開可能な監査 workflow はこの記録時点では十分に実装・評価していない。
 
-### 5. 対立質問と adversarial review が弱い
+### 5. 対立質問と adversarial review の体系化が未検証
 
-Planu の `challenge-spec` 系は、失敗、保安、scale、data consistency、out-of-scope、過去決定との矛盾を攻める。`semantic-guard` にも未決点や反証条件はあるが、体系的な adversarial scenario pack としてはまだ弱い。
+Planu の `challenge-spec` 系では、失敗、保安、scale、data consistency、out-of-scope、過去決定との矛盾を扱う。`semantic-guard` にも未決点や反証条件はあるが、体系的な adversarial scenario pack としての実装・評価はこの記録時点では無い。
 
 ## 隣接実装できるもの
 
@@ -285,7 +287,7 @@ Spec Kit の workflow engine を丸ごと持つ必要は薄い。だが workflow
 
 ### vendor scanner engine の内蔵
 
-Semgrep / Snyk の中身を置き換える必要はない。`semantic-guard` は保安走査器を名乗らない方が強い。作るなら結果 reader と evidence schema までで、監査関数には混ぜない。
+Semgrep / Snyk の中身を置き換える必要はない。`semantic-guard` は保安走査器を公開契約に含めていない。作るなら結果 reader と evidence schema までに境界を置き、監査関数には混ぜない。
 
 ### release gate 化
 
@@ -301,7 +303,7 @@ Planu のような spec store、interactive clarify session、drift management �
 
 ### 早すぎる shell workflow
 
-Spec Kit の shell step は強いが、`semantic-guard` に入れるには危険が増える。まずは sidecar artifact、gate suggestion report、operation audit log、external evidence normalizer が先。
+Spec Kit には shell step があるが、同種の実行面を `semantic-guard` に入れると権限と失敗境界が増える。この文書では sidecar artifact、gate suggestion report、operation audit log、external evidence normalizer を先行候補とする。
 
 ## 導入順
 
@@ -384,9 +386,9 @@ Spec Kit の shell step は強いが、`semantic-guard` に入れるには危険
 
 | 優先 | 候補 | 理由 |
 | --- | --- | --- |
-| 1 | external evidence contract | 他道具の強みを競合せず sidecar 化できる |
-| 2 | acceptance criteria quality / gap rules | Planu の強みを監査 core 外の report として使える |
-| 3 | gate suggestion | 人間判断境界を保ったまま Spec Kit / Harness の強みを横に置ける |
+| 1 | external evidence contract | 他道具で観測した証拠出力を sidecar 化する接続口になる |
+| 2 | acceptance criteria quality / gap rules | Planu で観測した検査結果を監査 core 外の report として扱う候補になる |
+| 3 | gate suggestion | 人間判断境界を保ったまま Spec Kit / Harness の gate 情報を参照する候補になる |
 | 4 | operation audit log | 監査道具自身の再現性が上がるが、採点には混ぜない |
 | 5 | scanner evidence readers | Semgrep / Snyk を sidecar evidence として正規化できる |
 | 6 | adversarial scenario pack | LLM reviewer に渡す前の材料を増やせる |
@@ -395,13 +397,13 @@ Spec Kit の shell step は強いが、`semantic-guard` に入れるには危険
 
 ## 実装に入るなら最初の切り口
 
-最初に作るべきは、`companions/external_evidence.py` である。
+この文書が最初の実装候補として記録するのは、`companions/external_evidence.py` である。
 
 理由:
 
-- Semgrep / Snyk / Planu / Spec Kit / Harness の全てから sidecar 化できる。
+- Semgrep / Snyk / Planu / Spec Kit / Harness の出力を受ける共通 sidecar 入口の候補になる。
 - `semantic-guard` の正体を変えない。
-- 既存の監査関数を変えずに、周辺証拠の品質が上がる。
+- 既存の監査関数を変えずに、周辺証拠を共通形式で記録する口を置ける。品質改善効果は未検証である。
 - 将来の scanner reader、coverage reader、gate suggestion、audit log の受け皿にもなる。
 
 最小 API 案:
@@ -421,16 +423,14 @@ semantic-guard ingest-evidence --kind generic --file evidence.json
 semantic-guard evidence summarize --file evidence.normalized.json
 ```
 
-この順序なら、`semantic-guard` は「他道具より何でもできる」などという鈍い主張をせずに済む。各道具の勝っている部分を sidecar artifact として扱い、監査 core はそのまま保つ。そこが一番筋がいい。
+この順序案は、「他道具より何でもできる」という未検証主張を避け、各道具で観測した出力を sidecar artifact として扱い、監査 core を保つ。設計境界との整合は説明できるが、実装効果と優先順位の妥当性は今後の検証対象である。
 
 ## 最終評価
 
-`semantic-guard` は、公開同系統の中で「個別実行能力が最強の道具」ではない。
+この調査は、`semantic-guard` が公開同系統の中で最強、優位、または劣位であることを立証しない。比較母集団は列挙した snapshot に限られ、同一条件の定量評価も無い。
 
-だが、agent 作業の要求、計画、差分、完了、受入判断材料を、外部化された監査対象として扱う点では、かなり明確な位置を持つ。
+観測できた設計上の差分は、agent 作業の要求、計画、差分、完了、受入判断材料を、義務と証拠を持つ外部化された監査対象として扱うことにある。この差分の実地価値は未検証である。
 
-利点は、コンテキスト外部化を「ただの記録」ではなく「監査可能な義務と証拠の束」へ寄せているところにある。
+一方、各専門 engine が出す現場証拠への接続は、この記録時点では未実装または未評価である。
 
-不利は、各専門 engine に比べて現場証拠の接続が弱いこと。
-
-ならば次の強化は明白である。専門 engine を真似るな。専門 engine の結果を、監査機能とは別の sidecar artifact として実装しろ。これが一番、道具の正体を壊さずに能力を底上げする。
+そのため本書は、専門 engine の結果を監査機能とは別の sidecar artifact として扱う案を、次の実装候補として残す。これは比較順位から導いた結論ではなく、既存の監査 core を保つための構造案である。
