@@ -1,5 +1,7 @@
 # semantic-guard 1.0.0 canonicalization audit
 
+> Historical audit evidence for the 1.0.0 promotion. Pending states and command counts below are observations at the recorded time, not current 1.1.0 status.
+
 Audit date: 2026-07-17
 
 Audit subject: the promoted repository tree and its intended `semantic-guard 1.0.0` package artifacts
@@ -11,7 +13,7 @@ Audit authority: technical audit material only; no automatic release approval or
 - `context`: determine whether the former contract-first candidate can become the canonical source without misrepresenting maturity or losing the predecessor lineage.
 - `current_state`: source, names, documentation, Skill, CI, migration, and archive are aligned; local tests, validators, distribution checks, and hosted CI pass. The locally verified implementation tree is bound to commit `dec7c737403cb9708942e43a7ac007397b161742`; publication head `a47301641b16df0f00b505143c8228b97af7dc75` adds evidence and CI maintenance only. Merge, v1 tag publication, and final human acceptance remain pending.
 - `action`: present the exact publication evidence and residual risks to the human decision owner; merge and create `v1.0.0` only after explicit acceptance.
-- `detail_refs`: repository diff, [hosted CI run 29519250814](https://github.com/morie-lene/criterion-loom/actions/runs/29519250814), wheel verification output, `validation/canonical-release-verification-2026-07-17.json`, `validation/hosted-canonical-release-verification-2026-07-17.json`, `PUBLIC-SNAPSHOT.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
+- `detail_refs`: repository diff, [hosted CI run 29519250814](https://github.com/morie-lene/criterion-loom/actions/runs/29519250814), wheel verification output, `validation/canonical-release-verification-2026-07-17.json`, `validation/hosted-canonical-release-verification-2026-07-17.json`, `docs/audits/public-snapshot-v1.0.0-2026-07-17.md`, `docs/canonical-promotion-decision.md`, `docs/migration-v0.1.0-to-v1.0.0.md`.
 
 ## Audit criteria
 
@@ -29,7 +31,7 @@ Audit authority: technical audit material only; no automatic release approval or
 - Candidate paths and names appeared in documentation, validation locators, packaging checks, and legacy baseline references.
 - The former CI validated only the predecessor implementation.
 - The companion Skill described commands absent from the candidate kernel.
-- The public copy of `semantic-guard-full-evaluation-2026-07-11.md` redacts two terminal-specific source paths as `<local-source-root>`; the private recovery archive retains the original. The public redaction has its own digest and must not be substituted for the private original without recording which subject was used.
+- The public copy of `semantic-guard-full-evaluation-2026-07-11.md` is a publication-sanitized derivative: it redacts terminal-specific source paths and private-dialogue provenance, and it does not expose a structured findings ledger that is absent from the public tree. The historical Git object retains earlier wording. The 2026 record also identified a separate private original, whose current availability is not established by this public repository. The public derivative has its own digest and must not be substituted for another subject without recording which copy was used.
 - The public copy of `migration/legacy-baseline-2026-07-16.json` redacts one resolved local-runtime path. The separate 2026-07-17 trust-root capture matched its 155 covered files at capture time but remains `pending_human_acceptance` and is not a correctness oracle.
 
 These findings require canonical name migration, explicit breaking-change documentation, regenerated evidence, CI replacement, and Skill narrowing. They are not cured by changing a package version alone.
@@ -79,7 +81,7 @@ These digests bind the locally built artifacts, not a future GitHub-hosted artif
 | Closed local contracts remain valid | full unit suite and validators | locally observed pass |
 | Wheel and sdist carry only the intended distribution boundary | trusted local digests and packaged-contract verifier | locally observed pass |
 | Installed public surface is callable | isolated installed CLI and MCP inventory checks | locally observed pass |
-| Frozen predecessor remains observable | archive manifest and legacy suite | locally observed: tag content is byte-identical outside the two archive manifests, 196 tests passed, and the 155-file public archive manifest digest is `e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5`; external trust-root adoption remains pending |
+| Frozen predecessor remained observable | archive manifest and legacy suite | observed at the recorded time: tag content was byte-identical outside the two archive manifests, 196 tests passed, and the 155-file public archive manifest digest was `e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5`; the current readable archive discloses later publication repairs and the historical Git anchor retains the original bytes |
 | Field performance is acceptable | adjudicated practical-domain corpus | not established |
 | Candidate policy/profile is adopted | explicit human decision record | not established |
 | External AI action is authentic | trusted observer, identity, time, and provenance evidence | not established |

@@ -9,13 +9,17 @@ uv run --locked semantic-guard schema audit-result
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-The 1.1.0 source contract has four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contains 24 names. Former 0.1.0 commands are available only in the frozen legacy source and are not aliases of the v1 implementation. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
+The 1.1.0 source contract has four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contains 24 names. Former 0.1.0 commands are available only in the publication-repaired legacy archive and are not aliases of the v1 implementation; the archive manifest identifies the original Git anchor. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
 
 ## Asking for help
 
-Use a GitHub issue for reproducible usage, documentation, packaging, or rule-gap reports. Use the private process in `SECURITY.md` for suspected vulnerabilities.
+Use a GitHub issue for reproducible usage, documentation, packaging, or rule-gap
+reports. For a suspected vulnerability or a conduct concern that needs private
+follow-up, follow `SECURITY.md` and choose **Sensitive contact request** from
+the repository issue chooser. That request is public, so it must contain only a
+minimal non-sensitive summary and a request for a private follow-up route.
 
-Include:
+For an ordinary non-sensitive support issue, include:
 
 - `semantic-guard` version and installation method;
 - operating system and Python version;
@@ -23,7 +27,7 @@ Include:
 - redacted standard output and standard error;
 - smallest non-sensitive input that reproduces the problem;
 - whether optional morphology or dependency providers were installed;
-- whether the result came from canonical v1 or the frozen 0.1.0 implementation.
+- whether the result came from canonical v1 or the archived 0.1.0 runtime.
 
 Do not attach secrets, proprietary requirements, personal information, tokens, or an uncontrolled legacy execution environment.
 

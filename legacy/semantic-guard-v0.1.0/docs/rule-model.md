@@ -1,5 +1,9 @@
 # Rule Model
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+
 `semantic-guard` の rule catalog は、監査規則を履歴ではなく工学上の関心事として育てるための構造である。
 
 ## Purpose

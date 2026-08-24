@@ -1,5 +1,10 @@
 # Criterion Loom 日本語取説
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+> 現行 project は [repository root の README](../../README.md) へ戻って確認すること。
+
 Criterion Loom は、Codex などの開発作業で曖昧になりやすい意味、目的、探索前の質問、要求、決定状態、計画、差分、完了証拠を外へ取り出して点検するための意味先行監査体系である。
 
 package / CLI / MCP server 名は `semantic-guard`。
@@ -23,7 +28,7 @@ Criterion Loom は次の四つを公開上の柱として扱う。
 
 - 仕様や要求がまだ曖昧な開発作業の事前点検。
 - まだ仕様化できない初期案から、対象利用者、重大な曖昧点、聞くべき質問だけを切り出す探索。
-- LLM に、入力と文脈から取れる情報をすべて拾わせた上で、欠けている重要情報をすべて問いたださせる探索。
+- LLM に、入力と文脈から取れる情報の抽出を試みさせ、見つかった重大な不足を列挙させる探索。情報や不足を取り切る保証はない。
 - 決定済み、未決定、仮説、推測、片側観測、時点依存、価値判断、根拠不足を同じ本文から分けて取り出す確認。
 - 実装計画が、やることの列挙だけになっていないかの確認。
 - 差分が公共契約、識別子、保存先、権限、失敗境界を変えていないかの確認。
@@ -75,7 +80,7 @@ uv run --python 3.13 --project . python -m unittest discover -s tests -v
 
 `explore-request` は、まだ要求文として監査できない初期案に使う軽量な決定論 preflight である。共通の JSON 包みを stdout に返し、`details.schema_version` は `request-exploration/v1` になる。`details.audience_hypotheses`、`details.material_ambiguities`、`details.questions`、`details.spec_outline` を返すが、これは実装計画ではない。CLI usage error は既存通り argparse の message を stderr に出して exit code 2 で終わり、監査対象の警告や blocker は stdout の JSON `status` として返る。
 
-`llm-explore-request` は、網羅的な仕様化前探索に使う LLM 版である。元の入力、任意の context、決定論 preflight 出力を隔離 `codex exec` reviewer へ渡し、取れる fact / inference / hypothesis / unknown / pending decision をすべて拾った上で、欠けている重要情報を質問として返す。既定は dry-run で、`--execute` を付けた時だけ Codex を実行し、`schemas/request-exploration-review.schema.json` で JSON を検証する。有効な出力は `schema_version: "request-exploration-review/v1"` を持ち、`extracted_information`、`audience_hypotheses`、`material_ambiguities`、`questions`、`spec_outline`、`non_decisions`、`limits` を含む。質問は、範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変えるものだけに絞る。これも承認、実装計画、最終受入ではない。
+`llm-explore-request` は、より広い仕様化前探索に使う LLM 版である。元の入力、任意の context、決定論 preflight 出力を隔離 `codex exec` reviewer へ渡し、取れる fact / inference / hypothesis / unknown / pending decision の抽出を試みた上で、見つかった重大な不足を質問として返す。情報抽出や質問を取り切る保証はない。既定は dry-run で、`--execute` を付けた時だけ Codex を実行し、`schemas/request-exploration-review.schema.json` で JSON を検証する。有効な出力は `schema_version: "request-exploration-review/v1"` を持ち、`extracted_information`、`audience_hypotheses`、`material_ambiguities`、`questions`、`spec_outline`、`non_decisions`、`limits` を含む。質問は、範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変えるものだけに絞る。これも承認、実装計画、最終受入ではない。
 
 MCP で長くなりそうな LLM 探索を走らせる場合は、`llm_explore_request_start_tool` で開始し、`llm_exploration_status_tool` で `running` / `completed` / `failed` / `timed_out` を見る。`exploration_received=true` は schema-valid な探索 JSON があるという意味で、最終受入ではない。
 
@@ -95,9 +100,9 @@ MCP で長くなりそうな LLM 探索を走らせる場合は、`llm_explore_r
 
 fresh-eyes 査読を明示したい時は、入力 JSON に `review_context.independent_review_requested` または `review_context.fresh_eyes_requested` を入れる。長時間同じ Codex 文脈で計画、実装、確認を進めた場合は `review_context.self_reviewed` や `review_context.same_agent_planned_and_implemented` も使える。
 
-## 実績証明として見せる場所
+## 公開成果物の証拠境界を読む場所
 
-会社などに実績として見せる場合は、次の順で読むと誤解が少ない。
+0.1.0 公開成果物で観測できる実装と非主張を確認する場合は、次の順で読む。
 
 1. この `README.ja.md`
 2. `docs/ja/naming.md`
@@ -106,7 +111,7 @@ fresh-eyes 査読を明示したい時は、入力 JSON に `review_context.inde
 5. `docs/calibration-report-2026-06-05.md`
 6. `docs/public-comparison-2026-06-02.ja.md`
 
-特に `docs/ja/company-evidence.md` は、何を成果として主張でき、何を主張してはいけないかを分けている。
+特に `docs/ja/company-evidence.md` は、archive で観測できる成果物・機構と、この記録からは主張できない範囲を分けている。
 
 ## GitHub 公開時に見る場所
 

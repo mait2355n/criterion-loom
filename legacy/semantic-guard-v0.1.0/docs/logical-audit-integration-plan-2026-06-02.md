@@ -1,5 +1,10 @@
 # Logical Audit Integration Plan 2026-06-02
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This plan turns the logical-audit consistency check into a staged implementation path.
@@ -31,8 +36,8 @@ uv run --python 3.13 --project . semantic-guard evaluate-fixtures
 
 Baseline at the start of this plan:
 
-- Documentation and schema backup exists at `backup-snapshot/docs-2026-06-02T12-22-15+0900/`.
-- Logical-audit consistency check exists at `docs/logical-audit-consistency-check-2026-06-02.md`.
+- At the 2026-06-02 planning point, a documentation and schema backup was recorded at `backup-snapshot/docs-2026-06-02T12-22-15+0900/`; this document does not establish its later availability.
+- At the same planning point, the logical-audit consistency check was recorded at `docs/logical-audit-consistency-check-2026-06-02.md`.
 - Unit tests previously passed: 110 tests OK.
 - Fixture evaluation at plan start passed: 15 total, 15 passed, pass rate 1.0.
 - Current output contract already supports optional details and finding fields.

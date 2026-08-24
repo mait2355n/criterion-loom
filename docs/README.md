@@ -3,6 +3,7 @@
 ## Start here
 
 - [Repository overview](../README.md)
+- [Current public surface](../PUBLIC-SNAPSHOT.md)
 - [Implementation status](implementation-status.md)
 - [Direction-binding audit public slice](direction-binding-audit.md)
 - [Operations](operations.md)
@@ -12,6 +13,7 @@
 - [v1.0.0 canonicalization audit](audits/canonicalization-audit-v1.0.0-2026-07-17.md)
 - [v1.1.0 direction-binding GitHub integration evidence](audits/direction-binding-integration-2026-08-23.md)
 - [Repository unification record, 2026-08-24](repository-unification-2026-08-24.md)
+- [Post-transfer repository observation, 2026-08-24](audits/repository-transfer-observation-2026-08-24.md)
 
 ## Status and lineage
 
@@ -23,8 +25,8 @@ and paths may change; the UUID on the right of `・` is the identity authority.
 | `current` | `canonical current・11c55966-ff12-50b9-b069-7bec6ed37cc4`; the repository overview and implementation status | Describes the current canonical repository boundary. A current document is not by itself field-validity or human-acceptance evidence. |
 | `reference` | `direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4`; `direction-binding-audit.md` and the undated contract/design guides | Explains intended meaning and constraints. Machine schemas and verified behavior outrank explanatory prose. |
 | `evidence` | Date- and subject-bound records under `docs/audits/` and `validation/` | Supports only the recorded subject, source digest, environment, and observation time. It does not automatically describe the current tree. |
-| `archive` | `frozen legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631`; frozen predecessor and superseded historical material | Preserved for history or explicit comparison. It is never a transparent current fallback or truth oracle. |
-| `experimental` | `candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0`; `docs/prototypes/` | Candidate material only. Do not infer adoption, migration, or canonical authority. |
+| `archive` | `publication-repaired legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631`; predecessor and superseded historical material | Preserved for history or explicit comparison. The historical Git anchor retains the original bytes; the readable archive includes disclosed publication repairs. It is never a transparent current fallback or truth oracle. |
+| `experimental` | `candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0`; prototype charters under `docs/prototypes/` except `origin-requirement.md` | Candidate material only. Do not infer adoption, migration, or canonical authority. `origin-requirement.md` is the current purpose authority despite its historical placement. |
 | `local-only` | `derived_from: local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895`; see the direction-binding source map | Exists outside the canonical repository boundary. Only explicitly selected, digest-bound sources may be integrated; no whole-root copy is authorized. |
 
 ## Contract and assurance design
@@ -45,12 +47,16 @@ and paths may change; the UUID on the right of `・` is the identity authority.
 
 Files whose names contain a date, and files under `docs/prototypes/`, record the state or design intent at their stated time. Canonical promotion does not rewrite them. They may contain former candidate names and paths; use current contracts and the migration guide for present commands.
 
+The exception is [`prototypes/origin-requirement.md`](prototypes/origin-requirement.md), whose placement is historical but whose OR-01 through OR-03 statements remain the current purpose authority. Its implementation-status section is explanatory and does not override schemas or the verification source.
+
 Repository owner/name changes follow the same rule. Historical GitHub URLs are
 not rewritten as though an earlier event occurred under a later owner label;
 see the [repository unification record](repository-unification-2026-08-24.md)
 for the repository-ID mapping and redirect boundary.
 
-The historical full evaluation under `docs/audits/semantic-guard-full-evaluation-2026-07-11.md` remains a digest-bound source referenced by the verification register. It is not the v1.0.0 canonicalization audit.
+The [1.0.0 public snapshot](audits/public-snapshot-v1.0.0-2026-07-17.md), [repository-unification pre-transfer record](repository-unification-2026-08-24.md), and other dated records describe only their recorded phase. Current owner/name observations are kept separately so the historical labels are not rewritten.
+
+The historical full evaluation under `docs/audits/semantic-guard-full-evaluation-2026-07-11.md` remains a publication-sanitized, digest-bound source referenced by the verification register. It is not the v1.0.0 canonicalization audit or a current implementation description.
 
 ## Reading rule
 

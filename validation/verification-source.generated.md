@@ -9,11 +9,11 @@
 | --- | --- |
 | projection_version | `semantic-guard-verification-projection/v0` |
 | source | `verification-source.json` |
-| source_sha256 | `d4fc9da6c08244f190913450ebf9bbdcc777ae151aa2a8bc7781a89d683f520c` |
-| canonical_json_sha256 | `6015934c274844a52eb0358d735dea896bbb40e533c176ea57b3a770417ca79a` |
+| source_sha256 | `cd36b827bfea34fe5136a6e0677be400dabf62583bc325466050aeb271a19736` |
+| canonical_json_sha256 | `ddff757272df65d347bc1718999e1df0a6d6d806caf5770ef887730a44318643` |
 | schema_version | `semantic-guard-verification-source/v0` |
 | register_id | `verification-register.semantic-guard.r0` |
-| recorded_at | `2026-07-17T01:44:51+09:00` |
+| recorded_at | `2026-08-24T13:01:52+09:00` |
 | human_acceptance.status | `pending` |
 | human_acceptance.owner | `human` |
 
@@ -62,10 +62,10 @@
 | `evidence_effects` | `effect.real-nlp.discovery-field.contextualizes` |  |
 | `evidence_effects` | `effect.real-nlp.provider-paths.supports` |  |
 | `evidence_effects` | `effect.repair.integrated-acceptance.contextualizes` |  |
-| `evidence_observations` | `evidence.constitution.snapshot.2026-07-17` | v1 憲法 snapshot |
+| `evidence_observations` | `evidence.constitution.snapshot.2026-08-24` | v1 憲法 snapshot |
 | `evidence_observations` | `evidence.full-evaluation.2026-07-11` | 全体監査の歴史的観測 |
 | `evidence_observations` | `evidence.integrated-verification.2026-07-16` | vNext 統合検証観測 |
-| `evidence_observations` | `evidence.origin-requirement.snapshot.2026-07-17` | 原点要求 snapshot |
+| `evidence_observations` | `evidence.origin-requirement.snapshot.2026-08-24` | 原点要求 snapshot |
 | `evidence_observations` | `evidence.public-trust-basis-inspection.2026-07-17` | 公開 provenance 信頼根拠欄の欠落観測 |
 | `evidence_observations` | `evidence.real-nlp-smoke.2026-07-16` | 実 Sudachi/GiNZA 煙試験観測 |
 | `implementation_conformance_items` | `conformance.INV-VN-001` | 未知・競合・無効・被覆不足を上位 pass が捨てない |
@@ -222,7 +222,7 @@ Every source node appears exactly once below. Object records expose their
 sorted keys, array records expose their length, and scalar records expose the
 complete JSON value. JSON Pointer escaping follows RFC 6901.
 
-Node count: `6127`
+Node count: `6128`
 
 ```jsonl
 {"keys":["$schema","authority_boundary","claim_effect_semantics","evidence_effects","evidence_observations","human_acceptance","implementation_conformance_items","non_goals","notation_profile","record_surface","recorded_at","register_id","schema_version","scope","state_axes","state_profiles","status","title","unresolved_items","upstream_sources","verification_items","views"],"member_count":22,"node_type":"object","pointer":"/"}
@@ -251,7 +251,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_effects/0/effect","value":"contextualizes"}
 {"node_type":"string","pointer":"/evidence_effects/0/effect_id","value":"effect.origin-requirement.purpose-items.contextualizes"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/evidence_effects/0/evidence_ref"}
-{"node_type":"string","pointer":"/evidence_effects/0/evidence_ref/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/evidence_effects/0/evidence_ref/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/evidence_effects/0/evidence_ref/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/evidence_effects/0/evidence_ref/reference_kind","value":"ref"}
 {"item_count":3,"node_type":"array","pointer":"/evidence_effects/0/item_refs"}
@@ -277,7 +277,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_effects/1/effect","value":"contextualizes"}
 {"node_type":"string","pointer":"/evidence_effects/1/effect_id","value":"effect.constitution.normative-items.contextualizes"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/evidence_effects/1/evidence_ref"}
-{"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/reference_kind","value":"ref"}
 {"item_count":5,"node_type":"array","pointer":"/evidence_effects/1/item_refs"}
@@ -882,7 +882,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_effects/26/effect","value":"contextualizes"}
 {"node_type":"string","pointer":"/evidence_effects/26/effect_id","value":"effect.origin-requirement.rebased-verification-denominator.contextualizes"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/evidence_effects/26/evidence_ref"}
-{"node_type":"string","pointer":"/evidence_effects/26/evidence_ref/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/evidence_effects/26/evidence_ref/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/evidence_effects/26/evidence_ref/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/evidence_effects/26/evidence_ref/reference_kind","value":"ref"}
 {"item_count":6,"node_type":"array","pointer":"/evidence_effects/26/item_refs"}
@@ -919,7 +919,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/0/acquisition_method","value":"file_read"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/content_digest"}
 {"node_type":"string","pointer":"/evidence_observations/0/content_digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/0/content_digest/value","value":"5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f"}
+{"node_type":"string","pointer":"/evidence_observations/0/content_digest/value","value":"24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/detail_refs"}
 {"node_type":"string","pointer":"/evidence_observations/0/detail_refs/0","value":"../docs/prototypes/origin-requirement.md"}
 {"keys":["formal_model_ref","formal_verification_result_ref","independence_basis_ref","observer_ref","signature_or_attestation_ref","signer_ref","trust_root_ref","verifier_ref"],"member_count":8,"node_type":"object","pointer":"/evidence_observations/0/elevated_trust_basis"}
@@ -931,7 +931,7 @@ Node count: `6127`
 {"node_type":"null","pointer":"/evidence_observations/0/elevated_trust_basis/signer_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/0/elevated_trust_basis/trust_root_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/0/elevated_trust_basis/verifier_ref","value":null}
-{"node_type":"string","pointer":"/evidence_observations/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/evidence_observations/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/evidence_observations/0/evidence_kind","value":"source_snapshot"}
 {"node_type":"string","pointer":"/evidence_observations/0/freshness","value":"current"}
 {"node_type":"string","pointer":"/evidence_observations/0/label","value":"原点要求 snapshot"}
@@ -939,7 +939,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/0/limitations/0","value":"A source snapshot proves recorded wording, not implementation or effectiveness."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/observation_locators"}
 {"node_type":"string","pointer":"/evidence_observations/0/observation_locators/0","value":"../docs/prototypes/origin-requirement.md"}
-{"node_type":"string","pointer":"/evidence_observations/0/observed_at","value":"2026-07-17T01:44:39+09:00"}
+{"node_type":"string","pointer":"/evidence_observations/0/observed_at","value":"2026-08-24T12:48:48+09:00"}
 {"node_type":"string","pointer":"/evidence_observations/0/result_summary","value":"OR-01, OR-02, OR-03, non-goals, acceptance criteria, and hollow-success conditions are present."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/scope"}
 {"node_type":"string","pointer":"/evidence_observations/0/scope/0","value":"Purpose and boundary text only."}
@@ -950,7 +950,7 @@ Node count: `6127`
 {"keys":["digest","subject_locator"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest"}
 {"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/value","value":"5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f"}
+{"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/value","value":"24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
 {"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/subject_locator","value":"../docs/prototypes/origin-requirement.md"}
 {"node_type":"null","pointer":"/evidence_observations/0/subject_binding/environment_ref","value":null}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/subject_binding/limitations"}
@@ -965,7 +965,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/1/acquisition_method","value":"file_read"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/content_digest"}
 {"node_type":"string","pointer":"/evidence_observations/1/content_digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/1/content_digest/value","value":"f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003"}
+{"node_type":"string","pointer":"/evidence_observations/1/content_digest/value","value":"4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/detail_refs"}
 {"node_type":"string","pointer":"/evidence_observations/1/detail_refs/0","value":"../constitution/semantic-guard-constitution.yaml"}
 {"keys":["formal_model_ref","formal_verification_result_ref","independence_basis_ref","observer_ref","signature_or_attestation_ref","signer_ref","trust_root_ref","verifier_ref"],"member_count":8,"node_type":"object","pointer":"/evidence_observations/1/elevated_trust_basis"}
@@ -977,7 +977,7 @@ Node count: `6127`
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/signer_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/trust_root_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/verifier_ref","value":null}
-{"node_type":"string","pointer":"/evidence_observations/1/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/evidence_observations/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/evidence_observations/1/evidence_kind","value":"source_snapshot"}
 {"node_type":"string","pointer":"/evidence_observations/1/freshness","value":"current"}
 {"node_type":"string","pointer":"/evidence_observations/1/label","value":"v1 憲法 snapshot"}
@@ -985,7 +985,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/1/limitations/0","value":"Presence in the constitution does not establish runtime implementation or field validity."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/observation_locators"}
 {"node_type":"string","pointer":"/evidence_observations/1/observation_locators/0","value":"../constitution/semantic-guard-constitution.yaml"}
-{"node_type":"string","pointer":"/evidence_observations/1/observed_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/evidence_observations/1/observed_at","value":"2026-08-24T13:01:52+09:00"}
 {"node_type":"string","pointer":"/evidence_observations/1/result_summary","value":"The constitution records bounded-correctness dimensions, separated claim classes, authority limits, invariants, pass preconditions, and evaluation metrics."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/scope"}
 {"node_type":"string","pointer":"/evidence_observations/1/scope/0","value":"Normative v1 model pending human acceptance."}
@@ -996,7 +996,7 @@ Node count: `6127`
 {"keys":["digest","subject_locator"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest"}
 {"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/value","value":"f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003"}
+{"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/value","value":"4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
 {"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/subject_locator","value":"../constitution/semantic-guard-constitution.yaml"}
 {"node_type":"null","pointer":"/evidence_observations/1/subject_binding/environment_ref","value":null}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/subject_binding/limitations"}
@@ -1167,7 +1167,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/5/acquisition_method","value":"file_read"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/5/content_digest"}
 {"node_type":"string","pointer":"/evidence_observations/5/content_digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/5/content_digest/value","value":"c0f20542bba8774e5d1c117fa6335334a91d4a3c0be3c49791ec778f79453acc"}
+{"node_type":"string","pointer":"/evidence_observations/5/content_digest/value","value":"e13e5a539372aff599b2c3c1241dce364b9962ad07eed6bc2047548b29ae2d37"}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/5/detail_refs"}
 {"node_type":"string","pointer":"/evidence_observations/5/detail_refs/0","value":"../docs/audits/semantic-guard-full-evaluation-2026-07-11.md"}
 {"keys":["formal_model_ref","formal_verification_result_ref","independence_basis_ref","observer_ref","signature_or_attestation_ref","signer_ref","trust_root_ref","verifier_ref"],"member_count":8,"node_type":"object","pointer":"/evidence_observations/5/elevated_trust_basis"}
@@ -1183,9 +1183,10 @@ Node count: `6127`
 {"node_type":"string","pointer":"/evidence_observations/5/evidence_kind","value":"historical_assessment"}
 {"node_type":"string","pointer":"/evidence_observations/5/freshness","value":"stale"}
 {"node_type":"string","pointer":"/evidence_observations/5/label","value":"全体監査の歴史的観測"}
-{"item_count":2,"node_type":"array","pointer":"/evidence_observations/5/limitations"}
+{"item_count":3,"node_type":"array","pointer":"/evidence_observations/5/limitations"}
 {"node_type":"string","pointer":"/evidence_observations/5/limitations/0","value":"Predates the current v1 snapshot and must not override newer direct observations."}
-{"node_type":"string","pointer":"/evidence_observations/5/limitations/1","value":"The public artifact is path-redacted; the private original is separately archived with sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159."}
+{"node_type":"string","pointer":"/evidence_observations/5/limitations/1","value":"The content digest binds the publication-sanitized derivative prepared on 2026-08-24; observed_at denotes the historical assessment event, not the derivative publication time."}
+{"node_type":"string","pointer":"/evidence_observations/5/limitations/2","value":"A separate private original was recorded with sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159; current availability is not established by this public repository."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/5/observation_locators"}
 {"node_type":"string","pointer":"/evidence_observations/5/observation_locators/0","value":"../docs/audits/semantic-guard-full-evaluation-2026-07-11.md"}
 {"node_type":"string","pointer":"/evidence_observations/5/observed_at","value":"2026-07-11T00:00:00+09:00"}
@@ -2111,7 +2112,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/record_surface/detail_refs/9","value":"../docs/impact-and-execution-order-2026-07-16.md"}
 {"node_type":"string","pointer":"/record_surface/detail_refs/10","value":"./integrated-verification-2026-07-16.json"}
 {"node_type":"string","pointer":"/record_surface/detail_refs/11","value":"./real-nlp-smoke-2026-07-16.json"}
-{"node_type":"string","pointer":"/recorded_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/recorded_at","value":"2026-08-24T13:01:52+09:00"}
 {"node_type":"string","pointer":"/register_id","value":"verification-register.semantic-guard.r0"}
 {"node_type":"string","pointer":"/schema_version","value":"semantic-guard-verification-source/v0"}
 {"item_count":5,"node_type":"array","pointer":"/scope"}
@@ -3965,10 +3966,10 @@ Node count: `6127`
 {"node_type":"string","pointer":"/upstream_sources/0/limitations/0","value":"Defines target meaning and boundaries; it is not a completion claim or implementation contract."}
 {"node_type":"string","pointer":"/upstream_sources/0/path","value":"../docs/prototypes/origin-requirement.md"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/upstream_sources/0/ref"}
-{"node_type":"string","pointer":"/upstream_sources/0/ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/upstream_sources/0/ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/upstream_sources/0/ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/upstream_sources/0/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/0/version_or_digest","value":"sha256:5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f"}
+{"node_type":"string","pointer":"/upstream_sources/0/version_or_digest","value":"sha256:24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
 {"keys":["authority","limitations","path","ref","version_or_digest"],"member_count":5,"node_type":"object","pointer":"/upstream_sources/1"}
 {"node_type":"string","pointer":"/upstream_sources/1/authority","value":"normative_model"}
 {"item_count":2,"node_type":"array","pointer":"/upstream_sources/1/limitations"}
@@ -3979,7 +3980,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/upstream_sources/1/ref/entity_id","value":"constitution.semantic-guard.r0"}
 {"node_type":"string","pointer":"/upstream_sources/1/ref/label_hint","value":"v1 基幹憲法"}
 {"node_type":"string","pointer":"/upstream_sources/1/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/1/version_or_digest","value":"sha256:f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003"}
+{"node_type":"string","pointer":"/upstream_sources/1/version_or_digest","value":"sha256:4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
 {"keys":["authority","limitations","path","ref","version_or_digest"],"member_count":5,"node_type":"object","pointer":"/upstream_sources/2"}
 {"node_type":"string","pointer":"/upstream_sources/2/authority","value":"normative_model"}
 {"item_count":1,"node_type":"array","pointer":"/upstream_sources/2/limitations"}
@@ -4085,13 +4086,13 @@ Node count: `6127`
 {"node_type":"string","pointer":"/upstream_sources/12/authority","value":"historical_assessment"}
 {"item_count":2,"node_type":"array","pointer":"/upstream_sources/12/limitations"}
 {"node_type":"string","pointer":"/upstream_sources/12/limitations/0","value":"Predates the current v1 implementation and is supporting historical evidence, not current completion proof."}
-{"node_type":"string","pointer":"/upstream_sources/12/limitations/1","value":"The public artifact is a local-path-redacted derivative; the private original remains archived under sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159."}
+{"node_type":"string","pointer":"/upstream_sources/12/limitations/1","value":"The public artifact is a publication-sanitized derivative: terminal-specific paths, private-dialogue provenance, and an unavailable structured-ledger command are omitted. A separate private original was recorded under sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159; its current availability is not established by this public repository."}
 {"node_type":"string","pointer":"/upstream_sources/12/path","value":"../docs/audits/semantic-guard-full-evaluation-2026-07-11.md"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/upstream_sources/12/ref"}
 {"node_type":"string","pointer":"/upstream_sources/12/ref/entity_id","value":"evidence.full-evaluation.2026-07-11"}
 {"node_type":"string","pointer":"/upstream_sources/12/ref/label_hint","value":"2026-07-11 全体監査"}
 {"node_type":"string","pointer":"/upstream_sources/12/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/12/version_or_digest","value":"sha256:c0f20542bba8774e5d1c117fa6335334a91d4a3c0be3c49791ec778f79453acc"}
+{"node_type":"string","pointer":"/upstream_sources/12/version_or_digest","value":"sha256:e13e5a539372aff599b2c3c1241dce364b9962ad07eed6bc2047548b29ae2d37"}
 {"item_count":17,"node_type":"array","pointer":"/verification_items"}
 {"keys":["acceptance_criteria","assumptions","authority_boundary","claim_classes","counterconditions","counterevidence_refs","criticality","entity_id","evidence_refs","failure_consequence","item_kind","knowledge_basis","label","lifecycle_surface_assessments","lifecycle_surfaces","origin_requirement_refs","proposition","rejection_conditions","required_evidence","residual_risks","reverification","scope","state_profile_ref","unproven_scope","validation_method","verification_method"],"member_count":26,"node_type":"object","pointer":"/verification_items/0"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/0/acceptance_criteria"}
@@ -4122,7 +4123,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/0/entity_id","value":"verification.or01.lifecycle-surface-coverage"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/0/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/0/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/0/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/0/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/0/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/0/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/0/evidence_refs/1"}
@@ -4141,11 +4142,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/limitations/0","value":"The origin requirement names target surfaces but does not prescribe one implementation architecture."}
 {"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/locator","value":"OR-01"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/0/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/0/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/0/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/0/label","value":"OR-01 工程横断被覆"}
 {"item_count":10,"node_type":"array","pointer":"/verification_items/0/lifecycle_surface_assessments"}
 {"keys":["evidence_refs","scope_note","state_profile_ref","surface"],"member_count":4,"node_type":"object","pointer":"/verification_items/0/lifecycle_surface_assessments/0"}
@@ -4295,7 +4296,7 @@ Node count: `6127`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/0/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/0/residual_risks/0","value":"Progress on the requirement slice can dominate attention and hide untouched lifecycle surfaces."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/0/reverification"}
-{"node_type":"string","pointer":"/verification_items/0/reverification/last_evaluated_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/verification_items/0/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/0/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/0/reverification/procedure_refs/0","value":"docs/implementation-status.md"}
 {"node_type":"string","pointer":"/verification_items/0/reverification/procedure_refs/1","value":"validation/verification-source.json"}
@@ -4355,7 +4356,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/1/entity_id","value":"verification.or01.engineering-knowledge-governance"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/1/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/1/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/1/evidence_refs/1"}
@@ -4374,11 +4375,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/limitations/0","value":"External standards are not clause-completely mapped or adopted by this source."}
 {"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/locator","value":"Acceptance Criteria: engineering knowledge rule trace"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/1/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/1/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/1/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/1/label","value":"OR-01 体系知の根拠統治"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/1/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/1/lifecycle_surfaces/0","value":"cross_cutting"}
@@ -4398,7 +4399,7 @@ Node count: `6127`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/1/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/1/residual_risks/0","value":"A target form may become self-referential if its engineering origin is not independently reviewable."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/1/reverification"}
-{"node_type":"string","pointer":"/verification_items/1/reverification/last_evaluated_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/verification_items/1/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
 {"item_count":0,"node_type":"array","pointer":"/verification_items/1/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/1/reverification/status","value":"blocked"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/1/reverification/triggers"}
@@ -4575,7 +4576,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/3/entity_id","value":"verification.or02.bounded-claim-model"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/3/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/3/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/3/evidence_refs/1"}
@@ -4620,7 +4621,7 @@ Node count: `6127`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/3/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/3/residual_risks/0","value":"A structurally complete but semantically wrong claim can still be recorded."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/3/reverification"}
-{"node_type":"string","pointer":"/verification_items/3/reverification/last_evaluated_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/verification_items/3/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/3/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/3/reverification/procedure_refs/0","value":"tests/test_public_contract.py"}
 {"node_type":"string","pointer":"/verification_items/3/reverification/procedure_refs/1","value":"tests/test_models_and_aggregation.py"}
@@ -4703,11 +4704,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/limitations/0","value":"The origin requirement does not select one runtime attestation mechanism."}
 {"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/locator","value":"OR-02 and Hollow Success Conditions"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/4/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/4/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/4/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/4/label","value":"OR-02 行為発生・主体・権限・手続適合"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/4/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/4/lifecycle_surfaces/0","value":"action"}
@@ -4812,11 +4813,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/limitations/0","value":"No trust root, signature, transparency record, or causal model is selected."}
 {"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/locator","value":"Meaning Of Correctness And Bounded Proof"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/5/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/5/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/5/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/5/label","value":"OR-02 成果物来歴・真正性・因果境界"}
 {"item_count":4,"node_type":"array","pointer":"/verification_items/5/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/5/lifecycle_surfaces/0","value":"action"}
@@ -4893,7 +4894,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/6/entity_id","value":"verification.or03.repair-effect"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/6/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/6/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/6/evidence_refs/1"}
@@ -4912,11 +4913,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/limitations/0","value":"The origin requirement does not define one repair interface or performance threshold."}
 {"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/locator","value":"OR-03 and Hollow Success Conditions"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/6/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/6/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/6/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/6/label","value":"OR-03 修正循環の有効性"}
 {"item_count":5,"node_type":"array","pointer":"/verification_items/6/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/6/lifecycle_surfaces/0","value":"plan"}
@@ -4999,11 +5000,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/7/entity_id","value":"verification.or03.human-decision-boundary"}
 {"item_count":3,"node_type":"array","pointer":"/verification_items/7/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/7/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/7/evidence_refs/1"}
-{"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/7/evidence_refs/2"}
@@ -5050,7 +5051,7 @@ Node count: `6127`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/7/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/7/residual_risks/0","value":"External callers can still mislabel pass as acceptance outside the contract."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/7/reverification"}
-{"node_type":"string","pointer":"/verification_items/7/reverification/last_evaluated_at","value":"2026-07-17T01:44:51+09:00"}
+{"node_type":"string","pointer":"/verification_items/7/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/7/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/7/reverification/procedure_refs/0","value":"tests/test_models_and_aggregation.py"}
 {"node_type":"string","pointer":"/verification_items/7/reverification/procedure_refs/1","value":"tests/test_public_contract.py"}
@@ -5221,11 +5222,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/9/entity_id","value":"verification.cross.secure-and-responsible-operation"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/9/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/9/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/9/evidence_refs/1"}
-{"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/9/failure_consequence","value":"A semantically careful audit can still disclose protected material, trust poisoned inputs or resources, exceed granted authority, or preserve unsafe evidence while appearing suitable for real work."}
@@ -5240,11 +5241,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/limitations/0","value":"The origin requirement implies danger, authority, input, evidence, and trust handling but does not separately enumerate a security or privacy profile; adoption and acceptable controls remain a human decision."}
 {"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/locator","value":"OR-01 dangers and OR-02 authority, inputs, outputs, evidence, and trust conditions"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/9/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/9/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/9/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/9/label","value":"安全・責任ある情報取扱いと外部境界"}
 {"item_count":5,"node_type":"array","pointer":"/verification_items/9/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/9/lifecycle_surfaces/0","value":"request"}
@@ -5446,7 +5447,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/11/entity_id","value":"verification.or02.proof-obligation-and-assurance-graph-soundness"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/11/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/11/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/11/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/11/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/11/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/11/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/11/failure_consequence","value":"A structurally valid public claim can change its subject, proposition, rules, evidence, authority, or aggregate state while appearing to retain the original bounded assurance."}
@@ -5556,7 +5557,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/12/entity_id","value":"verification.cross.register-completeness"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/12/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/12/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/12/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/12/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/12/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/12/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/12/failure_consequence","value":"A known gap can disappear outside the canonical denominator and later completion material can look closed because the register validates only what it happened to retain."}
@@ -5665,7 +5666,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/13/entity_id","value":"verification.cross.lifecycle-trace-and-composition"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/13/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/13/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/13/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/13/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/13/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/13/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/13/failure_consequence","value":"Ten individually implemented surfaces can still fail the original purpose if meaning, authority, evidence, or unresolved scope changes silently between them."}
@@ -5680,11 +5681,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/limitations/0","value":"The origin requirement fixes the purpose and boundaries but does not prescribe a trace schema or composition algebra."}
 {"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/locator","value":"OR-01, OR-02, OR-03, Essential Realization, and Invariants 10-14"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/13/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/13/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/13/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/13/label","value":"工程横断 trace・意味合成"}
 {"item_count":11,"node_type":"array","pointer":"/verification_items/13/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/13/lifecycle_surfaces/0","value":"request"}
@@ -5781,7 +5782,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/14/entity_id","value":"verification.cross.operational-qualification"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/14/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/14/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/14/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/14/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/14/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/14/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/14/failure_consequence","value":"A locally correct audit path can fail, lose evidence, deadlock, leak resources, or recover unsafely under real operational conditions while still appearing ready."}
@@ -5888,7 +5889,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/15/entity_id","value":"verification.cross.transition-and-cutover"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/15/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/15/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/15/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/15/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/15/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/15/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/15/failure_consequence","value":"An unqualified sidecar can become authoritative, strand users or evidence, or become difficult to withdraw before its semantic and operational limits are understood."}
@@ -5903,11 +5904,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/limitations/0","value":"The origin requirement fixes the human and sidecar boundary but does not choose a migration window, cutover threshold, or retirement date."}
 {"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/locator","value":"Invariants 4-8 and Prototype Charter Requirement: promotion_criteria and rollback_or_disposal"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/15/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/15/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/15/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/15/label","value":"移行・cutover・rollback・retirement 統治"}
 {"item_count":6,"node_type":"array","pointer":"/verification_items/15/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/15/lifecycle_surfaces/0","value":"decision_state"}
@@ -5998,7 +5999,7 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/16/entity_id","value":"verification.cross.human-operational-use"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/16/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/16/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/16/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-07-17"}
+{"node_type":"string","pointer":"/verification_items/16/evidence_refs/0/entity_id","value":"evidence.origin-requirement.snapshot.2026-08-24"}
 {"node_type":"string","pointer":"/verification_items/16/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/16/evidence_refs/0/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/16/failure_consequence","value":"Correct audit material can be ignored, misrouted, misunderstood, or acted on by an unauthorized layer, leaving defects unchanged or silently converting technical pass into human acceptance."}
@@ -6013,11 +6014,11 @@ Node count: `6127`
 {"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/limitations/0","value":"The origin requirement fixes decision ownership but does not define organization-specific roles, routing, comprehension thresholds, or escalation policy."}
 {"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/locator","value":"OR-03, Audience And Use, Essential Realization, and Invariants 1-4 and 14"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/16/knowledge_basis/0/source_ref"}
-{"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v2"}
+{"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/source_ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/source_ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/source_ref/reference_kind","value":"ref"}
 {"node_type":"boolean","pointer":"/verification_items/16/knowledge_basis/0/standards_conformance_claimed","value":false}
-{"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/version","value":"prototype-origin-requirement/v2"}
+{"node_type":"string","pointer":"/verification_items/16/knowledge_basis/0/version","value":"prototype-origin-requirement/v3"}
 {"node_type":"string","pointer":"/verification_items/16/label","value":"人間・coding agent の責任適合利用"}
 {"item_count":7,"node_type":"array","pointer":"/verification_items/16/lifecycle_surfaces"}
 {"node_type":"string","pointer":"/verification_items/16/lifecycle_surfaces/0","value":"request"}

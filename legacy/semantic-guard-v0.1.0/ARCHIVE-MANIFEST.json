@@ -1,8 +1,71 @@
 {
-  "schema_version": "semantic-guard-archive-manifest/v0",
+  "schema_version": "semantic-guard-archive-manifest/v1",
   "archive_id": "archive.semantic-guard.v0.1.0",
   "version": "0.1.0",
   "archived_at": "2026-07-17",
+  "publication_repair": {
+    "repaired_at": "2026-08-24",
+    "reason": "Prevent direct-linked legacy documents from being mistaken for current 1.x state or guidance, identify the annotated Git tag and commit as original-byte authority, bound unsupported elicitation and comparative claims, remove private-conversation dependence, and separate dated local or recovery evidence from unverified current availability.",
+    "original_content_authority": "git_anchor",
+    "changed_files": [
+      "ARCHIVE-MANIFEST.json",
+      "ARCHIVE-MANIFEST.md",
+      "CHANGELOG.md",
+      "CONTRIBUTING.md",
+      "PUBLIC-SNAPSHOT.md",
+      "README.ja.md",
+      "README.md",
+      "SECURITY.md",
+      "docs/README.md",
+      "docs/acceptance-review-bundle.md",
+      "docs/ambiguity-confidence-design.md",
+      "docs/calibration-report-2026-06-04.md",
+      "docs/calibration-report-2026-06-05.md",
+      "docs/codex-exec-reviewer-plan.md",
+      "docs/comparative-advantage-and-adoption-2026-06-03.ja.md",
+      "docs/conflict-audit-2026-06-02.md",
+      "docs/conflict-fix-plan-2026-06-02.md",
+      "docs/conventions/README.md",
+      "docs/conventions/base-contract.md",
+      "docs/dogfood-readme-2026-06-01.md",
+      "docs/field-corpus-2026-06-04.md",
+      "docs/fixture-record-design.md",
+      "docs/ja/README.md",
+      "docs/ja/company-evidence.md",
+      "docs/ja/naming.md",
+      "docs/ja/quickstart.md",
+      "docs/llm-reviewer.md",
+      "docs/logical-audit-consistency-check-2026-06-02.md",
+      "docs/logical-audit-design.md",
+      "docs/logical-audit-inheritance-audit-2026-06-02.md",
+      "docs/logical-audit-integration-plan-2026-06-02.md",
+      "docs/logical-audit-second-slice-2026-06-02.md",
+      "docs/logical-audit-second-slice-readability-2026-06-02.md",
+      "docs/logical-audit-third-rule-bundle-2026-06-02.md",
+      "docs/logical-audit-trace-summary-2026-06-02.md",
+      "docs/logical-audit-wp8-decision-2026-06-02.md",
+      "docs/naming.md",
+      "docs/public-comparison-2026-06-02.ja.md",
+      "docs/public-comparison-2026-06-02.md",
+      "docs/release/github-publication-checklist.md",
+      "docs/rule-model.md",
+      "skills/semantic-implementation/README.md",
+      "skills/semantic-implementation/SKILL.md",
+      "skills/semantic-implementation/references/audit-rubric.md",
+      "skills/semantic-implementation/references/mcp-contract.md"
+    ],
+    "change_scope": {
+      "documentation_and_skill_prose": "changed",
+      "archive_manifest_metadata": "changed",
+      "public_markdown_boundary_document_count": 44,
+      "private_conversation_and_live_state_prose": "changed",
+      "runtime_code": "unchanged",
+      "schemas": "unchanged",
+      "tests": "unchanged",
+      "fixtures": "unchanged",
+      "legacy_pull_request_template": "unchanged"
+    }
+  },
   "git_anchor": {
     "tag": "v0.1.0",
     "commit": "e0a3dd39f17385b66f6361ade25eb44bed6e1ab3",
@@ -11,7 +74,23 @@
   "snapshot": {
     "file_count": 155,
     "digest_algorithm": "sha256-path-content-manifest/v0",
-    "digest": "e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5",
+    "digest": "7fc3491da28c6e2dca71a2a4996548f27bf15915993f855d1749c30fbe4c76bf",
+    "previous_snapshot_digest": "e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5",
+    "public_digest_lineage": [
+      {
+        "digest": "e904692a1170df7b67f4fb4d9fd6331e8ba1cddc3f69d8fdeff0747f402948c5",
+        "snapshot_role": "previous_public_archive_before_2026-08-24_publication_repair",
+        "publication_status": "recorded_public",
+        "locator": "git+https://github.com/mait2355n/criterion-loom.git@83bdd6deb86aeaa3c99515c013a1d30984a719e1#path=legacy/semantic-guard-v0.1.0"
+      },
+      {
+        "digest": "7fc3491da28c6e2dca71a2a4996548f27bf15915993f855d1749c30fbe4c76bf",
+        "snapshot_role": "current_publication_repair_candidate",
+        "publication_status": "pending_repository_integration",
+        "locator": "snapshot.digest"
+      }
+    ],
+    "population": "repository-tracked regular files below the archive root",
     "excludes": [
       "ARCHIVE-MANIFEST.json"
     ],
@@ -19,7 +98,7 @@
     "ordering": "utf8_relative_path_bytes_ascending"
   },
   "authority": {
-    "archive_status": "frozen_predecessor_source",
+    "archive_status": "publication_repaired_frozen_predecessor",
     "allowed_use": [
       "historical_inspection",
       "explicit_compatibility_execution",
@@ -31,6 +110,9 @@
   },
   "non_claims": [
     "The archive is not the canonical v1 implementation.",
+    "The repaired directory is not the original byte-for-byte 0.1.0 snapshot; the annotated Git anchor is the original content authority.",
+    "A dated 2026-07-17 record reported private recovery artifacts; this public archive does not establish their current availability.",
+    "Dated comparison documents record observed features in their stated samples; they do not establish superiority or a complete comparison population.",
     "The archive is not a correctness oracle for v1.",
     "The repository snapshot alone is not the operator-owned legacy execution trust root required by shadow comparison.",
     "Digest agreement does not establish field validity, external authenticity, security certification, operational qualification, or human acceptance."

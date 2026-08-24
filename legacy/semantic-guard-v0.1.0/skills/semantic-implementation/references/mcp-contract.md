@@ -1,12 +1,17 @@
 # semantic-guard MCP and CLI Contract
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 The MCP server and CLI share the same audit phases and JSON shape.
 
 ## Audience And Use
 
 This contract is for Codex runs that use the `semantic-implementation` skill and for maintainers extending `semantic-guard`.
 
-Use the deterministic audit tools throughout the work. Use deterministic exploration as fast preflight before turning an open-ended idea into a spec, and use LLM exploration when the work needs all visible information extracted before every material missing question is asked. Then use the normal audit phases once requirements or plans exist. Use LLM reviewer tools as optional intermediate audit support when rule item coverage, missing supplements, counter-conditions, or fresh-eyes review value need a second pass. Use acceptance bundle tools only when preparing a final artifact for human evaluation.
+Use the deterministic audit tools throughout the work. Use deterministic exploration as fast preflight before turning an open-ended idea into a spec, and use LLM exploration when the work benefits from attempting to extract information visible in the supplied input and context, then listing the material gaps found as questions. The exploration result does not guarantee exhaustive extraction or question coverage. Then use the normal audit phases once requirements or plans exist. Use LLM reviewer tools as optional intermediate audit support when rule item coverage, missing supplements, counter-conditions, or fresh-eyes review value need a second pass. Use acceptance bundle tools only when preparing a final artifact for human evaluation.
 Use `doctor`, `audit-result-schema`, `request-exploration-review-schema`, `rule-detector-map`, `audit-conventions`, and `conventions-catalog` as support tools for checkout health, output-contract integration, convention checks, and catalog maintenance.
 
 ## Contract Scope

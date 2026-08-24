@@ -5,7 +5,7 @@
   "register_id": "verification-register.semantic-guard.r0",
   "title": "semantic-guard v1 verification requirement and evidence source",
   "status": "active_draft",
-  "recorded_at": "2026-07-17T01:44:51+09:00",
+  "recorded_at": "2026-08-24T13:01:52+09:00",
   "authority_boundary": {
     "audit_owner": "semantic-guard",
     "control_owner": "external_caller_or_resource_control_plane",
@@ -39,12 +39,12 @@
     {
       "ref": {
         "reference_kind": "ref",
-        "entity_id": "document.prototype-origin-requirement.v2",
+        "entity_id": "document.prototype-origin-requirement.v3",
         "label_hint": "原点要求"
       },
       "path": "../docs/prototypes/origin-requirement.md",
       "authority": "purpose",
-      "version_or_digest": "sha256:5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f",
+      "version_or_digest": "sha256:24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1",
       "limitations": [
         "Defines target meaning and boundaries; it is not a completion claim or implementation contract."
       ]
@@ -57,7 +57,7 @@
       },
       "path": "../constitution/semantic-guard-constitution.yaml",
       "authority": "normative_model",
-      "version_or_digest": "sha256:f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003",
+      "version_or_digest": "sha256:4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337",
       "limitations": [
         "Pending human acceptance.",
         "Defines semantics and invariants but does not itself prove implementation or field performance."
@@ -202,10 +202,10 @@
       },
       "path": "../docs/audits/semantic-guard-full-evaluation-2026-07-11.md",
       "authority": "historical_assessment",
-      "version_or_digest": "sha256:c0f20542bba8774e5d1c117fa6335334a91d4a3c0be3c49791ec778f79453acc",
+      "version_or_digest": "sha256:e13e5a539372aff599b2c3c1241dce364b9962ad07eed6bc2047548b29ae2d37",
       "limitations": [
         "Predates the current v1 implementation and is supporting historical evidence, not current completion proof.",
-        "The public artifact is a local-path-redacted derivative; the private original remains archived under sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159."
+        "The public artifact is a publication-sanitized derivative: terminal-specific paths, private-dialogue provenance, and an unavailable structured-ledger command are omitted. A separate private original was recorded under sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159; its current availability is not established by this public repository."
       ]
     }
   ],
@@ -397,16 +397,16 @@
   ],
   "evidence_observations": [
     {
-      "entity_id": "evidence.origin-requirement.snapshot.2026-07-17",
+      "entity_id": "evidence.origin-requirement.snapshot.2026-08-24",
       "label": "原点要求 snapshot",
       "source_path": "../docs/prototypes/origin-requirement.md",
-      "observed_at": "2026-07-17T01:44:39+09:00",
+      "observed_at": "2026-08-24T12:48:48+09:00",
       "evidence_kind": "source_snapshot",
       "trust_class": "locally_observed",
       "acquisition_method": "file_read",
       "content_digest": {
         "algorithm": "sha256",
-        "value": "5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f"
+        "value": "24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"
       },
       "subject_binding": {
         "status": "bound",
@@ -416,7 +416,7 @@
             "subject_locator": "../docs/prototypes/origin-requirement.md",
             "digest": {
               "algorithm": "sha256",
-              "value": "5e05f6227998e447cff94b085a0716bb222c7e3987f81278e7218775d0536b0f"
+              "value": "24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"
             }
           }
         ],
@@ -450,16 +450,16 @@
       ]
     },
     {
-      "entity_id": "evidence.constitution.snapshot.2026-07-17",
+      "entity_id": "evidence.constitution.snapshot.2026-08-24",
       "label": "v1 憲法 snapshot",
       "source_path": "../constitution/semantic-guard-constitution.yaml",
-      "observed_at": "2026-07-17T01:44:51+09:00",
+      "observed_at": "2026-08-24T13:01:52+09:00",
       "evidence_kind": "source_snapshot",
       "trust_class": "locally_observed",
       "acquisition_method": "file_read",
       "content_digest": {
         "algorithm": "sha256",
-        "value": "f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003"
+        "value": "4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"
       },
       "subject_binding": {
         "status": "bound",
@@ -469,7 +469,7 @@
             "subject_locator": "../constitution/semantic-guard-constitution.yaml",
             "digest": {
               "algorithm": "sha256",
-              "value": "f485799b2f6ba3a61ee39d5979a87cf12104ea0aa74c46283abab39cc0a74003"
+              "value": "4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"
             }
           }
         ],
@@ -692,7 +692,7 @@
       "acquisition_method": "file_read",
       "content_digest": {
         "algorithm": "sha256",
-        "value": "c0f20542bba8774e5d1c117fa6335334a91d4a3c0be3c49791ec778f79453acc"
+        "value": "e13e5a539372aff599b2c3c1241dce364b9962ad07eed6bc2047548b29ae2d37"
       },
       "subject_binding": {
         "status": "unbound",
@@ -720,7 +720,8 @@
       ],
       "limitations": [
         "Predates the current v1 snapshot and must not override newer direct observations.",
-        "The public artifact is path-redacted; the private original is separately archived with sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159."
+        "The content digest binds the publication-sanitized derivative prepared on 2026-08-24; observed_at denotes the historical assessment event, not the derivative publication time.",
+        "A separate private original was recorded with sha256:788499cc5cb8c283cf130f9fd2c645733f18f6c63c5755a334973a83196a3159; current availability is not established by this public repository."
       ],
       "freshness": "stale",
       "observation_locators": ["../docs/audits/semantic-guard-full-evaluation-2026-07-11.md"],
@@ -737,7 +738,7 @@
         {"reference_kind": "ref", "entity_id": "verification.or03.human-decision-boundary", "label_hint": "人間判断境界"},
         {"reference_kind": "ref", "entity_id": "verification.cross.secure-and-responsible-operation", "label_hint": "安全・責任ある運用境界"}
       ],
-      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"},
+      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"},
       "effect": "contextualizes",
       "claim_dimensions": ["proposition"],
       "proposition_scope": "The bound origin-requirement snapshot defines the lifecycle denominator, retained human decision ownership, and the authority and danger context from which the candidate secure-operation proposition is derived.",
@@ -753,7 +754,7 @@
         {"reference_kind": "ref", "entity_id": "verification.or03.human-decision-boundary", "label_hint": "人間判断境界"},
         {"reference_kind": "ref", "entity_id": "verification.cross.secure-and-responsible-operation", "label_hint": "安全・責任ある運用境界"}
       ],
-      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"},
+      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
       "effect": "contextualizes",
       "claim_dimensions": ["proposition"],
       "proposition_scope": "The bound constitution snapshot supplies the normative vocabulary, invariants, authority boundary, bounded-assurance dimensions, repair intent, and human-decision separation used to formulate these verification propositions.",
@@ -1051,7 +1052,7 @@
         {"reference_kind": "ref", "entity_id": "verification.cross.transition-and-cutover", "label_hint": "移行・cutover 統治"},
         {"reference_kind": "ref", "entity_id": "verification.cross.human-operational-use", "label_hint": "人間・coding agent の責任適合利用"}
       ],
-      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"},
+      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"},
       "effect": "contextualizes",
       "claim_dimensions": ["proposition"],
       "proposition_scope": "The bound origin requirement supplies the lifecycle denominator, bounded-proof meaning, repair and human-decision purpose, sidecar boundary, and prohibition on silent success from which the six rebased verification concerns are derived.",
@@ -1148,9 +1149,9 @@
       "failure_consequence": "A successful requirement-relation slice could be mistaken for completion of the whole cross-process audit purpose.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "OR-01",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "adopted_internal",
           "applicability": "All AI-agent development lifecycle audit profiles.",
           "counterconditions": ["A lifecycle surface explicitly declared outside semantic-guard audit ownership."],
@@ -1184,7 +1185,7 @@
         "Representative operational shadow observations."
       ],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [
@@ -1199,7 +1200,7 @@
         "status": "defined",
         "triggers": ["Origin requirement revision.", "A lifecycle profile is added, removed, or re-scoped."],
         "procedure_refs": ["docs/implementation-status.md", "validation/verification-source.json"],
-        "last_evaluated_at": "2026-07-17T01:44:51+09:00",
+        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1225,9 +1226,9 @@
       "failure_consequence": "The system may precisely compare text against an arbitrary template while presenting the result as engineering-grounded audit.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "Acceptance Criteria: engineering knowledge rule trace",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "adopted_internal",
           "applicability": "Any rule claiming an engineering knowledge basis.",
           "counterconditions": ["Purely repository-local syntactic contract checks that make no engineering-grounding claim."],
@@ -1262,7 +1263,7 @@
         "Independent review and adoption record."
       ],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.full-evaluation.2026-07-11", "label_hint": "全体監査の歴史的観測"}
       ],
       "counterevidence_refs": [
@@ -1277,7 +1278,7 @@
         "status": "blocked",
         "triggers": ["Rule-pack source, external edition, interpretation, or organization profile changes."],
         "procedure_refs": [],
-        "last_evaluated_at": "2026-07-17T01:44:51+09:00",
+        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1417,7 +1418,7 @@
       ],
       "required_evidence": ["Schema self-validation and negative conformance cases.", "Representative assurance records for every claim class."],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [
@@ -1432,7 +1433,7 @@
         "status": "defined",
         "triggers": ["Claim taxonomy, schema, authority, or public projection changes."],
         "procedure_refs": ["tests/test_public_contract.py", "tests/test_models_and_aggregation.py"],
-        "last_evaluated_at": "2026-07-17T01:44:51+09:00",
+        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1458,9 +1459,9 @@
       "failure_consequence": "A self-report or well-formed action description can be mistaken for an authorized action that actually occurred and followed the required procedure.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "OR-02 and Hollow Success Conditions",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "adopted_internal",
           "applicability": "Claims about actual AI-agent actions.",
           "counterconditions": ["A claim explicitly concerns only completeness of an action description."],
@@ -1529,9 +1530,9 @@
       "failure_consequence": "The system can produce cryptographically strong evidence for the wrong artifact, wrong input, wrong actor, or wrong causal claim.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "Meaning Of Correctness And Bounded Proof",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "adopted_internal",
           "applicability": "Claims of artifact generation, provenance, authenticity, verification result, or causality.",
           "counterconditions": ["The claim is explicitly limited to local content equality or schema validity."],
@@ -1596,9 +1597,9 @@
       "failure_consequence": "The system can generate detailed reports that never improve work or human decisions, satisfying document production while failing its practical purpose.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "OR-03 and Hollow Success Conditions",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "adopted_internal",
           "applicability": "Audit results intended for agent revision or human review.",
           "counterconditions": ["An audit is explicitly exploratory and no revision outcome is claimed."],
@@ -1622,7 +1623,7 @@
       "rejection_conditions": ["The report has no machine-consumable repair target.", "A changed output is counted as improvement without re-audit.", "semantic-guard automatically executes or accepts the repair."],
       "required_evidence": ["Versioned finding-to-repair mapping.", "Before/after cases with independent review.", "Regression and escalation evidence.", "Human comprehension and contestability observations."],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [],
@@ -1687,8 +1688,8 @@
       "rejection_conditions": ["Workflow pass is described as human acceptance.", "An automated reviewer fills a final human decision.", "Human risk acceptance deletes findings or unproven scope."],
       "required_evidence": ["Schema negative cases.", "Aggregation and projection tests.", "Human acceptance-review observation before cutover."],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"},
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [],
@@ -1701,7 +1702,7 @@
         "status": "defined",
         "triggers": ["Decision schema, workflow projection, acceptance documentation, or ownership changes."],
         "procedure_refs": ["tests/test_models_and_aggregation.py", "tests/test_public_contract.py"],
-        "last_evaluated_at": "2026-07-17T01:44:51+09:00",
+        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1795,9 +1796,9 @@
       "failure_consequence": "A semantically careful audit can still disclose protected material, trust poisoned inputs or resources, exceed granted authority, or preserve unsafe evidence while appearing suitable for real work.",
       "knowledge_basis": [
         {
-          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"},
+          "source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"},
           "locator": "OR-01 dangers and OR-02 authority, inputs, outputs, evidence, and trust conditions",
-          "version": "prototype-origin-requirement/v2",
+          "version": "prototype-origin-requirement/v3",
           "adoption_status": "candidate",
           "applicability": "Any use with non-public artifacts, external providers, privileged actions, third-party resources, or durable evidence.",
           "counterconditions": ["A closed local demonstration uses only synthetic public data, no external provider, no privilege, and no durable operational claim."],
@@ -1836,8 +1837,8 @@
         "Independent review appropriate to the selected deployment risk."
       ],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"},
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-07-17", "label_hint": "v1 憲法 snapshot"}
+        {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"}
       ],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
@@ -1968,7 +1969,7 @@
         "Graph closure is presented as action occurrence, evidence authenticity, or human acceptance."
       ],
       "required_evidence": ["Versioned proof-obligation and graph contract.", "Independent reaggregation implementation and positive, mutation, cycle, duplicate-accounting, and unclosed-reference observations.", "Independent review of subject, authority, evidence, and aggregation bypasses.", "Human profile and migration decision record where adoption or default-output change is claimed."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["The candidate charter remains the proposed bounded meaning; the local opt-in v1 implementation does not itself adopt the assurance or migration profile."],
@@ -2010,7 +2011,7 @@
       "acceptance_criteria": ["Every declared denominator entry has exactly one non-contradictory disposition and a resolvable source locator.", "Resolved and non-applicable dispositions require typed evidence or a versioned human decision with reactivation conditions.", "Control-plane handoff preserves audit-side uncertainty and the projection exposes every registered identity."],
       "rejection_conditions": ["The register declares completeness against an unreviewed self-selected denominator.", "Deferral, handoff, file presence, or implementation absence is treated as resolution.", "The completeness mechanism assigns priority, accepts risk, or claims discovery of unknown unknowns."],
       "required_evidence": ["Versioned denominator and disposition vocabulary.", "Negative omission, dangling-locator, duplicate, contradiction, unsupported-resolution, and unsupported-non-applicability observations.", "Independent denominator review and human bounded-meaning decision."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["Completeness is bounded to a declared, versioned denominator."],
@@ -2035,13 +2036,13 @@
       "scope": "Trace and composition between the ten OR-01 lifecycle surfaces, including split, merge, revision, cancellation, supersession, repair, and completion projections.",
       "criticality": "critical",
       "failure_consequence": "Ten individually implemented surfaces can still fail the original purpose if meaning, authority, evidence, or unresolved scope changes silently between them.",
-      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"}, "locator": "OR-01, OR-02, OR-03, Essential Realization, and Invariants 10-14", "version": "prototype-origin-requirement/v2", "adoption_status": "adopted_internal", "applicability": "Every transition and composition among the lifecycle audit surfaces named by OR-01.", "counterconditions": ["Two artifacts are explicitly unrelated and no cross-stage claim is made."], "limitations": ["The origin requirement fixes the purpose and boundaries but does not prescribe a trace schema or composition algebra."], "standards_conformance_claimed": false}],
+      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"}, "locator": "OR-01, OR-02, OR-03, Essential Realization, and Invariants 10-14", "version": "prototype-origin-requirement/v3", "adoption_status": "adopted_internal", "applicability": "Every transition and composition among the lifecycle audit surfaces named by OR-01.", "counterconditions": ["Two artifacts are explicitly unrelated and no cross-stage claim is made."], "limitations": ["The origin requirement fixes the purpose and boundaries but does not prescribe a trace schema or composition algebra."], "standards_conformance_claimed": false}],
       "verification_method": {"method_types": ["inspection", "test"], "procedure_refs": ["schemas/lifecycle-trace.schema.json", "src/semantic_guard/lifecycle_trace.py", "tests/test_lifecycle_trace.py", "validation/lifecycle-profile-registry.candidate.json"], "environment": "A local typed lifecycle-trace and composition validator with adversarial fixtures exists. The ten profile meanings remain candidate-only, the resolver and public stage adapters are absent, and no subject-bound full-lifecycle observation or independent review is registered.", "population_or_context": "All declared lifecycle transitions, including branching, merging, supersession, cancellation, and repair."},
       "validation_method": {"method_types": ["not_defined"], "procedure_refs": [], "environment": "Not defined pending lifecycle profiles and representative cross-stage cases.", "population_or_context": "Coding agents and human reviewers following work from request through completion material."},
       "acceptance_criteria": ["Every stage output names its source subjects, transformations, carried and discharged obligations, evidence, authority, and unresolved remainder.", "Split, merge, revision, cancellation, and supersession preserve or explicitly transform identity and proposition meaning under versioned rules.", "Adversarial substitutions, orphaned obligations, duplicated authority, stale evidence, and unsupported strengthening fail closed."],
       "rejection_conditions": ["Per-surface presence is counted as lifecycle composition.", "Trace is inferred from labels, sequence, or lexical similarity alone.", "A downstream completion claim drops upstream contradiction, uncertainty, authority, or evidence limits."],
       "required_evidence": ["Human-accepted cross-stage semantics and ownership boundary.", "Versioned trace and composition contract.", "Vertical, mutation, split/merge, supersession, cancellation, and orphan-detection observations.", "Independent cross-stage omission and semantic-substitution review."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["The current OR-01 surface list remains the lifecycle denominator."],
@@ -2072,7 +2073,7 @@
       "acceptance_criteria": ["The human-selected deployment envelope and failure thresholds are explicit.", "Bound qualification runs cover duration, concurrency, load, exhaustion, provider failure, restart, recovery, compatibility, platform, observability, and rollback triggers.", "Independent review confirms that missing, stale, failed, or out-of-envelope results cannot become readiness."],
       "rejection_conditions": ["Unit, doctor, schema, or smoke passage is called operational qualification.", "One platform or short run is generalized beyond its declared envelope.", "Qualification silently chooses deployment risk or erases semantic, security, or field-validity gaps."],
       "required_evidence": ["Human deployment-envelope and operational-risk decision.", "Closed subject, environment, dependency, provider, and configuration manifest.", "Bound qualification executions and raw incident, recovery, and resource observations.", "Independent operational review."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["Operational behavior varies by deployment profile, provider, platform, resource envelope, and failure policy."],
@@ -2097,13 +2098,13 @@
       "scope": "Opt-in introduction, default-route switch, compatibility period, rollback, disposal, and predecessor retirement for v1 profiles and assurance contracts.",
       "criticality": "high",
       "failure_consequence": "An unqualified sidecar can become authoritative, strand users or evidence, or become difficult to withdraw before its semantic and operational limits are understood.",
-      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"}, "locator": "Invariants 4-8 and Prototype Charter Requirement: promotion_criteria and rollback_or_disposal", "version": "prototype-origin-requirement/v2", "adoption_status": "adopted_internal", "applicability": "Any promotion from prototype or sidecar to a default or retired-predecessor state.", "counterconditions": ["A prototype remains isolated, opt-in, non-authoritative, and makes no migration or retirement claim."], "limitations": ["The origin requirement fixes the human and sidecar boundary but does not choose a migration window, cutover threshold, or retirement date."], "standards_conformance_claimed": false}],
+      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"}, "locator": "Invariants 4-8 and Prototype Charter Requirement: promotion_criteria and rollback_or_disposal", "version": "prototype-origin-requirement/v3", "adoption_status": "adopted_internal", "applicability": "Any promotion from prototype or sidecar to a default or retired-predecessor state.", "counterconditions": ["A prototype remains isolated, opt-in, non-authoritative, and makes no migration or retirement claim."], "limitations": ["The origin requirement fixes the human and sidecar boundary but does not choose a migration window, cutover threshold, or retirement date."], "standards_conformance_claimed": false}],
       "verification_method": {"method_types": ["inspection", "test"], "procedure_refs": ["schemas/transition-plan.schema.json", "src/semantic_guard/transition_control.py", "tests/test_transition_control.py", "docs/operational-qualification-and-transition.md"], "environment": "A local sidecar-to-retirement transition contract, nine gates, abort and rollback checks, and adversarial fixtures exist. No human-adopted transition policy, bound rehearsal, independent observation, cutover decision, or retirement decision exists.", "population_or_context": "Every opt-in, default switch, compatibility window, rollback, and predecessor-retirement transition."},
       "validation_method": {"method_types": ["not_defined"], "procedure_refs": [], "environment": "Not defined pending field, operational, and human-use evidence.", "population_or_context": "Agents, humans, callers, and stored evidence affected by a route or contract transition."},
       "acceptance_criteria": ["A versioned transition plan declares compatibility, shadowing, entry and abort criteria, evidence migration, rollback, disposal, and retirement boundaries.", "Bound rehearsal and independent observation demonstrate rollback and recovery without erasing unresolved audit state.", "A human-owned decision authorizes only the selected transition after required field, operational, and human-use evidence is located."],
       "rejection_conditions": ["File presence, local passage, or implementation completion silently changes the default route.", "Rollback is documentary only or predecessor retirement precedes bounded compatibility and recovery evidence.", "semantic-guard performs cutover, accepts risk, or fabricates the human transition decision."],
       "required_evidence": ["Versioned migration, compatibility, rollback, disposal, and retirement plan.", "Bound shadow, migration, rollback, and recovery rehearsal with independent observation.", "Located field, operational-qualification, human-use, and human cutover decision records."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["The current v1 path remains sidecar or opt-in until a separate human cutover decision."],
@@ -2128,13 +2129,13 @@
       "scope": "Machine-readable and human-readable findings, unresolved obligations, proof limits, repair targets, escalation material, and acceptance material across coding-agent and human responsibility layers.",
       "criticality": "critical",
       "failure_consequence": "Correct audit material can be ignored, misrouted, misunderstood, or acted on by an unauthorized layer, leaving defects unchanged or silently converting technical pass into human acceptance.",
-      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v2", "label_hint": "原点要求"}, "locator": "OR-03, Audience And Use, Essential Realization, and Invariants 1-4 and 14", "version": "prototype-origin-requirement/v2", "adoption_status": "adopted_internal", "applicability": "Every audit result or bounded assurance record intended to change agent work or support a human decision.", "counterconditions": ["A record is retained only as internal diagnostic data and is not presented as repair, escalation, or decision material."], "limitations": ["The origin requirement fixes decision ownership but does not define organization-specific roles, routing, comprehension thresholds, or escalation policy."], "standards_conformance_claimed": false}],
+      "knowledge_basis": [{"source_ref": {"reference_kind": "ref", "entity_id": "document.prototype-origin-requirement.v3", "label_hint": "原点要求"}, "locator": "OR-03, Audience And Use, Essential Realization, and Invariants 1-4 and 14", "version": "prototype-origin-requirement/v3", "adoption_status": "adopted_internal", "applicability": "Every audit result or bounded assurance record intended to change agent work or support a human decision.", "counterconditions": ["A record is retained only as internal diagnostic data and is not presented as repair, escalation, or decision material."], "limitations": ["The origin requirement fixes decision ownership but does not define organization-specific roles, routing, comprehension thresholds, or escalation policy."], "standards_conformance_claimed": false}],
       "verification_method": {"method_types": ["inspection", "test"], "procedure_refs": ["schemas/responsibility-material.schema.json", "src/semantic_guard/repair_loop.py", "schemas/operational-outcome-evaluation.schema.json", "src/semantic_guard/operational_outcomes.py", "tests/test_repair_loop.py", "tests/test_operational_outcomes.py"], "environment": "Local responsibility-aware material, repair-cycle, and operational-outcome evaluation contracts exist with adversarial fixtures. No human-adopted organizational routing policy, real participants, bound task execution, independently authenticated observation, or human-use validity evidence exists.", "population_or_context": "Coding agents, human requesters, reviewers, approvers, and maintainers receiving audit material."},
       "validation_method": {"method_types": ["not_defined"], "procedure_refs": [], "environment": "Not defined pending human role and risk policy plus representative use evaluation.", "population_or_context": "Representative coding-agent and human decision tasks across the intended lifecycle profiles."},
       "acceptance_criteria": ["A human-owned responsibility and escalation policy defines which questions an agent may resolve and which must reach a human role.", "Outputs preserve finding, evidence, limitation, unresolved scope, authority class, repair target, and decision question in responsibility-correct projections.", "Independent task-based evaluation measures routing, comprehension, repair correctness, escalation, residual uncertainty, and authority errors separately."],
       "rejection_conditions": ["One message shape is assumed suitable for coding agents and humans without role-specific evidence.", "A recommendation, score, or technical pass is projected as authorization or acceptance.", "Comprehension is inferred from schema validity or reviewer agreement alone."],
       "required_evidence": ["Human responsibility, escalation, and decision-rights policy.", "Versioned responsibility-aware material and routing contract.", "Representative task-based agent and human evaluation with preserved errors and disagreement.", "Independent review of authority, comprehension, and repair outcomes."],
-      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-07-17", "label_hint": "原点要求 snapshot"}],
+      "evidence_refs": [{"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-24", "label_hint": "原点要求 snapshot"}],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
       "assumptions": ["Coding agents and humans have materially different authority, context, and decision capacities."],

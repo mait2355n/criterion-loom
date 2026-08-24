@@ -12,9 +12,9 @@
 - `Verification method` / `検証方法`
 - `Evidence` / `証拠`
 
-未標識行、重複欄、複数記録、空欄は閉じた記録として扱わない。これは融通の欠如ではなく、自由文から「欠落」や「満足」を断定しないための境界である。
+未標識行、重複欄、複数記録、空欄は閉じた記録として扱わない。この制約は、自由文から「欠落」や「満足」を断定しないための入力境界である。
 
-CLI と MCP が一回に受け取る要求本文は UTF-8 で 262,144 bytes 以下とする。この縦断実装は一件の構造化要求を対象にしており、文書束を一要求に偽装して投入してはならない。上限超過は解析前に拒否する。
+CLI と MCP が一回に受け取る要求本文は UTF-8 で 262,144 bytes 以下とする。この縦断実装は一件の構造化要求を対象にしており、複数文書を一件の要求として結合入力してはならない。上限超過は解析前に拒否する。
 
 ## 方向拘束入力契約
 
@@ -28,11 +28,11 @@ uv run --locked semantic-guard audit-direction-binding \
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-形態素解析は `signal_only` で、数値投影は補助証拠に限る。`morphology=none`、部分被覆、失敗又は契約不整合を方向拘束の成立へ洗浄しない。方向監査は `semantic-guard-direction-binding-audit/v1` を返し、既存 `audit-result/v0` へ字段を追加しない。
+形態素解析は `signal_only` で、数値投影は補助証拠に限る。`morphology=none`、部分被覆、失敗又は契約不整合を方向拘束の成立へ洗浄しない。方向監査は `semantic-guard-direction-binding-audit/v1` を返し、既存 `audit-result/v0` へ欄を追加しない。
 
 ## Wheel 配布契約の隔離検証
 
-正本repository rootを作業directoryとし、信頼済みの局所作業木から wheel を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。検証器は隣接する偽 `schemas/` と `validation/` を置いた上で、包内24 schema、CLI四命令、MCP四工具、生活周期候補10件、工学規則候補11件とそのschema、空objectを拒む運用成果schemaを再演する。
+正本repository rootを作業directoryとし、信頼済みの局所作業木から wheel を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。検証器は隣接する偽 `schemas/` と `validation/` を置いた上で、包内24 schema、CLI四命令、MCP四工具、ライフサイクル候補10件、工学規則候補11件とそのschema、空objectを拒む運用成果schemaを再演する。
 
 ```sh
 uv build --out-dir dist .
@@ -44,7 +44,7 @@ uv run --locked python scripts/verify_packaged_contracts.py \
 
 `dist/` には対象 wheel 一個だけを置く。標準出力は機械可読 JSON 一個で、`status=pass` の時だけ終了符号 `0`、入力、導入、資源上限、経路又は契約検証の不成立は非零となる。検証器は外部の Python、監査program又は資源pathを引数で選ばせず、wheel量、展開量、全体時限、子過程CPU、出力量、生成file量及びfile descriptor数を制限する。Darwinでは有限 `RLIMIT_AS` を受理しないため、住所空間上限だけは適用せず結果の限界へ明記する。
 
-これは未知の wheel を安全に実行する隔離器ではない。wheelのimport自体が符号実行なので、アナタが信頼する局所buildだけを対象にする。依存解決には二進配布物だけを許すが、索引、通信及びその時点の互換依存版には依存する。成功しても、同梱資源と局所契約の再演を示すだけで、実地妥当性、運用資格、外部真正性、保安認証又は人間受理にはならない。
+これは未知の wheel を安全に実行する隔離器ではない。wheelのimport自体が符号実行なので、運用者が信頼する局所buildだけを対象にする。依存解決には二進配布物だけを許すが、索引、通信及びその時点の互換依存版には依存する。成功しても、同梱資源と局所契約の再演を示すだけで、実地妥当性、運用資格、外部真正性、保安認証又は人間受理にはならない。
 
 2026-08-23 の局所統合観測では、1.1.0 の wheel と sdist を構築し、選択した wheel に対する隔離検証20件が全て通過した。検証結果は `public_schemas=24`、`cli_commands=4`、`mcp_tools=4` を記録し、導入済み配布物からの方向拘束 CLI、Schema 取得、`--fail-on` 及び MCP dispatchも通過した。これは当該局所buildの配布契約を再演した証拠であり、別build、公開索引上の配布物、GitHub上のcommit又は人間受理へ一般化しない。
 
@@ -140,7 +140,7 @@ uv run --locked python scripts/validate_verification_source.py
 
 ## 旧版比較
 
-旧版は運用者所有の外部rootにある `vnext/migration/legacy-baseline-2026-07-17.json` の閉じた file digest 集合を照合してから別過程で実行する。現在の採取候補は155ファイルを照合するが、`capture_authority=pending_human_acceptance`であり、人間採択済みの正しさのoracleではない。repository内の `legacy/semantic-guard-v0.1.0/` は源保存であって、必要な実行体と同相対配置を備えた信頼rootではない。2026-07-15及び2026-07-16のmanifestは歴史的観測として残すが、正規実行時の信頼根には使わない。digestがずれた場合、既定では比較を行わない。
+旧版は運用者所有の外部rootにある `vnext/migration/legacy-baseline-2026-07-17.json` の閉じた file digest 集合を照合してから別過程で実行する。現在の採取候補は155ファイルを照合するが、`capture_authority=pending_human_acceptance`であり、人間採択済みの正しさのoracleではない。repository内の `legacy/semantic-guard-v0.1.0/` は公開用修復済みの旧版資料及び実行源の保存であり、原byteの権威はannotated tag `v0.1.0`とcommit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`にある。この保存directory自体は、必要な実行体と同相対配置を備えた信頼rootではない。2026-07-15及び2026-07-16のmanifestは歴史的観測として残すが、正規実行時の信頼根には使わない。digestがずれた場合、既定では比較を行わない。
 
 MCP の旧版影比較は既定無効である。工具呼出側から実行ファイル、adapter、manifest、source root を指定させない。server operator が必要性と対象を確認した場合だけ、MCP server process に次を設定する。
 
@@ -153,13 +153,13 @@ root は絶対 path で、`.venv/bin/python`、固定位置の `vnext/scripts/le
 
 旧版 adapter は選択 manifest に封印された root 内 path だけを実行する。Python 実行体の SHA-256 も照合し、環境変数は限定規約へ正規化する。実行後に基準線を再照合し、途中 drift は結果を無効化する。標準出力は旧版 `audit-result` schema と `phase=audit_request` に適合した場合だけ `completed` とし、入力・文脈 digest、profile、論理追跡方式、timeout、出力 digest を実行観測へ残す。`--require-legacy` は実行完了だけでなく、基準線一致、adapter 封印、出力 schema 適合を要する。CLI の manifest/adapter 明示差替えは局所診断用であり、MCP の正規基準線と同一視してはならない。
 
-採取器は試験結果を捏造して manifest に書かない。試験・診断・標本評価の実観測は `validation/` の別記録に残す。実行体 digest と lockfile は通常の drift を検出するが、OS、動的 library、host、署名済み来歴又は悪意ある実行環境の真正性までは立証しない。
+採取器は、観測していない試験結果を manifest に記録しない。試験・診断・標本評価の実観測は `validation/` の別記録に残す。実行体 digest と lockfile は通常の drift を検出するが、OS、動的 library、host、署名済み来歴又は悪意ある実行環境の真正性までは立証しない。
 
 差分は少なくとも observation delta、direction、assessment、basis kind を分ける。新旧不一致だけで v1 の後退又は改善を断定しない。裁定根拠は憲法不変条件、適合例、変形不変条件、裁定済み実務例、運用証拠のいずれかでなければならない。
 
 ## 切替禁止条件
 
-- 導入対象を上記merge SHA又はそれを後継する明示commitへ束縛していない、又は、対応するhosted CIの成功を確認していない。
+- 導入対象を、[実装状態](implementation-status.md)の「1.1.0 GitHub統合観測」が示す merge commit `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` 又はそれを祖先に持つ明示commitへ束縛していない、又は、導入対象commitをsubjectとするhosted CIの成功を確認していない。
 - 重大誤満足率を実務資料で測っていない。
 - 未解決差分が残る。
 - 公開 schema と実体の適合試験が失敗する。

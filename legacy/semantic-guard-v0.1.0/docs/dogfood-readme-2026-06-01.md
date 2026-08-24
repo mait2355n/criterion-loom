@@ -1,5 +1,10 @@
 # Dogfood: README Expansion
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 Date: 2026-06-01 JST
 
 ## Purpose
@@ -589,8 +594,8 @@ Source:
 Observed value:
 
 - The current system has a defensible niche as a phase-spanning semantic audit layer for agent work.
-- Its strongest property is not scanner power, workflow execution, or platform governance, but externalizing request, plan, diff, finish, trace, evidence, and human review points as inspectable audit data.
-- The human final decision boundary remains a meaningful advantage over designs that imply automatic acceptance.
+- The property emphasized here is not scanner power, workflow execution, or platform governance, but externalizing request, plan, diff, finish, trace, evidence, and human review points as inspectable audit data.
+- The human final decision boundary is a documented design distinction; this record does not measure outcomes against other designs.
 
 Observed limits:
 

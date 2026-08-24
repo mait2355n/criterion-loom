@@ -1,5 +1,9 @@
 # クイックスタート
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+
 この文書は、Criterion Loom の技術実装である `semantic-guard` を公開 snapshot から動かすための最短手順である。
 
 ## 前提
@@ -33,14 +37,14 @@ uv run --python 3.13 --project . semantic-guard explore-request --text \
 
 `explore-request` は、まだ要求文として監査できない案から、対象利用者の仮説、重大な曖昧点、聞くべき質問、仕様書の輪郭を返す軽量 preflight である。実装計画ではない。
 
-網羅的に問いただす必要がある場合は LLM 版を使う。
+より広い探索が必要な場合は LLM 版を使う。ただし、情報抽出や質問を取り切る保証はない。
 
 ```sh
 uv run --python 3.13 --project . semantic-guard llm-explore-request --text \
   "割り勘アプリを作りたい" --execute
 ```
 
-`llm-explore-request` は、入力と context から取れる fact / inference / hypothesis / unknown / pending decision を拾い、そのうえで欠けている重要情報を質問にする。既定は dry-run なので、実行する時だけ `--execute` を付ける。範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変える質問だけを残す。
+`llm-explore-request` は、入力と context から取れる fact / inference / hypothesis / unknown / pending decision の抽出を試み、そのうえで見つかった重大な不足を質問にする。既定は dry-run なので、実行する時だけ `--execute` を付ける。範囲、資料模型、秘匿性、外部権威、受入証拠、人間判断点を変える質問だけを残す。
 
 ## 要求を監査する
 
@@ -64,7 +68,7 @@ uv run --python 3.13 --project . semantic-guard audit-request \
 
 ```sh
 uv run --python 3.13 --project . semantic-guard audit-plan --text \
-  "目的: README の日本語取説を整える。作業分解: 入口、操作例、実績証明文書を追加する。検証: 文書監査と単体試験を実行する。撤回: 追加文書だけを戻す。"
+  "目的: README の日本語取説を整える。作業分解: 入口、操作例、公開成果物説明文書を追加する。検証: 文書監査と単体試験を実行する。撤回: 追加文書だけを戻す。"
 ```
 
 計画監査では、作業分解、依存順序、資源見積、リスク対応、進捗制御、変更統制、検証責任、撤回手段を見る。

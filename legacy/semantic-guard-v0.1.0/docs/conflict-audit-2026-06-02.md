@@ -1,5 +1,10 @@
 # Conflict Audit 2026-06-02
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This document audits `semantic-guard` for internal rule and output conflicts after the requirements, planning, implementation, traceability, severity-profile, not-applicable, vocabulary-negotiation, and reviewer-boundary layers have accumulated.
@@ -30,7 +35,7 @@ Important existing boundaries:
 
 ### Input Intent
 
-User intent:
+Audited request intent:
 
 - Inspect the main `semantic-guard` layers once.
 - Find conflict points.
@@ -66,7 +71,7 @@ Initial `audit-request` result:
 Interpretation:
 
 - This is a real structural warning, not a blocker.
-- The user's request is naturally a work package, not a single atomic product requirement.
+- The audited request is naturally a work package, not a single atomic product requirement.
 - The correct response is not to reject the request, but to decompose the deliverable.
 
 Derived atomic requirements:
@@ -216,7 +221,7 @@ Recommended implementation:
 
 Evidence:
 
-- The user's request produced an `atomicity` warning even though the task is naturally a multi-step conflict audit.
+- The audited request produced an `atomicity` warning even though the task is naturally a multi-step conflict audit.
 
 Conflict:
 
@@ -455,7 +460,7 @@ Impact:
 
 Disposition:
 
-- Accept for now because the user explicitly chose not to prioritize this yet.
+- Accept within this 2026-06-02 audit because profile-specific escalation pressure was outside the recorded priority.
 
 Recommended implementation:
 

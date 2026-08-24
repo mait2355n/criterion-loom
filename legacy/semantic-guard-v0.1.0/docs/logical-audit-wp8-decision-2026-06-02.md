@@ -1,5 +1,10 @@
 # Logical Audit WP8 Decision 2026-06-02
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
 This document records the WP8 decision gate for the first logical-audit slice.
@@ -108,4 +113,4 @@ Representative evidence from the WP3-WP8 pass:
 
 `final_human_decision.status` remains outside this document and outside `semantic-guard`.
 
-This WP8 decision does not mean the user has accepted the project. It only records the technical gate result for whether to expand the logical-audit implementation.
+This WP8 decision does not constitute human acceptance of the project. It only records the technical gate result for whether to expand the logical-audit implementation.

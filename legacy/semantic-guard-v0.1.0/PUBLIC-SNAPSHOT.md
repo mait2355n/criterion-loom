@@ -1,8 +1,13 @@
 # Public Snapshot
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 ## Purpose
 
-This file records what is included in the GitHub-oriented publication snapshot and what is intentionally excluded from the local working checkout.
+This file records what the dated GitHub-oriented publication snapshot included and what preparation-only material it excluded.
 
 ## Audience And Use
 
@@ -11,7 +16,7 @@ Use this file when checking whether the public tree contains only publishable pa
 ## Snapshot Contract
 
 The snapshot should be runnable from its own root and should not depend on the
-local working checkout. Local-only paths, backup directories, generated caches,
+checkout used to prepare it. Preparation-only paths, backup directories, generated caches,
 private work notes, and unredacted private inputs stay out. Selected dated
 design, audit, and acceptance records may remain as historical evidence only
 after hygiene review; they are not current guidance or public-contract sources.
@@ -38,7 +43,7 @@ This file records source, included files, excluded files, and verification comma
 
 ## Source
 
-- Source checkout: local working checkout
+- Source checkout: the checkout used for the 2026-06-04 snapshot preparation; its location is not asserted here
 - Snapshot path: this directory
 
 ## Included
@@ -85,7 +90,7 @@ This file records source, included files, excluded files, and verification comma
 
 ## Verification Intent
 
-Verify this snapshot from its own root, not from the working checkout:
+Verify this snapshot from its own root, not from any preparation checkout:
 
 ```sh
 uv run --python 3.13 --project . semantic-guard --help

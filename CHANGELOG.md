@@ -4,11 +4,14 @@ All notable repository and public-contract changes are recorded here. Package ve
 
 ## [Unreleased]
 
-### Operations
+### Documentation and distribution metadata
 
-- Switched the supported requirement-relation audit path in the local Codex environment to the canonical `semantic-guard 1.0.0` MCP server and companion Skill.
-- Removed the frozen pre-v1 Skill backup from Codex Skill discovery while preserving it in the external archive.
-- Recorded the human-directed, reversible local-default decision separately from production qualification and irreversible predecessor retirement.
+- Restored the Criterion Loom public-project name while retaining `semantic-guard` for the package, CLI, and MCP surfaces.
+- Separated the current 1.1.0 public-surface summary from dated 1.0.0 and repository-transfer evidence.
+- Removed operator-local instructions, private-dialogue provenance, and unbound destructive-authorization wording from the public documentation surface.
+- Added a public, non-sensitive contact-request route for reports that require a private follow-up channel.
+- Repaired public prose in the 0.1.0 archive while retaining the original byte content at annotated tag `v0.1.0` and commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+- Replaced the tautological package summary in `pyproject.toml`; this changes metadata in future wheel and sdist builds but does not change the runtime API or schema contracts. No package-index artifact or release evidence is updated by this documentation change.
 
 ## [1.1.0] - 2026-08-23
 

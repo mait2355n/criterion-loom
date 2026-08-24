@@ -17,9 +17,9 @@ Do not treat a detector warning, parser candidate, LLM output, test pass, or pri
 ## Canonical and legacy boundaries
 
 - Canonical v1 code lives at the repository root.
-- `legacy/semantic-guard-v0.1.0/` is frozen predecessor source, not a second editable implementation tree.
+- `legacy/semantic-guard-v0.1.0/` is a publication-repaired predecessor archive, not a second implementation tree for ordinary development. Its manifest identifies the historical Git anchor and repair boundary.
 - Fixes intended for v1 belong in the canonical root.
-- A necessary legacy correction requires a separate, explicit compatibility decision and must update the archive manifest. Do not silently rewrite historical records.
+- A necessary legacy publication, compatibility, or security correction requires a separate, explicit decision and must update the archive manifest. Do not silently rewrite historical records.
 - Dated validation records are append-only historical observations. Add a new record instead of modifying an old one.
 
 ## Required checks

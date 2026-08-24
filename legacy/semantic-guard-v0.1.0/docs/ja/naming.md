@@ -1,12 +1,16 @@
 # Criterion Loom 命名整理
 
+> **歴史境界（0.1.0 公開用修復済み archive）。** この文書は 0.1.0 系の記録時点に
+> おける predecessor を説明するもので、現行 1.x の状態・運用手順ではない。原 byte
+> の権威は tag `v0.1.0` / commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。
+
 ## 目的
 
 この文書は、Criterion Loom の公開名と、既存の repository / package / CLI / MCP / skill 名の対応を固定するためのものだ。
 
 ## 対象読者と用途
 
-README、repository description、実績証明、release note、貢献案内を書く時に使う。公開名と技術名を混同しないための文書である。
+README、repository description、公開成果物説明、release note、貢献案内を書く時に使う。公開名と技術名を混同しないための文書である。
 
 ## 名前対応
 

@@ -1,5 +1,7 @@
 # Migration from semantic-guard 0.1.0 to 1.0.0
 
+> This guide describes the 0.1.0-to-1.0.0 contract replacement. The current 1.1.0 line additionally exposes the independent direction-binding command and MCP tool documented in the root README.
+
 ## Summary
 
 1.0.0 is a contract replacement, not an in-place extension of the 0.1.0 command set. Migrate callers by selecting the required behaviour explicitly.
@@ -9,12 +11,12 @@
 | 0.1.0 surface | 1.0.0 status | Migration route |
 | --- | --- | --- |
 | `audit-request` | Replaced for the structured functional-requirement slice | Use `audit-requirement`; update the consumer to the v1 closed result schema. |
-| `audit-plan` | Not migrated | Run the frozen legacy implementation explicitly or defer until a v1 slice exists. Do not label the legacy result as v1. |
+| `audit-plan` | Not migrated | Run the publication-repaired legacy archive explicitly or defer until a v1 slice exists. Do not label the legacy result as v1. |
 | `audit-diff` | Not migrated | Same explicit legacy or defer route. |
 | `finish-check` | Not migrated | Same explicit legacy or defer route. |
-| exploration, decision-state, convention, trace, reviewer and acceptance-bundle commands | Not migrated | Available only in frozen 0.1.0 source; no transparent v1 alias exists. |
+| exploration, decision-state, convention, trace, reviewer and acceptance-bundle commands | Not migrated | Available only in the publication-repaired 0.1.0 archive; no transparent v1 alias exists. |
 | old schema commands | Replaced | Use `semantic-guard schema NAME`. |
-| old MCP tool set | Replaced | Use only the three documented v1 MCP tools. |
+| old MCP tool set | Replaced | Use only the four documented 1.1.0 MCP tools; the fourth is the independent direction-binding surface. |
 
 The `--output legacy-compat` projection on `audit-requirement` is a lossy output projection for a narrow requirement result. It does not restore the old command set or execute the old engine.
 
@@ -29,9 +31,9 @@ uv run --locked semantic-guard-mcp
 
 Consumers must validate the selected v1 schema, retain provenance and source spans, and handle `undetermined`, `partial`, `failed`, `warn`, and `block` without coercing them to success.
 
-## Frozen repository archive
+## Publication-repaired repository archive
 
-`legacy/semantic-guard-v0.1.0/` contains the predecessor source and its historical documentation. It is deliberately outside the canonical package. Work from that directory only when a caller knowingly needs the old behaviour.
+`legacy/semantic-guard-v0.1.0/` contains predecessor runtime source and publication-repaired historical documentation. Its manifest identifies the original Git anchor, previous public digest, repair scope, and current digest. It is deliberately outside the canonical package. Work from that directory only when a caller knowingly needs the old behaviour.
 
 ```sh
 cd legacy/semantic-guard-v0.1.0
@@ -79,4 +81,4 @@ Do not average old and new scores or select the old result as an oracle. Preserv
 
 ## Rollback and coexistence
 
-Source rollback is possible by checking out the predecessor tag or using the frozen archive. Operational rollback requires a separately controlled deployment decision. Canonicalizing the repository does not assert that a deployed environment has switched, nor that every predecessor deployment may be destroyed.
+Exact source rollback is possible by checking out the predecessor tag. The publication-repaired archive supports explicit compatibility inspection and execution but is not the original byte snapshot. Operational rollback requires a separately controlled deployment decision. Canonicalizing the repository does not assert that a deployed environment has switched, nor that every predecessor deployment may be destroyed.

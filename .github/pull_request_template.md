@@ -2,7 +2,7 @@
 
 - Purpose and desired state:
 - Non-goals:
-- Human decision still pending:
+- Decisions or approvals still pending:
 
 ## Scope
 
@@ -12,13 +12,13 @@
 - [ ] requirement rules, providers, or conformance corpus
 - [ ] packaging or CI
 - [ ] documentation or Skill
-- [ ] migration or frozen legacy boundary
+- [ ] migration or publication-repaired legacy boundary
 
 ## Compatibility and claims
 
 - Breaking change:
 - Migration route:
-- Frozen 0.1.0 effect:
+- Publication-repaired 0.1.0 archive effect:
 - Claims supported by this change:
 - Claims explicitly not supported:
 

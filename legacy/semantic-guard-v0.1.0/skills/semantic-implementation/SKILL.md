@@ -3,6 +3,11 @@ name: semantic-implementation
 description: Meaning-, intent-, and value-oriented requirements, planning, implementation, and completion audit. Use when Codex works on non-trivial design, implementation, refactoring, migration, documentation, creative canon organization, requirement clarification, or any task where meaning, intent, scope, non-goals, uncertainty, verification, validation, traceability, or change impact may be misunderstood. Do not use for trivial typo fixes, simple one-line commands, current time checks, or already-obvious mechanical edits.
 ---
 
+> **Historical boundary (0.1.0 publication-repaired archive).** This document
+> describes the predecessor as recorded for the 0.1.0 line; it is not current 1.x
+> state or operating guidance. Original-byte authority: tag `v0.1.0`, commit
+> `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`.
+
 # Semantic Implementation
 
 ## Purpose
@@ -13,7 +18,7 @@ Use this skill to keep implementation from becoming shape-matching. Clarify what
 
 Use the lightest audit that protects the task.
 
-- For open-ended ideas that are not yet requirements, run exploration first: use deterministic exploration for fast preflight, and use LLM exploration when the task needs all available information extracted before every material missing question is asked.
+- For open-ended ideas that are not yet requirements, run exploration first: use deterministic exploration for fast preflight, and use LLM exploration when the task benefits from attempting to extract information visible in the supplied input and context, then listing the material gaps found. It does not guarantee exhaustive extraction or question coverage.
 - For ambiguous or high-impact work, run the full chain: exploration when needed, target understanding, request audit, plan audit, diff audit, finish check.
 - For ordinary code changes, at least identify meaning, intent, non-goals, risk, and verification before editing.
 - For small obvious edits, keep the audit implicit and do not perform ritual paperwork.
@@ -34,14 +39,14 @@ Use the lightest audit that protects the task.
 Use this before requirements exist, especially for product ideas, feature sketches, broad documentation requests, creative canon organization, or any task where asking the wrong questions would quietly fix the wrong scope.
 
 - Generate plausible audience or stakeholder hypotheses and state how each would change scope.
-- For exhaustive elicitation, use the LLM exploration path so the reviewer extracts visible facts, inferences, hypotheses, unknowns, and pending decisions before questioning gaps.
+- For broader elicitation, use the LLM exploration path so the reviewer attempts to extract facts, inferences, hypotheses, unknowns, and pending decisions visible in the supplied input and context before turning the material gaps it finds into questions. This does not guarantee exhaustive extraction or question coverage.
 - Extract only material ambiguities: scope, data shape, identity, privacy, payment, permissions, external authority, acceptance evidence, unresolved human decisions.
 - Ask only questions whose answers would change the artifact or audit path.
 - Keep taste, wording, and implementation-preference questions out unless they affect scope, public contracts, evidence, or risk.
 - Produce a spec outline with non-goals, acceptance criteria, unresolved decisions, and next design or planning phase.
 - Do not start implementation from this phase.
 
-Use MCP `explore_request_tool` or CLI `semantic-guard explore-request` for fast deterministic preflight. Use MCP `llm_explore_request_tool` or CLI `semantic-guard llm-explore-request --execute` when the point is to take all visible information first and then interrogate every missing material item. Treat both outputs as elicitation material, not approval or a final requirement.
+Use MCP `explore_request_tool` or CLI `semantic-guard explore-request` for fast deterministic preflight. Use MCP `llm_explore_request_tool` or CLI `semantic-guard llm-explore-request --execute` when the point is to attempt to extract information visible in the supplied input and context, then list the material gaps found. The result does not guarantee exhaustive extraction or question coverage. Treat both outputs as elicitation material, not approval or a final requirement.
 
 ### 1. Understand Target
 

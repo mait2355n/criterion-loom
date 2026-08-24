@@ -22,7 +22,7 @@ body:
     id: version
     attributes:
       label: Version and surface
-      description: State the semantic-guard version and whether this is canonical v1 or frozen 0.1.0.
+      description: State the semantic-guard version and whether this is canonical v1 or the archived 0.1.0 runtime.
       placeholder: "semantic-guard 1.1.0 / audit-direction-binding"
     validations:
       required: true

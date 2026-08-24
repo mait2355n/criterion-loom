@@ -1,12 +1,13 @@
 # Prototype Origin Requirement
 
 作成日: 2026-06-30
+更新日: 2026-08-24
 
 ## Purpose
 
-この文書は、Criterion Loom / `semantic-guard` の今後の試作で、原点となる要求を見失わないための正本である。
+この文書は、`docs/prototypes/` 配下の配置にかかわらず、Criterion Loom / `semantic-guard` の現行の目的正本である。配置は本書の目的正本としての状態を候補へ下げない一方、個別 prototype の実装又は採択を意味しない。
 
-ここで固定するのは、見栄えのよい概念文ではない。複数 prototype を作る時に、何を守り、何を測り、何を捨てるかを判断するための要求である。
+本書は、複数の prototype を評価する際に、保持対象、評価対象及び棄却条件を判断するための要求を定める。
 
 ## Origin Requirements
 
@@ -40,19 +41,19 @@ Criterion Loom は、AI エージェントの各工程行為について、対�
 
 `OR-01`、`OR-02`、`OR-03` は到達すべき要求であり、現実装がすでに全項目を実現したという完成主張ではない。
 
-2026-07-17 の正本 v1.0.0 は、単一の構造化機能要求を義務へ分け、直接規則、未解決再集約、形態素信号、係り受け等の候補、呼出元提出 LLM 候補を権限分離したまま検査する要求関係監査を公開縦断として持つ。公開面は `audit-requirement`、制御された `shadow-compare`、閉契約を返す `schema` と、それぞれに対応する三つの MCP 工具である。形態素解析は `signal_only`、依存構造解析と LLM は `candidate_only` が上限で、生出力だけでは支持又は保留解除にならない。
+正本 1.1.0 は、単一の構造化機能要求を義務へ分け、直接規則、未解決再集約、形態素信号、係り受け等の候補、呼出元提出 LLM 候補を権限分離したまま検査する要求関係監査に加え、同一対象・同一操作の方向開放表現へ方向限定表現が直接結合しているかを検査する独立した方向拘束監査を公開面に持つ。公開 CLI は `audit-requirement`、`audit-direction-binding`、`shadow-compare`、`schema` の四命令、MCP はそれぞれに対応する四工具、閉じた schema registry は24件である。要求関係監査では形態素解析は `signal_only`、依存構造解析と LLM は `candidate_only` が上限である。方向拘束監査でも形態素解析は `signal_only`、数値投影は補助証拠に限り、いずれも生出力だけでは支持、人間受理又は方向選択を成立させない。
 
-要求工程以外の生活周期 profile、action evidence、状態評価、修復、実地評価、安全運用、運用資格、移行には版付き候補又は sidecar 契約があるが、共通公開 workflow、人間採択、実地証拠、外部真正性は未成立である。従って `OR-01`、`OR-02`、`OR-03` の全工程達成済みとはしない。
+要求工程以外のライフサイクル profile、action evidence、状態評価、修復、実地評価、安全運用、運用資格、移行には版付き候補又は sidecar 契約があるが、共通公開 workflow、人間採択、実地証拠、外部真正性は未成立である。従って `OR-01`、`OR-02`、`OR-03` の全工程達成済みとはしない。
 
-旧 0.1.0 が持っていた文書、要求、計画、差分、完了、規約、査読、受理材料の局所監査は `legacy/semantic-guard-v0.1.0/` に凍結保存する。これらは未移植工程の互換導線であって、v1 正本へ透過統合された機能でも、正しさの oracle でもない。
+旧 0.1.0 が持っていた文書、要求、計画、差分、完了、規約、査読、受理材料の局所監査は、`legacy/semantic-guard-v0.1.0/` に公開用修復済みの歴史 archive として保存する。元の byte-for-byte 内容の権威は annotated tag `v0.1.0`、commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` の Git anchor に残り、現 directory は原 snapshot ではない。これらは未移植工程の互換導線であって、v1 正本へ透過統合された機能でも、正しさの oracle でもない。
 
-正本化の境界は `docs/canonical-promotion-decision.md`、移行は `docs/migration-v0.1.0-to-v1.0.0.md`、現時点の技術監査は `docs/audits/canonicalization-audit-v1.0.0-2026-07-17.md` に記録する。要求上の語義、局所契約適合、実務妥当性、人間採択を混同しない。
+正本化の境界は `docs/canonical-promotion-decision.md`、移行は `docs/migration-v0.1.0-to-v1.0.0.md`、1.1.0 の実装状態は `docs/implementation-status.md`、方向拘束統合証拠は `docs/audits/direction-binding-integration-2026-08-23.md` に記録する。要求上の語義、局所契約適合、実務妥当性、人間採択を混同しない。
 
 ## Why This Matters
 
-AI エージェントは、もっともらしい計画、もっともらしい完了報告、もっともらしい自己点検を作れる。だが、その中で何が事実で、何が仮説で、何が未決定で、何を証拠として確認したのかは、しばしば会話の内側へ沈む。
+AI エージェントが生成する計画、完了報告及び自己点検では、事実、仮説、未決定事項及び確認済み証拠の区別が会話文脈にだけ残り、成果物から検査できない場合がある。
 
-Criterion Loom の価値は、その沈んだ判断材料を外部化する点にある。高性能な自然言語判定器に見せることではない。実装、文書、試験、監査、受入判断を続けるために、作業の意味と証拠を扱える形へ戻すことにある。
+Criterion Loom の価値は、この区別と判断材料を監査可能な成果物として外部化する点にある。高性能な自然言語判定器に見せることではない。実装、文書、試験、監査、受入判断を続けるために、作業の意味と証拠を扱える形へ戻すことにある。
 
 ## Essential Realization
 
@@ -68,10 +69,10 @@ AI エージェントの作業について、要求、計画、行為、変更�
 - 人間の受入判断者: 監査結果、実行証拠、残危険を見て、受理、差戻し、保留を判断する。
 - 保守者: 規則、fixture、corpus、schema、外部証拠連携が原点要求から逸れていないかを確認する。
 
-使い方は次である。
+派生作業では次の順に記録を確認する。
 
-1. prototype を作る前に、この文書を読む。
-2. prototype charter に `origin_trace` を書く。
+1. prototype の開始前に、この文書を確認する。
+2. prototype charter に `origin_trace` を記録する。
 3. charter を監査し、原点要求へ trace できる場合だけ実装へ進む。
 4. prototype の採用、差戻し、保留、棄却は、人間判断材料として扱う。
 
@@ -82,7 +83,7 @@ uv run --locked semantic-guard audit-requirement \
   --text '監査結果は、未解決義務と根拠範囲を保持しなければならない。'
 ```
 
-この原点文書全体に対する旧 `audit-request --kind document` が必要なら、凍結旧版を明示して実行する。これは v1 監査ではない。
+この原点文書全体に対する旧 `audit-request --kind document` が必要なら、公開用修復済みの旧版 archive を明示して実行する。これは v1 監査ではなく、元の 0.1.0 byte snapshot の再演でもない。
 
 ```sh
 cd legacy/semantic-guard-v0.1.0
@@ -108,14 +109,14 @@ uv run --locked semantic-guard audit-request \
 
 この文書は、試作群の原点要求であり、新しい public CLI、MCP tool、API、schema、永続記録形式を定義しない。
 
-正本 v1 の正式な field、type、enum、条件制約は `schemas/audit-result.schema.json` とそこから参照される schema を正とする。旧 0.1.0 の `phase`、`status`、`score`、`findings`、`missing`、`next_actions`、`details` という共通形は凍結旧版の契約であり、v1 の閉じた義務結果へ読み替えない。
+正本 v1 の正式な field、type、enum、条件制約は `schemas/audit-result.schema.json` とそこから参照される schema を正とする。旧 0.1.0 の `phase`、`status`、`score`、`findings`、`missing`、`next_actions`、`details` という共通形は旧版 archive の契約であり、v1 の閉じた義務結果へ読み替えない。
 
 この文書自身の repository profile boundary は次の通りである。
 
 - `schema_version`: `prototype-origin-requirement/v3`。
 - `repository_id`: `semantic-guard`。
 - `public_surfaces`: documentation only。
-- `commands`: 正本 v1 の個別要求監査は `uv run --locked semantic-guard audit-requirement --text ...`。原点文書全体の旧文書監査は `legacy/semantic-guard-v0.1.0/` 内の `audit-request --kind document` を明示的に使う。
+- `commands`: 正本 1.1.0 の公開 CLI は `audit-requirement`、`audit-direction-binding`、`shadow-compare`、`schema` の四命令である。原点文書全体の旧文書監査は `legacy/semantic-guard-v0.1.0/` 内の `audit-request --kind document` を明示的に使う。
 - `output_shapes`: no new output shape。
 - `exceptions`: prototype-specific schema、CLI、MCP、API、record 形式は個別 prototype charter または別 schema で定義する。
 - `internal_scope`: prototype の内部実装、検出器設計、fixture 追加、corpus 採点は個別 prototype 側で扱う。
@@ -152,7 +153,7 @@ prototype が新しい構造化出力を持つ場合は、別文書または sch
 
 ## Prototype Charter Requirement
 
-prototype を作る前に、最低限次を記録する。
+各 prototype charter は、最低限次を記録する。
 
 - `prototype_id`: 安定した識別子。
 - `hypothesis`: 何を確かめる試作か。
@@ -220,15 +221,10 @@ prototype を作る前に、最低限次を記録する。
 - `defer`: 価値はあるが、今の prototype 群の中核ではない。
 - `reject`: 人間判断代替、過大主張、巨大統合、LLM 依存承認、契約破壊に寄る。
 
-## Open Decisions
+## Decision Ownership
 
-- 最初に作る prototype は未決定。現時点では `corpus-calibration` と `rule-trace` が有力である。
-- prototype 評価 corpus の規模と採点語彙は未決定。
-- sidecar artifact の保存場所と命名規則は未決定。
-- 行為 claim taxonomy、信頼・脅威模型、proof obligation、外部証拠の真正性確認方法は未決定。
+個別 prototype の採否と優先順位、評価 corpus の規模と採点語彙、sidecar artifact の保存場所と命名規則、行為 claim taxonomy、信頼・脅威模型、proof obligation及び外部証拠の真正性確認方法は、本目的正本だけでは決めない。版付きの判断記録と人間の受理に残す。
 
-これらは、実装前に必要なら `resource-control-plane` 側の未決定記録へ移す。
+## Entry Condition For Derived Work
 
-## First Next Action
-
-次に prototype を作る時は、この文書を先に読み、prototype charter を一枚書く。その charter がこの文書へ trace できなければ、実装へ進まない。
+第三者が本書から prototype 又は派生実装を開始する場合、作業開始条件は、対象 charter が安定した `prototype_id`、`origin_trace`、非目標、`evidence_plan`、`acceptance_criteria`、`rejection_conditions` 及び `rollback_or_disposal` を持ち、本書への trace を査読可能に示すことである。この条件を満たさない作業は、本書に由来する prototype として実装段階へ進めない。

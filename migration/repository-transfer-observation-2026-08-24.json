@@ -1,0 +1,53 @@
+{
+  "schema_version": "criterion-loom-repository-observation/v0",
+  "record_kind": "repository_transfer_observation",
+  "entity_id": "8aff10d0-cc23-4842-b237-9ed1d732b6f0",
+  "label": "criterion-loom post-transfer repository observation",
+  "subject_ref": "canonical repository object・51d473df-7d86-466d-a9f4-47a01ff70d44",
+  "observed_at": "2026-08-24T12:10:32+09:00",
+  "observer_basis": "Authenticated GitHub CLI REST queries.",
+  "observations": {
+    "canonical_locator": {
+      "requested": "mait2355n/criterion-loom",
+      "github_repository_id": 1270877024,
+      "resolved_full_name": "mait2355n/criterion-loom",
+      "visibility": "public",
+      "default_branch": "main"
+    },
+    "historical_locator_redirect": {
+      "requested": "morie-lene/criterion-loom",
+      "github_repository_id": 1270877024,
+      "resolved_full_name": "mait2355n/criterion-loom"
+    },
+    "remote_main": {
+      "commit": "83bdd6deb86aeaa3c99515c013a1d30984a719e1",
+      "tree": "b1e473a917ba3b81e0f6437db41330a128fe636e",
+      "committed_at": "2026-08-23T16:41:32Z"
+    },
+    "latest_main_ci": {
+      "run_id": 32652456895,
+      "subject_commit": "83bdd6deb86aeaa3c99515c013a1d30984a719e1",
+      "workflow": "CI",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/mait2355n/criterion-loom/actions/runs/32652456895"
+    },
+    "legacy_repository_id_query": {
+      "requested_repository_id": 1284490044,
+      "http_status": 404,
+      "interpretation": "The authenticated query could not access this repository ID. This does not distinguish deletion from inaccessibility and is not deletion evidence."
+    }
+  },
+  "not_verified": [
+    "Complete branch, tag, pull-request, release, Actions-artifact, permission, and security-setting preservation against the pre-transfer baseline.",
+    "Deletion or continued existence of GitHub repository ID 1284490044.",
+    "Continued availability and integrity of operator-external backups.",
+    "A publicly bound destructive-operation authorization.",
+    "Final human acceptance."
+  ],
+  "final_human_decision": {
+    "owner": "human",
+    "status": "pending"
+  }
+}
