@@ -6,6 +6,7 @@ All notable repository and public-contract changes are recorded here. Package ve
 
 ### Documentation and distribution metadata
 
+- Rebuilt the public entry path around an evidence-backed value statement, a reproducible input-command-output example, explicit current limits, interface choice, and task-oriented English/Japanese documentation maps.
 - Restored the Criterion Loom public-project name while retaining `semantic-guard` for the package, CLI, and MCP surfaces.
 - Separated the current 1.1.0 public-surface summary from dated 1.0.0 and repository-transfer evidence.
 - Removed operator-local instructions, private-dialogue provenance, and unbound destructive-authorization wording from the public documentation surface.

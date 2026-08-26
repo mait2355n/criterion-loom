@@ -27,6 +27,14 @@ body:
     validations:
       required: true
   - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the operating system, Python version, installation method, and relevant optional provider versions.
+      placeholder: "macOS 15 / Python 3.13 / source checkout with uv / SudachiPy 0.6.11"
+    validations:
+      required: true
+  - type: textarea
     id: expected
     attributes:
       label: Expected behavior
@@ -44,7 +52,7 @@ body:
     id: verification
     attributes:
       label: Verification
-      description: Mention tests, validators, schema validation, and whether optional providers were configured.
+      description: Mention tests, validators, schema validation, and the exact optional-provider configuration.
       render: shell
     validations:
       required: false

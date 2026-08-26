@@ -1,24 +1,117 @@
-# Documentation map
+# Criterion Loom documentation
 
-## Start here
+[日本語](README.ja.md) · [Project overview](../README.md)
 
-- [Repository overview](../README.md)
-- [Current public surface](../PUBLIC-SNAPSHOT.md)
-- [Implementation status](implementation-status.md)
-- [Direction-binding audit public slice](direction-binding-audit.md)
-- [Operations](operations.md)
-- [Canonical promotion decision](canonical-promotion-decision.md)
-- [Migration from 0.1.0](migration-v0.1.0-to-v1.0.0.md)
-- [Canonical migration classification map](../migration/migration-map.md)
-- [v1.0.0 canonicalization audit](audits/canonicalization-audit-v1.0.0-2026-07-17.md)
-- [v1.1.0 direction-binding GitHub integration evidence](audits/direction-binding-integration-2026-08-23.md)
-- [Repository unification record, 2026-08-24](repository-unification-2026-08-24.md)
-- [Post-transfer repository observation, 2026-08-24](audits/repository-transfer-observation-2026-08-24.md)
+This page routes readers by task. It deliberately separates current reference,
+operating guidance, design candidates, dated evidence, and history: proximity in
+the repository is not authority.
 
-## Status and lineage
+## Choose by task
+
+| If you want to… | Start with | Then read |
+| --- | --- | --- |
+| Understand the project in a few minutes | [Project overview](../README.md) | [Current public surface](../PUBLIC-SNAPSHOT.md) |
+| Run the CLI or MCP server | [Quickstart](../README.md#quickstart-one-bounded-proof) | [Operations guide](operations.md) |
+| Integrate an agent through MCP or the companion Skill | [Choose an interface](../README.md#choose-an-interface) | [Skill contract](../skills/semantic-implementation/references/mcp-contract.md) |
+| Interpret a direction-binding result | [Direction-binding audit](direction-binding-audit.md) | [Implementation status](implementation-status.md) |
+| Audit claims about maturity or evidence | [Implementation status](implementation-status.md) | [Evidence and audit records](#evidence-and-audit-records) |
+| Contribute or report a problem | [Contributing](../CONTRIBUTING.md) | [Support](../SUPPORT.md) or [Security](../SECURITY.md) |
+| Understand the 0.1.0 break | [Migration guide](migration-v0.1.0-to-v1.0.0.md) | [Canonical promotion decision](canonical-promotion-decision.md) |
+
+## Current reference
+
+These documents describe the current source line or its current reading rules.
+They do not, by themselves, establish field validity or human acceptance.
+
+- [Current public surface](../PUBLIC-SNAPSHOT.md) — package identity, public
+  commands and tools, supported claims, and explicit non-claims.
+- [Implementation status](implementation-status.md) — implemented surfaces,
+  dated observations, open evidence, and qualification gaps.
+- [Operations guide](operations.md) — input boundaries, provider authority,
+  exit codes, automation, package verification, and legacy isolation.
+- [Direction-binding audit](direction-binding-audit.md) — meaning, state model,
+  errors, evidence, and limits of the independent 1.1.0 slice.
+- [Origin requirement](prototypes/origin-requirement.md) — current purpose
+  authority despite its historically inherited `prototypes/` path.
+- [Canonical promotion decision](canonical-promotion-decision.md) — why v1 is
+  the canonical implementation and what promotion did not prove.
+
+Machine-readable authority for field constraints lives in the
+[audit-result schema](../schemas/audit-result.schema.json),
+[direction-binding schema](../schemas/direction-binding-audit.schema.json), and
+[verification source](../validation/verification-source.json). The
+[constitution](../constitution/semantic-guard-constitution.yaml) defines the
+project-level authority boundary.
+
+## Contract and assurance design
+
+The following documents describe implemented internal sidecars, candidate
+profiles, or design constraints. Unless a document explicitly says otherwise,
+their presence does not create a canonical public CLI/MCP workflow or human
+adoption.
+
+| Area | Document |
+| --- | --- |
+| Action evidence and bounded assurance | [Action evidence and assurance profile](action-evidence-and-assurance-profile.md) |
+| Lifecycle scope | [Lifecycle profile registry](lifecycle-profile-registry.md) |
+| Trace and composition | [Lifecycle trace and composition](lifecycle-trace-and-composition.md) |
+| State validity over change | [State assessment and requalification](state-assessment-and-requalification.md) |
+| Repair and responsibility | [Repair loop and responsibility material](repair-loop-and-responsibility-material.md) |
+| Field evaluation design | [Field evaluation and ablation](field-evaluation-and-ablation.md) |
+| Outcome evaluation | [Operational outcome evaluation](operational-outcome-evaluation.md) |
+| Qualification and transition | [Operational qualification and transition](operational-qualification-and-transition.md) |
+| Secure-operation boundary | [Secure-operation boundary](secure-operation-boundary.md) |
+| Engineering-knowledge governance | [Engineering rule-pack governance](engineering-rule-pack-governance.md) |
+
+## Evidence and audit records
+
+Dated records support only their named subject, source digest or commit,
+environment, and observation time. They are not silently refreshed when the
+current tree changes.
+
+| Record | Reading role |
+| --- | --- |
+| [Direction-binding integration, 2026-08-23](audits/direction-binding-integration-2026-08-23.md) | Dated 1.1.0 source, package, registered-case, and GitHub integration evidence |
+| [Repository unification, 2026-08-24](repository-unification-2026-08-24.md) | Pre-transfer repository identity and redirect boundary |
+| [Post-transfer observation, 2026-08-24](audits/repository-transfer-observation-2026-08-24.md) | Separate observation after the repository transfer |
+| [v1.0.0 canonicalization audit, 2026-07-17](audits/canonicalization-audit-v1.0.0-2026-07-17.md) | Evidence for the 1.0.0 promotion subject, not an automatic 1.1.0 claim |
+| [v1.0.0 public snapshot, 2026-07-17](audits/public-snapshot-v1.0.0-2026-07-17.md) | Frozen historical public-surface description |
+| [Full prototype evaluation, 2026-07-11](audits/semantic-guard-full-evaluation-2026-07-11.md) | Publication-sanitized historical evaluation; not current runtime evidence |
+| [Impact and execution order, 2026-07-16](impact-and-execution-order-2026-07-16.md) | Historical candidate-stage prioritization |
+
+For the verification items it declares, the structured state authority is
+[`validation/verification-source.json`](../validation/verification-source.json),
+not a convenient summary of a dated report. Its `active_draft` scope does not
+absorb every later observation or make dated 1.1.0 evidence current.
+
+## Prototypes and history
+
+- [Origin requirement](prototypes/origin-requirement.md) is the one path
+  exception: its OR-01 through OR-03 statements remain the current purpose
+  authority. That status does not promote every prototype beside it.
+- [Requirement-relation audit charter, 2026-07-12](prototypes/requirement-relation-audit-charter-2026-07-12.md)
+  records the candidate-stage design that preceded the canonical v1 slice.
+- [Proof-obligation assurance graph charter, 2026-07-16](prototypes/proof-obligation-assurance-graph-charter-2026-07-16.md)
+  is candidate material, not an adopted public workflow.
+- [Verification-register completeness charter, 2026-07-16](prototypes/verification-register-completeness-charter-2026-07-16.md)
+  is candidate material, not an adopted public workflow.
+- [Migration from 0.1.0 to 1.0.0](migration-v0.1.0-to-v1.0.0.md) explains the
+  contract replacement, explicit legacy route, and non-alias boundary.
+- [`migration/migration-map.md`](../migration/migration-map.md) classifies
+  retained, replaced, archived, and deferred material.
+- [`legacy/semantic-guard-v0.1.0/`](../legacy/semantic-guard-v0.1.0/) is a
+  publication-repaired archive. Its manifest points to the original Git bytes.
+
+Historical GitHub URLs are not rewritten as though an earlier event occurred
+under a later owner label. Use the repository-unification records for the
+repository-ID mapping and redirect boundary.
+
+## Status and identity notation
 
 The status below is a reading role for a placement, not entity identity. Labels
-and paths may change; the UUID on the right of `・` is the identity authority.
+and paths may change; the UUID on the right of `・` remains the identity
+authority. A shared label, path, or content digest does not by itself establish
+identity.
 
 | Status | Placement or lineage | Reading rule |
 | --- | --- | --- |
@@ -26,38 +119,17 @@ and paths may change; the UUID on the right of `・` is the identity authority.
 | `reference` | `direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4`; `direction-binding-audit.md` and the undated contract/design guides | Explains intended meaning and constraints. Machine schemas and verified behavior outrank explanatory prose. |
 | `evidence` | Date- and subject-bound records under `docs/audits/` and `validation/` | Supports only the recorded subject, source digest, environment, and observation time. It does not automatically describe the current tree. |
 | `archive` | `publication-repaired legacy archive・3fd59352-b0d9-58f6-8279-9309c8960631`; predecessor and superseded historical material | Preserved for history or explicit comparison. The historical Git anchor retains the original bytes; the readable archive includes disclosed publication repairs. It is never a transparent current fallback or truth oracle. |
-| `experimental` | `candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0`; prototype charters under `docs/prototypes/` except `origin-requirement.md` | Candidate material only. Do not infer adoption, migration, or canonical authority. `origin-requirement.md` is the current purpose authority despite its historical placement. |
+| `experimental` | `candidate_ref: local vnext candidate・32646741-8cec-5fe3-b9f3-2971a8a787f0`; prototype charters under `docs/prototypes/` except `origin-requirement.md` | Candidate material only. Do not infer adoption, migration, or canonical authority. |
 | `local-only` | `derived_from: local feature source snapshot・2b62dfa0-6d90-5c31-ae2d-34ec55c94895`; see the direction-binding source map | Exists outside the canonical repository boundary. Only explicitly selected, digest-bound sources may be integrated; no whole-root copy is authorized. |
 
-## Contract and assurance design
+## Community and maintenance
 
-- [Direction-binding audit public slice](direction-binding-audit.md)
-- [Action evidence and assurance profile](action-evidence-and-assurance-profile.md)
-- [Lifecycle profiles](lifecycle-profile-registry.md)
-- [Lifecycle trace and composition](lifecycle-trace-and-composition.md)
-- [State assessment and requalification](state-assessment-and-requalification.md)
-- [Repair loop and responsibility material](repair-loop-and-responsibility-material.md)
-- [Field evaluation and ablation](field-evaluation-and-ablation.md)
-- [Operational outcome evaluation](operational-outcome-evaluation.md)
-- [Operational qualification and transition](operational-qualification-and-transition.md)
-- [Secure-operation boundary](secure-operation-boundary.md)
-- [Engineering rule-pack governance](engineering-rule-pack-governance.md)
+- [Contributing](../CONTRIBUTING.md)
+- [Support](../SUPPORT.md)
+- [Security policy](../SECURITY.md)
+- [Code of Conduct](../CODE_OF_CONDUCT.md)
+- [Change log](../CHANGELOG.md)
+- [MIT License](../LICENSE)
 
-## Historical and prototype material
-
-Files whose names contain a date, and files under `docs/prototypes/`, record the state or design intent at their stated time. Canonical promotion does not rewrite them. They may contain former candidate names and paths; use current contracts and the migration guide for present commands.
-
-The exception is [`prototypes/origin-requirement.md`](prototypes/origin-requirement.md), whose placement is historical but whose OR-01 through OR-03 statements remain the current purpose authority. Its implementation-status section is explanatory and does not override schemas or the verification source.
-
-Repository owner/name changes follow the same rule. Historical GitHub URLs are
-not rewritten as though an earlier event occurred under a later owner label;
-see the [repository unification record](repository-unification-2026-08-24.md)
-for the repository-ID mapping and redirect boundary.
-
-The [1.0.0 public snapshot](audits/public-snapshot-v1.0.0-2026-07-17.md), [repository-unification pre-transfer record](repository-unification-2026-08-24.md), and other dated records describe only their recorded phase. Current owner/name observations are kept separately so the historical labels are not rewritten.
-
-The historical full evaluation under `docs/audits/semantic-guard-full-evaluation-2026-07-11.md` remains a publication-sanitized, digest-bound source referenced by the verification register. It is not the v1.0.0 canonicalization audit or a current implementation description.
-
-## Reading rule
-
-Contract schemas and the verification source outrank explanatory prose for field names and machine constraints. A dated report is evidence about its recorded subject only. None of these documents makes the final human acceptance decision.
+Final acceptance, revision, deferral, rejection, risk acceptance, policy
+adoption, and operational cutover remain outside the audit engine.
