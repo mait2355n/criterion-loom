@@ -40,6 +40,20 @@ uv run --locked python scripts/verify_packaged_contracts.py \
 
 For documentation changes, verify paths, examples, command names, contract versions, claim/evidence/limitation triples, and the distinction between canonicalization and adoption.
 
+## Documentation changes
+
+`README.md` is the English public entry point and `README.ja.md` is its Japanese
+counterpart. `docs/README.md` and `docs/README.ja.md` provide the matching
+task-oriented documentation maps. When a change affects value, current scope,
+commands, result semantics, evidence, or non-claims, update both languages in
+the same change or state the deliberate divergence in the pull request.
+
+Detailed reference and dated evidence may remain in their source language. Do
+not rewrite a historical observation merely to make the language surfaces
+symmetrical. Keep links from both documentation maps accurate, and classify
+each document as current reference, operating guidance, candidate design,
+dated evidence, migration, or archive material.
+
 ## Pull requests
 
 A pull request should include:
