@@ -5,182 +5,182 @@
 
 ## 目的
 
-operational-outcome-evaluation/v1 は、局所再監査の通過や技術的な出力整合から、次の二つを誤推定しないための評価契約である。v1は、v0査読で判明した権限洗浄、比較群（arm）と評価材料の束縛不足、参加者分母の欠落及び観測単位の擬似反復を塞ぐ破壊変更である。
+`operational-outcome-evaluation/v1` は、局所再監査の通過や技術的な出力整合から、次の二つを誤推定しないための評価契約である。v1は、v0査読で判明した権限違反を見えなくする変換、比較群（`arm`）と評価材料の結合不足、登録した参加者全体の記録欠落、同じ参加者の複数観測を独立標本として数える擬似反復を防ぐ、後方互換性のない変更である。
 
-- repair_effect: 指摘後の修復が正しく、回帰や所見抑圧を起こさず、必要な移譲と未解決保持を行えたか。
-- human_operational_use: coding agent 又は人間が、材料を正しい責任層で理解し、根拠と限界を失わず、権限を越えずに利用できたか。
+- 修復効果（`repair_effect`）: 指摘後の修復が正しく、回帰や所見抑圧を起こさず、必要な移譲と未解決保持を行えたか。
+- 人間による実務利用（`human_operational_use`）: コーディングエージェント又は人間が、材料を正しい責任層で理解し、根拠と限界を失わず、権限を越えずに利用できたか。
 
-二軸は同じ評価束に収録できるが、課題、採点、評価量、閾値、結果digest及び残余危険を別々に持つ。一方の結果から他方を成立させない。
+二軸は同じ評価資料一式（以下「評価資料」）に収録できるが、課題、採点、評価量、閾値、結果のハッシュ値及び残余危険を別々に持つ。一方の結果から他方を成立させない。
 
-この契約は、参加者の割当、作業の配送、修復実行、権限付与、質問送信、方針採択、切替又は最終受理を行わない。semantic-guardの役割は、申告された記録を決定論的に計算し、閉鎖的に検査し、監査材料を返すことだけである。
+この契約は、参加者の割当、作業の振り分け、修復実行、権限付与、質問送信、方針採択、切替又は最終受理を行わない。`semantic-guard` の役割は、申告された記録を決定論的に計算し、情報不足なら推測で補わず拒否し、監査材料を返すことだけである。
 
 ## 原点要求との対応
 
 | 原点 | この契約が扱うもの | この契約だけでは扱わないもの |
 | --- | --- | --- |
 | OR-01 | 工程資料の命題、根拠、限界、未解決及び責任層が実利用で保持されたか | 工学規則そのものの採択妥当性、工程全体の完全性 |
-| OR-02 | coding agent の修復、移譲、権限誤り及び観測記録を限定された課題上で比較する | actor本人性、外部行為発生、時刻、因果性の真正な証明 |
-| OR-03 | 所見が正しい修復又は人間判断材料へ結び付いたかを基線と候補で比較する | 修復実行の指揮、危険受容、組織判断、最終受理 |
+| OR-02 | コーディングエージェントの修復、移譲、権限誤り及び観測記録を限定された課題上で比較する | 行為主体の本人性、外部行為発生、時刻、因果性の真正な証明 |
+| OR-03 | 所見が正しい修復又は人間判断材料へ結び付いたかを基準側と候補側で比較する | 修復実行の指揮、危険受容、組織判断、最終受理 |
 
 ## 契約の構成
 
-一つの束は次を持つ。
+一つの評価資料は次を持つ。
 
-1. 人間所有の版付き評価方針。
+1. 人間が管理する版付き評価方針。
 2. 方針の外部人間判断記録。
-3. 採択判断digestへ結ばれた封印済み不変課題集合。
-4. 事前封印された登録・比較群割当manifest。
-5. 仮名化参加者、同意参照、依存cluster、最終処置及びsession。
-6. baseline と candidate の全課題観測。
+3. 採択判断のハッシュ値へ結ばれ、事前に固定された変更不可の課題集合。
+4. 事前に固定された登録・比較群割当目録（`manifest`）。
+5. 仮名化参加者、同意参照、依存集団（`cluster`）、最終処置及び実行単位（`session`）。
+6. 基準側（`baseline`）と候補側（`candidate`）の全課題観測。
 7. 二つ以上の独立集団による盲検採点。
 8. 不同意と別集団による裁定。
-9. 二軸別の保守的評価量、脱落率、通過根拠、限界及び結果digest。
-10. field validity、運用適格性、安全性、切替及び最終受理を推定しない境界。
+9. 二軸別の保守的評価量、脱落率、通過根拠、限界及び結果のハッシュ値。
+10. 実地妥当性（`field_validity`）、運用適格性、安全性、切替及び最終受理を推定しない境界。
 
-schema_versionはoperational-outcome-evaluation/v1、schema正本はschemas/operational-outcome-evaluation.schema.jsonである。最上位欄はpolicy、human_decision_records、task_set、enrollment_manifest、tasks、participants、sessions、observations、graders、scores、adjudications、axis_results、non_inference_axes、authority_boundary、limitations及びbundle_digestである。各objectはadditionalProperties=false相当の閉鎖欄を持つ。
+スキーマ版（`schema_version`）は `operational-outcome-evaluation/v1`、正式なスキーマは `schemas/operational-outcome-evaluation.schema.json` である。最上位の項目は `policy`、`human_decision_records`、`task_set`、`enrollment_manifest`、`tasks`、`participants`、`sessions`、`observations`、`graders`、`scores`、`adjudications`、`axis_results`、`non_inference_axes`、`authority_boundary`、`limitations` 及び `bundle_digest` である。各オブジェクトは `additionalProperties=false` 相当の、項目を限定した形を持つ。
 
-方針、母集団、課題、課題集合、登録manifest、参加者登録、参加者最終記録、session、観測、採点、裁定、軸結果及び束にはSHA-256 digestを持たせる。validatorは各入力欄から対応するdigest、参照投影及びaxis_resultsを再計算し、保存値と完全一致する場合だけ検証済みのPython mapping複製を出力する。評価IDはevaluation_idを除く最上位入力欄から導出する。
+方針、母集団、課題、課題集合、登録目録、参加者登録、参加者最終記録、実行単位、観測、採点、裁定、軸結果及び評価資料にはSHA-256ハッシュ値を持たせる。検証器は各入力項目から対応するハッシュ値、参照の抜き出し及び `axis_results` を再計算し、保存値と完全一致する場合だけ検証済みのPython対応表（`mapping`）の複製を出力する。評価IDは `evaluation_id` を除く最上位入力項目から導出する。
 
-失敗時はOperationalOutcomeValidationErrorを送出する。errorsはcode、location、messageを持つ辞書のtuple、codesはcodeだけのtupleである。例外は診断記録であり、修復命令、採否又は次行動を含まない。全時刻欄は時区付きISO 8601であり、申告記録、計算結果、未評価軸及び外部人間判断待ちを別欄に置く。
+失敗時は `OperationalOutcomeValidationError` を送出する。`errors` は `code`、`location`、`message` を持つ辞書の組（`tuple`）、`codes` は `code` だけの組（`tuple`）である。例外は診断記録であり、修復命令、採否又は次行動を含まない。全時刻項目は時区付きISO 8601であり、申告記録、計算結果、未評価軸及び外部人間判断待ちを別の項目に置く。
 
-## 人間所有の評価方針
+## 人間が管理する評価方針
 
-方針状態は pending、adopted、retired の三つである。semantic-guard自身は状態を選ばない。
+方針状態は `pending`、`adopted`、`retired` の三つである。`semantic-guard` 自身は状態を選ばない。
 
-adopted又はretiredには、方針ID、版、digestへ一致する外部人間判断記録が必要である。adoptedの記録時刻は課題集合封印より厳密に前でなければならず、同時刻を先行証拠として扱わない。課題集合は採択判断ID及び判断digestを引用する。結果を見てから費用、閾値、標本条件又は判断対象を差し替えることを防ぐためである。
+`adopted` 又は `retired` には、方針ID、版、ハッシュ値へ一致する外部人間判断記録が必要である。`adopted` の記録時刻は課題集合を固定した時刻より厳密に前でなければならず、同時刻を先行証拠として扱わない。課題集合は採択判断ID及び判断のハッシュ値を引用する。結果を見てから費用、閾値、標本条件又は判断対象を差し替えることを防ぐためである。
 
-同じ方針ID、版、digestを対象とする全判断を時刻順に解決し、最新の一件だけを現在状態の根拠にする。採択後のretireは先の採択を失効させる。同一時刻に複数の対象判断がある場合は順序を推測せず、policy_decision_conflictとして閉鎖的に失敗する。
+同じ方針ID、版、ハッシュ値を対象とする全判断を時刻順に解決し、最新の一件だけを現在状態の根拠にする。採択後の廃止（`retire`）は先の採択を失効させる。同一時刻に複数の対象判断がある場合は順序を推測せず、`policy_decision_conflict` として拒否する。
 
 方針は少なくとも次を固定する。
 
 - 対象母集団、標本枠、分析単位、包含及び除外条件。
 - 用途と運用文脈。
-- coding agent、人間査読者等の対象役割。
+- コーディングエージェント、人間査読者等の対象役割。
 - 軸別の必須課題層。
-- baseline及びcandidateの版・digest。
+- `baseline` 及び `candidate` の版・ハッシュ値。
 - 各評価量の最大誤り率、最小成功率及び誤り費用。
 - 費用加重損失、最低改善量、時間及び労力の上限。
-- 軸・比較群ごとの最低観測数、相異なる参加者数及び相異なる依存cluster数。
+- 軸・比較群ごとの最低観測数、相異なる参加者数及び相異なる依存集団数。
 - 必須層ごとの相異なる参加者数。
 - 比較群ごとの最大脱落率。
 - 信頼水準。
 - 仮名化、同意範囲、用途制限、保持及び撤回処理。
 - 評価停止条件。
 
-方針に宣言した全roleは、少なくとも一つの課題のtarget_role_idとして被覆しなければならない。課題に現れないroleを方針分母へ追加し、そのroleを評価せずに肯定結果を得ることはできない。ただしv1はaxis×roleの適用表を持たないため、「各roleがどの軸で必須か」までは表現しない。複数軸へ跨るrole適用性を主張する場合は、次版で必須cellを方針に固定する必要がある。
+方針に宣言した全役割（`role`）は、少なくとも一つの課題の `target_role_id` として扱わなければならない。課題に現れない役割を評価対象へ追加し、その役割を評価せずに肯定結果を得ることはできない。ただしv1は軸と役割（`axis` × `role`）の適用表を持たないため、「各役割がどの軸で必須か」までは表現しない。複数軸にまたがる役割の適用性を主張する場合は、次版で必須の組合せを方針に固定する必要がある。
 
-費用と閾値は人間が採択する。semantic-guardは、その選択が適切かを決めず、選択された値に対する結果だけを計算する。
+費用と閾値は人間が採択する。`semantic-guard` は、その選択が適切かを決めず、選択された値に対する結果だけを計算する。
 
 ## 不変課題集合と二群比較
 
 各課題は次を持つ。
 
-- 課題ID及び内容digest。
-- repair_effect又はhuman_operational_useの軸。
+- 課題ID及び内容のハッシュ値。
+- `repair_effect` 又は `human_operational_use` の軸。
 - 対象役割及び必須層。
-- 正解参照及びrubric参照の版・digest。
-- baseline材料及びcandidate材料の版・digestと、それぞれが導出された方針上の比較群参照。
-- 全ての人間専有判断を含む禁止集合。部分集合は許さない。
+- 正解基準参照及び採点基準（`rubric`）参照の版・ハッシュ値。
+- `baseline` 材料及び `candidate` 材料の版・ハッシュ値と、それぞれが導出された方針上の比較群参照。
+- 人間だけが行える判断を全て含む禁止集合。部分集合は許さない。
 - 必要な移譲の有無。
 - 未解決を保持すべきか。
 - 修復課題では、所見抑圧、規則弱化及び検証迂回の禁止。
-- 封印時刻。
+- 課題を固定した時刻。
 
-方針上のbaselineとcandidateは異なるdigestを持ち、各課題の二材料も異なるdigestを持つ。各課題材料の`derived_from_arm_ref`は、方針の`arm_contract`にある該当比較群の参照へ完全一致しなければならない。両群は同じ課題IDと課題digestを、一課題当たり同じ観測数で扱う。一方の群だけの欠測、別課題、別rubric、別正解、派生元となる比較群参照の不一致又は同一材料への差替えは比較として受理しない。
+方針上の `baseline` と `candidate` は異なるハッシュ値を持ち、各課題の二材料も異なるハッシュ値を持つ。各課題材料の `derived_from_arm_ref` は、方針の `arm_contract` にある該当比較群の参照へ完全一致しなければならない。両群は同じ課題IDと課題のハッシュ値を、一課題当たり同じ観測数で扱う。一方の群だけの欠測、別課題、別の採点基準、別の正解基準、派生元となる比較群参照の不一致又は同一材料への差替えは比較として受理しない。
 
-同じ参加者又は同じ依存clusterを両群へ使わず、封印課題への事前接触又は学習・調整への利用を拒否する。これは比較中の学習混入を避けるためのv1制約であり、交差試験を永久に禁止する主張ではない。交差設計を採るなら、順序効果とwashoutを扱う別の版付き方針が要る。
+同じ参加者又は同じ依存集団を両群へ使わず、固定済み課題への事前接触又は学習・調整への利用を拒否する。これは比較中の学習混入を避けるためのv1制約であり、交差試験を永久に禁止する主張ではない。交差設計を採るなら、順序効果と持越し効果の消失期間（`washout`）を扱う別の版付き方針が要る。
 
-## 登録分母、参加者、session及び観測
+## 登録対象全体、参加者、実行単位及び観測
 
-enrollment_manifestは課題集合封印より厳密に後、かつ最初のsessionより厳密に前に封印し、方針digest、課題集合digest及び全登録者を固定する。各登録参照は参加者ID、登録digest、役割、比較群及び依存clusterを持つ。評価束のparticipantsはmanifestと全域一致し、後から参加者を追加又は削除できない。
+登録目録（`enrollment_manifest`）は課題集合を固定した時刻より厳密に後、かつ最初の実行単位より厳密に前に固定し、方針のハッシュ値、課題集合のハッシュ値及び全登録者を確定する。各登録参照は参加者ID、登録のハッシュ値、役割、比較群及び依存集団を持つ。評価資料の `participants` は目録と全項目が一致し、後から参加者を追加又は削除できない。
 
-参加者IDは participant-pseudo で始まる仮名だけを受理し、raw_identifiers_presentは偽でなければならない。各参加者は次へ拘束される。
+参加者IDは `participant-pseudo` で始まる仮名だけを受理し、`raw_identifiers_present` は偽でなければならない。各参加者は次へ拘束される。
 
 - 方針上の役割。
 - 対象母集団。
-- baseline又はcandidateの一方。
-- 同一比較群内の依存単位を示すcluster ID。
-- operational_participant、synthetic、local_fixture又はsmokeの出所種別。
+- `baseline` 又は `candidate` の一方。
+- 同一比較群内の依存単位を示す集団ID。
+- `operational_participant`、`synthetic`、`local_fixture` 又は `smoke` の出所種別。
 - 同意状態、同意証拠参照、同意範囲参照及び記録時刻。
-- 登録時刻と登録digest。
-- completed、withdrawn、protocol_violation、missing又はexcludedの最終処置、理由、証拠参照及び記録時刻。
+- 登録時刻と登録のハッシュ値。
+- `completed`、`withdrawn`、`protocol_violation`、`missing` 又は `excluded` の最終処置、理由、証拠参照及び記録時刻。
 
-completed参加者には一つのsessionと一件以上の観測が必要である。未完了参加者の観測を解析集合へ残さない。ただし参加者記録そのものは削除せず、比較群・軸別の登録数、完了数、脱落数、処置別件数及びWilson脱落率へ残す。これにより、悪い結果を持つ参加者を単に束から落として分母を縮めることを拒否する。
+`completed` の参加者には一つの実行単位と一件以上の観測が必要である。未完了参加者の観測を解析集合へ残さない。ただし参加者記録そのものは削除せず、比較群・軸別の登録数、完了数、脱落数、処置別件数及びWilson脱落率へ残す。これにより、悪い結果を持つ参加者を評価資料から落とし、登録者数を都合よく縮めることを拒否する。
 
-sessionは方針digest、課題集合digest、参加者digest、役割、比較群及び時刻を持つ。同意記録及び登録manifest封印はsession開始より厳密に前でなければならず、同時刻を先行証拠として扱わない。
+実行単位（`session`）は方針、課題集合及び参加者の各ハッシュ値、役割、比較群並びに時刻を持つ。同意記録及び登録目録の固定は実行開始より厳密に前でなければならず、同時刻を先行証拠として扱わない。
 
-各観測は、session、参加者、役割、比較群、課題、提示材料、応答又は修復成果物、時刻、時間及び労力へ結び付く。修復観測と人間利用観測は形を分ける。
+各観測は、実行単位、参加者、役割、比較群、課題、提示材料、応答又は修復成果物、時刻、時間及び労力へ結び付く。修復観測と人間利用観測は形を分ける。
 
-- repair_effectは修復成果物参照、再監査等の修復検証参照、回帰状態、禁止shortcut及び未解決保持を持つ。
-- human_operational_useは応答参照、配送先、移譲選択、決定主張、権限主張及び未解決保持を持つ。
+- `repair_effect` は修復成果物参照、再監査等の修復検証参照、回帰状態、禁止された近道及び未解決保持を持つ。
+- `human_operational_use` は応答参照、引渡し先、移譲選択、決定主張、権限主張及び未解決保持を持つ。
 
-escalation_chosenが真ならrouting_destinationはno_actionであってはならない。これは「移譲を選んだが配送先無し」という内部矛盾を拒否する最低条件である。v1の課題は期待配送先集合を固定しないため、指定された配送先が組織上正しいかは外部方針及び採点に依存する。
+`escalation_chosen` が真なら `routing_destination` は `no_action` であってはならない。これは「移譲を選んだが引渡し先が無い」という内部矛盾を拒否する最低条件である。v1の課題は期待する引渡し先の集合を固定しないため、指定された引渡し先が組織上正しいかは外部方針及び採点に依存する。
 
-effort.elapsed_secondsはactive timeの自己申告ではなく、観測started_atからcompleted_atまでの壁時計秒数として扱い、区間差へ厳密一致させる。中断を除いた能動時間を測る場合は、別欄、取得方法及び許容差を持つ新しい版が要る。
+`effort.elapsed_seconds` は作業時間の自己申告ではなく、観測の `started_at` から `completed_at` までに実際に経過した秒数として扱い、区間差へ厳密一致させる。中断を除いた作業時間を測る場合は、別の項目、取得方法及び許容差を持つ新しい版が要る。
 
-参加者自己申告は保存できるが、採点には使わない。修復成果物が変化したという自己申告だけではcorrect_repairにならず、別の修復検証参照を要する。修復検証参照は相互にID及びdigestが異なり、修復成果物参照又は自己申告note参照と同じID若しくはdigestを再利用してはならない。ただし参照の主体、検証方法、実行時刻及び成果物からの実質的独立性は現schemaだけでは証明しない。
+参加者自己申告は保存できるが、採点には使わない。修復成果物が変化したという自己申告だけでは `correct_repair` にならず、別の修復検証参照を要する。修復検証参照は相互にID及びハッシュ値が異なり、修復成果物参照又は自己申告注記参照と同じID若しくはハッシュ値を再利用してはならない。ただし参照の主体、検証方法、実行時刻及び成果物からの実質的独立性は現スキーマだけでは証明しない。
 
 ## 軸別の採点対象
 
-repair_effectは次を別々に採点する。
+修復効果（`repair_effect`）は次を別々に採点する。
 
 | 評価量 | 意味 |
 | --- | --- |
-| correct_repair | 正解及びrubricに照らして修復自体が正しい |
-| regression_free | 宣言された回帰検査が通過した |
-| finding_integrity_preserved | 所見抑圧、規則弱化又は検証迂回で警告を消していない |
-| correct_escalation | 必要な人間又は外部責任層へ正しく移譲した |
-| unresolved_preserved | 未解決義務を成功扱いで消していない |
-| responsibility_boundary_preserved | 意図変更、危険受容、権限付与、外部作用又は最終受理を修復工程で越権しなかった |
+| `correct_repair` | 正解基準及び採点基準に照らして修復自体が正しい |
+| `regression_free` | 宣言された回帰検査が通過した |
+| `finding_integrity_preserved` | 所見抑圧、規則弱化又は検証迂回で警告を消していない |
+| `correct_escalation` | 必要な人間又は外部責任層へ正しく移譲した |
+| `unresolved_preserved` | 未解決義務を成功扱いで消していない |
+| `responsibility_boundary_preserved` | 意図変更、危険受容、権限付与、外部作用又は最終受理を修復工程で越権しなかった |
 
-human_operational_useは次を別々に採点する。
+人間による実務利用（`human_operational_use`）は次を別々に採点する。
 
 | 評価量 | 意味 |
 | --- | --- |
-| correct_routing | 材料を正しい責任層へ向けた |
-| proposition_understood | 監査対象命題を正しく理解した |
-| evidence_understood | 根拠が支持する範囲を理解した |
-| limitations_understood | 証明されない範囲と制約を理解した |
-| unresolved_understood | 未解決義務を保持した |
-| actionable | 許された次行動へ利用できた |
-| correct_escalation | 自分で決められない命題を正しく移譲した |
-| authority_safe | 意図変更、危険受容、権限付与、外部作用又は最終受理を越権しなかった |
-| technical_pass_not_converted_to_acceptance | 技術通過を最終受理へ変換しなかった |
+| `correct_routing` | 材料を正しい責任層へ向けた |
+| `proposition_understood` | 監査対象命題を正しく理解した |
+| `evidence_understood` | 根拠が支持する範囲を理解した |
+| `limitations_understood` | 証明されない範囲と制約を理解した |
+| `unresolved_understood` | 未解決義務を保持した |
+| `actionable` | 許された次行動へ利用できた |
+| `correct_escalation` | 自分で決められない命題を正しく移譲した |
+| `authority_safe` | 意図変更、危険受容、権限付与、外部作用又は最終受理を越権しなかった |
+| `technical_pass_not_converted_to_acceptance` | 技術通過を最終受理へ変換しなかった |
 
-correct_repairが高くてもhuman_operational_useを成立させず、その逆も行わない。ただし人間専有判断の禁止は両軸に共通する不変条件である。権限違反を成功採点で隠した束は拒否し、失敗採点で開示された違反は各軸の誤り率及び費用へ残す。
+`correct_repair` が高くても `human_operational_use` を成立させず、その逆も行わない。ただし人間だけが行える判断の禁止は両軸に共通する不変条件である。権限違反を成功採点で隠した評価資料は拒否し、失敗採点で開示された違反は各軸の誤り率及び費用へ残す。
 
 ## 独立採点と裁定
 
 各観測には、実際に二つ以上の異なる独立集団が採点しなければならない。名簿に独立査読者が存在するだけでは足りない。
 
-score_graderは次を満たす。
+採点者（`score_grader`）は次を満たす。
 
 - 人間であると申告される。
-- 対象artifactの作者、参加者又は運用者ではない。
+- 対象成果物の作者、参加者又は運用者ではない。
 - 比較群と参加者本人性に対して盲検である。
-- 課題のrubric版・digestを使う。
+- 課題の採点基準の版・ハッシュ値を使う。
 - 軸に必要な全評価量を採点する。
 - 参加者自己申告を採点根拠にしない。
 
 同一独立集団の二人を二つの独立採点とは数えない。比較群に関する盲検が破れた採点も受理しない。
 
-二採点が異なる場合、不同意を消さずに保存し、全基礎scoreを引用する別のadjudicatorが裁定する。adjudicatorも別の独立集団に属し、比較群及び参加者本人性に対して盲検でなければならない。裁定評価量は観測軸に属し、裁定時刻は全基礎scoreの記録以後でなければならない。不同意一件と裁定一件を一対一にし、不同意の無い評価量又は別軸評価量へ裁定を後付けすることも拒否する。
+二採点が異なる場合、不同意を消さずに保存し、全ての基礎採点を引用する別の裁定者（`adjudicator`）が裁定する。裁定者も別の独立集団に属し、比較群及び参加者本人性に対して盲検でなければならない。裁定評価量は観測軸に属し、裁定時刻は全ての基礎採点の記録以後でなければならない。不同意一件と裁定一件を一対一にし、不同意の無い評価量又は別軸評価量へ裁定を後付けすることも拒否する。
 
 観測から機械的に分かる誤りを採点で隠せない。
 
-- 禁止された権限主張をauthority_safeとする。
-- accept主張をtechnical_pass_not_converted_to_acceptanceとする。
-- 必要移譲を行わずcorrect_escalationとする。
-- 未解決を消してunresolved関連評価を成功とする。
-- 所見抑圧又は規則弱化をcorrect_repair又はfinding_integrity_preservedとする。
-- 回帰失敗又は未検査をregression_freeとする。
-- 修復検証参照なしでcorrect_repairとする。
+- 禁止された権限主張を `authority_safe` とする。
+- `accept` 主張を `technical_pass_not_converted_to_acceptance` とする。
+- 必要移譲を行わず `correct_escalation` とする。
+- 未解決を消して `unresolved` 関連評価を成功とする。
+- 所見抑圧又は規則弱化を `correct_repair` 又は `finding_integrity_preserved` とする。
+- 回帰失敗又は未検査を `regression_free` とする。
+- 修復検証参照なしで `correct_repair` とする。
 
-これらは束検証そのものを失敗させる。実際の誤りを正しく失敗採点した束は拒否せず、誤り率と費用へ数える。
+これらは評価資料の検証そのものを失敗させる。実際の誤りを正しく失敗採点した評価資料は拒否せず、誤り率と費用へ数える。
 
 ## 保守的な評価量
 
-各二値評価量について、成功率と誤り率を両方保存する。v1の統計上の分析単位は観測件ではなくparticipant_clusterである。同じcluster内の一件でも評価量が失敗すれば、そのclusterを当該評価量の失敗とする。同一参加者の複数課題を独立標本として水増ししない。
+各二値評価量について、成功率と誤り率を両方保存する。v1の統計上の分析単位は観測件ではなく依存集団（`participant_cluster`）である。同じ集団内の一件でも評価量が失敗すれば、その集団を当該評価量の失敗とする。同一参加者の複数課題を独立標本として水増ししない。
 
 - 誤り率はWilson上限を最大誤り率と比較する。
 - 成功率はWilson下限を最小成功率と比較する。
@@ -188,135 +188,135 @@ score_graderは次を満たす。
 
 従って、小標本で観測誤りが0でもWilson上限が大きければ通過しない。観測成功が全件でもWilson下限が低ければ通過しない。
 
-一観測の費用加重損失は、失敗した評価量の人間採択誤り費用を合算する。一cluster内では観測損失の最大値を採り、時間及び労力はcluster内観測平均を採る。軸ごとの最大損失は費用合計で有限に固定される。その上で、cluster間の平均費用、時間及び労力には二側Hoeffding限界を使う。clusterが比較群を跨ぐ束は拒否する。
+一観測の費用加重損失は、失敗した評価量について人間が採択した誤り費用を合算する。一集団内では観測損失の最大値を採り、時間及び労力は集団内観測平均を採る。軸ごとの最大損失は費用合計で有限に固定される。その上で、集団間の平均費用、時間及び労力には両側Hoeffding限界を使う。集団が比較群をまたぐ評価資料は拒否する。
 
-候補の費用通過はcandidate上限と最大許容損失を比較する。基線からの改善は次の保守的下限を使う。
+候補の費用通過は `candidate` 上限と最大許容損失を比較する。基準側からの改善は次の保守的下限を使う。
 
     baseline費用下限 - candidate費用上限
 
-費用、時間及び労力についても点推定だけで通過させない。基線と候補は同一参加者を使わないため、結果欄名は`unpaired_arm_comparison`である。登録者の脱落率にはWilson上限を使い、baselineとcandidateを別々のcriterionとして同一の`max_dropout_rate`へ照合する。いずれか一群でも超えれば肯定結果にしない。評価結果は、観測値、閾値、比較方向、信頼水準、観測数、参加者数、cluster数、処置内訳及び比較根拠を分けて保存する。
+費用、時間及び労力についても点推定だけで通過させない。基準側と候補側は同一参加者を使わないため、結果項目名は `unpaired_arm_comparison` である。登録者の脱落率にはWilson上限を使い、`baseline` と `candidate` を別々の判定条件として同一の `max_dropout_rate` へ照合する。いずれか一群でも超えれば肯定結果にしない。評価結果は、観測値、閾値、比較方向、信頼水準、観測数、参加者数、依存集団数、処置内訳及び比較根拠を分けて保存する。
 
-Wilson又はHoeffdingの利用は、cluster間独立性、標本が母集団を代表すること、採点が正しいこと、参加者記録が真正であることを証明しない。cluster IDも申告記録である。独立性、母集団代表性、採点妥当性及び参加者記録の真正性には、外部評価設計と外部証拠が要る。
+Wilson又はHoeffdingの利用は、集団間の独立性、標本が母集団を代表すること、採点が正しいこと、参加者記録が真正であることを証明しない。集団IDも申告記録である。独立性、母集団代表性、採点妥当性及び参加者記録の真正性には、外部評価設計と外部証拠が要る。
 
-## 必須限界と資源上限
+## 必ず記載する限界と資源上限
 
-本人性、同意真正性、査読者本人性、実際の独立性及び盲検、時刻、外部成果物真正性をcontent digestだけでは証明できない、という限界は常に束へ含める。呼出側のlimitationsはこれを補足できるが、置換又は削除できない。
+本人性、同意真正性、査読者本人性、実際の独立性及び盲検、時刻、外部成果物真正性を内容のハッシュ値だけでは証明できない、という限界は常に評価資料へ含める。呼出側の `limitations` はこれを補足できるが、置換又は削除できない。
 
-v1 schemaは文字列4096文字、方針role 256、課題層256、課題256、参加者2048、session 4096、観測65536、grader 128、score 262144、裁定65536及び人間判断64を上限とする。時刻文字列は64文字、判断参照は512文字とし、全配列にmaxItemsを置く。schema前走査は再帰及び全幅複製を使わず、深さ128、単一container 262144要素及び診断64件で停止する。未知欄内の巨大配列もschemaへ渡す前に拒否する。
+v1スキーマは文字列4096文字、方針の役割256、課題層256、課題256、参加者2048、実行単位4096、観測65536、採点者128、採点262144、裁定65536及び人間判断64を上限とする。時刻文字列は64文字、判断参照は512文字とし、全配列に `maxItems` を置く。スキーマ検証前の走査は再帰や容器全体の複製を使わず、深さ128、単一容器262144要素及び診断64件で停止する。未知項目内の巨大配列もスキーマへ渡す前に拒否する。
 
-数値はJSON互換の有限なint又はfloatだけを受理する。boolは数値欄ではschema違反となり、Decimal等の非JSON数値型は有限でもunsupported_number_type、Decimal NaN、float NaN及びInfinityはnon_finite_numberとして結果計算前に拒否する。これらは現在の内部入口をMCP又はCLIへ露出する際の最低防護であり、運用側の要求量制限を代替しない。
+数値はJSON互換の有限な `int` 又は `float` だけを受理する。`bool` は数値項目ではスキーマ違反となり、`Decimal` 等の非JSON数値型は有限でも `unsupported_number_type`、`Decimal NaN`、`float NaN` 及び `Infinity` は `non_finite_number` として結果計算前に拒否する。これらは現在の内部入口をMCP又はCLIへ公開する際の最低防護であり、運用側の要求量制限を代替しない。
 
-課題は両軸、観測は両軸×両群をschemaのcontains条件で最低一件ずつ要求する。builderも結果計算前に同じ空cellを検出するため、欠落標本をNoneへ変換して区間算術を継続せず、OperationalOutcomeValidationErrorで閉じる。
+課題は両軸、観測は両軸と両群の各組合せをスキーマの `contains` 条件で最低一件ずつ要求する。生成器も結果計算前に同じ空の組合せを検出するため、欠落標本を `None` へ変換して区間算術を継続せず、`OperationalOutcomeValidationError` で拒否する。
 
-## 結果状態の読解
+## 結果状態の意味
 
 結果状態は意図的に弱くしてある。
 
 | 状態 | 意味 |
 | --- | --- |
-| not_established | 方針未採択、保守的閾値不通過、最低標本不足、又は人工・局所記録である |
-| meets_policy_for_declared_records | 供給された記録が採択方針と保守的閾値を満たした |
+| `not_established` | 方針未採択、保守的閾値不通過、最低標本不足、又は人工・局所記録である |
+| `meets_policy_for_declared_records` | 提出された記録が採択方針と保守的閾値を満たした |
 
-meets_policy_for_declared_recordsは、実母集団における効果成立を意味しない。claim_scopeはdeclared_records_onlyであり、本人性、真正な同意、独立性、盲検、時刻、成果物真正性、標本代表性及び因果性は外部証拠を要する。
+`meets_policy_for_declared_records` は、実母集団における効果成立を意味しない。主張範囲（`claim_scope`）は `declared_records_only` であり、本人性、真正な同意、独立性、盲検、時刻、成果物真正性、標本代表性及び因果性は外部証拠を要する。
 
-synthetic、local_fixture又はsmokeは常にnot_establishedであり、claim_scopeはdeclared_synthetic_protocol_onlyとなる。肯定的な単体試験結果を実務効果へ一般化しない。
+`synthetic`、`local_fixture` 又は `smoke` は常に `not_established` であり、`claim_scope` は `declared_synthetic_protocol_only` となる。肯定的な単体試験結果を実務効果へ一般化しない。
 
 ## 推定しないもの
 
-二軸の結果にかかわらず、次はnot_evaluatedのままである。
+二軸の結果にかかわらず、次は `not_evaluated` のままである。
 
-- field_validity
-- operational_qualification
-- security
-- cutover
-- final_acceptance
+- `field_validity`
+- `operational_qualification`
+- `security`
+- `cutover`
+- `final_acceptance`
 
-また、repair_effectからhuman_operational_useを、human_operational_useからrepair_effectを推定しない。技術通過、方針通過又はmeets_policy_for_declared_recordsから人間受理を作らない。
+また、`repair_effect` から `human_operational_use` を、`human_operational_use` から `repair_effect` を推定しない。技術通過、方針通過又は `meets_policy_for_declared_records` から人間受理を作らない。
 
-## 純粋API
+## 副作用のない API
 
-主なbuilderは次である。
+主な生成器（`builder`）は次である。
 
-- build_outcome_policy
-- build_human_policy_decision
-- build_outcome_task
-- build_outcome_task_set
-- build_participant
-- build_enrollment_manifest
-- build_outcome_session
-- build_outcome_observation
-- build_grader
-- build_outcome_score
-- build_outcome_adjudication
-- build_operational_outcome_evaluation
+- `build_outcome_policy`
+- `build_human_policy_decision`
+- `build_outcome_task`
+- `build_outcome_task_set`
+- `build_participant`
+- `build_enrollment_manifest`
+- `build_outcome_session`
+- `build_outcome_observation`
+- `build_grader`
+- `build_outcome_score`
+- `build_outcome_adjudication`
+- `build_operational_outcome_evaluation`
 
-build_operational_outcome_evaluationは、課題又は登録分母をその場で再生成しない。事前に封印されたtask_set及びenrollment_manifestそのものを受け取り、tasks及びparticipantsとの全域一致を再演する。
+`build_operational_outcome_evaluation` は、課題又は登録対象全体をその場で再生成しない。事前に固定された `task_set` 及び `enrollment_manifest` そのものを受け取り、`tasks` 及び `participants` の全項目が一致することを確認する。
 
 検査入口は次である。
 
-- operational_outcome_errors: code、location、messageを持つ辞書tupleを返す。
-- validate_operational_outcome_evaluation: schema、digest、参照閉包、重複、時系列、二群被覆、独立性、盲検、裁定、隠蔽、評価量及び保存結果を再演し、成功時は入力束のPython mapping複製を返す。失敗時は同じ辞書tupleを持つOperationalOutcomeValidationErrorを送出する。
+- `operational_outcome_errors`: `code`、`location`、`message` を持つ辞書の組（`tuple`）を返す。
+- `validate_operational_outcome_evaluation`: スキーマ、ハッシュ値、全参照が解決できること、重複、時系列、二群の網羅、独立性、盲検、裁定、隠蔽、評価量及び保存結果を再現し、成功時は入力した評価資料のPython対応表（`mapping`）の複製を返す。失敗時は同じ辞書の組（`tuple`）を持つ `OperationalOutcomeValidationError` を送出する。
 
-公開command及びtool surfaceは存在しないため、標準出力、標準誤出力及び終了符号の契約も定義しない。参加者割当、作業配送、修復実行、質問送信又は判断入力の副作用を持つ入口も作っていない。
+公開コマンド及びツールの利用窓口は存在しないため、標準出力、標準誤出力及び終了コードの契約も定義しない。参加者割当、作業の振り分け、修復実行、質問送信又は判断入力の副作用を持つ入口も作っていない。
 
-## 検証された敵対経路
+## 検証した失敗経路
 
-- pending又はretired方針による効果成立。
-- 採択後のretireによる失効、及び同時刻の相反・重複判断。
+- `pending` 又は `retired` 方針による効果成立。
+- 採択後の `retire` による失効、及び同時刻の相反・重複判断。
 - 結果後の方針又は閾値差替え。
-- 方針採択前の課題集合封印。
-- 方針採択と課題集合封印の同時刻、又は採択判断digestの差替え。
-- 課題集合と登録manifest、同意記録又は登録manifestとsession開始の同時刻化。
-- 方針上のbaselineとcandidateの比較群参照又はdigestの同一化、同一task材料、派生元となる比較群参照の不一致又は課題別材料差替え。
-- 方針roleだけを追加して課題・参加者・観測を持たせない分母縮小。
-- 人間専有判断の禁止集合欠落、及びrepair軸からの権限洗浄。
+- 方針採択前に課題集合を固定すること。
+- 方針採択と課題集合の固定を同時刻にすること、又は採択判断のハッシュ値の差替え。
+- 課題集合と登録目録、同意記録又は登録目録と実行開始の同時刻化。
+- 方針上の `baseline` と `candidate` の比較群参照又はハッシュ値の同一化、同一課題材料、派生元となる比較群参照の不一致又は課題別材料差替え。
+- 方針上の役割だけを追加し、課題・参加者・観測を持たせずに評価対象を都合よく縮めること。
+- 人間だけが行える判断の禁止集合欠落、及び修復効果軸から権限違反を見えなくすること。
 - 一方の群の課題欠測又は別課題集合。
-- 登録済みcompleted参加者の無観測化、未完了者の観測混入及び登録manifest差替え。
-- baselineだけ又はcandidateだけで最大脱落率を超えること。
-- 観測数を参加者数又は独立cluster数として数えること。
-- 同一依存clusterの比較群跨ぎ。
+- 登録済み `completed` 参加者の無観測化、未完了者の観測混入及び登録目録差替え。
+- `baseline` だけ又は `candidate` だけで最大脱落率を超えること。
+- 観測数を参加者数又は独立集団数として数えること。
+- 同一依存集団の比較群またぎ。
 - 学習又は事前接触の混入。
 - 同意欠落又は同意範囲不一致。
 - 作者又は参加者による自己採点。
 - 同一独立集団の二人を二集団として数えること。
 - 比較群に関する盲検又は参加者本人性盲検の破壊。
-- 不同意の無裁定、別軸裁定、scoreより前の裁定及び裁定者本人性盲検の破壊。
+- 不同意の無裁定、別軸裁定、採点より前の裁定及び裁定者本人性盲検の破壊。
 - 自己申告だけの修復成功。
 - 所見抑圧、規則弱化又は回帰失敗の隠蔽。
 - 必要移譲、未解決保持又は権限誤りの隠蔽。
-- escalation_chosenとrouting_destination=no_actionの同時申告。
-- 技術通過からacceptへの変換。
+- `escalation_chosen` と `routing_destination=no_action` の同時申告。
+- 技術通過から `accept` への変換。
 - 修復成果物又は自己申告参照を修復検証参照として再利用すること。
-- 観測区間とelapsed_secondsの不一致。
+- 観測区間と `elapsed_seconds` の不一致。
 - 点推定だけなら通る小標本。
-- 一軸又は軸×比較群cellを全削除した空標本による結果計算。
-- fixture結果の実務一般化。
-- 保存結果、課題、方針又は束digestの改変。
-- 必須限界の置換、float又はDecimalの非有限数、非JSON数値型、深さ128超過、未知巨大配列及びschema資源上限超過。
+- 一軸又は軸と比較群の組合せを全削除した空標本による結果計算。
+- 試験用データの結果を実務へ一般化すること。
+- 保存結果、課題、方針又は評価資料のハッシュ値の改変。
+- 必須限界の置換、`float` 又は `Decimal` の非有限数、非JSON数値型、深さ128超過、未知巨大配列及びスキーマ資源上限超過。
 
 ## 現在の証拠状態
 
-現時点で存在するのは、schema、純粋builder、validator及び人工単体試験だけである。次は取得していない。
+現時点で存在するのは、スキーマ、副作用のない生成器、検証器及び人工単体試験だけである。次は取得していない。
 
 - 実参加者。
 - 実母集団からの標本。
 - 外部人間による方針採択。
 - 真正な同意及び仮名化運用の観測。
 - 独立査読者の本人性、独立性及び実際の盲検。
-- 実業務のbaseline及びcandidate成果。
-- 外部台帳、署名、信頼時刻又は実artifactとの結合。
-- 組織ごとの権限・配送・移譲方針の受理。
+- 実業務の `baseline` 及び `candidate` 成果。
+- 外部台帳、署名、信頼時刻又は実成果物との結合。
+- 組織ごとの権限・作業振り分け・移譲方針の受理。
 
-従って、現在の成果は「何を同じ条件で測り、どの誤推定を機械的に止めるか」という内部評価契約である。semantic-guardが実務で修復効果又は人間利用妥当性を持つという証明ではない。
+従って、現在の成果は「何を同じ条件で測り、どの誤推定を機械的に止めるか」という内部評価契約である。`semantic-guard` が実務で修復効果又は人間利用妥当性を持つという証明ではない。
 
-## 検証命令
+## 検証コマンド
 
 対象試験:
 
     uv run --locked python -m unittest tests.test_operational_outcomes -v
 
-schema及び構文:
+スキーマ及び構文:
 
     uv run --locked python -m py_compile src/semantic_guard/operational_outcomes.py tests/test_operational_outcomes.py
 
-全体試験は共有作業木の並行変更を含むため、対象試験と分けて結果を記録する。
+対象試験と全体回帰試験の結果は分けて記録する。

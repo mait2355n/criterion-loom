@@ -9,8 +9,8 @@
 | --- | --- |
 | projection_version | `semantic-guard-verification-projection/v0` |
 | source | `verification-source.json` |
-| source_sha256 | `cd36b827bfea34fe5136a6e0677be400dabf62583bc325466050aeb271a19736` |
-| canonical_json_sha256 | `ddff757272df65d347bc1718999e1df0a6d6d806caf5770ef887730a44318643` |
+| source_sha256 | `a3f53d54bc3127869535c5368880dc76f1c55b3df1609ef17f1de4efdb38a1cd` |
+| canonical_json_sha256 | `2945d427a6c82019a7493696a22abf41e188bb12433a6dcadab62d6ed414e57c` |
 | schema_version | `semantic-guard-verification-source/v0` |
 | register_id | `verification-register.semantic-guard.r0` |
 | recorded_at | `2026-08-24T13:01:52+09:00` |
@@ -919,7 +919,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/evidence_observations/0/acquisition_method","value":"file_read"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/content_digest"}
 {"node_type":"string","pointer":"/evidence_observations/0/content_digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/0/content_digest/value","value":"24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
+{"node_type":"string","pointer":"/evidence_observations/0/content_digest/value","value":"6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb"}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/detail_refs"}
 {"node_type":"string","pointer":"/evidence_observations/0/detail_refs/0","value":"../docs/prototypes/origin-requirement.md"}
 {"keys":["formal_model_ref","formal_verification_result_ref","independence_basis_ref","observer_ref","signature_or_attestation_ref","signer_ref","trust_root_ref","verifier_ref"],"member_count":8,"node_type":"object","pointer":"/evidence_observations/0/elevated_trust_basis"}
@@ -950,7 +950,7 @@ Node count: `6128`
 {"keys":["digest","subject_locator"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest"}
 {"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/value","value":"24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
+{"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/digest/value","value":"6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb"}
 {"node_type":"string","pointer":"/evidence_observations/0/subject_binding/digest_bindings/0/subject_locator","value":"../docs/prototypes/origin-requirement.md"}
 {"node_type":"null","pointer":"/evidence_observations/0/subject_binding/environment_ref","value":null}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/0/subject_binding/limitations"}
@@ -3969,7 +3969,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/upstream_sources/0/ref/entity_id","value":"document.prototype-origin-requirement.v3"}
 {"node_type":"string","pointer":"/upstream_sources/0/ref/label_hint","value":"原点要求"}
 {"node_type":"string","pointer":"/upstream_sources/0/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/0/version_or_digest","value":"sha256:24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"}
+{"node_type":"string","pointer":"/upstream_sources/0/version_or_digest","value":"sha256:6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb"}
 {"keys":["authority","limitations","path","ref","version_or_digest"],"member_count":5,"node_type":"object","pointer":"/upstream_sources/1"}
 {"node_type":"string","pointer":"/upstream_sources/1/authority","value":"normative_model"}
 {"item_count":2,"node_type":"array","pointer":"/upstream_sources/1/limitations"}

@@ -44,7 +44,7 @@
       },
       "path": "../docs/prototypes/origin-requirement.md",
       "authority": "purpose",
-      "version_or_digest": "sha256:24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1",
+      "version_or_digest": "sha256:6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb",
       "limitations": [
         "Defines target meaning and boundaries; it is not a completion claim or implementation contract."
       ]
@@ -406,7 +406,7 @@
       "acquisition_method": "file_read",
       "content_digest": {
         "algorithm": "sha256",
-        "value": "24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"
+        "value": "6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb"
       },
       "subject_binding": {
         "status": "bound",
@@ -416,7 +416,7 @@
             "subject_locator": "../docs/prototypes/origin-requirement.md",
             "digest": {
               "algorithm": "sha256",
-              "value": "24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1"
+              "value": "6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb"
             }
           }
         ],

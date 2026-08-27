@@ -2,6 +2,12 @@
 
 Changes to `semantic-guard` must preserve its audit-only authority boundary and keep claims proportional to evidence.
 
+Start a bug report, documentation correction, or rule-gap proposal with the
+[issue chooser](https://github.com/mait2355n/criterion-loom/issues/new/choose).
+Use [SUPPORT.md](SUPPORT.md) for usage questions and [SECURITY.md](SECURITY.md)
+for vulnerabilities or sensitive reports. Code changes should follow the
+[pull request template](.github/pull_request_template.md).
+
 ## Before changing code or contracts
 
 State:
@@ -53,6 +59,19 @@ not rewrite a historical observation merely to make the language surfaces
 symmetrical. Keep links from both documentation maps accurate, and classify
 each document as current reference, operating guidance, candidate design,
 dated evidence, migration, or archive material.
+
+Keep overview examples concrete enough to run, but explain their significance
+as stable project behavior. Put exhaustive field paths, paired negative
+controls, and dated execution detail in the relevant reference, test, or
+evidence record, then link to them from the overview. Do not strip away the
+proof, and do not let one fixture stand in for the project's purpose.
+
+In Japanese documentation, use ordinary Japanese for explanatory prose. Keep
+commands, schema names, field names, enum values, paths, versions, and other
+machine contracts exact and set them in code spans. Explain a specialized
+concept in Japanese at first use; do not replace it with an unexplained literal
+translation. Japanese and English documents must preserve the same claim
+boundaries, but they need not mirror each sentence word for word.
 
 ## Pull requests
 

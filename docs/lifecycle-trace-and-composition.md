@@ -1,131 +1,131 @@
-# Lifecycle trace and composition
+# 開発工程の追跡と意味の合成
 
 ## 結論
 
-`lifecycle-trace/v0` は、10工程の成果物が存在するかではなく、工程間で主体、命題、義務、未解決、証拠、権限が保全されたか、又はどの人間権限記録によって変更されたかを検証する内部試作契約である。
+`lifecycle-trace/v0` は、10工程の成果物が存在するかではなく、対象、命題、義務、未解決事項、証拠、権限が工程間で保存されたか、又はどの人間権限記録に基づいて変更されたかを検証する内部試作契約である。
 
 ```text
 request → exploration_question → requirement → decision → plan
         → action → realization → diff → verification → completion_claim
 ```
 
-この列を並べただけではcomposition成功にならない。各nodeを結ぶtyped edgeが全入力材料の行方を示し、全nodeがrequestから到達可能でcompletion claimへ接続され、必須義務と未解決の消失や意味・信頼・権限の無断昇格がない場合だけ、内部compositionをvalidとする。
+この列を並べただけでは、工程間の合成が成功したことにはならない。各ノードを結ぶ型付きエッジが全入力材料の行方を示し、全ノードが依頼から到達できて完了主張へ接続され、必須義務や未解決事項の消失、意味・信頼・権限の無断引上げがない場合だけ、内部合成を妥当（`valid`）とする。
 
-validは外部事実の正しさ、行為発生、証拠真正性、実務妥当性、又は人間受理を意味しない。
+妥当（`valid`）という結果は、外部事実の正しさ、行為発生、証拠の真正性、実務上の妥当性又は人間による受理を意味しない。
 
 ## 原点要求との接続
 
-| origin | この試作が強めるもの | 強めないもの |
+| 原点 | この試作が強めるもの | 強めないもの |
 |---|---|---|
-| `OR-01` | 依頼から完了主張までの10工程を同一の型付き関係graphへ載せ、工程間の意味保全と許可変更を検査する | 各工程固有の工学rule-packの正しさ・完全性 |
-| `OR-02` | 主体snapshot、命題digest、義務状態、証拠trust/freshness、actor/observer、権限を限定的立証材料として結合する | 行為発生、本人性、署名、改竄不能性、因果性の外部証明 |
-| `OR-03` | 未解決と残未証明範囲をcompletionまで保ち、人間の `accept` / `request_revision` / `defer` 記録を別権限として接続する | semantic-guard自身による採択、差戻し、延期、最終受理 |
+| `OR-01` | 依頼から完了主張までの10工程を同じ型付き関係グラフへ載せ、工程間の意味保存と許可された変更を検査する | 各工程固有の工学規則集の正しさ・完全性 |
+| `OR-02` | 対象の時点記録、命題のハッシュ値、義務状態、証拠の信頼度と現在性（観測時刻・有効期限・状態）、実行主体と観測者、権限を限定的な立証材料として対応付ける | 行為発生、本人性、署名、改竄不能性、因果関係の外部証明 |
+| `OR-03` | 未解決事項と残る未証明範囲を完了まで保ち、人間の `accept` / `request_revision` / `defer` 記録を別権限として接続する | semantic-guard自身による採択、差戻し、延期、最終受理 |
 
-## 正本となる構造
+## 正式な基準となる構造
 
-### Node
+### ノード
 
-全nodeは次を持つ。
+全ノードは次の情報を持つ。
 
 - 10種の `stage`
 - `node_id` と決定論的 `node_digest`
-- 対象snapshot refとSHA-256
-- proposition IDとSHA-256
-- requirednessを含むobligation states
-- unresolved refs
-- locator、digest、trust level、freshness、限界を持つevidence refs
-- effective authority rights
-- versioned profile refsとrule refs
-- actorとobserver、その関係とtrust class
-- timezone付き `recorded_at`
+- 対象の時点記録への参照と SHA-256
+- 命題 ID と SHA-256
+- 必須かどうかを含む義務状態
+- 未解決事項への参照
+- 所在、ハッシュ値、信頼水準、現在性、限界を持つ証拠参照
+- 現在有効な権限
+- 版付きのプロファイル参照と規則参照
+- 実行主体と観測者、その関係と信頼区分
+- タイムゾーン付きの `recorded_at`
 
-同じ文字列が別工程に現れることを同一主体又は同一命題の証拠にしない。refとdigestの双方をedgeで比較する。
+同じ文字列が別工程に現れることを、同一対象又は同一命題の証拠にしない。参照とハッシュ値の双方をエッジで比較する。
 
-### Edge
+### エッジ
 
-edge kindは次の9種である。
+エッジ種別は次の9種である。
 
 `refines`、`transforms`、`derives`、`verifies`、`supersedes`、`branches`、`merges`、`cancels`、`completes`
 
-各edgeはversioned composition rule、入力node、出力node、許可変更、decision refs、evidence refsに加え、次の対応表を持つ。
+各エッジは、版付きの合成規則、入力ノード、出力ノード、許可された変更、判断参照、証拠参照に加え、次の対応表を持つ。
 
-- subject preservation
-- proposition preservation
-- obligation transition
-- unresolved disposition
-- evidence trust/freshness preservation
-- authority right preservation/grant/revocation
+- 対象の保存
+- 命題の保存
+- 義務の状態遷移
+- 未解決事項の処置
+- 証拠の信頼度と現在性の保存
+- 権限の保存、付与、取消し
 
-一入力一出力だけでなく、branchの各出力、mergeの各入力と出力の組ごとに全対応が必要である。branch出力は後続merge又は明示的cancellationへ到達しなければならない。
+一入力一出力だけでなく、分岐の各出力、統合の各入力と出力の組ごとに、全項目の対応が必要である。分岐出力は後続の統合又は明示的な取消しへ到達しなければならない。
 
-### Resolution record
+### 解決記録
 
-`resolved`、`refuted`、`not_applicable` は説明文だけでは成立しない。resolution recordは次を結合する。
+`resolved`、`refuted`、`not_applicable` は説明文だけでは成立しない。解決記録は次の情報を対応付ける。
 
-- 対象obligationと関連unresolved refs
-- 入出力node
-- 出力nodeに位置づけられ、edgeから引用されたevidence
-- 出力nodeが使用するversioned rule
-- rationaleとrecorded time
-- `not_applicable` の場合は対応するhuman authority record
+- 対象義務と関連する未解決事項への参照
+- 入出力ノード
+- 出力ノードに位置付けられ、エッジから引用された証拠
+- 出力ノードが使用する版付き規則
+- 判断理由と記録時刻
+- `not_applicable` の場合は対応する人間権限記録
 
-従って、未解決配列から値を削除しただけではresolvedにならない。
+従って、未解決配列から値を削除しただけでは `resolved` にならない。
 
-### Human authority record
+### 人間権限記録
 
-変更種別と必要record typeは次の通りである。
+変更種別と必要な記録種別は次の通りである。
 
-| change | human authority record |
+| 変更 | 人間権限記録 |
 |---|---|
-| subject snapshot置換 | `subject_change` |
-| proposition / intent変更 | `intent_change` |
-| obligation又はunresolvedのscope除外 | `scope_change` |
+| 対象の時点記録の置換 | `subject_change` |
+| 命題又は意図の変更 | `intent_change` |
+| 義務又は未解決事項の範囲除外 | `scope_change` |
 | `not_applicable` | `not_applicable` 又は `scope_change` |
-| evidence trust昇格 | `evidence_trust_override` |
-| evidence freshness昇格 | `evidence_freshness_override` |
-| authority right追加 | `authority_grant` |
-| completionの受理・差戻し・延期 | `final_acceptance` |
+| 証拠の信頼度引上げ | `evidence_trust_override` |
+| 証拠の現在性引上げ | `evidence_freshness_override` |
+| 権限追加 | `authority_grant` |
+| 完了の受理・差戻し・延期 | `final_acceptance` |
 
-recordは `issuer_kind=human`、人間actor、対象node、対象subject/proposition/obligation/right、判断、根拠、証拠、時刻を持つ。recordが台帳に存在するだけでは足りず、変更edgeの `decision_refs` から引用され、対象scopeが一致しなければならない。
+記録は `issuer_kind=human`、人間の実行主体、対象ノード、変更対象となる対象・命題・義務・権限、判断、根拠、証拠、時刻を持つ。記録が台帳に存在するだけでは足りず、変更エッジの `decision_refs` から引用され、対象範囲が一致しなければならない。
 
-semantic-guardはrecordの構造と対応を検証するだけであり、recordを発行せず、人間判断の正当性を自動承認しない。
+semantic-guardは記録の構造と対応を検証するだけであり、記録を発行せず、人間判断の正当性を自動承認しない。
 
-## 閉鎖的検証規則
+## 情報不足を推測で補わない検証規則
 
 検証器は少なくとも次を拒否する。
 
-- schema、node、edge、graph digestの不一致
-- duplicate ID又はdangling endpoint/record/evidence
-- 10工程の欠落、逆向きstage遷移、無型の同工程遷移
-- cycle、requestから到達不能、completionへ到達不能
-- branchの未回収、merge入力の不完全なcomposition
-- authority recordのないsubject又はproposition置換
-- obligationの無断消失、requiredness変更、terminal state洗浄
-- located evidenceとversioned ruleのないresolution
-- resolution又はscope authorityのないunresolved消去
-- 同一evidence IDのdigest/locator置換
-- human overrideのないtrust/freshness昇格
-- human grantのないauthority right追加
-- verification nodeを経ないcompletion claim
-- completionにおけるactive required obligationの未被覆
-- completion unresolved refsと残未証明範囲traceの不一致
-- human authority recordのない `accepted` / `request_revision` / `deferred`
+- スキーマ、ノード、エッジ、グラフのハッシュ値の不一致
+- 重複 ID、又は参照先のない端点・記録・証拠
+- 10工程の欠落、工程を逆順にたどる遷移、型を持たない同一工程内の遷移
+- 循環、依頼から到達不能、完了へ到達不能
+- 分岐の未回収、統合入力の不完全な合成
+- 権限記録のない対象又は命題の置換
+- 義務の無断消失、必須性の変更、終端状態の不当な書換え
+- 所在付き証拠と版付き規則のない解決
+- 解決記録又は範囲変更権限のない未解決事項の消去
+- 同一証拠 ID に対するハッシュ値又は所在の置換
+- 人間による例外判断のない信頼度又は現在性の引上げ
+- 人間による付与のない権限追加
+- 検証ノードを経ない完了主張
+- 完了時に有効な必須義務の対応漏れ
+- 完了時の未解決事項への参照と、残る未証明範囲の追跡不一致
+- 人間権限記録のない `accepted` / `request_revision` / `deferred`
 
-nodeが10個存在してもedgeが欠ければ、`node_not_composed_from_request` 又は `node_not_composed_to_completion` になる。
+ノードが10個存在してもエッジが欠ければ、`node_not_composed_from_request` 又は `node_not_composed_to_completion` になる。
 
-## Completion claim境界
+## 完了主張の境界
 
-completion claim nodeは次を明示する。
+完了主張ノードは次の情報を明示する。
 
-- 接続済みverification node refs
-- 全active required obligationの `carried` / `resolved` / `refuted` trace
-- 各義務を担うsource nodeとverification node
-- completion時点の全unresolved refに対応する残未証明範囲
+- 接続済みの検証ノードへの参照
+- 全ての有効な必須義務に対する `carried` / `resolved` / `refuted` の追跡
+- 各義務を担う元ノードと検証ノード
+- 完了時点の全未解決事項への参照に対応する、残る未証明範囲
 - `human_acceptance`
 
-builderの既定思想は `human_acceptance.status=pending` である。非pending状態は、対応する `final_acceptance` human authority recordとcompletion edgeからの引用がある場合にだけ構造上成立する。それでもvalidityは「人間記録が正しく結合されている」という限定命題であって、semantic-guard自身が受理したことを意味しない。
+構築処理の既定値は `human_acceptance.status=pending` である。`pending` 以外の状態は、対応する `final_acceptance` の人間権限記録と、完了エッジからの引用がある場合にだけ構造上成立する。それでも妥当性が示すのは「人間記録が正しく結び付いている」という限定命題であって、semantic-guard自身が受理したことを意味しない。
 
-## 使用する純粋API
+## 使用する副作用のない API
 
 ```python
 from semantic_guard.lifecycle_trace import (
@@ -137,12 +137,12 @@ from semantic_guard.lifecycle_trace import (
 )
 ```
 
-- `build_lifecycle_node`: node contentから決定論的ID/digestを作る。
-- `build_pair_preservation`: 入力nodeの全項目について保守的なcarry対応を作る。
-- `build_composition_edge`: versioned composition ruleと対応表からedge ID/digestを作る。
-- `build_lifecycle_trace`: node、edge、authority、resolutionを整列しgraph digestを作る。
-- `validate_lifecycle_trace`: schema、digest、DAG、対応完全性、権限境界、completion closureを検証する。外部書込みを行わない。
-- `lifecycle_trace_errors`: 失敗をtyped error codeとして返す。
+- `build_lifecycle_node`: ノード内容から決定論的な ID とハッシュ値を作る。
+- `build_pair_preservation`: 入力ノードの全項目について、情報を不用意に落とさない引継ぎ対応を作る。
+- `build_composition_edge`: 版付き合成規則と対応表からエッジ ID とハッシュ値を作る。
+- `build_lifecycle_trace`: ノード、エッジ、権限、解決記録を整列し、グラフのハッシュ値を作る。
+- `validate_lifecycle_trace`: スキーマ、ハッシュ値、有向非巡回グラフ（DAG）、対応の完全性、権限境界、完了時に必要な参照と状態が全て揃っていることを検証する。外部書込みを行わない。
+- `lifecycle_trace_errors`: 失敗を型付きエラーコードとして返す。
 
 ## 検証
 
@@ -150,16 +150,16 @@ from semantic_guard.lifecycle_trace import (
 uv run --locked python -m unittest tests.test_lifecycle_trace -v
 ```
 
-試験はvalidな10工程traceの決定論的再生に加え、subject/proposition substitution、obligation/unresolved drop、fake resolution、trust/freshness promotion、authority escalation、incomplete merge、cycle、verificationなしcompletion、acceptance laundering、node存在だけの空洞成功を反証する。
+試験は、妥当な10工程追跡を同じ入力から再計算できることに加え、対象又は命題のすり替え、義務又は未解決事項の脱落、偽の解決記録、信頼度又は現在性の不当な引上げ、権限昇格、不完全な統合、循環、検証なしの完了、受理状態の不当な書換え、ノードが存在するだけの見かけ上の成功を拒否できることを確認する。
 
 ## 現在の限界
 
-- 内部schema・builder・validatorであり、CLI、MCP、既存public audit contractへ未接続である。
-- 実在の10工程artifactを生成・収集するadapterと永続台帳は未実装である。
-- nodeの入力digestが正しい対象を表すか、evidenceが真正か、actor/observerが本人かは外部trust mechanismを要する。
-- composition rule自体の工学的採択、独立査読、field corpus妥当化は別途必要である。
-- initial authority rightsとinitial evidence trustの正当な発行元は、このgraphだけでは証明しない。
-- branch/mergeの構造完全性は検証するが、代替案の探索十分性や採択価値は証明しない。
-- `final_acceptance` recordの存在とscopeは検証できるが、人間判断の質、権限組織の適切性、強迫や誤認の不存在までは証明しない。
+- 内部のスキーマ、構築処理、検証処理であり、CLI、MCP、既存の公開監査契約へ未接続である。
+- 実在する10工程の成果物を生成・収集する接続処理と永続台帳は未実装である。
+- ノードの入力ハッシュ値が正しい対象を表すか、証拠が真正か、実行主体や観測者が本人かは、外部の信頼機構を要する。
+- 合成規則自体の工学的採択、独立査読、現場資料による妥当性確認は別途必要である。
+- 初期権限と初期証拠の信頼度について、正当な発行元をこのグラフだけでは証明しない。
+- 分岐と統合の構造完全性は検証するが、代替案を十分に探索したか、採択する価値があるかは証明しない。
+- `final_acceptance` 記録の存在と対象範囲は検証できるが、人間判断の質、権限を持つ組織の適切性、強迫や誤認がないことまでは証明しない。
 
-従って本試作は工程横断の「意味保全を検査できる型」を提供する段階であり、実務領域での有効性又は全工程完成を主張する段階ではない。
+従って本試作は、工程間で意味が保たれたかを検査するための構造を提供する段階であり、実務領域での有効性又は全工程完成を主張する段階ではない。
