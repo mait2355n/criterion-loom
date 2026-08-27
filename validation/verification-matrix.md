@@ -1,9 +1,9 @@
 # v1 検証体系の可読投影
 
-投影時点: 2026-08-27T15:03:12+09:00
+投影時点: 2026-08-27T15:43:40+09:00
 正本: [`verification-source.json`](verification-source.json)
 正本 schema: [`verification-source.schema.json`](verification-source.schema.json)
-正本 SHA-256: `a3f53d54bc3127869535c5368880dc76f1c55b3df1609ef17f1de4efdb38a1cd`
+正本 SHA-256: `6a48d93e6800e145c9d4352d5d911cedaeb378697a2915d85b461119433b43ac`
 
 ## 役割
 

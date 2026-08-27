@@ -72,6 +72,7 @@ current tree changes.
 
 | Record | Reading role |
 | --- | --- |
+| [Public-document audit, 2026-08-27](audits/public-document-audit-2026-08-27.md) (Japanese) | Pre-integration record for value-first structure, Japanese wording, local links, contract boundaries, and local verification |
 | [Direction-binding integration, 2026-08-23](audits/direction-binding-integration-2026-08-23.md) (Japanese) | Dated 1.1.0 source, package, registered-case, and GitHub integration evidence |
 | [Repository unification, 2026-08-24](repository-unification-2026-08-24.md) | Pre-transfer repository identity and redirect boundary |
 | [Post-transfer observation, 2026-08-24](audits/repository-transfer-observation-2026-08-24.md) | Separate observation after the repository transfer |
