@@ -1,89 +1,89 @@
-# Lifecycle profile registry candidate
+# 開発工程プロファイル登録簿の候補
 
 ## 結論
 
-`lifecycle-profile-registry/v0` は、開発の十工程に必要な意味を候補契約として閉じる内部sidecarである。
+`lifecycle-profile-registry/v0` は、開発の十工程に必要な意味を、値や項目を限定した候補契約として定める内部の補助契約である。
 
 ```text
 request → exploration → requirement → decision → plan
         → action → realization → diff → verification → completion
 ```
 
-各工程に成果物がある、必須語が書かれている、局所試験が通る、監査が `pass` した、という事実だけでは工程成立にしない。各profileは入口・出口条件、必須意味欄、必須関係、原点要求別の義務template、証拠種別、妥当性確認材料、空洞成功、人間受理質問、未決定、上流・下流trace、再適格化条件、権限境界を持つ。
+各工程に成果物がある、必須語が書かれている、局所試験が通る、監査が `pass` した、という事実だけでは工程成立にしない。各プロファイルは、入口・出口条件、意味を判断するための必須項目、必須関係、原点要求別の義務ひな型、証拠種別、妥当性確認材料、成果物があるだけの見かけ上の成功、人間受理のための質問、未決定事項、上流・下流の追跡、再評価条件、権限境界を持つ。
 
-登録簿全体の状態は `candidate`、各profileは `pending_human_adoption` である。schema又は検証器がvalidと返しても、採択、runtime activation、実行許可、人間最終受理にはならない。
+登録簿全体の状態は `candidate`、各プロファイルは `pending_human_adoption` である。スキーマ又は検証器が妥当（`valid`）と返しても、採択、実行時の有効化、実行許可、人間による最終受理にはならない。
 
 ## 原点要求との接続
 
-各profileは `OR-01`、`OR-02`、`OR-03` を全て保持する。
+各プロファイルは `OR-01`、`OR-02`、`OR-03` を全て保持する。
 
-| 原点 | profile内の責務 |
+| 原点 | プロファイル内の責務 |
 | --- | --- |
 | `OR-01` | 各工程の内容を採択済み要求工学、計画工学、ソフトウェア／システム工学規則へ追跡する義務 |
 | `OR-02` | 対象命題、主体、規則、証拠、導出、信頼前提、反証、未証明を工程固有の限定立証材料として残す義務 |
 | `OR-03` | 欠落、失敗、矛盾を修正へ戻し、受理・差戻し・保留を人間判断材料へ接続する義務 |
 
-OR名の列挙だけでは足りない。検証器は、各profileの `upstream_trace.origin_requirements` が三件全てを含み、`obligation_templates` も三件を集合として被覆することを検査する。
+OR名の列挙だけでは足りない。検証器は、各プロファイルの `upstream_trace.origin_requirements` が三件全てを含み、`obligation_templates` も三件を集合として覆うことを検査する。
 
-## 十工程の意味分母
+## 十工程の意味要件
 
 | 工程 | 中核となる必須関係 | 成果物存在だけでは足りない理由 |
 | --- | --- | --- |
-| request | stakeholder `requests` outcome、need `justifies` outcome、boundary `constrains` subject | 依頼票だけでは誰の何を変えるか分からない |
-| exploration | question `targets` unknown、evidence `supports_or_refutes` hypothesis、owner `owns` question | 質問数だけでは未知、影響、判断先を被覆しない |
-| requirement | actor `performs` behavior、behavior `acts_on` object、condition `constrains` behavior、measure `evaluates` outcome | 必須語の出現だけでは主体と対象の係り受け又は検証可能性が成立しない |
-| decision | human decider `selects` disposition、disposition `resolves_or_defers` subject、rationale `cites` evidence | 監査結果又はagent提案は人間決定ではない |
-| plan | work package `addresses` obligation、dependency `precedes_or_gates` package、verification `checks` output | 計画書だけでは要求対応、順序、停止、復旧、検証を閉じない |
-| action | actor `executes` operation、authority `permits` scope、observer `observes` event、output `derived_from` input/event | 説明、命令、成果物又は自己申告から行動発生を推定できない |
-| realization | artifact `realizes` requirement、artifact `derived_from` action、deviation `authorized_or_unresolved_by` decision | ファイル存在だけでは要求実現、由来又は逸脱処理を示さない |
-| diff | change `transforms` baseline、change `traces_to` intent、impact `affects` surface | 文字差分だけでは意味、契約、運用又は移行影響を被覆しない |
-| verification | procedure `tests` proposition、result `supports/refutes/leaves_unproven` proposition、evidence `observes` result | 試験通過だけでは対象、oracle、被覆、信頼、一般化限界を閉じない |
-| completion | claim `aggregates` verification、residual `qualifies` claim、human `accepts/revises/defers` bundle | 完了報告、監査pass又は局所試験は人間最終受理ではない |
+| 依頼（`request`） | 利害関係者が成果を `requests`、必要性が成果を `justifies`、境界が対象を `constrains` | 依頼票だけでは誰の何を変えるか分からない |
+| 探索（`exploration`） | 質問が未知を `targets`、証拠が仮説を `supports_or_refutes`、所有者が質問を `owns` | 質問数だけでは未知、影響、判断先を覆えない |
+| 要求（`requirement`） | 主体が振る舞いを `performs`、振る舞いが対象を `acts_on`、条件が振る舞いを `constrains`、尺度が成果を `evaluates` | 必須語の出現だけでは主体と対象の係り受け又は検証可能性が成立しない |
+| 判断（`decision`） | 人間の判断者が処置を `selects`、処置が対象を `resolves_or_defers`、理由が証拠を `cites` | 監査結果又はエージェントの提案は人間の判断ではない |
+| 計画（`plan`） | 作業単位が義務を `addresses`、依存関係が作業単位を `precedes_or_gates`、検証が出力を `checks` | 計画書だけでは要求対応、順序、停止、復旧、検証を十分に定められない |
+| 行為（`action`） | 主体が操作を `executes`、権限が範囲を `permits`、観測者が事象を `observes`、出力が入力又は事象から `derived_from` | 説明、命令、成果物又は自己申告から行為発生を推定できない |
+| 実現（`realization`） | 成果物が要求を `realizes`、成果物が行為から `derived_from`、逸脱が判断によって `authorized_or_unresolved_by` | ファイルの存在だけでは要求実現、由来又は逸脱処理を示さない |
+| 差分（`diff`） | 変更が基準を `transforms`、変更が意図へ `traces_to`、影響が公開面を `affects` | 文字差分だけでは意味、契約、運用又は移行への影響を覆えない |
+| 検証（`verification`） | 手続が命題を `tests`、結果が命題を `supports/refutes/leaves_unproven`、証拠が結果を `observes` | 試験通過だけでは対象、正解基準、被覆、信頼、一般化の限界を十分に定められない |
+| 完了（`completion`） | 主張が検証を `aggregates`、残余事項が主張を `qualifies`、人間が判断材料を `accepts/revises/defers` | 完了報告、監査の通過又は局所試験は、人間による最終受理ではない |
 
-この表は説明用投影であり、正本は [候補登録簿](../validation/lifecycle-profile-registry.candidate.json) である。
+この表は説明用の抜き出しであり、正式な基準は [候補登録簿](../validation/lifecycle-profile-registry.candidate.json) である。
 
 ## 権限境界
 
 登録簿は次を機械的に拒否する。
 
-- registry又はprofileが人間採択前に `adopted` を名乗る。
-- semantic-guard又はagentがprofile採択権、runtime authority又は最終受理権を持つ。
-- decisionをagent所有にする、又は監査結果から人間判断を推定する。
-- actionの発生を説明から推定する、又は監査結果から実行権限を生成する。
-- completion claimを人間最終受理と併合する、又は局所試験・監査passを `accept` へ昇格する。
+- 登録簿又はプロファイルが、人間による採択前に `adopted` を名乗る。
+- semantic-guard又はエージェントが、プロファイル採択権、実行時の権限又は最終受理権を持つ。
+- 判断の主体をエージェントにする、又は監査結果から人間判断を推定する。
+- 行為の発生を説明から推定する、又は監査結果から実行権限を生成する。
+- 完了主張を人間による最終受理と同一視する、又は局所試験や監査の通過を `accept` へ引き上げる。
 
-decisionは `claim_owner=human` かつ `decision_authority=human_only` である。actionは `claim_owner=explicitly_authorized_actor` だが、外部権限記録と別個の発生観測を必須とする。completion claimは明示的に権限を持つactorが作成できる一方、`final_acceptance_authority=human_only` のままである。
+判断は `claim_owner=human` かつ `decision_authority=human_only` である。行為は `claim_owner=explicitly_authorized_actor` だが、外部権限記録と、それとは別の発生観測を必須とする。完了主張は明示的に権限を持つ主体が作成できる一方、`final_acceptance_authority=human_only` のままである。
 
-これらは権限記録の構造を検査する境界であり、外部人間の本人性、組織権限、強迫不存在、判断品質を証明しない。
+これらは権限記録の構造を検査する境界であり、外部人間の本人性、組織権限、強迫を受けていないこと、判断品質を証明しない。
 
-## Content addressとsummary再演
+## 内容に基づく識別と要約の再計算
 
-各profileの `profile_digest` は `profile_digest` 自身を除くcanonical JSONのSHA-256である。`registry_digest` は派生summaryとdigest自身を除く登録簿全体を束縛する。
+各プロファイルの `profile_digest` は、`profile_digest` 自身を除く正規化 JSON の SHA-256 である。`registry_digest` は、再計算で得る `summary` と `registry_digest` 自身を除いた登録簿全体から計算する。
 
-保存済み `summary` は次を原資料から再演する。
+保存済みの `summary` は次の内容を元資料から再計算する。
 
-- registry ID、版、digest。
-- 十工程順とprofile count。
-- stage別profile ID、版、digest。
-- `OR-01`、`OR-02`、`OR-03` のprofile被覆。
+- 登録簿 ID、版、ハッシュ値。
+- 十工程の順序とプロファイル数。
+- 工程別のプロファイル ID、版、ハッシュ値。
+- `OR-01`、`OR-02`、`OR-03` のプロファイル被覆。
 - `pending_human_adoption` と `adopted` の件数。
-- semantic-guardに採択、実行、最終受理権がないという権限文。
+- semantic-guardに採択、実行、最終受理権がないという権限に関する記述。
 
-検証器はprofile、registry、summaryのいずれか一つでも再演結果が違えばfail-closedにする。digest整合は改竄不能性又は真正性ではない。同じ入力bytesから同じ値を再計算できるという内部整合に限られる。
+検証器は、プロファイル、登録簿、要約のいずれか一つでも再計算結果が違えば、推測で補わず失敗として扱う。ハッシュ値の整合は改竄不能性又は真正性を示さない。同じ入力バイト列から同じ値を再計算できるという内部整合に限られる。
 
 ## 現在できること
 
-- JSON Schema Draft 2020-12で閉じた登録簿構造を検査する。
+- JSON Schema Draft 2020-12で、値や項目を限定した登録簿構造を検査する。
 - 十工程が過不足なく正しい順序で存在するか検査する。
-- profile ID、stage、既存 `lifecycle_trace` stage名の対応を検査する。
-- 前工程・次工程の隣接trace、未知参照、逆向き参照を検査する。
-- profile、入れ子欄、stageの重複を検査する。
-- 必須意味分母、必須関係、義務、証拠、妥当性確認、人間質問、未決定、再適格化条件の空欄を拒否する。
-- `OR-01` / `OR-02` / `OR-03` traceと、成果物存在だけの空洞成功条件を必須化する。
-- decision/action/completionの権限洗浄を拒否する。
-- profile、registry、保存済みsummaryを決定論的に再演する。
+- プロファイル ID、工程、既存 `lifecycle_trace` の工程名の対応を検査する。
+- 前工程・次工程の隣接追跡、未知参照、逆向き参照を検査する。
+- プロファイル、入れ子項目、工程の重複を検査する。
+- 必須の意味項目、必須関係、義務、証拠、妥当性確認、人間への質問、未決定、再適格化条件の空欄を拒否する。
+- `OR-01` / `OR-02` / `OR-03` の追跡と、成果物が存在するだけの見かけ上の成功を防ぐ条件を必須にする。
+- 判断、行為、完了における権限の不当な引き上げを拒否する。
+- プロファイル、登録簿、保存済み要約を同じ入力から再計算する。
 
-純粋APIは次である。
+副作用のない API は次である。
 
 ```python
 from semantic_guard.lifecycle_profiles import (
@@ -95,34 +95,34 @@ from semantic_guard.lifecycle_profiles import (
 )
 ```
 
-`seal_lifecycle_profile_registry` はcontent addressとsummaryを再生成するだけで、状態を `adopted` に変えない。
+`seal_lifecycle_profile_registry` は内容に基づく識別値と要約を再生成するだけで、状態を `adopted` に変えない。
 
 ## 外部人間採択が必要なこと
 
-候補profileを実務の規範分母として使う前に、少なくとも次が外部で必要である。
+候補プロファイルを実務上の判断基準として使う前に、少なくとも次の作業が外部で必要である。
 
-- 各工程の目的、必須欄、必須関係、義務、空洞成功、受理質問を誰が採択するか決める。
-- 対象業務、法令、組織、危険度ごとの適用条件、反適用条件、追加欄、閾値を決める。
-- 工学rule-packの採択版とprofile義務を対応させ、領域専門家が妥当性を査読する。
-- decision、action、completionで使う外部権限記録、観測者、信頼根、署名、時刻、保持、再適格化方針を決める。
-- 人工肯定例でなく、独立に標注した現場資料と実運用で過検出、見逃し、空洞成功、理解可能性を評価する。
+- 各工程の目的、必須項目、必須関係、義務、成果物があるだけの見かけ上の成功、受理質問を誰が採択するか決める。
+- 対象業務、法令、組織、危険度ごとの適用条件、適用しない条件（反適用条件）、追加項目、閾値を決める。
+- 工学規則集の採択版とプロファイル義務を対応させ、領域専門家が妥当性を査読する。
+- 判断、行為、完了で使う外部権限記録、観測者、信頼根、署名、時刻、保持、再評価方針を決める。
+- 人工的に作った肯定例でなく、独立した査読者がラベル付けした現場資料と実運用で過検出、見逃し、成果物があるだけの見かけ上の成功、理解可能性を評価する。
 - 採択、差戻し、延期又は棄却の人間判断を所在付きで残す。
 
 登録簿内の `human_acceptance_questions` は判断材料であって、回答、判断又は採択を自動生成しない。
 
-## 既存 lifecycle trace との未統合境界
+## 既存の工程追跡との未統合境界
 
-既存 `lifecycle-trace/v0` はnodeとedgeを用いて、主体、命題、義務、未解決、証拠、権限の工程間保存を検査する。本登録簿は各工程の内部意味を候補profileとして定義する。責務は補完関係にある。
+既存の `lifecycle-trace/v0` はノードとエッジを用いて、対象、命題、義務、未解決事項、証拠、権限が工程間で保存されるかを検査する。本登録簿は各工程の内部意味を候補プロファイルとして定義する。両者の責務は補完関係にある。
 
 しかし現段階では未統合である。
 
-- `lifecycle_trace` nodeの `profile_refs` が本登録簿のprofile ID、版、digestを解決するresolverはない。
-- node内容が該当profileの必須意味欄・関係・義務を充足するかを検査するadapterはない。
-- profile再適格化が既存graph、state assessment、assurance claim又はcompletion claimを自動的に失効させる接続はない。
-- CLI、MCP、既存public audit contractへの公開接続はない。
-- registry採択記録、版移行、廃止、rollbackを扱う外部管制記録はない。
+- `lifecycle_trace` のノードにある `profile_refs` から、本登録簿のプロファイル ID、版、ハッシュ値を解決する仕組みはない。
+- ノード内容が該当プロファイルの必須意味項目・関係・義務を満たすか検査する接続処理はない。
+- プロファイルの再評価が既存グラフ、状態評価、保証主張又は完了主張を自動的に失効させる接続はない。
+- CLI、MCP、既存の公開監査契約への接続はない。
+- 登録簿の採択記録、版移行、廃止、巻戻しを扱う外部の作業管理記録はない。
 
-従って、`lifecycle_trace` がvalidで本登録簿もvalidであっても、「十工程の実資料が採択済み意味契約を満たした」とはまだ言えない。今あるのは、工程間の保存模型と工程内の候補意味模型が別々に検査できる状態である。
+従って、`lifecycle_trace` と本登録簿がともに妥当（`valid`）であっても、「十工程の実資料が採択済み意味契約を満たした」とはまだ言えない。現段階では、工程間の保存モデルと、各工程の意味を表す候補モデルを別々に検査できるだけである。
 
 ## 検証
 
@@ -136,12 +136,12 @@ Draft202012Validator.check_schema(lifecycle_profile_registry_schema())
 PY
 ```
 
-敵対試験は工程欠落、順序改変、digest改変、未知・逆向き参照、空分母、採択詐称、OR trace欠落、成果物存在だけの空洞成功、decision/action/completion越権、重複identity、保存済みsummary改変を含む。
+改変やすり替えを想定した試験には、工程欠落、順序改変、ハッシュ値改変、未知・逆向き参照、空の判断対象、採択詐称、OR追跡の欠落、成果物が存在するだけの見かけ上の成功、判断・行為・完了の越権、同一性の重複、保存済み要約の改変を含む。
 
 ## 残る危険
 
-- 十工程の候補内容は、原点要求と既存模型から構成した未採択案であり、体系知の独立査読と領域妥当性確認をまだ受けていない。
-- 全profileが `OR-01` / `OR-02` / `OR-03` を被覆することはtrace完全性であり、各義務の実装又は有効性証明ではない。
-- JSON Schema、digest、summary再演は内部整合だけを支え、証拠、権限、主体、時計、観測者の真正性を支えない。
-- 必須関係を記録欄として持っても、その関係を自然言語や現場証拠から正しく抽出する性能は別評価である。
-- 人間採択、既存traceへの統合、field evaluation、secure operation、運用再適格化が閉じるまでruntime既定経路へ昇格させてはならない。
+- 十工程の候補内容は、原点要求と既存モデルから構成した未採択案であり、体系化された専門知識に基づく独立査読と、対象領域での妥当性確認をまだ受けていない。
+- 全プロファイルが `OR-01` / `OR-02` / `OR-03` を覆うことは追跡の完全性を示すだけであり、各義務の実装又は有効性の証明ではない。
+- JSON Schema、ハッシュ値、要約の再計算は内部整合だけを支え、証拠、権限、主体、時計、観測者の真正性を支えない。
+- 必須関係を記録項目として持っても、その関係を自然言語や現場証拠から正しく抽出する性能は別評価である。
+- 人間による採択、既存の工程追跡への統合、現場評価、安全運用、運用時の再評価が完了するまで、実行時の既定経路へ引き上げてはならない。

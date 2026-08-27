@@ -13,8 +13,9 @@ evidence, and human acceptance trapped in conversation. Criterion Loom exists
 to externalize those distinctions as versioned, inspectable audit artifacts—so
 the next correction or decision does not have to trust a fluent summary.
 
-`Criterion Loom` is the public project name. Its current source implementation,
-Python package, CLI, and MCP server are named `semantic-guard 1.1.0`.
+`Criterion Loom` is the public project name. Its current distribution and CLI
+are named `semantic-guard` at version `1.1.0`; the import package is
+`semantic_guard`, and the MCP server entry point is `semantic-guard-mcp`.
 
 > The current v1 public workflow audits one structured functional requirement
 > at a time and, separately, bounded Japanese direction-binding expressions. It
@@ -66,11 +67,12 @@ The selected fields are:
 }
 ```
 
-That last line is deliberate: the rule found a direct left-to-right binding,
-but the tool did not impersonate a human decision. Run the same command with
-`横一列で、Aの次の項目はどれですか？` and the bounded check returns JSON
-with `primary_rule_evaluation.state=gap` and
-`workflow_disposition.status=warn`.
+This example exposes two separate boundaries: a rule result does not become
+human acceptance, and a missing required direction is not filled in from
+convention. In the latter case, the audit fails closed at the rule boundary by
+reporting a `gap` and warning the workflow. The
+[direction-binding reference](docs/direction-binding-audit.md) (Japanese) keeps
+the paired inputs and exact field states.
 
 ## Current public surface
 
@@ -130,17 +132,18 @@ automatic verification of the current HEAD. They are contract and
 registered-case observations, not benchmarks, adoption claims, field accuracy,
 unrestricted Japanese coverage, production qualification, or human acceptance.
 Read the exact subjects and limits in
-[Implementation status](docs/implementation-status.md) and the dated
-[direction-binding integration evidence](docs/audits/direction-binding-integration-2026-08-23.md).
+[Implementation status](docs/implementation-status.md) (Japanese) and the dated
+[direction-binding integration evidence](docs/audits/direction-binding-integration-2026-08-23.md)
+(Japanese).
 
 ## Documentation
 
 | Goal | Document |
 | --- | --- |
 | Understand the current package and non-claims | [Current public surface](PUBLIC-SNAPSHOT.md) |
-| Run and automate the CLI or MCP server | [Operations guide](docs/operations.md) |
-| Interpret direction-binding results | [Direction-binding audit](docs/direction-binding-audit.md) |
-| Inspect implementation and evidence status | [Implementation status](docs/implementation-status.md) |
+| Run and automate the CLI or MCP server | [Operations guide](docs/operations.md) (Japanese) |
+| Compare bound and missing direction-binding results | [Direction-binding audit](docs/direction-binding-audit.md) (Japanese) |
+| Inspect implementation and evidence status | [Implementation status](docs/implementation-status.md) (Japanese) |
 | Browse current reference, evidence, history, and prototypes | [Documentation map](docs/README.md) |
 | Move from the archived 0.1.0 line | [Migration guide](docs/migration-v0.1.0-to-v1.0.0.md) |
 
@@ -157,9 +160,9 @@ old request, plan, diff, finish, convention, reviewer, and acceptance-bundle
 commands are not transparent aliases of v1.
 
 Current source identity, field validity, policy adoption, operational default,
-and historical preservation are separate states. See the
-[canonical promotion decision](docs/canonical-promotion-decision.md) and
-[change log](CHANGELOG.md).
+and historical preservation are separate states. See the historical
+[1.0.0 canonical promotion decision](docs/canonical-promotion-decision.md) and
+the [change log](CHANGELOG.md).
 
 ## Contributing and support
 
