@@ -10,6 +10,7 @@ All notable repository and public-contract changes are recorded here. Package ve
 - Reframed the direction-binding quickstart around its general decision and fail-closed boundaries, consolidated the paired positive/negative comparison in the detailed reference, and documented the overview/reference/test layering rule for future changes.
 - Added a runnable requirement-audit path, separated historical decisions from current reference, and exposed the distinct states of internal, candidate, and public-workflow material in both documentation maps.
 - Reworked current Japanese explanatory prose into ordinary Japanese while preserving machine identifiers, evidence states, non-claims, and historical records; synchronized the affected documentation anchors.
+- Closed integration-preflight evidence bindings by synchronizing the current origin and constitution observations, checking the constitution's embedded origin digests, and testing the human-readable matrix against its canonical source.
 - Restored the Criterion Loom public-project name while retaining `semantic-guard` for the package, CLI, and MCP surfaces.
 - Separated the current 1.1.0 public-surface summary from dated 1.0.0 and repository-transfer evidence.
 - Removed operator-local instructions, private-dialogue provenance, and unbound destructive-authorization wording from the public documentation surface.
