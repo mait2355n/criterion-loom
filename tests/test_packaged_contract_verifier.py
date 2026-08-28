@@ -146,6 +146,23 @@ class PackagedContractVerifierTests(unittest.TestCase):
                 )
         self.assertEqual(caught.exception.code, "executable_not_allowed")
 
+    def test_console_version_accepts_only_standard_line_endings(self) -> None:
+        for stdout in (
+            "semantic-guard 1.1.0\n",
+            "semantic-guard 1.1.0\r\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertTrue(verifier._is_exact_console_version_output(stdout))
+
+        for stdout in (
+            "semantic-guard 1.1.0",
+            "semantic-guard 1.1.0\r",
+            "semantic-guard 1.1.0\nextra\n",
+            "semantic-guard 1.1.1\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertFalse(verifier._is_exact_console_version_output(stdout))
+
     def test_clean_environment_preserves_windows_bootstrap_and_confines_user_paths(self) -> None:
         base = {
             "SystemRoot": r"C:\Windows",

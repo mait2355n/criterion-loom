@@ -774,6 +774,13 @@ def _require_success(result: ProcessResult, *, phase: str) -> None:
     )
 
 
+def _is_exact_console_version_output(stdout: str) -> bool:
+    return stdout in {
+        "semantic-guard 1.1.0\n",
+        "semantic-guard 1.1.0\r\n",
+    }
+
+
 def _remaining(deadline: float, *, phase: str) -> float:
     value = deadline - time.monotonic()
     if value <= 0:
@@ -999,7 +1006,10 @@ def verify_wheel(
             phase="audit_console_version",
         )
         _require_success(version_result, phase="audit_console_version")
-        if version_result.stdout != "semantic-guard 1.1.0\n" or version_result.stderr:
+        if (
+            not _is_exact_console_version_output(version_result.stdout)
+            or version_result.stderr
+        ):
             raise VerificationFailure(
                 "console_version_mismatch",
                 "installed console version does not identify semantic-guard 1.1.0",
