@@ -774,6 +774,13 @@ def _require_success(result: ProcessResult, *, phase: str) -> None:
     )
 
 
+def _is_exact_console_version_output(stdout: str) -> bool:
+    return stdout in {
+        "semantic-guard 1.1.0\n",
+        "semantic-guard 1.1.0\r\n",
+    }
+
+
 def _remaining(deadline: float, *, phase: str) -> float:
     value = deadline - time.monotonic()
     if value <= 0:
@@ -797,17 +804,50 @@ def _venv_console_script(venv_root: Path, name: str) -> Path:
     return venv_root / "bin" / name
 
 
-def _clean_environment(*, home: Path, temporary: Path, executable_directory: Path) -> dict[str, str]:
+def _environment_value(environment: Mapping[str, str], name: str) -> str | None:
+    for key, value in environment.items():
+        if key.casefold() == name.casefold():
+            return value
+    return None
+
+
+def _clean_environment(
+    *,
+    home: Path,
+    temporary: Path,
+    executable_directory: Path,
+    base_environment: Mapping[str, str] | None = None,
+    os_name: str | None = None,
+) -> dict[str, str]:
+    source_environment = os.environ if base_environment is None else base_environment
+    selected_os = os.name if os_name is None else os_name
     environment = {
         "HOME": str(home),
         "PATH": str(executable_directory) + os.pathsep + os.defpath,
         "PIP_CONFIG_FILE": os.devnull,
         "PIP_DISABLE_PIP_VERSION_CHECK": "1",
         "PIP_NO_INPUT": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONHASHSEED": "0",
+        "PYTHONIOENCODING": "utf-8",
         "PYTHONNOUSERSITE": "1",
+        "PYTHONUTF8": "1",
+        "TEMP": str(temporary),
+        "TMP": str(temporary),
         "TMPDIR": str(temporary),
     }
+    if selected_os == "nt":
+        environment.update(
+            {
+                "APPDATA": str(home),
+                "LOCALAPPDATA": str(home),
+                "USERPROFILE": str(home),
+            }
+        )
+        for name in ("SYSTEMROOT", "WINDIR"):
+            value = _environment_value(source_environment, name)
+            if value:
+                environment[name] = value
     for name in (
         "ALL_PROXY",
         "HTTPS_PROXY",
@@ -816,7 +856,7 @@ def _clean_environment(*, home: Path, temporary: Path, executable_directory: Pat
         "SSL_CERT_FILE",
         "REQUESTS_CA_BUNDLE",
     ):
-        value = os.environ.get(name)
+        value = _environment_value(source_environment, name)
         if value:
             environment[name] = value
     return environment
@@ -966,7 +1006,10 @@ def verify_wheel(
             phase="audit_console_version",
         )
         _require_success(version_result, phase="audit_console_version")
-        if version_result.stdout != "semantic-guard 1.1.0\n" or version_result.stderr:
+        if (
+            not _is_exact_console_version_output(version_result.stdout)
+            or version_result.stderr
+        ):
             raise VerificationFailure(
                 "console_version_mismatch",
                 "installed console version does not identify semantic-guard 1.1.0",

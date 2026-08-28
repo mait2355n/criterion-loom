@@ -146,6 +146,58 @@ class PackagedContractVerifierTests(unittest.TestCase):
                 )
         self.assertEqual(caught.exception.code, "executable_not_allowed")
 
+    def test_console_version_accepts_only_standard_line_endings(self) -> None:
+        for stdout in (
+            "semantic-guard 1.1.0\n",
+            "semantic-guard 1.1.0\r\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertTrue(verifier._is_exact_console_version_output(stdout))
+
+        for stdout in (
+            "semantic-guard 1.1.0",
+            "semantic-guard 1.1.0\r",
+            "semantic-guard 1.1.0\nextra\n",
+            "semantic-guard 1.1.1\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertFalse(verifier._is_exact_console_version_output(stdout))
+
+    def test_clean_environment_preserves_windows_bootstrap_and_confines_user_paths(self) -> None:
+        base = {
+            "SystemRoot": r"C:\Windows",
+            "WINDIR": r"C:\Windows",
+            "USERPROFILE": r"C:\Users\runner",
+            "TEMP": r"C:\Users\runner\Temp",
+            "PYTHONPATH": r"D:\source",
+            "pythonhome": r"C:\host-python",
+            "https_proxy": "http://proxy.example.invalid:8080",
+        }
+        home = Path("controlled-home")
+        temporary = Path("controlled-tmp")
+        environment = verifier._clean_environment(
+            home=home,
+            temporary=temporary,
+            executable_directory=Path("venv") / "Scripts",
+            base_environment=base,
+            os_name="nt",
+        )
+
+        self.assertEqual(environment["SYSTEMROOT"], r"C:\Windows")
+        self.assertEqual(environment["WINDIR"], r"C:\Windows")
+        for name in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA"):
+            self.assertEqual(environment[name], str(home))
+        for name in ("TEMP", "TMP", "TMPDIR"):
+            self.assertEqual(environment[name], str(temporary))
+        self.assertNotIn("pythonpath", {name.casefold() for name in environment})
+        self.assertNotIn("pythonhome", {name.casefold() for name in environment})
+        self.assertEqual(environment["PYTHONIOENCODING"], "utf-8")
+        self.assertEqual(environment["PYTHONUTF8"], "1")
+        self.assertEqual(
+            environment["HTTPS_PROXY"],
+            "http://proxy.example.invalid:8080",
+        )
+
     def test_public_arguments_cannot_select_executable_or_audit_program(self) -> None:
         destinations = {
             action.dest for action in verifier.build_parser()._actions
