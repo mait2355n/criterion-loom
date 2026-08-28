@@ -58,6 +58,7 @@ adoption.
 | Trace and composition | Implemented internal prototype; no public workflow | [Lifecycle trace and composition](lifecycle-trace-and-composition.md) (Japanese) |
 | State validity over change | Implemented internal opt-in contract; no public workflow | [State assessment and requalification](state-assessment-and-requalification.md) (Japanese) |
 | Repair and responsibility | Implemented internal opt-in contract; practical effect untested | [Repair loop and responsibility material](repair-loop-and-responsibility-material.md) (Japanese) |
+| Prospective field-sample intake | Implemented intake gate; no real corpus or field result | [Field-sample intake](field-sample-intake.md) (Japanese) |
 | Field evaluation design | Implemented evaluation contract; no field result | [Field evaluation and ablation](field-evaluation-and-ablation.md) (Japanese) |
 | Outcome evaluation | Implemented evaluation contract; no real participants or outcomes | [Operational outcome evaluation](operational-outcome-evaluation.md) (Japanese) |
 | Qualification and transition | Implemented internal contract; no operational qualification or cutover | [Operational qualification and transition](operational-qualification-and-transition.md) (Japanese) |

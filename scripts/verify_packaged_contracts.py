@@ -125,7 +125,7 @@ decoy_schemas.mkdir()
 )
 
 from semantic_guard import __version__, lifecycle_profiles
-from semantic_guard import operational_outcomes
+from semantic_guard import field_sample_intake, operational_outcomes
 from semantic_guard.cli import build_parser
 from semantic_guard.lifecycle_profiles import (
     load_candidate_registry,
@@ -175,6 +175,7 @@ require(
 selected_schema_directory = schema_directory().resolve()
 selected_lifecycle = Path(lifecycle_profiles._CANDIDATE_PATH).resolve()
 selected_operational = Path(operational_outcomes._SCHEMA_PATH).resolve()
+selected_field_intake = Path(field_sample_intake._SCHEMA_PATH).resolve()
 require(
     selected_schema_directory == package_root / "schemas",
     f"schema directory escaped package: {selected_schema_directory}",
@@ -187,13 +188,17 @@ require(
     selected_operational == package_root / "schemas" / "operational-outcome-evaluation.schema.json",
     f"operational schema escaped package: {selected_operational}",
 )
+require(
+    selected_field_intake == package_root / "schemas" / "field-sample-intake.schema.json",
+    f"field-intake schema escaped package: {selected_field_intake}",
+)
 
 present_names = {
     path.name.removesuffix(".schema.json")
     for path in selected_schema_directory.glob("*.schema.json")
 }
 known_names = set(KNOWN_SCHEMA_NAMES)
-require(len(known_names) == 24, f"expected 24 public schemas, found {len(known_names)}")
+require(len(known_names) == 25, f"expected 25 public schemas, found {len(known_names)}")
 require(present_names == known_names, "KNOWN_SCHEMA_NAMES and packaged schemas differ")
 
 loaded = {}
@@ -264,6 +269,7 @@ require(
 require(len(engineering_candidate.get("rules", [])) == 11, "engineering rule denominator is not eleven")
 
 operational_schema = load_public_schema("operational-outcome-evaluation")
+field_intake_schema = load_public_schema("field-sample-intake")
 require(
     not Draft202012Validator(operational_schema).is_valid({}),
     "public operational schema accepted an empty object",
@@ -271,6 +277,14 @@ require(
 require(
     not operational_outcomes._schema_validator().is_valid({}),
     "operational validator selected the permissive adjacent decoy",
+)
+require(
+    not Draft202012Validator(field_intake_schema).is_valid({}),
+    "public field-intake schema accepted an empty object",
+)
+require(
+    not field_sample_intake._schema_validator().is_valid({}),
+    "field-intake validator accepted an empty object",
 )
 
 audit_payload = audit_requirement_relations_service(
@@ -349,6 +363,7 @@ print(json.dumps({
         "lifecycle_candidate_valid",
         "engineering_rule_pack_valid",
         "operational_empty_object_rejected",
+        "field_intake_module_and_schema_packaged",
         "canonical_distribution_identity",
         "canonical_mcp_surface",
         "public_audit_producer_version",
@@ -367,6 +382,14 @@ print(json.dumps({
         "direction_binding_schema_sha256": hashlib.sha256(
             json.dumps(
                 loaded["direction-binding-audit"],
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest(),
+        "field_intake_schema_sha256": hashlib.sha256(
+            json.dumps(
+                loaded["field-sample-intake"],
                 ensure_ascii=False,
                 sort_keys=True,
                 separators=(",", ":"),

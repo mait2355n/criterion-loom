@@ -80,7 +80,7 @@ the paired inputs and exact field states.
 | --- | --- | --- | --- |
 | Requirement-relation audit | `audit-requirement` | `audit_requirement_relations_tool` | One seven-field structured functional requirement; morphology is `signal_only`, dependency and caller-supplied LLM analysis are `candidate_only` |
 | Direction-binding audit | `audit-direction-binding` | `audit_direction_binding_tool` | Registered scalar and non-scalar Japanese expressions with direct attachment; not unrestricted language understanding |
-| Closed schema access | `schema` | `semantic_guard_schema_tool` | 24 known schema names; schema availability does not imply an integrated public workflow |
+| Closed schema access | `schema` | `semantic_guard_schema_tool` | 25 known schema names; schema availability does not imply an integrated public workflow |
 | Explicit legacy comparison | `shadow-compare` | `shadow_compare_legacy_tool` | Operator-owned external 0.1.0 root; trusted comparison requires baseline digest agreement. The MCP route is disabled by default and requires operator configuration; legacy is not a truth oracle |
 
 The current source also contains candidate lifecycle and assurance contracts.
