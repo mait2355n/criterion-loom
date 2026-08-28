@@ -21,6 +21,36 @@ EXACT_UV_RUNTIME_CHECK = (
     "os.environ['UV_VERSION']; sys.exit(f'uv runtime mismatch: {observed!r}; expected uv "
     "{expected}') if observed[:2] != ['uv', expected] else None\""
 )
+ACTION_USES = {
+    "actions/checkout": (
+        "d23441a48e516b6c34aea4fa41551a30e30af803",
+        "v6",
+        4,
+    ),
+    "actions/setup-python": (
+        "ece7cb06caefa5fff74198d8649806c4678c61a1",
+        "v6",
+        4,
+    ),
+    "actions/upload-artifact": (
+        "043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
+        "v7",
+        1,
+    ),
+    "actions/download-artifact": (
+        "3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "v8",
+        1,
+    ),
+}
+
+
+def action_ref(action: str) -> str:
+    return f"uses: {action}@{ACTION_USES[action][0]}"
+
+
+def action_line(action: str) -> str:
+    return f"{action_ref(action)} # {ACTION_USES[action][1]}"
 
 
 def workflow_job(text: str, name: str) -> str:
@@ -33,6 +63,18 @@ def workflow_job(text: str, name: str) -> str:
 
 def audit_ci_contract(text: str) -> list[str]:
     errors: list[str] = []
+    uses_lines = [line.strip() for line in text.splitlines() if "uses:" in line]
+    expected_uses = {
+        action_line(action): count for action, (_, _, count) in ACTION_USES.items()
+    }
+    for expected, count in expected_uses.items():
+        if uses_lines.count(expected) != count:
+            errors.append(
+                "action must use the reviewed commit pin exactly "
+                f"{count} times: {expected}"
+            )
+    if any(line not in expected_uses for line in uses_lines):
+        errors.append("workflow contains an unreviewed action reference")
     if not re.search(rf"(?m)^  UV_VERSION: [\"']{re.escape(UV_VERSION)}[\"']$", text):
         errors.append("UV_VERSION must be fixed at the reviewed version")
 
@@ -73,7 +115,7 @@ def audit_ci_contract(text: str) -> list[str]:
         "marker.unlink()",
         "scripts/distribution_binding.py create",
         "scripts/distribution_binding.py check",
-        "uses: actions/upload-artifact@v7",
+        action_ref("actions/upload-artifact"),
     )
     positions = [package_job.find(token) for token in ordered_distribution_tokens]
     if all(position >= 0 for position in positions) and positions != sorted(positions):
@@ -91,7 +133,7 @@ def audit_ci_contract(text: str) -> list[str]:
         "ref: ${{ github.sha }}",
         'python-version: "3.12"',
         'raise SystemExit(f"Python runtime mismatch:',
-        "uses: actions/download-artifact@v8",
+        action_ref("actions/download-artifact"),
         "name: ${{ needs.package.outputs.artifact_name }}",
         "scripts/distribution_binding.py check",
         '--expected-commit "${{ github.sha }}"',
@@ -104,7 +146,7 @@ def audit_ci_contract(text: str) -> list[str]:
         if token not in portability_job:
             errors.append(f"missing same-wheel portability contract token: {token}")
     ordered_portability_tokens = (
-        "uses: actions/download-artifact@v8",
+        action_ref("actions/download-artifact"),
         "scripts/distribution_binding.py check",
         "scripts/verify_packaged_contracts.py",
     )
@@ -124,6 +166,38 @@ class CiContractTests(unittest.TestCase):
         self.assertNotEqual(mutated, text)
         self.assertTrue(
             any("uv installations" in error for error in audit_ci_contract(mutated))
+        )
+
+    def test_action_tag_mutation_is_detected(self) -> None:
+        text = WORKFLOW.read_text(encoding="utf-8")
+        exact = action_line("actions/checkout")
+        mutations = (
+            text.replace(exact, "uses: actions/checkout@v6", 1),
+            text.replace(exact, f'{action_ref("actions/checkout")}-suffix # v6', 1),
+        )
+        for mutated in mutations:
+            with self.subTest(mutated=mutated):
+                self.assertNotEqual(mutated, text)
+                self.assertTrue(
+                    any(
+                        "reviewed commit pin" in error
+                        for error in audit_ci_contract(mutated)
+                    )
+                )
+
+    def test_unreviewed_action_mutation_is_detected(self) -> None:
+        text = WORKFLOW.read_text(encoding="utf-8")
+        mutated = text.replace(
+            "      - name: Compile canonical source and tests\n",
+            "      - name: Unreviewed action\n"
+            "        uses: example/unreviewed@0123456789abcdef0123456789abcdef01234567\n\n"
+            "      - name: Compile canonical source and tests\n",
+            1,
+        )
+        self.assertNotEqual(mutated, text)
+        self.assertIn(
+            "workflow contains an unreviewed action reference",
+            audit_ci_contract(mutated),
         )
 
     def test_uv_runtime_assertion_mutation_is_detected(self) -> None:
