@@ -78,7 +78,7 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 | --- | --- | --- | --- |
 | 要求関係監査 | `audit-requirement` | `audit_requirement_relations_tool` | 七項目からなる一件の構造化機能要求。形態素解析は `signal_only`、係り受け解析と呼出元提出 LLM 解析は `candidate_only` |
 | 方向拘束監査 | `audit-direction-binding` | `audit_direction_binding_tool` | 登録済みの尺度・非尺度日本語表現で、方向指定が同じ対象と操作に直接結び付いているかを検査。制限のない言語理解ではない |
-| 値や項目を限定したスキーマの取得 | `schema` | `semantic_guard_schema_tool` | 既知のスキーマ名24件。スキーマが有るだけでは公開処理経路への統合を意味しない |
+| 値や項目を限定したスキーマの取得 | `schema` | `semantic_guard_schema_tool` | 既知のスキーマ名25件。スキーマが有るだけでは公開処理経路への統合を意味しない |
 | 明示的な旧版比較 | `shadow-compare` | `shadow_compare_legacy_tool` | 運用者が所有する外部 0.1.0 ルートを使い、信頼済み比較には基準ハッシュ値の一致を要する。MCP 経路は既定無効で運用者設定が必要。旧版は正解基準ではない |
 
 現行ソースコードには、工程横断と保証に関する候補契約も存在する。設計や試験の材料では

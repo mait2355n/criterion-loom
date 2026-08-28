@@ -1,0 +1,739 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/v1/schemas/field-sample-intake.schema.json",
+  "title": "semantic-guard prospective field-sample intake bundle",
+  "description": "Content-addressed intake facts, human-owned permission and privacy decisions, exposure declarations, duplicate closure, split assignment, and a fail-closed projection into field-evaluation/v0 cases. It validates declared records; it does not prove their external truth, sampling representativeness, or field performance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "intake_id",
+    "policy_binding",
+    "collection",
+    "normalization_profile",
+    "assignment_protocol",
+    "candidates",
+    "duplicate_clusters",
+    "duplicate_review",
+    "candidate_assessments",
+    "cluster_assessments",
+    "holdout_projection",
+    "summary",
+    "authority_boundary",
+    "limitations",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "field-sample-intake/v0"},
+    "intake_id": {
+      "type": "string",
+      "pattern": "^field-intake\\.[a-z0-9.-]+$",
+      "maxLength": 256
+    },
+    "policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "collection": {"$ref": "#/$defs/collection"},
+    "normalization_profile": {"$ref": "#/$defs/versionedRef"},
+    "assignment_protocol": {"$ref": "#/$defs/versionedRef"},
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "duplicate_clusters": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/duplicateCluster"}
+    },
+    "duplicate_review": {"$ref": "#/$defs/duplicateReview"},
+    "candidate_assessments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/candidateAssessment"}
+    },
+    "cluster_assessments": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/clusterAssessment"}
+    },
+    "holdout_projection": {"$ref": "#/$defs/holdoutProjection"},
+    "summary": {"$ref": "#/$defs/summary"},
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stableRef": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+~-]*$",
+      "maxLength": 512
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 64
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "version", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/stableRef"},
+        "version": {"$ref": "#/$defs/stableRef"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "humanPolicyDecision": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_type",
+        "issuer_kind",
+        "human_actor_ref",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "decision",
+        "rationale_digest",
+        "evidence_refs",
+        "recorded_at",
+        "decision_digest"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stableRef"},
+        "decision_type": {"enum": ["adopt_policy", "retire_policy"]},
+        "issuer_kind": {"const": "human"},
+        "human_actor_ref": {"$ref": "#/$defs/stableRef"},
+        "policy_id": {"$ref": "#/$defs/stableRef"},
+        "policy_version": {"$ref": "#/$defs/stableRef"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "decision": {"enum": ["adopt", "retire"]},
+        "rationale_digest": {"$ref": "#/$defs/digest"},
+        "evidence_refs": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableRef"}
+        },
+        "recorded_at": {"$ref": "#/$defs/dateTime"},
+        "decision_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "stratificationBinding": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension_id", "required", "stratum_refs"],
+        "properties": {
+          "dimension_id": {"$ref": "#/$defs/stableRef"},
+          "required": {"type": "boolean"},
+          "stratum_refs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 256,
+            "uniqueItems": true,
+            "items": {"$ref": "#/$defs/stableRef"}
+          }
+        }
+      }
+    },
+    "policyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "policy_status",
+        "evidence_class",
+        "population_id",
+        "intended_use_id",
+        "population_digest",
+        "stratification",
+        "human_decision",
+        "policy_binding_digest"
+      ],
+      "properties": {
+        "policy_id": {"$ref": "#/$defs/stableRef"},
+        "policy_version": {"$ref": "#/$defs/stableRef"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "policy_status": {"enum": ["pending", "adopted", "retired"]},
+        "evidence_class": {"enum": ["field_evaluation", "local_fixture", "smoke"]},
+        "population_id": {"$ref": "#/$defs/stableRef"},
+        "intended_use_id": {"$ref": "#/$defs/stableRef"},
+        "population_digest": {"$ref": "#/$defs/digest"},
+        "stratification": {"$ref": "#/$defs/stratificationBinding"},
+        "human_decision": {"$ref": "#/$defs/humanPolicyDecision"},
+        "policy_binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "collection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collection_id",
+        "source_register_ref",
+        "acquisition_mode",
+        "opened_at",
+        "closed_at",
+        "assignment_frozen_at",
+        "collection_digest"
+      ],
+      "properties": {
+        "collection_id": {"$ref": "#/$defs/stableRef"},
+        "source_register_ref": {"$ref": "#/$defs/versionedRef"},
+        "acquisition_mode": {
+          "enum": [
+            "prospective_consecutive",
+            "prospective_stratified",
+            "retrospective_archive",
+            "local_fixture"
+          ]
+        },
+        "opened_at": {"$ref": "#/$defs/dateTime"},
+        "closed_at": {"$ref": "#/$defs/dateTime"},
+        "assignment_frozen_at": {"$ref": "#/$defs/dateTime"},
+        "collection_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "owner_ref",
+        "allowed_uses",
+        "decision_record_ref",
+        "recorded_at",
+        "valid_through",
+        "permission_digest"
+      ],
+      "properties": {
+        "status": {"enum": ["granted", "denied", "unknown", "revoked"]},
+        "owner_ref": {"$ref": "#/$defs/stableRef"},
+        "allowed_uses": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "calibration",
+              "holdout_evaluation",
+              "derived_metrics",
+              "public_raw_material"
+            ]
+          }
+        },
+        "decision_record_ref": {
+          "anyOf": [{"$ref": "#/$defs/stableRef"}, {"type": "null"}]
+        },
+        "recorded_at": {
+          "anyOf": [{"$ref": "#/$defs/dateTime"}, {"type": "null"}]
+        },
+        "valid_through": {
+          "anyOf": [{"$ref": "#/$defs/dateTime"}, {"type": "null"}]
+        },
+        "permission_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "privacyReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification",
+        "handling",
+        "release_status",
+        "reviewer_ref",
+        "decision_record_ref",
+        "recorded_at",
+        "approved_subject_digest",
+        "privacy_digest"
+      ],
+      "properties": {
+        "classification": {"enum": ["public", "internal", "confidential", "restricted"]},
+        "handling": {"enum": ["not_required", "redacted", "pseudonymized", "isolated"]},
+        "release_status": {"enum": ["approved", "denied", "pending", "revoked"]},
+        "reviewer_ref": {"$ref": "#/$defs/stableRef"},
+        "decision_record_ref": {
+          "anyOf": [{"$ref": "#/$defs/stableRef"}, {"type": "null"}]
+        },
+        "recorded_at": {
+          "anyOf": [{"$ref": "#/$defs/dateTime"}, {"type": "null"}]
+        },
+        "approved_subject_digest": {
+          "anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]
+        },
+        "privacy_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "unitAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "assessor_kind",
+        "assessor_ref",
+        "assessment_record_ref",
+        "recorded_at",
+        "assessment_digest"
+      ],
+      "properties": {
+        "status": {"enum": ["single_function", "multiple_functions", "ambiguous"]},
+        "assessor_kind": {"const": "human"},
+        "assessor_ref": {"$ref": "#/$defs/stableRef"},
+        "assessment_record_ref": {"$ref": "#/$defs/stableRef"},
+        "recorded_at": {"$ref": "#/$defs/dateTime"},
+        "assessment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "exposureRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exposure_id",
+        "kind",
+        "subject_digest",
+        "actor_ref",
+        "actor_version",
+        "artifact_ref",
+        "occurred_at"
+      ],
+      "properties": {
+        "exposure_id": {"$ref": "#/$defs/stableRef"},
+        "kind": {
+          "enum": [
+            "training",
+            "tuning",
+            "test_fixture",
+            "documentation_example",
+            "rule_design",
+            "route_design",
+            "model_input",
+            "human_development_review",
+            "other"
+          ]
+        },
+        "subject_digest": {"$ref": "#/$defs/digest"},
+        "actor_ref": {"$ref": "#/$defs/stableRef"},
+        "actor_version": {"$ref": "#/$defs/stableRef"},
+        "artifact_ref": {"$ref": "#/$defs/stableRef"},
+        "occurred_at": {"$ref": "#/$defs/dateTime"}
+      }
+    },
+    "exposureDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "checked_contexts",
+        "records",
+        "declared_by",
+        "recorded_at",
+        "exposure_digest"
+      ],
+      "properties": {
+        "status": {"enum": ["no_known_exposure", "known_exposure", "unknown"]},
+        "checked_contexts": {
+          "type": "array",
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "training_corpus",
+              "tuning_history",
+              "test_fixtures",
+              "documentation_examples",
+              "rule_and_route_design",
+              "prior_model_inputs",
+              "prior_intake_manifests"
+            ]
+          }
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {"$ref": "#/$defs/exposureRecord"}
+        },
+        "declared_by": {"$ref": "#/$defs/stableRef"},
+        "recorded_at": {"$ref": "#/$defs/dateTime"},
+        "exposure_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "field_case_id",
+        "subject_ref",
+        "source_occurrence_id",
+        "origin_ref",
+        "source_revision",
+        "source_kind",
+        "acquired_at",
+        "collector_ref",
+        "original_digest",
+        "normalized_digest",
+        "evaluation_subject_digest",
+        "normalization_profile_ref",
+        "normalization_profile_digest",
+        "population_id",
+        "intended_use_id",
+        "stratum_refs",
+        "derived_from_refs",
+        "permission",
+        "privacy_review",
+        "unit_assessment",
+        "exposure_declaration",
+        "candidate_digest"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^field-candidate\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "field_case_id": {
+          "type": "string",
+          "pattern": "^field-case\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "subject_ref": {"$ref": "#/$defs/stableRef"},
+        "source_occurrence_id": {"$ref": "#/$defs/stableRef"},
+        "origin_ref": {"$ref": "#/$defs/stableRef"},
+        "source_revision": {"$ref": "#/$defs/stableRef"},
+        "source_kind": {
+          "enum": ["operational_request", "issue", "ticket", "specification", "other"]
+        },
+        "acquired_at": {"$ref": "#/$defs/dateTime"},
+        "collector_ref": {"$ref": "#/$defs/stableRef"},
+        "original_digest": {"$ref": "#/$defs/digest"},
+        "normalized_digest": {"$ref": "#/$defs/digest"},
+        "evaluation_subject_digest": {"$ref": "#/$defs/digest"},
+        "normalization_profile_ref": {"$ref": "#/$defs/stableRef"},
+        "normalization_profile_digest": {"$ref": "#/$defs/digest"},
+        "population_id": {"$ref": "#/$defs/stableRef"},
+        "intended_use_id": {"$ref": "#/$defs/stableRef"},
+        "stratum_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableRef"}
+        },
+        "derived_from_refs": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^field-candidate\\.[a-z0-9.-]+$",
+            "maxLength": 256
+          }
+        },
+        "permission": {"$ref": "#/$defs/permission"},
+        "privacy_review": {"$ref": "#/$defs/privacyReview"},
+        "unit_assessment": {"$ref": "#/$defs/unitAssessment"},
+        "exposure_declaration": {"$ref": "#/$defs/exposureDeclaration"},
+        "candidate_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "duplicateCluster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cluster_id",
+        "member_refs",
+        "representative_ref",
+        "assigned_split",
+        "assignment_protocol_ref",
+        "assignment_protocol_digest",
+        "assignment_record_ref",
+        "assigned_at",
+        "cluster_digest"
+      ],
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "pattern": "^duplicate-cluster\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "member_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^field-candidate\\.[a-z0-9.-]+$",
+            "maxLength": 256
+          }
+        },
+        "representative_ref": {
+          "type": "string",
+          "pattern": "^field-candidate\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "assigned_split": {"enum": ["calibration", "holdout", "excluded"]},
+        "assignment_protocol_ref": {"$ref": "#/$defs/stableRef"},
+        "assignment_protocol_digest": {"$ref": "#/$defs/digest"},
+        "assignment_record_ref": {"$ref": "#/$defs/stableRef"},
+        "assigned_at": {"$ref": "#/$defs/dateTime"},
+        "cluster_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "comparisonScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibration_corpus",
+        "test_fixtures",
+        "documentation_examples",
+        "prior_intakes",
+        "rule_and_route_design"
+      ],
+      "properties": {
+        "calibration_corpus": {"$ref": "#/$defs/versionedRef"},
+        "test_fixtures": {"$ref": "#/$defs/versionedRef"},
+        "documentation_examples": {"$ref": "#/$defs/versionedRef"},
+        "prior_intakes": {"$ref": "#/$defs/versionedRef"},
+        "rule_and_route_design": {"$ref": "#/$defs/versionedRef"}
+      }
+    },
+    "duplicateReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id",
+        "status",
+        "reviewer_kind",
+        "reviewer_ref",
+        "review_record_ref",
+        "methods",
+        "comparison_scope",
+        "candidate_set_digest",
+        "cluster_set_digest",
+        "completed_at",
+        "review_digest"
+      ],
+      "properties": {
+        "review_id": {"$ref": "#/$defs/stableRef"},
+        "status": {"enum": ["complete", "incomplete"]},
+        "reviewer_kind": {"const": "human"},
+        "reviewer_ref": {"$ref": "#/$defs/stableRef"},
+        "review_record_ref": {"$ref": "#/$defs/stableRef"},
+        "methods": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {"enum": ["exact_digest", "normalized_digest", "semantic_human_review"]}
+        },
+        "comparison_scope": {"$ref": "#/$defs/comparisonScope"},
+        "candidate_set_digest": {"$ref": "#/$defs/digest"},
+        "cluster_set_digest": {"$ref": "#/$defs/digest"},
+        "completed_at": {"$ref": "#/$defs/dateTime"},
+        "review_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "eligibilityStatus": {
+      "enum": ["eligible_for_holdout", "calibration_only", "excluded"]
+    },
+    "eligibilityReason": {
+      "enum": [
+        "policy_not_adopted",
+        "policy_decision_missing_or_mismatched",
+        "policy_adopted_after_collection_open",
+        "policy_evidence_class_not_field",
+        "collection_not_prospective",
+        "evaluation_permission_not_granted",
+        "holdout_use_not_permitted",
+        "calibration_use_not_permitted",
+        "permission_expired_before_freeze",
+        "privacy_release_not_approved",
+        "not_single_function",
+        "stratum_not_declared",
+        "required_stratum_cardinality_invalid",
+        "known_prior_exposure",
+        "exposure_status_unknown",
+        "exposure_scope_incomplete",
+        "duplicate_review_incomplete",
+        "duplicate_review_methods_incomplete"
+      ]
+    },
+    "reasonCodes": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/eligibilityReason"}
+    },
+    "candidateAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "candidate_digest",
+        "status",
+        "reason_codes",
+        "assessment_digest"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^field-candidate\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "candidate_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/eligibilityStatus"},
+        "reason_codes": {"$ref": "#/$defs/reasonCodes"},
+        "assessment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "clusterAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cluster_id",
+        "cluster_digest",
+        "status",
+        "reason_codes",
+        "assessment_digest"
+      ],
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "pattern": "^duplicate-cluster\\.[a-z0-9.-]+$",
+          "maxLength": 256
+        },
+        "cluster_digest": {"$ref": "#/$defs/digest"},
+        "status": {"$ref": "#/$defs/eligibilityStatus"},
+        "reason_codes": {"$ref": "#/$defs/reasonCodes"},
+        "assessment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "holdoutProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason_codes",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "population_digest",
+        "cases",
+        "case_set_digest",
+        "projection_digest"
+      ],
+      "properties": {
+        "status": {"enum": ["ready", "blocked", "not_requested"]},
+        "reason_codes": {"$ref": "#/$defs/reasonCodes"},
+        "policy_id": {"$ref": "#/$defs/stableRef"},
+        "policy_version": {"$ref": "#/$defs/stableRef"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "population_digest": {"$ref": "#/$defs/digest"},
+        "cases": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {"$ref": "field-evaluation.schema.json#/$defs/case"}
+        },
+        "case_set_digest": {
+          "anyOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]
+        },
+        "projection_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eligible_for_holdout", "calibration_only", "excluded"],
+      "properties": {
+        "eligible_for_holdout": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "calibration_only": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "excluded": {"type": "integer", "minimum": 0, "maximum": 4096}
+      }
+    },
+    "splitCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calibration", "holdout", "excluded"],
+      "properties": {
+        "calibration": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "holdout": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "excluded": {"type": "integer", "minimum": 0, "maximum": 4096}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_count",
+        "cluster_count",
+        "candidate_status_counts",
+        "cluster_status_counts",
+        "split_counts",
+        "projected_holdout_case_count",
+        "summary_digest"
+      ],
+      "properties": {
+        "candidate_count": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "cluster_count": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "candidate_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "cluster_status_counts": {"$ref": "#/$defs/statusCounts"},
+        "split_counts": {"$ref": "#/$defs/splitCounts"},
+        "projected_holdout_case_count": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "summary_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_guard_role",
+        "policy_owner",
+        "permission_owner",
+        "privacy_owner",
+        "single_function_owner",
+        "semantic_duplicate_owner",
+        "split_owner",
+        "final_acceptance_owner"
+      ],
+      "properties": {
+        "semantic_guard_role": {"const": "validate_declared_intake_and_project_eligible_holdout_cases"},
+        "policy_owner": {"const": "human"},
+        "permission_owner": {"const": "external_human_or_organization"},
+        "privacy_owner": {"const": "external_human_or_organization"},
+        "single_function_owner": {"const": "human"},
+        "semantic_duplicate_owner": {"const": "human"},
+        "split_owner": {"const": "external_human_or_control_plane"},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    }
+  }
+}

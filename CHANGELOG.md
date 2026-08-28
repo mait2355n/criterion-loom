@@ -4,6 +4,11 @@ All notable repository and public-contract changes are recorded here. Package ve
 
 ## [Unreleased]
 
+### Added
+
+- Added the closed `field-sample-intake/v0` sidecar contract and Python validator for prospective acquisition, permission, privacy handling, single-function assessment, exposure declarations, duplicate-cluster split isolation, and fail-closed projection into unchanged `field-evaluation/v0` cases.
+- Added an explicit intake-to-evaluation binding check, adversarial tests, operating guidance, and a pending human-owned field-evaluation policy draft. These artifacts do not constitute a real corpus, adopted policy, field-validity result, or package release.
+
 ### Documentation and distribution metadata
 
 - Rebuilt the public entry path around an evidence-backed value statement, a reproducible input-command-output example, explicit current limits, interface choice, and task-oriented English/Japanese documentation maps.

@@ -55,6 +55,7 @@
 | 追跡と合成 | 内部試作を実装済み。公開処理経路には未統合 | [工程追跡・合成](lifecycle-trace-and-composition.md) |
 | 変更後の状態妥当性 | 明示的に有効化する内部契約を実装済み。公開処理経路には未統合 | [状態評価・再評価](state-assessment-and-requalification.md) |
 | 修正と責任 | 明示的に有効化する内部契約を実装済み。実務効果は未評価 | [修正循環・責任材料](repair-loop-and-responsibility-material.md) |
+| 実地標本の前向き取込 | 取込門を実装済み。実在資料・実地結果なし | [実地標本の前向き取込](field-sample-intake.md) |
 | 実地評価設計 | 評価契約を実装済み。実地結果なし | [実地評価・除去比較](field-evaluation-and-ablation.md) |
 | 成果評価 | 評価契約を実装済み。実参加者・実成果なし | [運用成果評価](operational-outcome-evaluation.md) |
 | 運用適格性と移行 | 内部契約実装済み。運用適格性・切替なし | [運用適格性・移行](operational-qualification-and-transition.md) |

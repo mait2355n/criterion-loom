@@ -1,6 +1,6 @@
-# Public Surface: Criterion Loom / semantic-guard 1.1.0
+# Public Surface: Criterion Loom / semantic-guard current source
 
-Documentation date: 2026-08-24
+Documentation date: 2026-08-28
 
 This file describes the current public source contract. It is not release-artifact evidence, a deployment record, or a claim that every repository document describes the current implementation.
 
@@ -8,7 +8,7 @@ This file describes the current public source contract. It is not release-artifa
 
 - Public project and repository name: Criterion Loom / `criterion-loom`
 - Distribution: `semantic-guard`
-- Version: `1.1.0`
+- Distribution metadata version: `1.1.0`; the change log separately identifies unreleased source changes
 - CLI: `semantic-guard`
 - MCP server: `semantic-guard-mcp`
 - Python package: `semantic_guard`
@@ -33,7 +33,9 @@ MCP tools:
 - `shadow_compare_legacy_tool`
 - `semantic_guard_schema_tool`
 
-The schema tool exposes 24 closed contract schemas. Schema availability does not assert that every sidecar has a public end-to-end workflow.
+The schema tool exposes 25 closed contract schemas, including the schema-only
+`field-sample-intake/v0` sidecar. Schema availability does not assert that every
+sidecar has a public end-to-end workflow or that a real field corpus exists.
 
 ## Public source contents
 

@@ -1,6 +1,13 @@
-# semantic-guard 1.1.0 実装状態
+# semantic-guard 実装状態
 
-更新日: 2026-08-24
+更新日: 2026-08-28
+
+この文書は、配布・統合証拠がある `1.1.0` 基線と、その後の `Unreleased` 現行ソースを
+別の証拠境界として扱う。後者の実装又はローカル検証を、`1.1.0` 配布物の成立証拠へ
+遡及させない。
+
+## 1.1.0 配布・統合基線
+
 判定: 要求関係監査に加え、独立した方向拘束監査の項目を限定した契約、CLI、MCP、
 スキーマ及び回帰試験を実装し、GitHub の `main` にあるマージコミット
 `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` へ統合済みである。PR ブランチとマージ後の
@@ -14,7 +21,7 @@
 同一視しない。方針、プロファイル、各スキーマの `v1` / `v2` は各契約の意味版であり、
 パッケージ版へ一括置換しない。
 
-## 1.1.0 統合済み: 方向拘束監査の独立した公開限定機能
+### 1.1.0 統合済み: 方向拘束監査の独立した公開限定機能
 
 `direction-binding public slice・245dad95-accf-581c-8b0a-ae1c1f557de4` は、マージコミット
 `a77c3cbdc69295572e90333e2a6e9da690fbbb6d` が拘束する正式な 1.1.0 ソースコードへ
@@ -63,9 +70,14 @@ CLI及びMCPの正式な基準へ昇格した。全工程の公開一貫統合�
 
 原点は [origin-requirement.md](prototypes/origin-requirement.md) である。成果物数や試験数は原点達成の代用品ではない。
 
-## 実装面
+## Unreleased 現行ソースの実装面
 
-| 面 | 主な実体 | 現在の意味 |
+現行ソースは、前向き実地標本取込の補助契約と25件目の公開スキーマを追加する。
+これは `1.1.0` 基線へ含まれず、版付き公開配布、実在標本の取込、評価方針の人間採択、
+実地妥当性又は人間受理の成立を意味しない。以下の表は、特記がない限りこの
+`Unreleased` 現行ソースを記述する。
+
+| 面 | 主な実体 | 現行ソースでの意味 |
 | --- | --- | --- |
 | 検証範囲 | `validation/verification-source.json`, `verification-gap-register.json` | 17検証項目、17未解決群、52解消責務、19解消経路、65件の `gap` を、項目を限定した正式な検証基準と台帳で保持する |
 | 正式基準の表示 | `verification_projection.py`, `verification-source.generated.md` | 全 JSON ノードを JSON Pointer 付きで決定論的に表示し、生成文字列の完全一致を検査する |
@@ -78,14 +90,16 @@ CLI及びMCPの正式な基準へ昇格した。全工程の公開一貫統合�
 | 工程間意味保存 | `lifecycle-trace.schema.json`, `lifecycle_trace.py` | 対象、命題、義務、証拠、権限、未解決を十工程グラフで保存し、差替え・欠落・越権を拒む |
 | 行為証拠 | `action-assurance-profile.schema.json`, `action-evidence.schema.json`, `action_evidence.py` | 行為プロファイル v1の根拠へ人間採択を結合し、七主張を別々に再現する。説明、ツールへの要求、自己申告だけから発生を導出しない |
 | 修復循環 | `responsibility-policy.schema.json`, `repair-cycle.schema.json`, `repair_loop.py` | 方針・循環 v2で、責任方針の根拠、人間による採択主体、型付きの変更後監査・回帰結果、版付き効果遷移、対象と結び付いた独立人間査読の必要条件を検査する |
-| 実地評価 | `field-evaluation.schema.json`, `field_evaluation.py` | 同一事例集合で経路を比較し、偽充足・偽反証・棄権は Wilson 限界、費用は明示された比較根拠で扱う。実保留標本は未実施 |
+| 実地標本取込・評価 | `field-sample-intake.schema.json`, `field_sample_intake.py`, `field-evaluation.schema.json`, `field_evaluation.py` | 前向き取得、許諾、秘匿、単一機能査定、既知露出、重複群分割を検査した代表だけを旧事例へ射影し、同一事例集合で経路を比較する。実保留標本と採択済み評価方針は未実施 |
 | 修復・人間利用効果 | `operational-outcome-evaluation.schema.json`, `operational_outcomes.py` | v1で権限不変条件、比較群の由来、固定した課題・登録者範囲、参加者・群単位、脱落、盲検裁定、Wilson/Hoeffding による評価に必要な条件を検査する。肯定値も与えられた記録内に限定する |
 | 安全運用 | `secure-operation.schema.json`, `secure_operation.py` | v1で最新採択・廃止、範囲、情報の流れ、保持、削除、再起動、証拠種別、資源上限を検査する。外部安全性を表す正判定は設けず、内部整合状態と未立証主張を分ける |
 | 運用適格性・移行 | `operational-qualification.schema.json`, `transition-plan.schema.json` | 12運用場面、配備条件、再評価、補助契約から旧系廃止までの判定条件、中止・巻戻しを契約化する。実運用試験や切替判断は未実施 |
 | 方向拘束公開限定機能 | `direction_binding_audit.py`, `request_decision_frame.py`, `request_direction_binding.py`, `direction-binding-audit.schema.json` | 同一対象・同一操作への明示方向付着を尺度系14族・49軸・56尺度語と非尺度系六軸で検査する。形態素は `signal_only`、数値は補助のみ、人間受理は外部に残す |
-| 公開インターフェース | `cli.py`, `mcp_server.py`, `schema_access.py` | CLIコマンド四件、MCPツール四件、全24契約スキーマの取得をソースコードで実装する。1.1.0の `wheel` / `sdist` を構築し、選択した `wheel` の隔離検証20件、方向CLI・スキーマ・`--fail-on`・MCP振分けを再現済み。ライフサイクル、状態、行為、修復、評価及び運用の補助契約群を合成する実務処理経路は未実装 |
+| 公開インターフェース | `cli.py`, `mcp_server.py`, `schema_access.py` | CLIコマンド四件、MCPツール四件、現行ソースの全25契約スキーマ取得を実装する。2026-08-23に選択した1.1.0 `wheel` の24件という観測は歴史値として別に保持する。ライフサイクル、状態、行為、修復、評価及び運用の補助契約群を合成する実務処理経路は未実装 |
 
 ## 層別準備度
+
+この表も `Unreleased` 現行ソースを対象とし、`1.1.0` の配布・統合観測とは分ける。
 
 | 層 | 現在地 | 判定 |
 | --- | --- | --- |

@@ -27,6 +27,7 @@ class PackagedContractVerifierTests(unittest.TestCase):
         compile(verifier._AUDIT_PROGRAM, "<installed-contract-audit>", "exec")
         self.assertIn("adjacent_decoys_not_selected", verifier._AUDIT_PROGRAM)
         self.assertIn("operational_empty_object_rejected", verifier._AUDIT_PROGRAM)
+        self.assertIn("field_intake_module_and_schema_packaged", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_distribution_identity", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_mcp_surface", verifier._AUDIT_PROGRAM)
         self.assertIn("public_audit_producer_version", verifier._AUDIT_PROGRAM)
