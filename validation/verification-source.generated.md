@@ -9,11 +9,11 @@
 | --- | --- |
 | projection_version | `semantic-guard-verification-projection/v0` |
 | source | `verification-source.json` |
-| source_sha256 | `6a48d93e6800e145c9d4352d5d911cedaeb378697a2915d85b461119433b43ac` |
-| canonical_json_sha256 | `af51759ef1143b1e5b11d1b4681c94e30807c0c4b5291bfedcb19b51159cb59a` |
+| source_sha256 | `8de902be395bfa886a457fb2ce9b5b9f2ef4ca7e4358a081c7b68b8577599d41` |
+| canonical_json_sha256 | `15883e0d19cbaa185c3087e2db4aa4fa503dbd86d82576a17cb82ced2be66e49` |
 | schema_version | `semantic-guard-verification-source/v0` |
 | register_id | `verification-register.semantic-guard.r0` |
-| recorded_at | `2026-08-27T15:43:40+09:00` |
+| recorded_at | `2026-08-28T10:17:29+09:00` |
 | human_acceptance.status | `pending` |
 | human_acceptance.owner | `human` |
 
@@ -62,7 +62,7 @@
 | `evidence_effects` | `effect.real-nlp.discovery-field.contextualizes` |  |
 | `evidence_effects` | `effect.real-nlp.provider-paths.supports` |  |
 | `evidence_effects` | `effect.repair.integrated-acceptance.contextualizes` |  |
-| `evidence_observations` | `evidence.constitution.snapshot.2026-08-24` | v1 憲法 snapshot |
+| `evidence_observations` | `evidence.constitution.snapshot.2026-08-28` | v1 憲法 snapshot |
 | `evidence_observations` | `evidence.full-evaluation.2026-07-11` | 全体監査の歴史的観測 |
 | `evidence_observations` | `evidence.integrated-verification.2026-07-16` | vNext 統合検証観測 |
 | `evidence_observations` | `evidence.origin-requirement.snapshot.2026-08-27` | 原点要求 snapshot |
@@ -277,7 +277,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/evidence_effects/1/effect","value":"contextualizes"}
 {"node_type":"string","pointer":"/evidence_effects/1/effect_id","value":"effect.constitution.normative-items.contextualizes"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/evidence_effects/1/evidence_ref"}
-{"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/evidence_effects/1/evidence_ref/reference_kind","value":"ref"}
 {"item_count":5,"node_type":"array","pointer":"/evidence_effects/1/item_refs"}
@@ -965,7 +965,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/evidence_observations/1/acquisition_method","value":"file_read"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/content_digest"}
 {"node_type":"string","pointer":"/evidence_observations/1/content_digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/1/content_digest/value","value":"4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
+{"node_type":"string","pointer":"/evidence_observations/1/content_digest/value","value":"4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5"}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/detail_refs"}
 {"node_type":"string","pointer":"/evidence_observations/1/detail_refs/0","value":"../constitution/semantic-guard-constitution.yaml"}
 {"keys":["formal_model_ref","formal_verification_result_ref","independence_basis_ref","observer_ref","signature_or_attestation_ref","signer_ref","trust_root_ref","verifier_ref"],"member_count":8,"node_type":"object","pointer":"/evidence_observations/1/elevated_trust_basis"}
@@ -977,7 +977,7 @@ Node count: `6128`
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/signer_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/trust_root_ref","value":null}
 {"node_type":"null","pointer":"/evidence_observations/1/elevated_trust_basis/verifier_ref","value":null}
-{"node_type":"string","pointer":"/evidence_observations/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/evidence_observations/1/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/evidence_observations/1/evidence_kind","value":"source_snapshot"}
 {"node_type":"string","pointer":"/evidence_observations/1/freshness","value":"current"}
 {"node_type":"string","pointer":"/evidence_observations/1/label","value":"v1 憲法 snapshot"}
@@ -985,7 +985,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/evidence_observations/1/limitations/0","value":"Presence in the constitution does not establish runtime implementation or field validity."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/observation_locators"}
 {"node_type":"string","pointer":"/evidence_observations/1/observation_locators/0","value":"../constitution/semantic-guard-constitution.yaml"}
-{"node_type":"string","pointer":"/evidence_observations/1/observed_at","value":"2026-08-24T13:01:52+09:00"}
+{"node_type":"string","pointer":"/evidence_observations/1/observed_at","value":"2026-08-28T10:17:29+09:00"}
 {"node_type":"string","pointer":"/evidence_observations/1/result_summary","value":"The constitution records bounded-correctness dimensions, separated claim classes, authority limits, invariants, pass preconditions, and evaluation metrics."}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/scope"}
 {"node_type":"string","pointer":"/evidence_observations/1/scope/0","value":"Normative v1 model pending human acceptance."}
@@ -996,7 +996,7 @@ Node count: `6128`
 {"keys":["digest","subject_locator"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0"}
 {"keys":["algorithm","value"],"member_count":2,"node_type":"object","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest"}
 {"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/algorithm","value":"sha256"}
-{"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/value","value":"4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
+{"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/digest/value","value":"4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5"}
 {"node_type":"string","pointer":"/evidence_observations/1/subject_binding/digest_bindings/0/subject_locator","value":"../constitution/semantic-guard-constitution.yaml"}
 {"node_type":"null","pointer":"/evidence_observations/1/subject_binding/environment_ref","value":null}
 {"item_count":1,"node_type":"array","pointer":"/evidence_observations/1/subject_binding/limitations"}
@@ -2112,7 +2112,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/record_surface/detail_refs/9","value":"../docs/impact-and-execution-order-2026-07-16.md"}
 {"node_type":"string","pointer":"/record_surface/detail_refs/10","value":"./integrated-verification-2026-07-16.json"}
 {"node_type":"string","pointer":"/record_surface/detail_refs/11","value":"./real-nlp-smoke-2026-07-16.json"}
-{"node_type":"string","pointer":"/recorded_at","value":"2026-08-27T15:43:40+09:00"}
+{"node_type":"string","pointer":"/recorded_at","value":"2026-08-28T10:17:29+09:00"}
 {"node_type":"string","pointer":"/register_id","value":"verification-register.semantic-guard.r0"}
 {"node_type":"string","pointer":"/schema_version","value":"semantic-guard-verification-source/v0"}
 {"item_count":5,"node_type":"array","pointer":"/scope"}
@@ -3980,7 +3980,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/upstream_sources/1/ref/entity_id","value":"constitution.semantic-guard.r0"}
 {"node_type":"string","pointer":"/upstream_sources/1/ref/label_hint","value":"v1 基幹憲法"}
 {"node_type":"string","pointer":"/upstream_sources/1/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/1/version_or_digest","value":"sha256:4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"}
+{"node_type":"string","pointer":"/upstream_sources/1/version_or_digest","value":"sha256:4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5"}
 {"keys":["authority","limitations","path","ref","version_or_digest"],"member_count":5,"node_type":"object","pointer":"/upstream_sources/2"}
 {"node_type":"string","pointer":"/upstream_sources/2/authority","value":"normative_model"}
 {"item_count":1,"node_type":"array","pointer":"/upstream_sources/2/limitations"}
@@ -4040,7 +4040,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/upstream_sources/7/ref/entity_id","value":"validator.semantic-guard.verification-source.v0"}
 {"node_type":"string","pointer":"/upstream_sources/7/ref/label_hint","value":"検証正本内部検証器"}
 {"node_type":"string","pointer":"/upstream_sources/7/ref/reference_kind","value":"ref"}
-{"node_type":"string","pointer":"/upstream_sources/7/version_or_digest","value":"sha256:e290e9468d1250338dbc488da73a5d4e955a28080f0bdb8cab8738484f0e45cb"}
+{"node_type":"string","pointer":"/upstream_sources/7/version_or_digest","value":"sha256:5f83abf2f44b8188de05198eda6893623af6e18551804fc98847d5700a2c7b2f"}
 {"keys":["authority","limitations","path","ref","version_or_digest"],"member_count":5,"node_type":"object","pointer":"/upstream_sources/8"}
 {"node_type":"string","pointer":"/upstream_sources/8/authority","value":"public_contract"}
 {"item_count":1,"node_type":"array","pointer":"/upstream_sources/8/limitations"}
@@ -4356,7 +4356,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/verification_items/1/entity_id","value":"verification.or01.engineering-knowledge-governance"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/1/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/1/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/1/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/1/evidence_refs/1"}
@@ -4399,7 +4399,7 @@ Node count: `6128`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/1/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/1/residual_risks/0","value":"A target form may become self-referential if its engineering origin is not independently reviewable."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/1/reverification"}
-{"node_type":"string","pointer":"/verification_items/1/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
+{"node_type":"string","pointer":"/verification_items/1/reverification/last_evaluated_at","value":"2026-08-28T10:17:29+09:00"}
 {"item_count":0,"node_type":"array","pointer":"/verification_items/1/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/1/reverification/status","value":"blocked"}
 {"item_count":1,"node_type":"array","pointer":"/verification_items/1/reverification/triggers"}
@@ -4576,7 +4576,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/verification_items/3/entity_id","value":"verification.or02.bounded-claim-model"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/3/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/3/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/3/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/3/evidence_refs/1"}
@@ -4621,7 +4621,7 @@ Node count: `6128`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/3/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/3/residual_risks/0","value":"A structurally complete but semantically wrong claim can still be recorded."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/3/reverification"}
-{"node_type":"string","pointer":"/verification_items/3/reverification/last_evaluated_at","value":"2026-08-24T13:01:52+09:00"}
+{"node_type":"string","pointer":"/verification_items/3/reverification/last_evaluated_at","value":"2026-08-28T10:17:29+09:00"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/3/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/3/reverification/procedure_refs/0","value":"tests/test_public_contract.py"}
 {"node_type":"string","pointer":"/verification_items/3/reverification/procedure_refs/1","value":"tests/test_models_and_aggregation.py"}
@@ -4894,7 +4894,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/verification_items/6/entity_id","value":"verification.or03.repair-effect"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/6/evidence_refs"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/6/evidence_refs/0"}
-{"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/6/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/6/evidence_refs/1"}
@@ -5004,7 +5004,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/7/evidence_refs/1"}
-{"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/7/evidence_refs/1/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/7/evidence_refs/2"}
@@ -5051,7 +5051,7 @@ Node count: `6128`
 {"item_count":1,"node_type":"array","pointer":"/verification_items/7/residual_risks"}
 {"node_type":"string","pointer":"/verification_items/7/residual_risks/0","value":"External callers can still mislabel pass as acceptance outside the contract."}
 {"keys":["last_evaluated_at","procedure_refs","status","triggers","valid_until"],"member_count":5,"node_type":"object","pointer":"/verification_items/7/reverification"}
-{"node_type":"string","pointer":"/verification_items/7/reverification/last_evaluated_at","value":"2026-08-27T15:43:40+09:00"}
+{"node_type":"string","pointer":"/verification_items/7/reverification/last_evaluated_at","value":"2026-08-28T10:17:29+09:00"}
 {"item_count":2,"node_type":"array","pointer":"/verification_items/7/reverification/procedure_refs"}
 {"node_type":"string","pointer":"/verification_items/7/reverification/procedure_refs/0","value":"tests/test_models_and_aggregation.py"}
 {"node_type":"string","pointer":"/verification_items/7/reverification/procedure_refs/1","value":"tests/test_public_contract.py"}
@@ -5226,7 +5226,7 @@ Node count: `6128`
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/label_hint","value":"原点要求 snapshot"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/0/reference_kind","value":"ref"}
 {"keys":["entity_id","label_hint","reference_kind"],"member_count":3,"node_type":"object","pointer":"/verification_items/9/evidence_refs/1"}
-{"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-24"}
+{"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/entity_id","value":"evidence.constitution.snapshot.2026-08-28"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/label_hint","value":"v1 憲法 snapshot"}
 {"node_type":"string","pointer":"/verification_items/9/evidence_refs/1/reference_kind","value":"ref"}
 {"node_type":"string","pointer":"/verification_items/9/failure_consequence","value":"A semantically careful audit can still disclose protected material, trust poisoned inputs or resources, exceed granted authority, or preserve unsafe evidence while appearing suitable for real work."}

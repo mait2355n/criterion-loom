@@ -17,11 +17,94 @@ from semantic_guard.verification_projection import (
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "validation/verification-source.json"
 PROJECTION = ROOT / "validation/verification-source.generated.md"
+MATRIX = ROOT / "validation/verification-matrix.md"
 RENDER_SCRIPT = ROOT / "scripts/render_verification_projection.py"
 VALIDATOR = ROOT / "scripts/validate_verification_source.py"
 
 
+def matrix_evidence_rows(text: str) -> dict[str, tuple[str, str]]:
+    section = text.split("## 証拠観測\n", 1)[1].split("\n## ", 1)[0]
+    rows: dict[str, tuple[str, str]] = {}
+    for line in section.splitlines():
+        if not line.startswith("| `evidence."):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        entity_id = cells[0].strip("`")
+        if entity_id in rows:
+            raise ValueError(f"duplicate evidence row: {entity_id}")
+        rows[entity_id] = (cells[1], cells[2])
+    return rows
+
+
+def matrix_source_header(text: str) -> tuple[str, str]:
+    projection_time = next(
+        line.removeprefix("投影時点: ")
+        for line in text.splitlines()
+        if line.startswith("投影時点: ")
+    )
+    source_digest = next(
+        line.removeprefix("正本 SHA-256: `").removesuffix("`")
+        for line in text.splitlines()
+        if line.startswith("正本 SHA-256: `")
+    )
+    return projection_time, source_digest
+
+
 class VerificationProjectionTests(unittest.TestCase):
+    def test_human_matrix_header_matches_canonical_source(self) -> None:
+        source_bytes = SOURCE.read_bytes()
+        source = json.loads(source_bytes)
+        expected = (
+            source["recorded_at"],
+            hashlib.sha256(source_bytes).hexdigest(),
+        )
+        actual = matrix_source_header(MATRIX.read_text(encoding="utf-8"))
+        self.assertEqual(actual, expected)
+
+    def test_human_matrix_header_check_detects_stale_source_digest(self) -> None:
+        source_digest = hashlib.sha256(SOURCE.read_bytes()).hexdigest()
+        text = MATRIX.read_text(encoding="utf-8")
+        tampered = text.replace(source_digest, "0" * 64, 1)
+        self.assertNotEqual(tampered, text)
+        self.assertNotEqual(
+            matrix_source_header(tampered)[1],
+            source_digest,
+        )
+
+    def test_human_matrix_evidence_rows_match_canonical_source(self) -> None:
+        source = json.loads(SOURCE.read_text(encoding="utf-8"))
+        expected = {
+            item["entity_id"]: (
+                f'{item["evidence_kind"]} / {item["trust_class"]}',
+                f'{item["subject_binding"]["status"]} / {item["freshness"]}',
+            )
+            for item in source["evidence_observations"]
+        }
+        actual = matrix_evidence_rows(MATRIX.read_text(encoding="utf-8"))
+        self.assertEqual(actual, expected)
+
+    def test_human_matrix_evidence_check_detects_stale_identity(self) -> None:
+        source = json.loads(SOURCE.read_text(encoding="utf-8"))
+        expected_ids = {
+            item["entity_id"] for item in source["evidence_observations"]
+        }
+        current_id = next(
+            entity_id
+            for entity_id in expected_ids
+            if entity_id.startswith("evidence.origin-requirement.snapshot.")
+        )
+        text = MATRIX.read_text(encoding="utf-8")
+        tampered = text.replace(
+            current_id,
+            f"{current_id}.stale",
+            1,
+        )
+        self.assertNotEqual(tampered, text)
+        self.assertNotEqual(
+            set(matrix_evidence_rows(tampered)),
+            expected_ids,
+        )
+
     def test_checked_in_projection_is_exact_and_idempotent(self) -> None:
         source_bytes = SOURCE.read_bytes()
         source = json.loads(source_bytes)

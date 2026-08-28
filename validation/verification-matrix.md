@@ -1,9 +1,9 @@
 # v1 検証体系の可読投影
 
-投影時点: 2026-08-27T15:43:40+09:00
+投影時点: 2026-08-28T10:17:29+09:00
 正本: [`verification-source.json`](verification-source.json)
 正本 schema: [`verification-source.schema.json`](verification-source.schema.json)
-正本 SHA-256: `6a48d93e6800e145c9d4352d5d911cedaeb378697a2915d85b461119433b43ac`
+正本 SHA-256: `8de902be395bfa886a457fb2ce9b5b9f2ef4ca7e4358a081c7b68b8577599d41`
 
 ## 役割
 
@@ -213,8 +213,8 @@ repository canonicalization は locator と製品 identity の昇格に限る。
 
 | 証拠 ID | 種別・信頼 | 対象拘束 / 鮮度 | 支持する範囲 | 支持しない範囲 |
 | --- | --- | --- | --- | --- |
-| `evidence.origin-requirement.snapshot.2026-08-24` | source_snapshot / locally_observed | bound / current | digest で固定した原点要求の記録内容 | 実装、効果 |
-| `evidence.constitution.snapshot.2026-08-24` | source_snapshot / locally_observed | bound / current | digest で固定した規範模型と状態語彙 | 実装、実務性能 |
+| `evidence.origin-requirement.snapshot.2026-08-27` | source_snapshot / locally_observed | bound / current | digest で固定した原点要求の記録内容 | 実装、効果 |
+| `evidence.constitution.snapshot.2026-08-28` | source_snapshot / locally_observed | bound / current | digest で固定した規範模型と状態語彙 | 実装、実務性能 |
 | `evidence.public-trust-basis-inspection.2026-07-17` | source_snapshot / locally_observed | bound / current | 公開 provenance schema の高信頼級に、観測者独立性・署名・信頼根・形式模型・検証器の条件拘束が無いという局所反証 | 実際の悪用、将来の修正、外部証拠真正性 |
 | `evidence.integrated-verification.2026-07-16` | test_execution / tool_reported | unbound / unbound | 日付付き記録が報告する局所試験、schema、配布、MCP、旧版比較 | 現 source snapshot への適用、実務性能、真正性、運用受理 |
 | `evidence.real-nlp-smoke.2026-07-16` | test_execution / tool_reported | unbound / unbound | 日付付き記録が報告する五例の実解析器経路、能力欠落 | 現解析器 source・資源への適用、母集団精度、一般化 |

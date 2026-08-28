@@ -5,7 +5,7 @@
   "register_id": "verification-register.semantic-guard.r0",
   "title": "semantic-guard v1 verification requirement and evidence source",
   "status": "active_draft",
-  "recorded_at": "2026-08-27T15:43:40+09:00",
+  "recorded_at": "2026-08-28T10:17:29+09:00",
   "authority_boundary": {
     "audit_owner": "semantic-guard",
     "control_owner": "external_caller_or_resource_control_plane",
@@ -57,7 +57,7 @@
       },
       "path": "../constitution/semantic-guard-constitution.yaml",
       "authority": "normative_model",
-      "version_or_digest": "sha256:4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337",
+      "version_or_digest": "sha256:4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5",
       "limitations": [
         "Pending human acceptance.",
         "Defines semantics and invariants but does not itself prove implementation or field performance."
@@ -136,7 +136,7 @@
       },
       "path": "../scripts/validate_verification_source.py",
       "authority": "validation_implementation",
-      "version_or_digest": "sha256:e290e9468d1250338dbc488da73a5d4e955a28080f0bdb8cab8738484f0e45cb",
+      "version_or_digest": "sha256:5f83abf2f44b8188de05198eda6893623af6e18551804fc98847d5700a2c7b2f",
       "limitations": [
         "Checks bounded repository-local consistency only; its output records its own digest and runtime but is not independent evidence."
       ]
@@ -450,16 +450,16 @@
       ]
     },
     {
-      "entity_id": "evidence.constitution.snapshot.2026-08-24",
+      "entity_id": "evidence.constitution.snapshot.2026-08-28",
       "label": "v1 憲法 snapshot",
       "source_path": "../constitution/semantic-guard-constitution.yaml",
-      "observed_at": "2026-08-24T13:01:52+09:00",
+      "observed_at": "2026-08-28T10:17:29+09:00",
       "evidence_kind": "source_snapshot",
       "trust_class": "locally_observed",
       "acquisition_method": "file_read",
       "content_digest": {
         "algorithm": "sha256",
-        "value": "4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"
+        "value": "4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5"
       },
       "subject_binding": {
         "status": "bound",
@@ -469,7 +469,7 @@
             "subject_locator": "../constitution/semantic-guard-constitution.yaml",
             "digest": {
               "algorithm": "sha256",
-              "value": "4f1662fa4ba00d866dbfd808dd02f57249bfddf87306762d107205d626b23337"
+              "value": "4e1deee66b6b5c61144eed94ec58df545953a9ec97281acee1b3a83b2c3937c5"
             }
           }
         ],
@@ -754,7 +754,7 @@
         {"reference_kind": "ref", "entity_id": "verification.or03.human-decision-boundary", "label_hint": "人間判断境界"},
         {"reference_kind": "ref", "entity_id": "verification.cross.secure-and-responsible-operation", "label_hint": "安全・責任ある運用境界"}
       ],
-      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
+      "evidence_ref": {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"},
       "effect": "contextualizes",
       "claim_dimensions": ["proposition"],
       "proposition_scope": "The bound constitution snapshot supplies the normative vocabulary, invariants, authority boundary, bounded-assurance dimensions, repair intent, and human-decision separation used to formulate these verification propositions.",
@@ -1263,7 +1263,7 @@
         "Independent review and adoption record."
       ],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.full-evaluation.2026-07-11", "label_hint": "全体監査の歴史的観測"}
       ],
       "counterevidence_refs": [
@@ -1278,7 +1278,7 @@
         "status": "blocked",
         "triggers": ["Rule-pack source, external edition, interpretation, or organization profile changes."],
         "procedure_refs": [],
-        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
+        "last_evaluated_at": "2026-08-28T10:17:29+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1418,7 +1418,7 @@
       ],
       "required_evidence": ["Schema self-validation and negative conformance cases.", "Representative assurance records for every claim class."],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [
@@ -1433,7 +1433,7 @@
         "status": "defined",
         "triggers": ["Claim taxonomy, schema, authority, or public projection changes."],
         "procedure_refs": ["tests/test_public_contract.py", "tests/test_models_and_aggregation.py"],
-        "last_evaluated_at": "2026-08-24T13:01:52+09:00",
+        "last_evaluated_at": "2026-08-28T10:17:29+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1623,7 +1623,7 @@
       "rejection_conditions": ["The report has no machine-consumable repair target.", "A changed output is counted as improvement without re-audit.", "semantic-guard automatically executes or accepts the repair."],
       "required_evidence": ["Versioned finding-to-repair mapping.", "Before/after cases with independent review.", "Regression and escalation evidence.", "Human comprehension and contestability observations."],
       "evidence_refs": [
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [],
@@ -1689,7 +1689,7 @@
       "required_evidence": ["Schema negative cases.", "Aggregation and projection tests.", "Human acceptance-review observation before cutover."],
       "evidence_refs": [
         {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-27", "label_hint": "原点要求 snapshot"},
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"},
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"},
         {"reference_kind": "ref", "entity_id": "evidence.integrated-verification.2026-07-16", "label_hint": "統合検証観測"}
       ],
       "counterevidence_refs": [],
@@ -1702,7 +1702,7 @@
         "status": "defined",
         "triggers": ["Decision schema, workflow projection, acceptance documentation, or ownership changes."],
         "procedure_refs": ["tests/test_models_and_aggregation.py", "tests/test_public_contract.py"],
-        "last_evaluated_at": "2026-08-27T15:43:40+09:00",
+        "last_evaluated_at": "2026-08-28T10:17:29+09:00",
         "valid_until": null
       },
       "authority_boundary": {
@@ -1838,7 +1838,7 @@
       ],
       "evidence_refs": [
         {"reference_kind": "ref", "entity_id": "evidence.origin-requirement.snapshot.2026-08-27", "label_hint": "原点要求 snapshot"},
-        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-24", "label_hint": "v1 憲法 snapshot"}
+        {"reference_kind": "ref", "entity_id": "evidence.constitution.snapshot.2026-08-28", "label_hint": "v1 憲法 snapshot"}
       ],
       "counterevidence_refs": [],
       "state_profile_ref": {"reference_kind": "ref", "entity_id": "state.not-assessed", "label_hint": "未評価"},
