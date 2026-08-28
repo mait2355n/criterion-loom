@@ -10,6 +10,9 @@ on:
 permissions:
   contents: read
 
+env:
+  UV_VERSION: "0.10.10"
+
 jobs:
   v1-contract:
     name: v1 contract / Python ${{ matrix.python-version }}
@@ -17,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.13"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
       - name: Check out repository
@@ -29,7 +32,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        run: python -m pip install --upgrade pip uv
+        run: python -m pip install "uv==${{ env.UV_VERSION }}"
+
+      - name: Verify Python and uv identity
+        env:
+          EXPECTED_PYTHON: ${{ matrix.python-version }}
+        run: |
+          python -c "import os, sys; expected = tuple(map(int, os.environ['EXPECTED_PYTHON'].split('.'))); actual = sys.version_info[:2]; sys.exit(f'Python runtime mismatch: {actual!r} != {expected!r}') if actual != expected else None"
+          python -c "import os, subprocess, sys; observed = subprocess.check_output(['uv', '--version'], text=True).split(); expected = os.environ['UV_VERSION']; sys.exit(f'uv runtime mismatch: {observed!r}; expected uv {expected}') if observed[:2] != ['uv', expected] else None"
 
       - name: Verify lockfile and environment
         run: |
@@ -74,7 +84,14 @@ jobs:
           python-version: "3.13"
 
       - name: Install uv
-        run: python -m pip install --upgrade pip uv
+        run: python -m pip install "uv==${{ env.UV_VERSION }}"
+
+      - name: Verify Python and uv identity
+        env:
+          EXPECTED_PYTHON: "3.13"
+        run: |
+          python -c "import os, sys; expected = tuple(map(int, os.environ['EXPECTED_PYTHON'].split('.'))); actual = sys.version_info[:2]; sys.exit(f'Python runtime mismatch: {actual!r} != {expected!r}') if actual != expected else None"
+          python -c "import os, subprocess, sys; observed = subprocess.check_output(['uv', '--version'], text=True).split(); expected = os.environ['UV_VERSION']; sys.exit(f'uv runtime mismatch: {observed!r}; expected uv {expected}') if observed[:2] != ['uv', expected] else None"
 
       - name: Prepare archived 0.1.0 environment
         env:
@@ -97,6 +114,10 @@ jobs:
     name: wheel and installed public surface
     runs-on: ubuntu-latest
     needs: [v1-contract, legacy-smoke]
+    outputs:
+      artifact_name: ${{ steps.distribution.outputs.artifact_name }}
+      sdist_filename: ${{ steps.distribution.outputs.sdist_filename }}
+      wheel_filename: ${{ steps.distribution.outputs.wheel_filename }}
 
     steps:
       - name: Check out repository
@@ -108,24 +129,67 @@ jobs:
           python-version: "3.13"
 
       - name: Install uv
-        run: python -m pip install --upgrade pip uv
+        run: python -m pip install "uv==${{ env.UV_VERSION }}"
+
+      - name: Verify Python and uv identity
+        env:
+          EXPECTED_PYTHON: "3.13"
+        run: |
+          python -c "import os, sys; expected = tuple(map(int, os.environ['EXPECTED_PYTHON'].split('.'))); actual = sys.version_info[:2]; sys.exit(f'Python runtime mismatch: {actual!r} != {expected!r}') if actual != expected else None"
+          python -c "import os, subprocess, sys; observed = subprocess.check_output(['uv', '--version'], text=True).split(); expected = os.environ['UV_VERSION']; sys.exit(f'uv runtime mismatch: {observed!r}; expected uv {expected}') if observed[:2] != ['uv', expected] else None"
 
       - name: Build canonical wheel and source distribution
         run: |
           uv lock --check
           uv build --out-dir dist
+          python - <<'PY'
+          from pathlib import Path
+
+          marker = Path("dist/.gitignore")
+          if marker.is_symlink() or not marker.is_file() or marker.read_bytes() != b"*":
+              raise SystemExit("uv build marker differs from the reviewed single-byte form")
+          marker.unlink()
+          PY
+
+      - name: Bind distributions to checked-out source
+        id: distribution
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          python scripts/distribution_binding.py create \
+            --project-root . \
+            --dist-dir dist \
+            --expected-commit "$EXPECTED_COMMIT"
+          python scripts/distribution_binding.py check \
+            --project-root . \
+            --dist-dir dist \
+            --expected-commit "$EXPECTED_COMMIT"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = json.loads(Path("dist/distribution-binding.json").read_text(encoding="utf-8"))
+          artifacts = {item["kind"]: item["filename"] for item in manifest["artifacts"]}
+          if set(artifacts) != {"wheel", "sdist"}:
+              raise SystemExit("distribution binding does not name one wheel and one sdist")
+          version = manifest["project"]["version"]
+          artifact_name = f"semantic-guard-{version}-{os.environ['EXPECTED_COMMIT'][:12]}-distributions"
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write(f"artifact_name={artifact_name}\n")
+              output.write(f"wheel_filename={artifacts['wheel']}\n")
+              output.write(f"sdist_filename={artifacts['sdist']}\n")
+          PY
 
       - name: Verify packaged contracts
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
-          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0.tar.gz' -print -quit)"
-          test -n "$WHEEL"
-          test -n "$SDIST"
+          WHEEL="dist/${{ steps.distribution.outputs.wheel_filename }}"
+          SDIST="dist/${{ steps.distribution.outputs.sdist_filename }}"
           uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"
 
       - name: Verify installed CLI and MCP inventory
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
+          WHEEL="dist/${{ steps.distribution.outputs.wheel_filename }}"
           VENV="$RUNNER_TEMP/semantic-guard-installed"
           python -m venv "$VENV"
           "$VENV/bin/python" -m pip install --upgrade pip
@@ -164,11 +228,62 @@ jobs:
               raise SystemExit("installed direction-binding dispatch did not fail closed")
           PY
 
-      - name: Upload wheel
+      - name: Upload bound distributions
         uses: actions/upload-artifact@v7
         with:
-          name: semantic-guard-1.1.0-distributions
+          name: ${{ steps.distribution.outputs.artifact_name }}
           path: |
-            dist/*.whl
-            dist/*.tar.gz
+            dist/${{ steps.distribution.outputs.wheel_filename }}
+            dist/${{ steps.distribution.outputs.sdist_filename }}
+            dist/distribution-binding.json
+            dist/SHA256SUMS
           if-no-files-found: error
+
+  package-portability:
+    name: bound wheel / Python 3.12 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: package
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Check out bound source
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Verify Python identity
+        shell: python
+        run: |
+          import sys
+          expected = (3, 12)
+          actual = sys.version_info[:2]
+          if actual != expected:
+              raise SystemExit(f"Python runtime mismatch: {actual!r} != {expected!r}")
+
+      - name: Download bound distributions
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ needs.package.outputs.artifact_name }}
+          path: dist
+
+      - name: Recheck distribution binding
+        run: >-
+          python scripts/distribution_binding.py check
+          --project-root .
+          --dist-dir dist
+          --expected-commit "${{ github.sha }}"
+
+      - name: Verify packaged contracts on target environment
+        run: >-
+          python scripts/verify_packaged_contracts.py
+          --wheel "dist/${{ needs.package.outputs.wheel_filename }}"
+          --sdist "dist/${{ needs.package.outputs.sdist_filename }}"
+          --timeout-seconds 300
