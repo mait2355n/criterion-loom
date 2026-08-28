@@ -294,7 +294,8 @@ uv run --locked python scripts/validate_verification_source.py
 目録は歴史的観測として残すが、通常実行時の信頼の起点には使わない。ハッシュ値がずれた場合、
 既定では比較を行わない。
 
-MCP の `shadow-compare` による旧版比較は既定で無効である。ツールの呼出側から実行ファイル、変換器、目録、
+MCP ツール `shadow_compare_legacy_tool` による旧版比較は既定で無効である。CLI の対応するサブコマンドは
+`shadow-compare` である。いずれも呼出側から実行ファイル、変換器、目録、
 ソースルートを指定させない。サーバー運用者が必要性と対象を確認した場合だけ、
 MCP サーバーの実行環境に次を設定する。
 

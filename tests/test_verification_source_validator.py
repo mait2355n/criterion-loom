@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "validation/verification-source.json"
 RESULT_SCHEMA = ROOT / "validation/verification-validation-result.schema.json"
 GAP_REGISTER = ROOT / "validation/verification-gap-register.json"
+CONSTITUTION = ROOT / "constitution/semantic-guard-constitution.yaml"
 SCRIPT = ROOT / "scripts/validate_verification_source.py"
 
 
@@ -116,6 +117,71 @@ class VerificationSourceValidatorTests(unittest.TestCase):
             for item in source[collection]
         )
         self.assertEqual(result["counts"]["gap_records"], expected_gap_count)
+
+    def test_canonical_constitution_rejects_stale_origin_digest(self) -> None:
+        origin_digest = hashlib.sha256(
+            (ROOT / "docs/prototypes/origin-requirement.md").read_bytes()
+        ).hexdigest()
+        constitution_text = CONSTITUTION.read_text(encoding="utf-8")
+        tampered = constitution_text.replace(
+            f"value: {origin_digest}",
+            f"value: {'0' * 64}",
+            1,
+        )
+        self.assertNotEqual(tampered, constitution_text)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            suffix=".yaml",
+            prefix="constitution-stale-origin-test-",
+            dir=ROOT / "constitution",
+            delete=False,
+        ) as handle:
+            handle.write(tampered)
+            constitution_path = Path(handle.name)
+        self.addCleanup(constitution_path.unlink, missing_ok=True)
+
+        constitution_digest = hashlib.sha256(
+            constitution_path.read_bytes()
+        ).hexdigest()
+        constitution_locator = f"../constitution/{constitution_path.name}"
+        source = self._source()
+        upstream = next(
+            item
+            for item in source["upstream_sources"]
+            if item["ref"]["entity_id"] == "constitution.semantic-guard.r0"
+        )
+        upstream["path"] = constitution_locator
+        upstream["version_or_digest"] = f"sha256:{constitution_digest}"
+        evidence = next(
+            item
+            for item in source["evidence_observations"]
+            if item["entity_id"].startswith("evidence.constitution.snapshot.")
+        )
+        evidence["source_path"] = constitution_locator
+        evidence["content_digest"]["value"] = constitution_digest
+        evidence["subject_binding"]["subject_locators"] = [constitution_locator]
+        evidence["subject_binding"]["digest_bindings"] = [
+            {
+                "subject_locator": constitution_locator,
+                "digest": {
+                    "algorithm": "sha256",
+                    "value": constitution_digest,
+                },
+            }
+        ]
+        evidence["observation_locators"] = [constitution_locator]
+        evidence["detail_refs"] = [constitution_locator]
+        source_path = self._write_source(source)
+
+        completed, result = self._run("--source", str(source_path))
+        self.assertEqual(completed.returncode, 1)
+        self.assertTrue(
+            any(
+                error["code"] == "constitution_origin_digest_mismatch"
+                for error in result["errors"]
+            )
+        )
 
     def test_gap_register_rejects_removed_declared_gap(self) -> None:
         register = self._gap_register()

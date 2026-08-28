@@ -314,6 +314,115 @@ def _extract_constitution_subject_ids(text: str) -> set[str]:
     return set(invariant_ids) | set(stage_ids)
 
 
+def _check_constitution_origin_digests(
+    root: Path,
+    text: str,
+    errors: list[dict[str, str]],
+    location: str,
+) -> None:
+    lines = text.splitlines()
+    try:
+        origin_index = next(
+            index for index, line in enumerate(lines) if line == "origin:"
+        )
+    except StopIteration:
+        _error(
+            errors,
+            "constitution_origin_missing",
+            location,
+            "canonical constitution has no origin section",
+        )
+        return
+
+    records: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    in_content_digest = False
+    for line in lines[origin_index + 1 :]:
+        if line and not line[0].isspace():
+            break
+        if re.match(r"^\s{2}-\s+ref:\s*", line):
+            if current is not None:
+                records.append(current)
+            current = {}
+            in_content_digest = False
+            continue
+        if current is None:
+            continue
+        path_match = re.match(r"^\s{4}path:\s*(.+?)\s*$", line)
+        if path_match:
+            current["path"] = path_match.group(1).strip("\"'")
+            continue
+        if re.match(r"^\s{4}content_digest:\s*$", line):
+            in_content_digest = True
+            continue
+        if not in_content_digest:
+            continue
+        algorithm_match = re.match(r"^\s{6}algorithm:\s*(.+?)\s*$", line)
+        if algorithm_match:
+            current["algorithm"] = algorithm_match.group(1).strip("\"'")
+            continue
+        value_match = re.match(r"^\s{6}value:\s*(.+?)\s*$", line)
+        if value_match:
+            current["value"] = value_match.group(1).strip("\"'")
+    if current is not None:
+        records.append(current)
+
+    if not records:
+        _error(
+            errors,
+            "constitution_origin_empty",
+            location,
+            "canonical constitution origin section has no records",
+        )
+        return
+
+    for index, record in enumerate(records):
+        record_location = f"{location}.origin[{index}]"
+        missing = sorted({"path", "algorithm", "value"} - set(record))
+        if missing:
+            _error(
+                errors,
+                "constitution_origin_binding_incomplete",
+                record_location,
+                f"missing fields: {', '.join(missing)}",
+            )
+            continue
+        if record["algorithm"] != "sha256":
+            _error(
+                errors,
+                "constitution_origin_digest_algorithm_unsupported",
+                f"{record_location}.content_digest.algorithm",
+                f"expected 'sha256', observed {record['algorithm']!r}",
+            )
+            continue
+        path = _resolve_inside_root(
+            root,
+            root,
+            record["path"],
+            errors,
+            f"{record_location}.path",
+        )
+        if not _require_file(path, errors, f"{record_location}.path"):
+            continue
+        try:
+            observed_digest = _sha256(path)
+        except OSError as exc:
+            _error(
+                errors,
+                "constitution_origin_digest_failed",
+                f"{record_location}.content_digest",
+                str(exc),
+            )
+            continue
+        if observed_digest != record["value"]:
+            _error(
+                errors,
+                "constitution_origin_digest_mismatch",
+                f"{record_location}.content_digest",
+                f"expected {record['value']}, observed {observed_digest}",
+            )
+
+
 def _check_resolved_reference_kind(
     reference: dict[str, Any],
     errors: list[dict[str, str]],
@@ -399,6 +508,8 @@ def _check_reference_closure(
         except (OSError, UnicodeError) as exc:
             _error(errors, "reference_source_unreadable", location, str(exc))
             continue
+        if upstream["ref"]["entity_id"] == "constitution.semantic-guard.r0":
+            _check_constitution_origin_digests(root, text, errors, location)
         if upstream["authority"] == "purpose":
             origin_requirement_ids.update(_extract_origin_requirement_ids(text))
         if upstream["authority"] == "normative_model":

@@ -3,7 +3,7 @@ notation_profile: entity-reference-notation/v0
 constitution_id: constitution.semantic-guard.r0
 version: 0.2.0-draft
 status: implementation_baseline_pending_human_acceptance
-recorded_at: "2026-08-24T13:01:52+09:00"
+recorded_at: "2026-08-28T10:17:29+09:00"
 
 identity:
   product_ref: semantic-guard v1・product.semantic-guard
@@ -19,7 +19,7 @@ origin:
     path: docs/prototypes/origin-requirement.md
     content_digest:
       algorithm: sha256
-      value: 24286b2be68f6c52c6275ee9d2e5c1f3df33b184049f54a645e171b065b0f5f1
+      value: 6960dfbc79670712b45ea3b02da8a2f7239c770ec9bf861cd7aa652009b5d3fb
     strengthens: [OR-01, OR-02, OR-03]
   - ref: 要求関係監査試作憲章・document.requirement-relation-audit-charter.v0
     path: docs/prototypes/requirement-relation-audit-charter-2026-07-12.md
