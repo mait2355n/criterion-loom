@@ -624,12 +624,16 @@ def _evaluate_evidence(
                 "stale",
                 rule["requalification_evidence_kinds"],
             )
-        policy_expiry = observed_at + timedelta(seconds=int(rule["max_age_seconds"]))
-        effective_expiry = min(expires_at, policy_expiry)
-        if evaluated_at >= effective_expiry:
+        # Compare exact durations instead of adding an unbounded schema-valid
+        # lifetime to datetime, whose representable calendar range is finite.
+        microsecond = timedelta(microseconds=1)
+        policy_lifetime = int(rule["max_age_seconds"]) * 1_000_000
+        evidence_lifetime = (expires_at - observed_at) // microsecond
+        elapsed = (evaluated_at - observed_at) // microsecond
+        if elapsed >= min(evidence_lifetime, policy_lifetime):
             reason = (
                 "evidence_expired"
-                if expires_at <= policy_expiry
+                if evidence_lifetime <= policy_lifetime
                 else "evidence_age_exceeds_policy"
             )
             invalidate(reason, "stale", rule["requalification_evidence_kinds"])

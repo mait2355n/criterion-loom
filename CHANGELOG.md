@@ -4,6 +4,10 @@ All notable repository and public-contract changes are recorded here. Package ve
 
 ## [Unreleased]
 
+### Fixed
+
+- Prevented state-assessment freshness checks from overflowing for schema-valid large policy lifetimes or observations near the maximum representable year. Expiration still occurs at the earlier evidence or policy deadline, including exact microsecond boundaries and ties.
+
 ### Documentation and distribution metadata
 
 - Rebuilt the public entry path around an evidence-backed value statement, a reproducible input-command-output example, explicit current limits, interface choice, and task-oriented English/Japanese documentation maps.

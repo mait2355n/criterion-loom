@@ -385,6 +385,64 @@ class StateAssessmentTests(unittest.TestCase):
             assessment["evidence_evaluations"][0]["reasons"],
         )
 
+    def test_large_policy_lifetimes_keep_the_declared_evidence_expiry(self) -> None:
+        for maximum_age in (3600, 315_576_000_000, 10**30):
+            self.kind_rules[0]["max_age_seconds"] = maximum_age
+            policy = self._policy("adopted")
+            for assessed_at, expected in (
+                ("2026-07-16T01:09:59.999999Z", "current"),
+                ("2026-07-16T01:10:00Z", "stale"),
+            ):
+                with self.subTest(maximum_age=maximum_age, assessed_at=assessed_at):
+                    result = self._assessment(policy=policy, assessed_at=assessed_at)
+                    self.assertEqual(result["axes"]["freshness"], expected)
+                    if expected == "stale":
+                        self.assertIn(
+                            "evidence_expired", result["evidence_evaluations"][0]["reasons"]
+                        )
+
+    def test_ordinary_policy_lifetime_does_not_overflow_at_datetime_limit(self) -> None:
+        evidence = self._evidence(
+            observed_at="9999-12-31T23:59:58Z",
+            expires_at="9999-12-31T23:59:59Z",
+        )
+        for assessed_at, expected in (
+            ("9999-12-31T23:59:58.999999Z", "current"),
+            ("9999-12-31T23:59:59Z", "stale"),
+        ):
+            with self.subTest(assessed_at=assessed_at):
+                result = self._assessment(evidence=[evidence], assessed_at=assessed_at)
+                self.assertEqual(result["axes"]["freshness"], expected)
+                if expected == "stale":
+                    self.assertIn(
+                        "evidence_expired", result["evidence_evaluations"][0]["reasons"]
+                    )
+
+    def test_policy_and_evidence_expiry_preserve_microsecond_boundaries(self) -> None:
+        self.kind_rules[0]["max_age_seconds"] = 1
+        policy = self._policy("adopted")
+        for expires_at, assessed_at, expected_reason in (
+            ("00:10:01.000002Z", "00:10:01.000000Z", None),
+            ("00:10:01.000002Z", "00:10:01.000001Z", "evidence_age_exceeds_policy"),
+            ("00:10:01.000001Z", "00:10:01.000001Z", "evidence_expired"),
+            ("00:10:01.000000Z", "00:10:01.000000Z", "evidence_expired"),
+        ):
+            with self.subTest(expires_at=expires_at, assessed_at=assessed_at):
+                evidence = self._evidence(
+                    observed_at="2026-07-16T00:10:00.000001Z",
+                    expires_at=f"2026-07-16T{expires_at}",
+                )
+                result = self._assessment(
+                    policy=policy, evidence=[evidence], assessed_at=f"2026-07-16T{assessed_at}"
+                )
+                self.assertEqual(
+                    result["axes"]["freshness"], "stale" if expected_reason else "current"
+                )
+                self.assertEqual(
+                    result["evidence_evaluations"][0]["reasons"],
+                    [expected_reason] if expected_reason else [],
+                )
+
     def test_pending_policy_never_produces_current_freshness(self) -> None:
         pending = self._policy("pending")
         assessment = self._assessment(policy=pending)
