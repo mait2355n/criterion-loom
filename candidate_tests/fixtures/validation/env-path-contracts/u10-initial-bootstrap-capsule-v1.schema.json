@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-initial-bootstrap-capsule-v1.schema.json",
+  "title": "U-10 one-shot digest-pinned bootstrap capsule v1",
+  "type": "object",
+  "required": ["schema_version", "capsule_kind", "invocation_id", "members", "formal_authority", "positive_assurance_allowed"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-initial-bootstrap-capsule/v1"},
+    "capsule_kind": {"enum": ["root_runtime_observation", "bootstrap_publication"]},
+    "invocation_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"},
+    "members": {"type": "array", "minItems": 6, "items": {"type": "object", "required": ["name", "encoding", "content", "artifact_digest"], "properties": {"name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,1023}$"}, "encoding": {"const": "base64"}, "content": {"type": "string", "contentEncoding": "base64"}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}},
+    "formal_authority": {"const": "none"}, "positive_assurance_allowed": {"const": false}
+  },
+  "$defs": {"digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}

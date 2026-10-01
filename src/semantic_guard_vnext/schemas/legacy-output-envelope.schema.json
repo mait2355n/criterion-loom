@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/legacy-output-envelope.schema.json",
+  "title": "semantic-guard legacy ungoverned output envelope",
+  "description": "A self-describing isolation envelope for historical output payloads. Nested material has observation-only authority and cannot establish positive assurance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "envelope_id",
+    "output_format",
+    "governance_status",
+    "authority_scope",
+    "formal_authority",
+    "positive_assurance",
+    "allowed_use",
+    "forbidden_use",
+    "limitations",
+    "legacy_payload",
+    "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "legacy-ungoverned-output-envelope/v0"},
+    "envelope_id": {"type": "string", "pattern": "^legacy-output\\.[0-9a-f]{64}$", "maxLength": 96},
+    "output_format": {
+      "enum": [
+        "legacy-compat",
+        "legacy-public-v0",
+        "legacy-assurance-v1",
+        "legacy-internal-debug-v0"
+      ]
+    },
+    "governance_status": {"const": "legacy_ungoverned"},
+    "authority_scope": {"const": "observation_only"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance": {"const": false},
+    "allowed_use": {"const": ["historical_observation", "compatibility_analysis"]},
+    "forbidden_use": {"const": ["formal_satisfaction", "formal_nonconformance", "hold_release", "human_acceptance"]},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 8192}
+    },
+    "legacy_payload": {"type": "object"},
+    "record_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"output_format": {"const": "legacy-compat"}}},
+      "then": {"properties": {"legacy_payload": {"$ref": "#/$defs/legacyCompatPayload"}}}
+    },
+    {
+      "if": {"properties": {"output_format": {"const": "legacy-public-v0"}}},
+      "then": {"properties": {"legacy_payload": {"$ref": "#/$defs/legacyPublicPayload"}}}
+    },
+    {
+      "if": {"properties": {"output_format": {"const": "legacy-assurance-v1"}}},
+      "then": {"properties": {"legacy_payload": {"$ref": "#/$defs/legacyAssurancePayload"}}}
+    },
+    {
+      "if": {"properties": {"output_format": {"const": "legacy-internal-debug-v0"}}},
+      "then": {"properties": {"legacy_payload": {"$ref": "#/$defs/legacyInternalPayload"}}}
+    }
+  ],
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "legacyCompatPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phase", "status", "score", "findings", "missing", "next_actions", "details"],
+      "properties": {
+        "phase": {"type": "string", "minLength": 1, "maxLength": 8192},
+        "status": {"type": "string", "minLength": 1, "maxLength": 8192},
+        "score": {"type": "number"},
+        "findings": {"type": "array", "maxItems": 4096},
+        "missing": {"type": "array", "maxItems": 4096},
+        "next_actions": {"type": "array", "maxItems": 4096},
+        "details": {"type": "object"}
+      }
+    },
+    "legacyPublicPayload": {
+      "type": "object",
+      "required": ["schema_version", "audit_id", "audit_conclusion", "workflow_disposition", "obligation_results"],
+      "properties": {"schema_version": {"const": "semantic-guard-vnext-audit-result/v0"}}
+    },
+    "legacyAssurancePayload": {
+      "type": "object",
+      "required": ["schema_version", "claim_id", "basis_snapshot", "proof_obligations", "derivation_graph"],
+      "properties": {"schema_version": {"const": "assurance-claim/v1"}}
+    },
+    "legacyInternalPayload": {
+      "type": "object",
+      "required": ["schema_version", "source_id", "profile_id", "profile_version", "record", "direct_assessments", "analysis_attempts", "obligation_reassessments", "remaining_unresolved_obligations", "result", "analysis_mode"],
+      "properties": {"schema_version": {"const": "semantic-guard-vnext-requirement-audit/v0"}}
+    }
+  }
+}

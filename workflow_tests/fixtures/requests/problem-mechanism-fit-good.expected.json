@@ -1,0 +1,30 @@
+{
+  "id": "REQ-PROBLEM-MECHANISM-FIT-GOOD-001",
+  "title": "Problem solution with cause and rejection condition does not trigger mechanism-fit warnings",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。問題: 旧 JSON の import が失敗する。原因: required field の欠落を新 schema として扱っている。解決策: 欠落 field に migration default を補う。目的: 旧 JSON を意味を壊さず読み込む。シナリオ: 保守者が旧 JSON を import する場合、欠落 field が default として記録される。期待結果: migration log と import 結果が残る。受入基準: 旧 JSON が migration され、欠落 field は default として記録される。検証方法: pytest。証拠: 試験結果。不合格条件: 未知 field を silent に捨てた場合は差し戻し。対象外: UI。未確定: なし。優先度: 必須。",
+  "strict": true,
+  "rationale": "Cause, mechanism, expected result, evidence, and rejection condition are present, so the new mechanism-fit rules should stay quiet.",
+  "labels": {
+    "forbidden_rules": [
+      "req.solution.problem_mechanism_fit_missing",
+      "req.acceptance.symptom_only_success_criteria"
+    ],
+    "forbidden_findings": [
+      {
+        "category": "solution_fit"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "pass",
+    "missing": {
+      "excludes": [
+        "problem_mechanism_fit",
+        "symptom_only_success_criteria"
+      ]
+    }
+  }
+}

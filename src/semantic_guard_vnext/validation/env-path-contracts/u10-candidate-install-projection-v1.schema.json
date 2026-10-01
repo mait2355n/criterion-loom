@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-candidate-install-projection-v1.schema.json",
+  "title": "semantic-guard U-10 candidate installation prepublication projection v1",
+  "description": "A frozen candidate-tree projection prepared before atomic directory publication. It closes the projected denominator but makes no occurrence or publication-time claim.",
+  "type": "object",
+  "required": [
+    "schema_version", "projection_id", "record_kind", "occurrence_id",
+    "authorization_ref", "consumption_ref", "bundle_ref",
+    "projected_candidate_path", "installed_denominator",
+    "metadata_denominator", "post_freeze_verification_status",
+    "post_freeze_verified_payload_digest", "installation_state",
+    "dependency_environment_status", "snapshot_lock_validation_status",
+    "snapshot_adoption_status", "active_snapshot_written",
+    "active_trust_store_written", "u4_principal_authenticity",
+    "formal_authority", "positive_assurance_allowed", "projection_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-candidate-install-projection/v1"},
+    "projection_id": {"$ref": "#/$defs/path_component_id"},
+    "record_kind": {"const": "candidate_installation_projection"},
+    "occurrence_id": {"$ref": "#/$defs/path_component_id"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"},
+    "consumption_ref": {"$ref": "#/$defs/consumption_ref"},
+    "bundle_ref": {"$ref": "#/$defs/bundle_ref"},
+    "projected_candidate_path": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+    "installed_denominator": {"$ref": "#/$defs/payload_denominator"},
+    "metadata_denominator": {"$ref": "#/$defs/metadata_denominator"},
+    "post_freeze_verification_status": {"const": "exact_root_names_payload_files_modes_sizes_digests_and_metadata_contracts"},
+    "post_freeze_verified_payload_digest": {"$ref": "#/$defs/digest"},
+    "installation_state": {"const": "candidate_projected_not_published"},
+    "dependency_environment_status": {"const": "project_distribution_excluded_source_root_separate"},
+    "snapshot_lock_validation_status": {"const": "pending_non_root_final_path_check"},
+    "snapshot_adoption_status": {"const": "pending"},
+    "active_snapshot_written": {"const": false},
+    "active_trust_store_written": {"const": false},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "projection_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "path_component_id": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "relative_path": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "authorization_digest", "authorized_operation", "record_locator", "artifact_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/path_component_id"}, "authorization_digest": {"$ref": "#/$defs/digest"}, "authorized_operation": {"const": "install_candidate_only"}, "record_locator": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.authorization\\.json$", "maxLength": 220}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/path_component_id"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "bundle_ref": {"type": "object", "required": ["bundle_id", "bundle_digest"], "properties": {"bundle_id": {"$ref": "#/$defs/path_component_id"}, "bundle_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "payload_entry": {"type": "object", "required": ["path", "artifact_digest", "size", "installed_mode", "source"], "properties": {"path": {"$ref": "#/$defs/relative_path"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "size": {"type": "integer", "minimum": 0}, "installed_mode": {"enum": ["0400", "0500"]}, "source": {"enum": ["closed_bundle_payload", "root_generated_relocation_binding"]}}, "unevaluatedProperties": false},
+    "payload_denominator": {"type": "object", "required": ["status", "scope", "directory_count", "directories", "entry_count", "entries", "tree_digest"], "properties": {"status": {"const": "closed"}, "scope": {"const": "payload_tree_only"}, "directory_count": {"type": "integer", "minimum": 1}, "directories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/relative_path"}}, "entry_count": {"type": "integer", "minimum": 1}, "entries": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/payload_entry"}}, "tree_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "metadata_denominator": {
+      "type": "object",
+      "required": ["status", "scope", "entry_count", "manifest_entry", "projection_entry"],
+      "properties": {
+        "status": {"const": "closed_by_path_and_contract"},
+        "scope": {"const": "candidate_root_metadata_excluding_payload_tree"},
+        "entry_count": {"const": 2},
+        "manifest_entry": {"type": "object", "required": ["path", "role", "artifact_digest", "size", "installed_mode"], "properties": {"path": {"const": "bundle-manifest.json"}, "role": {"const": "source_bundle_manifest"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "size": {"type": "integer", "minimum": 1}, "installed_mode": {"const": "0400"}}, "unevaluatedProperties": false},
+        "projection_entry": {"type": "object", "required": ["path", "role", "integrity_binding", "installed_mode"], "properties": {"path": {"const": "candidate-install-projection.json"}, "role": {"const": "candidate_install_prepublication_projection"}, "integrity_binding": {"const": "self_sealed_projection_digest"}, "installed_mode": {"const": "0400"}}, "unevaluatedProperties": false}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-runtime-observation-receipt-v1.schema.json",
+  "title": "U-10 root runtime observation occurrence receipt v1",
+  "type": "object",
+  "required": ["schema_version", "receipt_id", "record_kind", "request_id", "request_digest", "request_artifact_digest", "capsule_digest", "broker_manifest_ref", "control_manifest_ref", "preboot_ledger_initialization", "observation_started_at", "observation_observed_at", "receipt_recorded_at", "target_publication_occurred", "key_generation_occurred", "human_bootstrap_authorization_status", "formal_authority", "positive_assurance_allowed", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-runtime-observation-receipt/v1"}, "receipt_id": {"$ref": "#/$defs/id"}, "record_kind": {"const": "bootstrap_runtime_root_observation_occurrence"}, "request_id": {"$ref": "#/$defs/id"},
+    "request_digest": {"$ref": "#/$defs/digest"}, "request_artifact_digest": {"$ref": "#/$defs/digest"}, "capsule_digest": {"$ref": "#/$defs/digest"},
+    "broker_manifest_ref": {"$ref": "#/$defs/manifest_ref"}, "control_manifest_ref": {"$ref": "#/$defs/manifest_ref"},
+    "preboot_ledger_initialization": {"type": "object", "required": ["root", "root_state", "root_mode", "lock_locator", "lock_state", "lock_mode"], "properties": {"root": {"type": "string", "pattern": "^/"}, "root_state": {"enum": ["created_by_observation_loader", "existing_exact"]}, "root_mode": {"const": 448}, "lock_locator": {"type": "string", "pattern": "^/"}, "lock_state": {"enum": ["created_by_observation_loader", "existing_exact"]}, "lock_mode": {"const": 384}}, "unevaluatedProperties": false},
+    "observation_started_at": {"type": "string", "format": "date-time"}, "observation_observed_at": {"type": "string", "format": "date-time"}, "receipt_recorded_at": {"type": "string", "format": "date-time"},
+    "target_publication_occurred": {"const": false}, "key_generation_occurred": {"const": false}, "human_bootstrap_authorization_status": {"const": "pending"}, "formal_authority": {"const": "none"}, "positive_assurance_allowed": {"const": false}, "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}, "manifest_ref": {"type": "object", "required": ["locator", "artifact_digest", "manifest_digest"], "properties": {"locator": {"type": "string", "pattern": "^/", "maxLength": 4096}, "artifact_digest": {"$ref": "#/$defs/digest"}, "manifest_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}

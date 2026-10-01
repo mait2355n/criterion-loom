@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-key-operation-authorization-v1.schema.json",
+  "title": "U-10 exact Ed25519 key lifecycle authorization v1",
+  "type": "object",
+  "required": ["schema_version", "authorization_id", "authorization_version", "record_kind", "key_operation", "key_id", "key_entity_ref", "expected_current_key_id", "target_generation_path", "target_public_metadata_path", "target_private_key_path", "authorized_algorithm", "authorized_operation", "human_decision", "decision_owner", "recorded_at", "not_before", "expires_at", "u4_principal_authenticity", "authority_scope", "formal_authority", "positive_assurance_allowed", "authorization_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-key-operation-authorization/v1"}, "authorization_id": {"$ref": "#/$defs/id"}, "authorization_version": {"const": "1.0.0"}, "record_kind": {"const": "signing_key_operation_authorization"},
+    "key_operation": {"enum": ["generate", "rotate", "revoke"]}, "key_id": {"$ref": "#/$defs/uuid"}, "key_entity_ref": {"$ref": "#/$defs/entity_ref"}, "expected_current_key_id": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/uuid"}]},
+    "target_generation_path": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}$"},
+    "target_public_metadata_path": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/public-metadata\\.json$"},
+    "target_private_key_path": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/private\\.ed25519$"},
+    "authorized_algorithm": {"const": "Ed25519"}, "authorized_operation": {"const": "apply_exact_key_lifecycle_transition"}, "human_decision": {"const": "accept"}, "decision_owner": {"const": "human"},
+    "recorded_at": {"type": "string", "format": "date-time"}, "not_before": {"type": "string", "format": "date-time"}, "expires_at": {"type": "string", "format": "date-time"},
+    "u4_principal_authenticity": {"const": "unresolved"}, "authority_scope": {"const": "u10_signing_key_transition_only"}, "formal_authority": {"const": "human_key_transition_decision_only"}, "positive_assurance_allowed": {"const": false}, "authorization_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"}, "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}

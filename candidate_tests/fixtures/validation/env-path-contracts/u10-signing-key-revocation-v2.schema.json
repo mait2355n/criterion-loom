@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-signing-key-revocation-v2.schema.json",
+  "title": "U-10 signing key revocation occurrence v2",
+  "type": "object",
+  "required": ["schema_version", "revocation_id", "record_kind", "key_id", "key_entity_ref", "authorization_ref", "consumption_ref", "prior_selector_ref", "transition_evidence_selector", "revoked_at", "private_material_disposition", "formal_authority", "positive_assurance_allowed", "revocation_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-signing-key-revocation/v2"},
+    "revocation_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "signing_key_revocation_occurrence"},
+    "key_id": {"$ref": "#/$defs/uuid"},
+    "key_entity_ref": {"$ref": "#/$defs/entity_ref"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"},
+    "consumption_ref": {"$ref": "#/$defs/consumption_ref"},
+    "prior_selector_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/selector_ref"}]},
+    "transition_evidence_selector": {"$ref": "#/$defs/transition_evidence_selector"},
+    "revoked_at": {"type": "string", "format": "date-time"},
+    "private_material_disposition": {"const": "retained_root_only_not_exported_pending_retention_policy"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "revocation_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"},
+    "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "locator", "artifact_digest", "authorization_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/activations/key-transitions/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "authorization_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "locator", "artifact_digest", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/activations/key-transitions/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "selector_ref": {"type": "object", "required": ["selector_id", "locator", "artifact_digest", "selector_digest"], "properties": {"selector_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/selector-history/sha256/[0-9a-f]{64}\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "selector_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "transition_evidence_selector": {"type": "object", "required": ["ledger_root", "authorization_ref", "consumption_ref", "prior_selector_ref", "receipt_locator", "resolution_policy"], "properties": {"ledger_root": {"const": "/Library/Application Support/semantic-guard/u10/activations/key-transitions"}, "authorization_ref": {"$ref": "#/$defs/authorization_ref"}, "consumption_ref": {"$ref": "#/$defs/consumption_ref"}, "prior_selector_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/selector_ref"}]}, "receipt_locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/activations/key-transitions/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"}, "resolution_policy": {"const": "resolve_exact_key_transition_chain/v2"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

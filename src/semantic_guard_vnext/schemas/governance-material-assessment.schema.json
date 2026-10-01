@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/governance-material-assessment.schema.json",
+  "title": "semantic-guard governance material assessment",
+  "description": "A fail-closed assessment that binds supplied H1, H2, ENV-PATH, and D7 candidate material to one requirement observation without granting formal authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "observation_digest",
+    "authority_source_ids",
+    "subject_scope_ref",
+    "engineering_rule_governance",
+    "lifecycle_profile_governance",
+    "execution_environment_evidence",
+    "field_performance_evidence",
+    "formal_authority",
+    "positive_assurance",
+    "limitations",
+    "assessment_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "governance-material-assessment/v1"},
+    "observation_digest": {"$ref": "#/$defs/digest"},
+    "authority_source_ids": {"$ref": "#/$defs/strings"},
+    "subject_scope_ref": {"$ref": "#/$defs/recordRef"},
+    "engineering_rule_governance": {"$ref": "#/$defs/axis"},
+    "lifecycle_profile_governance": {"$ref": "#/$defs/axis"},
+    "execution_environment_evidence": {"$ref": "#/$defs/axis"},
+    "field_performance_evidence": {"$ref": "#/$defs/axis"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 8192}
+    },
+    "assessment_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "strings": {
+      "type": "array",
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 8192}
+    },
+    "recordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1, "maxLength": 512},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "jsonValue": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string", "maxLength": 1048576},
+        {"type": "array", "maxItems": 65536, "items": {"$ref": "#/$defs/jsonValue"}},
+        {"type": "object", "maxProperties": 65536, "additionalProperties": {"$ref": "#/$defs/jsonValue"}}
+      ]
+    },
+    "axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_status",
+        "binding_status",
+        "input_material",
+        "input_material_digest",
+        "validated_record",
+        "validated_record_digest",
+        "reason_codes",
+        "formal_authority",
+        "positive_assurance"
+      ],
+      "properties": {
+        "input_status": {"enum": ["missing", "candidate_assessed", "rejected"]},
+        "binding_status": {"enum": ["not_bound", "matched_candidate", "invalid"]},
+        "input_material": {"$ref": "#/$defs/jsonValue"},
+        "input_material_digest": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]
+        },
+        "validated_record": {"$ref": "#/$defs/jsonValue"},
+        "validated_record_digest": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]
+        },
+        "reason_codes": {"$ref": "#/$defs/strings"},
+        "formal_authority": {"const": "none"},
+        "positive_assurance": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "id": "REQ-DECISION-FRAME-ORDER-DIRECTION-UNSPECIFIED-001",
+  "title": "Direction-open scalar successor lacks a bound direction constraint",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "田中の次に身長が高い人は誰か？",
+  "strict": true,
+  "morphology": {
+    "source_text": "田中の次に身長が高い人は誰か？",
+    "result": {
+      "provider_id": "fixture-morphology",
+      "provider_version": "1",
+      "resource_version": "closed-fixture",
+      "split_mode": "C",
+      "tokens": [
+        {
+          "surface": "田中",
+          "normalized": "田中",
+          "lemma": "田中",
+          "pos": ["名詞", "固有名詞", "人名", "*", "*", "*"],
+          "start": 0,
+          "end": 2
+        },
+        {
+          "surface": "の",
+          "normalized": "の",
+          "lemma": "の",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 2,
+          "end": 3
+        },
+        {
+          "surface": "次",
+          "normalized": "次",
+          "lemma": "次",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 3,
+          "end": 4
+        },
+        {
+          "surface": "に",
+          "normalized": "に",
+          "lemma": "に",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 4,
+          "end": 5
+        },
+        {
+          "surface": "身長",
+          "normalized": "身長",
+          "lemma": "身長",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 5,
+          "end": 7
+        },
+        {
+          "surface": "が",
+          "normalized": "が",
+          "lemma": "が",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 7,
+          "end": 8
+        },
+        {
+          "surface": "高い",
+          "normalized": "高い",
+          "lemma": "高い",
+          "pos": ["形容詞", "一般", "*", "*", "形容詞", "連体形-一般"],
+          "start": 8,
+          "end": 10
+        },
+        {
+          "surface": "人",
+          "normalized": "人",
+          "lemma": "人",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 10,
+          "end": 11
+        },
+        {
+          "surface": "誰",
+          "normalized": "誰",
+          "lemma": "誰",
+          "pos": ["代名詞", "*", "*", "*", "*", "*"],
+          "start": 12,
+          "end": 13
+        }
+      ]
+    }
+  },
+  "rationale": "Fixed registered scalar syntax and bounded attachment expose the missing direction; numeric evidence is neither required nor a stronger rule.",
+  "labels": {
+    "expected_rules": [
+      "req.precondition.order_direction_unspecified"
+    ],
+    "expected_findings": [
+      {
+        "severity": "minor",
+        "category": "decision_frame",
+        "rule_id": "req.precondition.order_direction_unspecified",
+        "match_status": "matched",
+        "confidence": "medium",
+        "evidence_contains": "scale=height",
+        "ambiguity_reason": "missing_condition:order_direction"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "decision_frame"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "order_direction"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.precondition.order_direction_unspecified"
+  }
+}

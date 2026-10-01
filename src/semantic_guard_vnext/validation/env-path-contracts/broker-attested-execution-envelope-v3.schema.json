@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v3.schema.json",
+  "title": "semantic-guard broker-attested governed execution envelope v3",
+  "description": "An Ed25519 occurrence attestation that binds the candidate eligibility source to one exact root-held external environment adoption and worker-context v2. It grants no engineering, human-decision, or positive-assurance authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "signed_statement",
+    "signature",
+    "envelope_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-broker-attested-execution-envelope/v3"},
+    "signed_statement": {
+      "type": "object",
+      "required": [
+        "statement_schema_version",
+        "envelope_id",
+        "key_id",
+        "signature_domain",
+        "canonicalization_profile",
+        "broker",
+        "trust_store_ref",
+        "trust_entry_ref",
+        "request",
+        "nonce_consumption",
+        "snapshot_manifest_ref",
+        "preactivation_boundary_binding",
+        "worker_identity",
+        "worker_launch_contract",
+        "worker_reported_observation",
+        "broker_execution_observation",
+        "command_binding",
+        "verification_profile_ref",
+        "environment_profile_ref",
+        "eligibility_source_ref",
+        "environment_adoption_ref",
+        "execution_nonce",
+        "broker_context_ref",
+        "worker_outcome_ref",
+        "receipt_ref",
+        "started_at",
+        "finished_at",
+        "attested_at",
+        "authority_ceiling"
+      ],
+      "properties": {
+        "statement_schema_version": {"const": "semantic-guard-u10-broker-signed-statement/v3"},
+        "envelope_id": {"$ref": "#/$defs/stable_id"},
+        "key_id": {"$ref": "#/$defs/stable_id"},
+        "signature_domain": {"const": "semantic-guard.u10.broker-execution-attestation/v3"},
+        "canonicalization_profile": {"const": "semantic-guard-canonical-json/v1"},
+        "broker": {
+          "type": "object",
+          "required": ["broker_id", "broker_version", "runtime_ref"],
+          "properties": {
+            "broker_id": {"const": "semantic-guard.u10.root-execution-broker"},
+            "broker_version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "runtime_ref": {"$ref": "#/$defs/root_artifact_ref"}
+          },
+          "unevaluatedProperties": false
+        },
+        "trust_store_ref": {"$ref": "#/$defs/trust_store_ref"},
+        "trust_entry_ref": {"$ref": "#/$defs/trust_entry_ref"},
+        "request": {"$ref": "#/$defs/execution_request"},
+        "nonce_consumption": {
+          "type": "object",
+          "required": ["ledger_root", "nonce_record_ref", "recorded_at", "replay_check"],
+          "properties": {
+            "ledger_root": {"const": "/Library/Application Support/semantic-guard/u10/nonce-ledger"},
+            "nonce_record_ref": {"$ref": "#/$defs/nonce_record_ref"},
+            "recorded_at": {"type": "string", "format": "date-time"},
+            "replay_check": {"const": "record_absent_then_o_excl_created_before_launch"}
+          },
+          "unevaluatedProperties": false
+        },
+        "snapshot_manifest_ref": {"$ref": "#/$defs/snapshot_manifest_ref"},
+        "preactivation_boundary_binding": {"$ref": "#/$defs/preactivation_boundary_binding"},
+        "worker_identity": {"$ref": "#/$defs/worker_identity"},
+        "worker_launch_contract": {"$ref": "#/$defs/worker_launch_contract"},
+        "worker_reported_observation": {"$ref": "#/$defs/worker_reported_observation"},
+        "broker_execution_observation": {"$ref": "#/$defs/broker_execution_observation"},
+        "command_binding": {
+          "type": "object",
+          "required": ["command_id", "command_definition_digest", "closed_test_manifest_ref"],
+          "properties": {
+            "command_id": {"$ref": "#/$defs/stable_id"},
+            "command_definition_digest": {"$ref": "#/$defs/digest"},
+            "closed_test_manifest_ref": {"$ref": "#/$defs/closed_test_manifest_ref"}
+          },
+          "unevaluatedProperties": false
+        },
+        "verification_profile_ref": {"$ref": "#/$defs/verification_profile_ref"},
+        "environment_profile_ref": {"$ref": "#/$defs/environment_profile_ref"},
+        "eligibility_source_ref": {"$ref": "#/$defs/eligibility_source_ref"},
+        "environment_adoption_ref": {"$ref": "#/$defs/environment_adoption_ref"},
+        "execution_nonce": {"$ref": "#/$defs/nonce"},
+        "broker_context_ref": {"$ref": "#/$defs/broker_context_ref"},
+        "worker_outcome_ref": {"$ref": "#/$defs/worker_outcome_ref"},
+        "receipt_ref": {"$ref": "#/$defs/execution_receipt_ref"},
+        "started_at": {"type": "string", "format": "date-time", "description": "Root-broker UTC observation immediately before Popen."},
+        "finished_at": {"type": "string", "format": "date-time", "description": "Root-broker UTC observation after worker evidence validation and process-group quiescence."},
+        "attested_at": {"type": "string", "format": "date-time"},
+        "authority_ceiling": {
+          "type": "object",
+          "required": [
+            "evidence_authority",
+            "formal_authority",
+            "positive_assurance_allowed",
+            "human_decision_authority",
+            "engineering_correctness_authority",
+            "u4_authority_status"
+          ],
+          "properties": {
+            "evidence_authority": {"const": "broker_observed_execution_occurrence_only"},
+            "formal_authority": {"const": "none"},
+            "positive_assurance_allowed": {"const": false},
+            "human_decision_authority": {"const": "none"},
+            "engineering_correctness_authority": {"const": "none"},
+            "u4_authority_status": {"const": "unresolved"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "encoding", "signed_member", "value"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "encoding": {"const": "base64"},
+        "signed_member": {"const": "signed_statement"},
+        "value": {"type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "envelope_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/stable_id"},
+    "nonce": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/nonce"},
+    "digest": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/digest"},
+    "root_artifact_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/root_artifact_ref"},
+    "trust_store_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/trust_store_ref"},
+    "nonce_record_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/nonce_record_ref"},
+    "execution_request": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/execution_request"},
+    "trust_entry_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/trust_entry_ref"},
+    "snapshot_manifest_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/snapshot_manifest_ref"},
+    "preactivation_boundary_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/preactivation_boundary_binding"},
+    "worker_identity": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/worker_identity"},
+    "worker_launch_contract": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/worker_launch_contract"},
+    "worker_reported_observation": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/worker_reported_observation"},
+    "broker_execution_observation": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/broker_execution_observation"},
+    "closed_test_manifest_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/closed_test_manifest_ref"},
+    "verification_profile_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/verification_profile_ref"},
+    "environment_profile_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/environment_profile_ref"},
+    "eligibility_source_ref": {
+      "type": "object",
+      "required": ["source_id", "source_version", "lifecycle_state", "locator", "artifact_digest", "source_digest"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "candidate"},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "source_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_adoption_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/authorizations/[A-Za-z0-9][A-Za-z0-9._:-]{0,255}\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_context_ref": {
+      "type": "object",
+      "required": ["run_id", "schema_version", "locator", "artifact_digest", "semantic_digest", "phase_budget", "phase_budget_digest"],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/stable_id"},
+        "schema_version": {"const": "semantic-guard-u10-worker-context/v2"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/spool/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "phase_budget": {"$ref": "#/$defs/worker_phase_budget"},
+        "phase_budget_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_phase_budget": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/worker_phase_budget"},
+    "worker_outcome_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/worker_outcome_ref"},
+    "execution_receipt_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json#/$defs/execution_receipt_ref"}
+  },
+  "unevaluatedProperties": false
+}

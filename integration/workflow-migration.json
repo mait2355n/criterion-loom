@@ -1,0 +1,2211 @@
+{
+  "purpose": "Trace the isolated workflow port to its local source bytes. This is internal migration evidence, not an audit-result contract.",
+  "source_baseline": "eb34d0f",
+  "canonical_baseline": "0a38d9bb82c593ccdd794ec08fbaf514dea135a9",
+  "destination_namespace": "semantic_guard_workflow",
+  "contract_policy": "Preserve semantic-guard schema identifiers and workflow result meanings; never label workflow results as canonical requirement results.",
+  "shared_direction_modules": {
+    "strategy": "independent_copy",
+    "reason": "Preserve workflow Python module identity, monkeypatch targets, and test provenance without changing canonical modules.",
+    "modules": [
+      "decision_frame_scales",
+      "direction_binding_core",
+      "direction_spaces",
+      "request_decision_frame",
+      "request_direction_binding"
+    ]
+  },
+  "files": [
+    {
+      "source_path": "src/semantic_guard/__init__.py",
+      "source_sha256": "7fa22f877a735acff611230a962da658d570d4450a2975451ffb39016f01bf21",
+      "destination_path": "src/semantic_guard_workflow/__init__.py",
+      "destination_sha256": "06d3eaf89e6dbb9958d048ddfc73402e074cc5871fdf5fce50581fae79106e11",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/acceptance_review.py",
+      "source_sha256": "fd543a55f21df7731e9279086f11819c1cd5664a8b3fa5bbf78e58a0de2a7901",
+      "destination_path": "src/semantic_guard_workflow/acceptance_review.py",
+      "destination_sha256": "c5e7834cd7cc0fae7628e8d878c074b787b2313309fd48b2d35e15e0a76a8895",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/artifact_membership.py",
+      "source_sha256": "efb7f2dfd1c93ba1186c5b1b80d1af626c178e2061959fff5d84f414843829d1",
+      "destination_path": "src/semantic_guard_workflow/artifact_membership.py",
+      "destination_sha256": "0ab14630ac9b9eca48f7500e5ad66a4406063944381dd75524f426f229c4d486",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/assertion_context.py",
+      "source_sha256": "81659e4de5a30cf5f6763125dac64e9a2c441a3d2d68ad12fa2def851f799167",
+      "destination_path": "src/semantic_guard_workflow/assertion_context.py",
+      "destination_sha256": "afafa3cc9569f2c8c31950842f1f04a6f428f43e78de20a70c29396e46bf1bac",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/audit_common.py",
+      "source_sha256": "c354c892392de4c0e093e4d30f9ae388d5d37bfc07ab33e2eb807d4508402653",
+      "destination_path": "src/semantic_guard_workflow/audit_common.py",
+      "destination_sha256": "6c3a979213b6cd66dfdd73b1e30bb7299017eec7da6a61b5eea61eece1ba70cd",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/cli.py",
+      "source_sha256": "ba020fb45052b186ceab6dec1f83156deff1e493c144c1583160e5afba9d9213",
+      "destination_path": "src/semantic_guard_workflow/cli.py",
+      "destination_sha256": "622aad8cc5447dfbcd2fd94601687a2611caf50b9ecf2b1d1f7e3c36bc611842",
+      "transformations": [
+        "python_namespace_relocation",
+        "explicit_workflow_program_name",
+        "argv_dispatch_support"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/codex_exec_exploration.py",
+      "source_sha256": "8dd492e0acd4fbcee93428eabc9f85653c13b8f326906618b608b1ccf200f9cb",
+      "destination_path": "src/semantic_guard_workflow/codex_exec_exploration.py",
+      "destination_sha256": "8c231ea8cb99c481954d2f881574501f5c8055d7a6441da15bc66cba6445f3d1",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/codex_exec_review.py",
+      "source_sha256": "5bb4c92bd456ab1679e177df57b904eef0b1c2b494534b7b22ced1c60bf20f01",
+      "destination_path": "src/semantic_guard_workflow/codex_exec_review.py",
+      "destination_sha256": "2dd22998ad82253863241be64cfb0a706541010372ecdde90e4a188adff87c22",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/codex_exec_runtime.py",
+      "source_sha256": "d9ee8dc4ad7298049e9ef0c8235ef4994d893873fec3e7e27d3dc7250ea10a56",
+      "destination_path": "src/semantic_guard_workflow/codex_exec_runtime.py",
+      "destination_sha256": "46eb7edf0b353e7a9a3123a3a5460be61812f956fd766f08dd2abf9ec550f064",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/conventions.py",
+      "source_sha256": "82b34c61f56241734e3544ece21054f541720ee19fee085df6c3e952f6c19ce8",
+      "destination_path": "src/semantic_guard_workflow/conventions.py",
+      "destination_sha256": "b642f921ea3af3b518bfa5011deb920fd9181ca7fa2fe4e9649be16e681c769e",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/core.py",
+      "source_sha256": "cb0cc45066d8722b4c5b832967f4cb6fde4b9c773e8ac59f823b99d91bd007d6",
+      "destination_path": "src/semantic_guard_workflow/core.py",
+      "destination_sha256": "2d0f31463e338fe35fffe189f440b311cbf15ba18bb4b38015bbee3b72f45360",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/decision_frame_scales.py",
+      "source_sha256": "12c31bec44b096665537a48ef3bf0ca1e9c7b9ccb64b092274462751d0d4ea8c",
+      "destination_path": "src/semantic_guard_workflow/decision_frame_scales.py",
+      "destination_sha256": "12c31bec44b096665537a48ef3bf0ca1e9c7b9ccb64b092274462751d0d4ea8c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/decision_state.py",
+      "source_sha256": "ca86eb24b501ea5b28eab34320421cd11f18c130498860f9837c717782236029",
+      "destination_path": "src/semantic_guard_workflow/decision_state.py",
+      "destination_sha256": "6d1b47d7ea594c5548442dcb2088bf66e75b4bf9ad0e0860b868b2c4f02298c1",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/diff_audit.py",
+      "source_sha256": "90162dd94a6df974414308e8914f65dfe34bc313a685f8b15861a91f40128dec",
+      "destination_path": "src/semantic_guard_workflow/diff_audit.py",
+      "destination_sha256": "aea244c48b16b049c31f6c428bea257781cba59ff98c6d98e8a26e6188904591",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/direction_binding_core.py",
+      "source_sha256": "96b0642b1dfd7743cb3ee257e96a1dd3c7e2ffa0b4730601efa6a4e3590e5af9",
+      "destination_path": "src/semantic_guard_workflow/direction_binding_core.py",
+      "destination_sha256": "96b0642b1dfd7743cb3ee257e96a1dd3c7e2ffa0b4730601efa6a4e3590e5af9",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/direction_spaces.py",
+      "source_sha256": "6eab5a8534b074c7fc746da7652916213e171044cdb636695ec51a452ca66848",
+      "destination_path": "src/semantic_guard_workflow/direction_spaces.py",
+      "destination_sha256": "6eab5a8534b074c7fc746da7652916213e171044cdb636695ec51a452ca66848",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/doctor.py",
+      "source_sha256": "b303866b6438bfda50c1949b01d3b3b4f54a857a1110231fe1ac9ab5bae5cb28",
+      "destination_path": "src/semantic_guard_workflow/doctor.py",
+      "destination_sha256": "c41afc3543fd17e22dbc05d4212a0e67a07371ca908188514e929931096bd9ae",
+      "transformations": [
+        "python_namespace_relocation",
+        "workflow_source_layout",
+        "owned_convention_and_fixture_lookup"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/document_audit.py",
+      "source_sha256": "a8c048b9b9ff50a68e242d038f54baf06bc05db419c6c8680ca9edb000fbbda5",
+      "destination_path": "src/semantic_guard_workflow/document_audit.py",
+      "destination_sha256": "4ee8835a2b914e60cb36c779015d933e9876c169025d32947fccd3364e3b1371",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/escalation.py",
+      "source_sha256": "bd13bab8eddfa3419986a9fc37bcb448249f33278661f6f81b40452abc6a8d73",
+      "destination_path": "src/semantic_guard_workflow/escalation.py",
+      "destination_sha256": "037cd710ce2de972d99e23beb1c0abae1244a7ca332726b3465d64e924f44ad1",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/evaluation.py",
+      "source_sha256": "c2d1e1acca679ccf5f10296199159d9ee85f84187a50d93fe7ce78ea469477f8",
+      "destination_path": "src/semantic_guard_workflow/evaluation.py",
+      "destination_sha256": "0924cfb8e33cbf9d178d7c7ad326156b3d2383a45e494e1a10127e16106d03b9",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/exploration.py",
+      "source_sha256": "dc91f0ceebdf6ca9a81d858c8c270a2bdb2636b3fed008628015034fd701e9a1",
+      "destination_path": "src/semantic_guard_workflow/exploration.py",
+      "destination_sha256": "d35dbb3b67a9c1ba1a096e1db71a79d294438d99d5e9c445950ba035953ed54c",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/exploration_jobs.py",
+      "source_sha256": "c18b733fc2b9f2b5723fcbf75431af32d0676190a85ea3388dd99f4cf446e8cd",
+      "destination_path": "src/semantic_guard_workflow/exploration_jobs.py",
+      "destination_sha256": "7b9bf829a8cd40e67bdd532b84ae49105bd17d223fe5db16d8ae000ae5a017c2",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/expression_precision.py",
+      "source_sha256": "b4eb2aabe5dc3a2acc49f52e06b975a23cda7964b2095886fe1bd23e90470416",
+      "destination_path": "src/semantic_guard_workflow/expression_precision.py",
+      "destination_sha256": "507655e70778c90201dbbafa2d097db9959436874c1c53a82cfb6fa60b723bb9",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/expression_terms.py",
+      "source_sha256": "f9df483bd582d0d3eefae0c7b5d75253d3481b50758b55dd380a9da3916ed1ef",
+      "destination_path": "src/semantic_guard_workflow/expression_terms.py",
+      "destination_sha256": "f9df483bd582d0d3eefae0c7b5d75253d3481b50758b55dd380a9da3916ed1ef",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/field_detection.py",
+      "source_sha256": "210b15e12dc2a4fa36d972e80a87f84f578901de363c063dd891ed5067915b09",
+      "destination_path": "src/semantic_guard_workflow/field_detection.py",
+      "destination_sha256": "7b0867199288e3662f8285216a1ebec42da0981a2e3953c0ace71ba6a9ac5a0e",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/finish_audit.py",
+      "source_sha256": "8c6bc3eab2ee649dc2ffe1be48f20faf70f4dde1c28e22697389c394d35844b8",
+      "destination_path": "src/semantic_guard_workflow/finish_audit.py",
+      "destination_sha256": "68f3945eb70b7803c27d577a1e1097911bcbf12579b7605be7a888a3488d9850",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/japanese_morphology.py",
+      "source_sha256": "239a6931f5fe1ecd731b2f3c0af7cee42cc8dde203864159372b2f7a3fcecc82",
+      "destination_path": "src/semantic_guard_workflow/japanese_morphology.py",
+      "destination_sha256": "239a6931f5fe1ecd731b2f3c0af7cee42cc8dde203864159372b2f7a3fcecc82",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/job_runtime.py",
+      "source_sha256": "40f7dafaaa17cfb455597b00b809117b88e52c6e2619497ac3c0dde208e93614",
+      "destination_path": "src/semantic_guard_workflow/job_runtime.py",
+      "destination_sha256": "a09cce040b9eca86e94a327139f0dc64a3e49e32307e5441d84be8fff0128479",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/llm_review.py",
+      "source_sha256": "a7373a30d0dff163696e4eb6fd9b48772abcc9b87c9d5d096e84b961554c98fd",
+      "destination_path": "src/semantic_guard_workflow/llm_review.py",
+      "destination_sha256": "1b9a2e2f2533fa663bba936a2dfe33579c05c0ffbcbd8fcd5ccf0016ea00fe6e",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/logic.py",
+      "source_sha256": "e0167d5fea414746c4a88b8b3b8894018b30df3bf4ff6440d88d1e729708b390",
+      "destination_path": "src/semantic_guard_workflow/logic.py",
+      "destination_sha256": "675464675bda26315130a5c444bf73db71601b08f96243508983d75036d3ed0a",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/matching.py",
+      "source_sha256": "d13d0f2e1be5a268eb36bdc49b5d3bd9792edb0360ca345a93a99406eef037be",
+      "destination_path": "src/semantic_guard_workflow/matching.py",
+      "destination_sha256": "d13d0f2e1be5a268eb36bdc49b5d3bd9792edb0360ca345a93a99406eef037be",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/mcp_server.py",
+      "source_sha256": "a76b854f57e3d04115331abf321a7ea0718baaba1505eff6e4d71235b0bf70b5",
+      "destination_path": "src/semantic_guard_workflow/mcp_server.py",
+      "destination_sha256": "27f94c0556b2328641ce0beb3f8082f0c36ce5bbe1d9bdfa7d8599b90456e7d7",
+      "transformations": [
+        "python_namespace_relocation",
+        "isolated_workflow_mcp_identity"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/models.py",
+      "source_sha256": "a28bb629f4b8139c601bdd6e6fdbeb6d277dd2f3466f241c676985342af36987",
+      "destination_path": "src/semantic_guard_workflow/models.py",
+      "destination_sha256": "ff98f02e2049b715a9df6780b2628b49118385056c7aef9a495a4e72d3254106",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/plan_audit.py",
+      "source_sha256": "744968b63bf6ce23945c4a7b6b34cdcf722498772b1a8aec26f3dd8b2dba50bb",
+      "destination_path": "src/semantic_guard_workflow/plan_audit.py",
+      "destination_sha256": "5facc1e7319cdb1333b5064986ab37d4860c2d8c08e03c6f4ed89228d347020e",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/problem_signals.py",
+      "source_sha256": "c16b0626409d7275896b04dd3e020236a438b365f81e9ada082dc6386c2be5d4",
+      "destination_path": "src/semantic_guard_workflow/problem_signals.py",
+      "destination_sha256": "ef64c38d894b0f8452083bdb868a70cd2f8d444bd5ee5a77530fb5ac61dda4c8",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_audit.py",
+      "source_sha256": "534069788de8adb7519151b8b9c2f630b76dc3ffb44ec42a675561f35a93884d",
+      "destination_path": "src/semantic_guard_workflow/request_audit.py",
+      "destination_sha256": "700a97b32434638597d9b522ddced0981414f73c03bbcd189cc851181a4b4a6a",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_decision_frame.py",
+      "source_sha256": "7f51fda673253351b93e9371c7b87a1747f89264d99460a688be50b25bff1265",
+      "destination_path": "src/semantic_guard_workflow/request_decision_frame.py",
+      "destination_sha256": "178fd22bccbac0c6cf5b2cee887da49c73115849e87366ce15fe50bf53aa0560",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_direction_binding.py",
+      "source_sha256": "1bbe2d0a146709c04ef1ede2d073136270bb243ca7bb26b7d8b0083f35f45e69",
+      "destination_path": "src/semantic_guard_workflow/request_direction_binding.py",
+      "destination_sha256": "6676f2b3e463db8c967359fc5a18bf936d97ee2a4d34cb688e22886bb35d8b8b",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_exploration_review.py",
+      "source_sha256": "adc0e6ae939d71483251a026f7c17f31c1bc046fb192536e2058405088fe5743",
+      "destination_path": "src/semantic_guard_workflow/request_exploration_review.py",
+      "destination_sha256": "5e23ccaaf042e63a6dfcd85390b4ff3d0ac8f9b1e8dcd28c5a7fb2ecb8390713",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_findings.py",
+      "source_sha256": "f682df18e139e8133039e34de6bbb79d4876050fa68f483d8e5ef610b9d5f4f3",
+      "destination_path": "src/semantic_guard_workflow/request_findings.py",
+      "destination_sha256": "2cf7da40a3fa44bd846412bb208b74ae57211d07e39deed66f0b2468459ff418",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_profiles.py",
+      "source_sha256": "0f7c7d6b552c54fbfc462cda3ab66dbae1d9a3ebaf932d5f7b33076c149b6322",
+      "destination_path": "src/semantic_guard_workflow/request_profiles.py",
+      "destination_sha256": "eda820c9c222743fbd721b46ab4825161367ea93e5b1aca166883bf2b9bf72c5",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/request_signals.py",
+      "source_sha256": "f86a4345a1b0e8fb55741ccf6c309ed17feae0d20b430f66c4f5d0deaabe1dd6",
+      "destination_path": "src/semantic_guard_workflow/request_signals.py",
+      "destination_sha256": "475538efb7a7da149e3eae471f482c96ae051271ea149968d9ccf8e88545e69b",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/requirement_relations.py",
+      "source_sha256": "8906bd29291897c4c3c32f57e6a8d81cc94d6f2da05a8662dbc80f1222085921",
+      "destination_path": "src/semantic_guard_workflow/requirement_relations.py",
+      "destination_sha256": "0af9a9bf301b618cb923cfc2a567daf51c6603b8320dd82b3f973cae1c131b89",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/resources.py",
+      "source_sha256": "12f04682802cfc9f1eac4a93710cd4f08a46cf3cf2a784238a09f1b799ee45d9",
+      "destination_path": "src/semantic_guard_workflow/resources.py",
+      "destination_sha256": "6b8cd74811fad4e8a9402a93f24057d86846e883c25afbbfedabb830f9172c7f",
+      "transformations": [
+        "python_namespace_relocation",
+        "owned_package_resources_only",
+        "resource_escape_rejection"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/result_builder.py",
+      "source_sha256": "f784a73a1dfb935832b0f3d62365116343c827abc5a6ae14e4f972ac7f85d59f",
+      "destination_path": "src/semantic_guard_workflow/result_builder.py",
+      "destination_sha256": "4939a13f5b47baf6b5a512924c56bfc3a026abfd2c3e56549acd089ae8e30aa0",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/review_jobs.py",
+      "source_sha256": "d67af22d098b81f47252f8dd52226f51940766a7587bdd8d294ea5439f55251a",
+      "destination_path": "src/semantic_guard_workflow/review_jobs.py",
+      "destination_sha256": "af003ea838eda88f12c4ea05cf0fba8642186f4c16351cff0fcf1bae76186863",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/rule_mapping.py",
+      "source_sha256": "de1f38c01ca4fa45ba5d16b1c5cfec14223faed4abacbc2b537a3e2e469cd2a6",
+      "destination_path": "src/semantic_guard_workflow/rule_mapping.py",
+      "destination_sha256": "0505ced1323af47f9f887263391fea737c0cbadfd21a696b8e73ff7ea74ba884",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/rules.py",
+      "source_sha256": "dd9e1d665c3f92bf9d76f69920421a095bcd35b3feb5d28dc0984efaeb6c0b92",
+      "destination_path": "src/semantic_guard_workflow/rules.py",
+      "destination_sha256": "dd9e1d665c3f92bf9d76f69920421a095bcd35b3feb5d28dc0984efaeb6c0b92",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/__init__.py",
+      "source_sha256": "ded789d0caf7e435aed1ec2da290cc89e7a7c426996c7392fd24a5c1c24df0af",
+      "destination_path": "src/semantic_guard_workflow/runtime/__init__.py",
+      "destination_sha256": "ded789d0caf7e435aed1ec2da290cc89e7a7c426996c7392fd24a5c1c24df0af",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/codex_exec.py",
+      "source_sha256": "d5f89ec49006f56e9a39ecf8f3675d644d984f6e778b45669cd85c4d8388123f",
+      "destination_path": "src/semantic_guard_workflow/runtime/codex_exec.py",
+      "destination_sha256": "d5f89ec49006f56e9a39ecf8f3675d644d984f6e778b45669cd85c4d8388123f",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/exploration.py",
+      "source_sha256": "55b5ca54838e2a67566dd6bbc558e49d4e28a116b2c8aa9365a4f2adbeecf680",
+      "destination_path": "src/semantic_guard_workflow/runtime/exploration.py",
+      "destination_sha256": "b9fcd5da583f346a98f4b1f67376a458f17808e682a302d084dd0ea90303c7d8",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/exploration_jobs.py",
+      "source_sha256": "eadcf507f1b3e3fe60c7b192952813624bfe5c23f9edf2742d8400299a89d5ba",
+      "destination_path": "src/semantic_guard_workflow/runtime/exploration_jobs.py",
+      "destination_sha256": "eadcf507f1b3e3fe60c7b192952813624bfe5c23f9edf2742d8400299a89d5ba",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/jobs.py",
+      "source_sha256": "0583cd469be96978e79873b1db0ef50a357fdfcbdac23f6c5582eaaa561418cf",
+      "destination_path": "src/semantic_guard_workflow/runtime/jobs.py",
+      "destination_sha256": "0583cd469be96978e79873b1db0ef50a357fdfcbdac23f6c5582eaaa561418cf",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/review.py",
+      "source_sha256": "77f388ce693619e3879d1434dd579129b8de5562d2fbf72982316b0cc2d8de72",
+      "destination_path": "src/semantic_guard_workflow/runtime/review.py",
+      "destination_sha256": "527778a7ed56e225897dbd9e54134eab203c84950c04000ce82aa1c65045428c",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/runtime/review_jobs.py",
+      "source_sha256": "96bf6b4d73aa15900fa713b2c57eff43ba1b9f598ff6ac594e24f34838a8c36c",
+      "destination_path": "src/semantic_guard_workflow/runtime/review_jobs.py",
+      "destination_sha256": "2a8908fbce01b4a200a2431b029dfa581605f4d3b0955c927e45d7fd67181041",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/schema_validation.py",
+      "source_sha256": "5ffcb6d3536ac24c0356dcbf6e3bfa1fc68f72a9799d21da8b436c38a1d5faf8",
+      "destination_path": "src/semantic_guard_workflow/schema_validation.py",
+      "destination_sha256": "5ffcb6d3536ac24c0356dcbf6e3bfa1fc68f72a9799d21da8b436c38a1d5faf8",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/semantic_assertions.py",
+      "source_sha256": "d82309666855cc868bf2471620a530e8279201d01ddd5f965a171579d118d897",
+      "destination_path": "src/semantic_guard_workflow/semantic_assertions.py",
+      "destination_sha256": "0f94801cab3bea9594ec8a591d994639e52cbdcb77acb1db8a95d0e53618ce4d",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/severity_profiles.py",
+      "source_sha256": "ccd89a0ea61bf2c04a9767ac0ba3a8e80a22d47ffd2d5b98a851468805c27b8b",
+      "destination_path": "src/semantic_guard_workflow/severity_profiles.py",
+      "destination_sha256": "ccd89a0ea61bf2c04a9767ac0ba3a8e80a22d47ffd2d5b98a851468805c27b8b",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/target_understanding.py",
+      "source_sha256": "6aa20d2aefb8a551c6cb2a46f1ba6bce0f6177889fac27868178f021a4f35513",
+      "destination_path": "src/semantic_guard_workflow/target_understanding.py",
+      "destination_sha256": "08f41b08c0e6ad256afb1631193f52a4278c235dc3647802412965b99d7b9b51",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/text_matching.py",
+      "source_sha256": "bfa2e7f456a73037e4a787d45416849102831abbe4a09a867746f28adc03e469",
+      "destination_path": "src/semantic_guard_workflow/text_matching.py",
+      "destination_sha256": "bfa2e7f456a73037e4a787d45416849102831abbe4a09a867746f28adc03e469",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/text_utils.py",
+      "source_sha256": "97d081a4e2dfc68a92648cea3838df2160d5fa56cbe17a05da2ed2fcd24d7ec9",
+      "destination_path": "src/semantic_guard_workflow/text_utils.py",
+      "destination_sha256": "97d081a4e2dfc68a92648cea3838df2160d5fa56cbe17a05da2ed2fcd24d7ec9",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "src/semantic_guard/traceability.py",
+      "source_sha256": "ea67cab81aea0a248ff0f100f8cc8ff521ad4c37781e7e339dea49cb64319077",
+      "destination_path": "src/semantic_guard_workflow/traceability.py",
+      "destination_sha256": "b4b7c7c857b47d02bb5bba5e6d56d1b6450cff3f6c56589e3d88d34905cc86c9",
+      "transformations": [
+        "python_namespace_relocation"
+      ]
+    },
+    {
+      "source_path": "schemas/acceptance-review-bundle.schema.json",
+      "source_sha256": "4a4f1c821b77110cdd2fb44eef0a23b733fb3d62f048c6df1be8c2ae3a620834",
+      "destination_path": "src/semantic_guard_workflow/_resources/schemas/acceptance-review-bundle.schema.json",
+      "destination_sha256": "4a4f1c821b77110cdd2fb44eef0a23b733fb3d62f048c6df1be8c2ae3a620834",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "schemas/audit-result.schema.json",
+      "source_sha256": "4ea40e7773d8767a8277e74d67b693e2c8655cdd761c6ff701e300c50516dda1",
+      "destination_path": "src/semantic_guard_workflow/_resources/schemas/audit-result.schema.json",
+      "destination_sha256": "4ea40e7773d8767a8277e74d67b693e2c8655cdd761c6ff701e300c50516dda1",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "schemas/candidate-gap-review.schema.json",
+      "source_sha256": "92297b30e4b221284223deaab59ae502534592c8f0cb5f13266d284859c6c34a",
+      "destination_path": "src/semantic_guard_workflow/_resources/schemas/candidate-gap-review.schema.json",
+      "destination_sha256": "92297b30e4b221284223deaab59ae502534592c8f0cb5f13266d284859c6c34a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "schemas/request-exploration-review.schema.json",
+      "source_sha256": "7dd972419a23eed4eba83227367b30c3fd7720ec4d73df2fa502f2a1068fe983",
+      "destination_path": "src/semantic_guard_workflow/_resources/schemas/request-exploration-review.schema.json",
+      "destination_sha256": "7dd972419a23eed4eba83227367b30c3fd7720ec4d73df2fa502f2a1068fe983",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "docs/conventions/README.md",
+      "source_sha256": "96c8c1c54b92a021c6347852d28bc520be74de3cb5aa60c2125cecf349f41761",
+      "destination_path": "src/semantic_guard_workflow/_resources/docs/conventions/README.md",
+      "destination_sha256": "96c8c1c54b92a021c6347852d28bc520be74de3cb5aa60c2125cecf349f41761",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "docs/conventions/base-contract.json",
+      "source_sha256": "88c18a60017b6ff838465c5273be307fda0ba4ca8b1539272cd68edab33787a0",
+      "destination_path": "src/semantic_guard_workflow/_resources/docs/conventions/base-contract.json",
+      "destination_sha256": "88c18a60017b6ff838465c5273be307fda0ba4ca8b1539272cd68edab33787a0",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "docs/conventions/base-contract.md",
+      "source_sha256": "52456fc92a30d1ba752359f1d6de9ebb3cd9a18b258d6069f180ad0cfc9196be",
+      "destination_path": "src/semantic_guard_workflow/_resources/docs/conventions/base-contract.md",
+      "destination_sha256": "52456fc92a30d1ba752359f1d6de9ebb3cd9a18b258d6069f180ad0cfc9196be",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c01-bounded-whole-plan.expected.json",
+      "source_sha256": "96f6f0278ba988daee9065bf5f3c479520cb959f3809e06b49d28cac04c783da",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/conflicts/c01-bounded-whole-plan.expected.json",
+      "destination_sha256": "96f6f0278ba988daee9065bf5f3c479520cb959f3809e06b49d28cac04c783da",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c02-bounded-work-package-request.expected.json",
+      "source_sha256": "a969c896e3ea34a688f8596730fe7f843255651a7d1fa907ae9cb320e27cdc2d",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/conflicts/c02-bounded-work-package-request.expected.json",
+      "destination_sha256": "a969c896e3ea34a688f8596730fe7f843255651a7d1fa907ae9cb320e27cdc2d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c07-docs-only-evidence-diff.expected.json",
+      "source_sha256": "5b7c8338450567e3ec5229ab2b5b4960f533b4b134f6696aae81009d6dbab05a",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/conflicts/c07-docs-only-evidence-diff.expected.json",
+      "destination_sha256": "5b7c8338450567e3ec5229ab2b5b4960f533b4b134f6696aae81009d6dbab05a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/command-defaults.diff",
+      "source_sha256": "742160a17798d08b6c40f54d94d862d222ed6647c22a9a054ccd78866d99beab",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/command-defaults.diff",
+      "destination_sha256": "742160a17798d08b6c40f54d94d862d222ed6647c22a9a054ccd78866d99beab",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/command-defaults.expected.json",
+      "source_sha256": "bbd1456a72b8619271bfd5518ea7f02e01e1ca05645aeedd0ab2963500858430",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/command-defaults.expected.json",
+      "destination_sha256": "bbd1456a72b8619271bfd5518ea7f02e01e1ca05645aeedd0ab2963500858430",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/complexity-growth.expected.json",
+      "source_sha256": "320a4a8cee65b1c7da28e7e36f07fd16cd4536022f3b9be35a359dc43175ee9a",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/complexity-growth.expected.json",
+      "destination_sha256": "320a4a8cee65b1c7da28e7e36f07fd16cd4536022f3b9be35a359dc43175ee9a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/dependency-runtime-change.expected.json",
+      "source_sha256": "4336c84c0ba8c73b55544699ba3629a892e437181fdeb8043c70abc1fab3ecbf",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/dependency-runtime-change.expected.json",
+      "destination_sha256": "4336c84c0ba8c73b55544699ba3629a892e437181fdeb8043c70abc1fab3ecbf",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/failure-handling-missing.expected.json",
+      "source_sha256": "2f9bf3c0ee244a747c81d3959cd6864164b5d5fa084c1f1bd5fa4d1c10f18e30",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/failure-handling-missing.expected.json",
+      "destination_sha256": "2f9bf3c0ee244a747c81d3959cd6864164b5d5fa084c1f1bd5fa4d1c10f18e30",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/field-test-command-no-contract.expected.json",
+      "source_sha256": "722cee3c5926a4974ed5d67c132fd60f2acfba16d87dd4860d80920ab9723ae6",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/field-test-command-no-contract.expected.json",
+      "destination_sha256": "722cee3c5926a4974ed5d67c132fd60f2acfba16d87dd4860d80920ab9723ae6",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/filename-content-overbreadth.expected.json",
+      "source_sha256": "aa5b56cd5c822e14bc830c5fcf7d5b0901f427b49cda3e2d7199b20dc2af2b39",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/filename-content-overbreadth.expected.json",
+      "destination_sha256": "aa5b56cd5c822e14bc830c5fcf7d5b0901f427b49cda3e2d7199b20dc2af2b39",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/filename-scope-underspecified.expected.json",
+      "source_sha256": "1bef85e2fdec7b5d3e1414f3bc6779c7e46a952a7495b08a6ae98c3679018f20",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/filename-scope-underspecified.expected.json",
+      "destination_sha256": "1bef85e2fdec7b5d3e1414f3bc6779c7e46a952a7495b08a6ae98c3679018f20",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/identity-boundary-change.expected.json",
+      "source_sha256": "8a6e1235ff74c8b4fe930c0672e73c1654c7ec151527057778e9ed956ebb211f",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/identity-boundary-change.expected.json",
+      "destination_sha256": "8a6e1235ff74c8b4fe930c0672e73c1654c7ec151527057778e9ed956ebb211f",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/operational-observability-missing.expected.json",
+      "source_sha256": "a8a8af07907dc5cb4b5463d58528f4dbbc5b86756958fa19c20c726168a4794d",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/operational-observability-missing.expected.json",
+      "destination_sha256": "a8a8af07907dc5cb4b5463d58528f4dbbc5b86756958fa19c20c726168a4794d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/public-contract-change.expected.json",
+      "source_sha256": "86d2f7acd359465983c491b1b52ed88978d4745633c3e7cbb89fe262bbbb9c2d",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/public-contract-change.expected.json",
+      "destination_sha256": "86d2f7acd359465983c491b1b52ed88978d4745633c3e7cbb89fe262bbbb9c2d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/source-without-tests.expected.json",
+      "source_sha256": "64c1dd01d9f226b4fa86e504386f4588a4135ff0412ba6c277ece2224c2266c4",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/source-without-tests.expected.json",
+      "destination_sha256": "64c1dd01d9f226b4fa86e504386f4588a4135ff0412ba6c277ece2224c2266c4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/subprocess-security.diff",
+      "source_sha256": "49bebb433aeb43b7bc95488a8d72643c0616426fd4eb35be62b9f15aedbaa13c",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/subprocess-security.diff",
+      "destination_sha256": "49bebb433aeb43b7bc95488a8d72643c0616426fd4eb35be62b9f15aedbaa13c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/subprocess-security.expected.json",
+      "source_sha256": "c27faa1ba7b7f80bd4c2ecf2eb2d378f02d6b4eabbfe6be9f24f0b4aa8122a31",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/diffs/subprocess-security.expected.json",
+      "destination_sha256": "c27faa1ba7b7f80bd4c2ecf2eb2d378f02d6b4eabbfe6be9f24f0b4aa8122a31",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/overclaim.expected.json",
+      "source_sha256": "a0714dbb5fa56ff1c154df914294731b565d07b2ad9161f8ff710e61ef7afa86",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/documents/overclaim.expected.json",
+      "destination_sha256": "a0714dbb5fa56ff1c154df914294731b565d07b2ad9161f8ff710e61ef7afa86",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/overclaim.md",
+      "source_sha256": "391ee9c3f61fe8868105e3238f02d72bd85b454dd784d663953766ef174ffe02",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/documents/overclaim.md",
+      "destination_sha256": "391ee9c3f61fe8868105e3238f02d72bd85b454dd784d663953766ef174ffe02",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/readme-good.expected.json",
+      "source_sha256": "7b0cba371e08b768752d7365ff829a9c8fcb6d0dc6f83b7b53632bc819459b99",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/documents/readme-good.expected.json",
+      "destination_sha256": "7b0cba371e08b768752d7365ff829a9c8fcb6d0dc6f83b7b53632bc819459b99",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/readme-good.md",
+      "source_sha256": "4eaa5d05ca65957d128415226c70969ea7093263115ba4e28ed176f7cf1e8dd4",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/documents/readme-good.md",
+      "destination_sha256": "4eaa5d05ca65957d128415226c70969ea7093263115ba4e28ed176f7cf1e8dd4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/no-evidence.expected.json",
+      "source_sha256": "fcc415c1849377ec5515486609e1cd4a61227b7f9e036e0e0e5f104cce885ee0",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/finish/no-evidence.expected.json",
+      "destination_sha256": "fcc415c1849377ec5515486609e1cd4a61227b7f9e036e0e0e5f104cce885ee0",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/no-evidence.md",
+      "source_sha256": "59d9156b8494333d428fd517c5bc17f2d1af43720acfb4666bbcea45547887f8",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/finish/no-evidence.md",
+      "destination_sha256": "59d9156b8494333d428fd517c5bc17f2d1af43720acfb4666bbcea45547887f8",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/public-behavior-good.expected.json",
+      "source_sha256": "95f35a20fdeb057fc1ba7ace32e6f75f56694b82dc3e7548ba584e00539d7aa8",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/finish/public-behavior-good.expected.json",
+      "destination_sha256": "95f35a20fdeb057fc1ba7ace32e6f75f56694b82dc3e7548ba584e00539d7aa8",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/public-behavior-missing.expected.json",
+      "source_sha256": "ccaa9f4dbc9b91c87833973b82da4d27b8bbe4a6ec95cff7906ba38b1ec4eaba",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/finish/public-behavior-missing.expected.json",
+      "destination_sha256": "ccaa9f4dbc9b91c87833973b82da4d27b8bbe4a6ec95cff7906ba38b1ec4eaba",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/autonomy-permission-question-good.expected.json",
+      "source_sha256": "05661bea1540755d8f8c7c1f8ae7fe5089f10500b8bba9d230ac9f39f92fe4d7",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/autonomy-permission-question-good.expected.json",
+      "destination_sha256": "05661bea1540755d8f8c7c1f8ae7fe5089f10500b8bba9d230ac9f39f92fe4d7",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/autonomy-question-necessity-missing.expected.json",
+      "source_sha256": "ba39101600312330239593a6b8742814c665f60a57a3ae7fc2999d1f718833d0",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/autonomy-question-necessity-missing.expected.json",
+      "destination_sha256": "ba39101600312330239593a6b8742814c665f60a57a3ae7fc2999d1f718833d0",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/field-rollback-missing.expected.json",
+      "source_sha256": "de56c61c2024d86afd85de1b7fa630ec22201d489d6c7948f42aae56da90fc71",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/field-rollback-missing.expected.json",
+      "destination_sha256": "de56c61c2024d86afd85de1b7fa630ec22201d489d6c7948f42aae56da90fc71",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/good.expected.json",
+      "source_sha256": "0b55076b5d7a5b008130d7ed7e29ec70df7ad353751b541962de120a6b0ac275",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/good.expected.json",
+      "destination_sha256": "0b55076b5d7a5b008130d7ed7e29ec70df7ad353751b541962de120a6b0ac275",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/good.md",
+      "source_sha256": "0b37585be62368cc6af058c01de49c8db602694c12a2c53fd874fd852aa14b01",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/good.md",
+      "destination_sha256": "0b37585be62368cc6af058c01de49c8db602694c12a2c53fd874fd852aa14b01",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/hazard-transfer-good.expected.json",
+      "source_sha256": "d6ea7d5f95827c5e53d7a3110d9a288b0a803de2818ec05322ba974beec6ef26",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/hazard-transfer-good.expected.json",
+      "destination_sha256": "d6ea7d5f95827c5e53d7a3110d9a288b0a803de2818ec05322ba974beec6ef26",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/hazard-transfer-missing.expected.json",
+      "source_sha256": "87859383737af251c5a6d24baf5fcb3156f351b9e043e68d54abe6aea56a42fd",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/hazard-transfer-missing.expected.json",
+      "destination_sha256": "87859383737af251c5a6d24baf5fcb3156f351b9e043e68d54abe6aea56a42fd",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/idempotency-missing.expected.json",
+      "source_sha256": "05245d4185b994751e59b60c57742617615fa9c4ef864d4d9eec6b87966f57f7",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/idempotency-missing.expected.json",
+      "destination_sha256": "05245d4185b994751e59b60c57742617615fa9c4ef864d4d9eec6b87966f57f7",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/minimality-justification-missing.expected.json",
+      "source_sha256": "26677a589e609b4c7577b68e3ef16f8d681112563116fb5d81b4bd501c777c28",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/minimality-justification-missing.expected.json",
+      "destination_sha256": "26677a589e609b4c7577b68e3ef16f8d681112563116fb5d81b4bd501c777c28",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/problem-fit-missing.expected.json",
+      "source_sha256": "6245ecb2edfdf66b36d549d715a92d0ffb5eb00c161a593abd1044e07c3395cf",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/problem-fit-missing.expected.json",
+      "destination_sha256": "6245ecb2edfdf66b36d549d715a92d0ffb5eb00c161a593abd1044e07c3395cf",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/progress-control-missing.expected.json",
+      "source_sha256": "ef189e81e762b538f19a732137c75144e6d8a91e14340b2ff65423f55b829d4d",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/progress-control-missing.expected.json",
+      "destination_sha256": "ef189e81e762b538f19a732137c75144e6d8a91e14340b2ff65423f55b829d4d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-good.expected.json",
+      "source_sha256": "cbc86ea8dcc29c36abe6910236150a9a67a7c8a0ecefd103a9557c2cd63beb16",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/release-good.expected.json",
+      "destination_sha256": "cbc86ea8dcc29c36abe6910236150a9a67a7c8a0ecefd103a9557c2cd63beb16",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-provenance-missing.expected.json",
+      "source_sha256": "5d1751bc87c7d971f15f3fb9de5f468842fefceb69a96ae8c820fce29685333c",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/release-provenance-missing.expected.json",
+      "destination_sha256": "5d1751bc87c7d971f15f3fb9de5f468842fefceb69a96ae8c820fce29685333c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-weak.expected.json",
+      "source_sha256": "01828aa09e83660a56a6d69263117a740cae7fa5903baa7136d971b65787390a",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/release-weak.expected.json",
+      "destination_sha256": "01828aa09e83660a56a6d69263117a740cae7fa5903baa7136d971b65787390a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/rollback-missing.expected.json",
+      "source_sha256": "ceb8a36286e7dbb9bf038883842493b5fbd41a06c99c8d8f25f4d960944de2fe",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/rollback-missing.expected.json",
+      "destination_sha256": "ceb8a36286e7dbb9bf038883842493b5fbd41a06c99c8d8f25f4d960944de2fe",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/validation-owner-missing.expected.json",
+      "source_sha256": "4a199bdf26eb87f7e045304b0b8bfb94dc08df928e1ca4a9d4c81c5ced01a168",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/plans/validation-owner-missing.expected.json",
+      "destination_sha256": "4a199bdf26eb87f7e045304b0b8bfb94dc08df928e1ca4a9d4c81c5ced01a168",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/achievement-criteria-missing.expected.json",
+      "source_sha256": "d3294f9ed4662229085b35313ad904ee88772e9d37d604a83a5a0734a7dc53dc",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/achievement-criteria-missing.expected.json",
+      "destination_sha256": "d3294f9ed4662229085b35313ad904ee88772e9d37d604a83a5a0734a7dc53dc",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/ambiguous.expected.json",
+      "source_sha256": "a04b7cfcac2d02ca58e2ed76326d5ad39a3d7b04b3f56370709656623e8c8fb4",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/ambiguous.expected.json",
+      "destination_sha256": "a04b7cfcac2d02ca58e2ed76326d5ad39a3d7b04b3f56370709656623e8c8fb4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/ambiguous.md",
+      "source_sha256": "fb643d5ba7c621afa55947a289a20592c82fcd75d07f2f646bfd305904cbf516",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/ambiguous.md",
+      "destination_sha256": "fb643d5ba7c621afa55947a289a20592c82fcd75d07f2f646bfd305904cbf516",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-direction-unbound-with-impact.expected.json",
+      "source_sha256": "ae35dd80b5694613fd2b8acebddf8ba0e11127a81ff2215b4ae9a3dae4796452",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-direction-unbound-with-impact.expected.json",
+      "destination_sha256": "ae35dd80b5694613fd2b8acebddf8ba0e11127a81ff2215b4ae9a3dae4796452",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-morphology-disabled.expected.json",
+      "source_sha256": "9bf367f8f141fbcc257b606a3bda4892b7967952bd4283f16cd470469e817e6a",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-morphology-disabled.expected.json",
+      "destination_sha256": "9bf367f8f141fbcc257b606a3bda4892b7967952bd4283f16cd470469e817e6a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-order-direction-unspecified.expected.json",
+      "source_sha256": "08a89182720fe4c5f5f7b9d28e173adff462cc8285b45c9709916e815b205757",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-order-direction-unspecified.expected.json",
+      "destination_sha256": "08a89182720fe4c5f5f7b9d28e173adff462cc8285b45c9709916e815b205757",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/detailed-search.expected.json",
+      "source_sha256": "17e6869d3148368402028755d3a8199361a64e35e4ecb4783297634ba5725075",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/detailed-search.expected.json",
+      "destination_sha256": "17e6869d3148368402028755d3a8199361a64e35e4ecb4783297634ba5725075",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/evidence-artifact-missing.expected.json",
+      "source_sha256": "722601790068434967bd6212224016e069d2163aca86bb0a757710e4983f1699",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/evidence-artifact-missing.expected.json",
+      "destination_sha256": "722601790068434967bd6212224016e069d2163aca86bb0a757710e4983f1699",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/field-priority-unprioritized.expected.json",
+      "source_sha256": "68789226eb21f61e07590cc76e718b59ab610b526f7161cbb86f612d9ee21a5c",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/field-priority-unprioritized.expected.json",
+      "destination_sha256": "68789226eb21f61e07590cc76e718b59ab610b526f7161cbb86f612d9ee21a5c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/interface-contract-missing.expected.json",
+      "source_sha256": "69e2f0ae9754ecbb44e00d1122a7025cf8c100f2cc1bdee9f6b158b9e74df79f",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/interface-contract-missing.expected.json",
+      "destination_sha256": "69e2f0ae9754ecbb44e00d1122a7025cf8c100f2cc1bdee9f6b158b9e74df79f",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/negated-assurance-fields.expected.json",
+      "source_sha256": "90c45c630c16f2f06f8bfe740ead36f274717d65986ec7774b9b4e992b56e928",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/negated-assurance-fields.expected.json",
+      "destination_sha256": "90c45c630c16f2f06f8bfe740ead36f274717d65986ec7774b9b4e992b56e928",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/observable-behavior-missing.expected.json",
+      "source_sha256": "273256c4e7502667e948caeae3f500ac6e94c0ef1259a1b67963025d4f4afdd4",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/observable-behavior-missing.expected.json",
+      "destination_sha256": "273256c4e7502667e948caeae3f500ac6e94c0ef1259a1b67963025d4f4afdd4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/priority-missing.expected.json",
+      "source_sha256": "169b301a3da9aa7eaa02df9f6217e56c59d5b9ad133338249746f3a3c4198591",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/priority-missing.expected.json",
+      "destination_sha256": "169b301a3da9aa7eaa02df9f6217e56c59d5b9ad133338249746f3a3c4198591",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/problem-mechanism-fit-good.expected.json",
+      "source_sha256": "62c4076a74416c0c7734226b1a7b23bcd7724608a330770444760883bd6955c2",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/problem-mechanism-fit-good.expected.json",
+      "destination_sha256": "62c4076a74416c0c7734226b1a7b23bcd7724608a330770444760883bd6955c2",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/problem-mechanism-fit-missing.expected.json",
+      "source_sha256": "0699596aa98217fb62b47d86c3588a6de707a02e9ebde52c252c9b225d5e7a48",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/problem-mechanism-fit-missing.expected.json",
+      "destination_sha256": "0699596aa98217fb62b47d86c3588a6de707a02e9ebde52c252c9b225d5e7a48",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/rejection-condition-missing.expected.json",
+      "source_sha256": "7c216836b455ae1b023b7ab7cab8ea0bf9cc9f722a949fec18dc7278d0e7c24a",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/rejection-condition-missing.expected.json",
+      "destination_sha256": "7c216836b455ae1b023b7ab7cab8ea0bf9cc9f722a949fec18dc7278d0e7c24a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/scenario-context-missing.expected.json",
+      "source_sha256": "3cc93e4e91d9a49e88e76ff9d9ce99bc220a782c6b020a698410ca3af12725ff",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/scenario-context-missing.expected.json",
+      "destination_sha256": "3cc93e4e91d9a49e88e76ff9d9ce99bc220a782c6b020a698410ca3af12725ff",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/stakeholder-source-missing.expected.json",
+      "source_sha256": "25d214a6224acee1dd7452035285a8fea7921bb5189f255e22c0194aa182624d",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/stakeholder-source-missing.expected.json",
+      "destination_sha256": "25d214a6224acee1dd7452035285a8fea7921bb5189f255e22c0194aa182624d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/structured-negated-assurance-fields.expected.json",
+      "source_sha256": "1719b44fd896e7a443fcfa4166b90bcb6bcfcd9143087fbe0290d90a48e25e60",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/structured-negated-assurance-fields.expected.json",
+      "destination_sha256": "1719b44fd896e7a443fcfa4166b90bcb6bcfcd9143087fbe0290d90a48e25e60",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/uncertainty-classified-good.expected.json",
+      "source_sha256": "1fc107e19ebc0db7f6fae97ac58d2406c4973c6fb4d6a1f75bf922cc4679a9ae",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/uncertainty-classified-good.expected.json",
+      "destination_sha256": "1fc107e19ebc0db7f6fae97ac58d2406c4973c6fb4d6a1f75bf922cc4679a9ae",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/uncertainty-unclassified.expected.json",
+      "source_sha256": "e344b1b475e9a67fcd9ce25d0d2a1166adb0c30bb1988c8ed106206b69c7f675",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/uncertainty-unclassified.expected.json",
+      "destination_sha256": "e344b1b475e9a67fcd9ce25d0d2a1166adb0c30bb1988c8ed106206b69c7f675",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/verification-method-weak.expected.json",
+      "source_sha256": "ce3992926f36df34d27e29e01d38ec3c713d89b7fcd053b008c09d4b2e223bbd",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/verification-method-weak.expected.json",
+      "destination_sha256": "ce3992926f36df34d27e29e01d38ec3c713d89b7fcd053b008c09d4b2e223bbd",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/verification-target-mismatch.expected.json",
+      "source_sha256": "f0400ac899fda64fd3fdb200efda4053f503c87daf5fcfa8ae7c82ed4f91aa08",
+      "destination_path": "src/semantic_guard_workflow/_resources/tests/fixtures/requests/verification-target-mismatch.expected.json",
+      "destination_sha256": "f0400ac899fda64fd3fdb200efda4053f503c87daf5fcfa8ae7c82ed4f91aa08",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/field-corpus/corpus-2026-06-04.json",
+      "source_sha256": "b6e657423a1e74f9db64b9e1c82d1ffaf0dbe29c5fea40c7d4cea9231fe2c471",
+      "destination_path": "workflow_tests/field-corpus/corpus-2026-06-04.json",
+      "destination_sha256": "b6e657423a1e74f9db64b9e1c82d1ffaf0dbe29c5fea40c7d4cea9231fe2c471",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c01-bounded-whole-plan.expected.json",
+      "source_sha256": "96f6f0278ba988daee9065bf5f3c479520cb959f3809e06b49d28cac04c783da",
+      "destination_path": "workflow_tests/fixtures/conflicts/c01-bounded-whole-plan.expected.json",
+      "destination_sha256": "96f6f0278ba988daee9065bf5f3c479520cb959f3809e06b49d28cac04c783da",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c02-bounded-work-package-request.expected.json",
+      "source_sha256": "a969c896e3ea34a688f8596730fe7f843255651a7d1fa907ae9cb320e27cdc2d",
+      "destination_path": "workflow_tests/fixtures/conflicts/c02-bounded-work-package-request.expected.json",
+      "destination_sha256": "a969c896e3ea34a688f8596730fe7f843255651a7d1fa907ae9cb320e27cdc2d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/conflicts/c07-docs-only-evidence-diff.expected.json",
+      "source_sha256": "5b7c8338450567e3ec5229ab2b5b4960f533b4b134f6696aae81009d6dbab05a",
+      "destination_path": "workflow_tests/fixtures/conflicts/c07-docs-only-evidence-diff.expected.json",
+      "destination_sha256": "5b7c8338450567e3ec5229ab2b5b4960f533b4b134f6696aae81009d6dbab05a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/command-defaults.diff",
+      "source_sha256": "742160a17798d08b6c40f54d94d862d222ed6647c22a9a054ccd78866d99beab",
+      "destination_path": "workflow_tests/fixtures/diffs/command-defaults.diff",
+      "destination_sha256": "742160a17798d08b6c40f54d94d862d222ed6647c22a9a054ccd78866d99beab",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/command-defaults.expected.json",
+      "source_sha256": "bbd1456a72b8619271bfd5518ea7f02e01e1ca05645aeedd0ab2963500858430",
+      "destination_path": "workflow_tests/fixtures/diffs/command-defaults.expected.json",
+      "destination_sha256": "bbd1456a72b8619271bfd5518ea7f02e01e1ca05645aeedd0ab2963500858430",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/complexity-growth.expected.json",
+      "source_sha256": "320a4a8cee65b1c7da28e7e36f07fd16cd4536022f3b9be35a359dc43175ee9a",
+      "destination_path": "workflow_tests/fixtures/diffs/complexity-growth.expected.json",
+      "destination_sha256": "320a4a8cee65b1c7da28e7e36f07fd16cd4536022f3b9be35a359dc43175ee9a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/dependency-runtime-change.expected.json",
+      "source_sha256": "4336c84c0ba8c73b55544699ba3629a892e437181fdeb8043c70abc1fab3ecbf",
+      "destination_path": "workflow_tests/fixtures/diffs/dependency-runtime-change.expected.json",
+      "destination_sha256": "4336c84c0ba8c73b55544699ba3629a892e437181fdeb8043c70abc1fab3ecbf",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/failure-handling-missing.expected.json",
+      "source_sha256": "2f9bf3c0ee244a747c81d3959cd6864164b5d5fa084c1f1bd5fa4d1c10f18e30",
+      "destination_path": "workflow_tests/fixtures/diffs/failure-handling-missing.expected.json",
+      "destination_sha256": "2f9bf3c0ee244a747c81d3959cd6864164b5d5fa084c1f1bd5fa4d1c10f18e30",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/field-test-command-no-contract.expected.json",
+      "source_sha256": "722cee3c5926a4974ed5d67c132fd60f2acfba16d87dd4860d80920ab9723ae6",
+      "destination_path": "workflow_tests/fixtures/diffs/field-test-command-no-contract.expected.json",
+      "destination_sha256": "722cee3c5926a4974ed5d67c132fd60f2acfba16d87dd4860d80920ab9723ae6",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/filename-content-overbreadth.expected.json",
+      "source_sha256": "aa5b56cd5c822e14bc830c5fcf7d5b0901f427b49cda3e2d7199b20dc2af2b39",
+      "destination_path": "workflow_tests/fixtures/diffs/filename-content-overbreadth.expected.json",
+      "destination_sha256": "aa5b56cd5c822e14bc830c5fcf7d5b0901f427b49cda3e2d7199b20dc2af2b39",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/filename-scope-underspecified.expected.json",
+      "source_sha256": "1bef85e2fdec7b5d3e1414f3bc6779c7e46a952a7495b08a6ae98c3679018f20",
+      "destination_path": "workflow_tests/fixtures/diffs/filename-scope-underspecified.expected.json",
+      "destination_sha256": "1bef85e2fdec7b5d3e1414f3bc6779c7e46a952a7495b08a6ae98c3679018f20",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/identity-boundary-change.expected.json",
+      "source_sha256": "8a6e1235ff74c8b4fe930c0672e73c1654c7ec151527057778e9ed956ebb211f",
+      "destination_path": "workflow_tests/fixtures/diffs/identity-boundary-change.expected.json",
+      "destination_sha256": "8a6e1235ff74c8b4fe930c0672e73c1654c7ec151527057778e9ed956ebb211f",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/operational-observability-missing.expected.json",
+      "source_sha256": "a8a8af07907dc5cb4b5463d58528f4dbbc5b86756958fa19c20c726168a4794d",
+      "destination_path": "workflow_tests/fixtures/diffs/operational-observability-missing.expected.json",
+      "destination_sha256": "a8a8af07907dc5cb4b5463d58528f4dbbc5b86756958fa19c20c726168a4794d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/public-contract-change.expected.json",
+      "source_sha256": "86d2f7acd359465983c491b1b52ed88978d4745633c3e7cbb89fe262bbbb9c2d",
+      "destination_path": "workflow_tests/fixtures/diffs/public-contract-change.expected.json",
+      "destination_sha256": "86d2f7acd359465983c491b1b52ed88978d4745633c3e7cbb89fe262bbbb9c2d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/source-without-tests.expected.json",
+      "source_sha256": "64c1dd01d9f226b4fa86e504386f4588a4135ff0412ba6c277ece2224c2266c4",
+      "destination_path": "workflow_tests/fixtures/diffs/source-without-tests.expected.json",
+      "destination_sha256": "64c1dd01d9f226b4fa86e504386f4588a4135ff0412ba6c277ece2224c2266c4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/subprocess-security.diff",
+      "source_sha256": "49bebb433aeb43b7bc95488a8d72643c0616426fd4eb35be62b9f15aedbaa13c",
+      "destination_path": "workflow_tests/fixtures/diffs/subprocess-security.diff",
+      "destination_sha256": "49bebb433aeb43b7bc95488a8d72643c0616426fd4eb35be62b9f15aedbaa13c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/diffs/subprocess-security.expected.json",
+      "source_sha256": "c27faa1ba7b7f80bd4c2ecf2eb2d378f02d6b4eabbfe6be9f24f0b4aa8122a31",
+      "destination_path": "workflow_tests/fixtures/diffs/subprocess-security.expected.json",
+      "destination_sha256": "c27faa1ba7b7f80bd4c2ecf2eb2d378f02d6b4eabbfe6be9f24f0b4aa8122a31",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/overclaim.expected.json",
+      "source_sha256": "a0714dbb5fa56ff1c154df914294731b565d07b2ad9161f8ff710e61ef7afa86",
+      "destination_path": "workflow_tests/fixtures/documents/overclaim.expected.json",
+      "destination_sha256": "a0714dbb5fa56ff1c154df914294731b565d07b2ad9161f8ff710e61ef7afa86",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/overclaim.md",
+      "source_sha256": "391ee9c3f61fe8868105e3238f02d72bd85b454dd784d663953766ef174ffe02",
+      "destination_path": "workflow_tests/fixtures/documents/overclaim.md",
+      "destination_sha256": "391ee9c3f61fe8868105e3238f02d72bd85b454dd784d663953766ef174ffe02",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/readme-good.expected.json",
+      "source_sha256": "7b0cba371e08b768752d7365ff829a9c8fcb6d0dc6f83b7b53632bc819459b99",
+      "destination_path": "workflow_tests/fixtures/documents/readme-good.expected.json",
+      "destination_sha256": "7b0cba371e08b768752d7365ff829a9c8fcb6d0dc6f83b7b53632bc819459b99",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/documents/readme-good.md",
+      "source_sha256": "4eaa5d05ca65957d128415226c70969ea7093263115ba4e28ed176f7cf1e8dd4",
+      "destination_path": "workflow_tests/fixtures/documents/readme-good.md",
+      "destination_sha256": "4eaa5d05ca65957d128415226c70969ea7093263115ba4e28ed176f7cf1e8dd4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/no-evidence.expected.json",
+      "source_sha256": "fcc415c1849377ec5515486609e1cd4a61227b7f9e036e0e0e5f104cce885ee0",
+      "destination_path": "workflow_tests/fixtures/finish/no-evidence.expected.json",
+      "destination_sha256": "fcc415c1849377ec5515486609e1cd4a61227b7f9e036e0e0e5f104cce885ee0",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/no-evidence.md",
+      "source_sha256": "59d9156b8494333d428fd517c5bc17f2d1af43720acfb4666bbcea45547887f8",
+      "destination_path": "workflow_tests/fixtures/finish/no-evidence.md",
+      "destination_sha256": "59d9156b8494333d428fd517c5bc17f2d1af43720acfb4666bbcea45547887f8",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/public-behavior-good.expected.json",
+      "source_sha256": "95f35a20fdeb057fc1ba7ace32e6f75f56694b82dc3e7548ba584e00539d7aa8",
+      "destination_path": "workflow_tests/fixtures/finish/public-behavior-good.expected.json",
+      "destination_sha256": "95f35a20fdeb057fc1ba7ace32e6f75f56694b82dc3e7548ba584e00539d7aa8",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/finish/public-behavior-missing.expected.json",
+      "source_sha256": "ccaa9f4dbc9b91c87833973b82da4d27b8bbe4a6ec95cff7906ba38b1ec4eaba",
+      "destination_path": "workflow_tests/fixtures/finish/public-behavior-missing.expected.json",
+      "destination_sha256": "ccaa9f4dbc9b91c87833973b82da4d27b8bbe4a6ec95cff7906ba38b1ec4eaba",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/autonomy-permission-question-good.expected.json",
+      "source_sha256": "05661bea1540755d8f8c7c1f8ae7fe5089f10500b8bba9d230ac9f39f92fe4d7",
+      "destination_path": "workflow_tests/fixtures/plans/autonomy-permission-question-good.expected.json",
+      "destination_sha256": "05661bea1540755d8f8c7c1f8ae7fe5089f10500b8bba9d230ac9f39f92fe4d7",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/autonomy-question-necessity-missing.expected.json",
+      "source_sha256": "ba39101600312330239593a6b8742814c665f60a57a3ae7fc2999d1f718833d0",
+      "destination_path": "workflow_tests/fixtures/plans/autonomy-question-necessity-missing.expected.json",
+      "destination_sha256": "ba39101600312330239593a6b8742814c665f60a57a3ae7fc2999d1f718833d0",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/field-rollback-missing.expected.json",
+      "source_sha256": "de56c61c2024d86afd85de1b7fa630ec22201d489d6c7948f42aae56da90fc71",
+      "destination_path": "workflow_tests/fixtures/plans/field-rollback-missing.expected.json",
+      "destination_sha256": "de56c61c2024d86afd85de1b7fa630ec22201d489d6c7948f42aae56da90fc71",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/good.expected.json",
+      "source_sha256": "0b55076b5d7a5b008130d7ed7e29ec70df7ad353751b541962de120a6b0ac275",
+      "destination_path": "workflow_tests/fixtures/plans/good.expected.json",
+      "destination_sha256": "0b55076b5d7a5b008130d7ed7e29ec70df7ad353751b541962de120a6b0ac275",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/good.md",
+      "source_sha256": "0b37585be62368cc6af058c01de49c8db602694c12a2c53fd874fd852aa14b01",
+      "destination_path": "workflow_tests/fixtures/plans/good.md",
+      "destination_sha256": "0b37585be62368cc6af058c01de49c8db602694c12a2c53fd874fd852aa14b01",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/hazard-transfer-good.expected.json",
+      "source_sha256": "d6ea7d5f95827c5e53d7a3110d9a288b0a803de2818ec05322ba974beec6ef26",
+      "destination_path": "workflow_tests/fixtures/plans/hazard-transfer-good.expected.json",
+      "destination_sha256": "d6ea7d5f95827c5e53d7a3110d9a288b0a803de2818ec05322ba974beec6ef26",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/hazard-transfer-missing.expected.json",
+      "source_sha256": "87859383737af251c5a6d24baf5fcb3156f351b9e043e68d54abe6aea56a42fd",
+      "destination_path": "workflow_tests/fixtures/plans/hazard-transfer-missing.expected.json",
+      "destination_sha256": "87859383737af251c5a6d24baf5fcb3156f351b9e043e68d54abe6aea56a42fd",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/idempotency-missing.expected.json",
+      "source_sha256": "05245d4185b994751e59b60c57742617615fa9c4ef864d4d9eec6b87966f57f7",
+      "destination_path": "workflow_tests/fixtures/plans/idempotency-missing.expected.json",
+      "destination_sha256": "05245d4185b994751e59b60c57742617615fa9c4ef864d4d9eec6b87966f57f7",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/minimality-justification-missing.expected.json",
+      "source_sha256": "26677a589e609b4c7577b68e3ef16f8d681112563116fb5d81b4bd501c777c28",
+      "destination_path": "workflow_tests/fixtures/plans/minimality-justification-missing.expected.json",
+      "destination_sha256": "26677a589e609b4c7577b68e3ef16f8d681112563116fb5d81b4bd501c777c28",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/problem-fit-missing.expected.json",
+      "source_sha256": "6245ecb2edfdf66b36d549d715a92d0ffb5eb00c161a593abd1044e07c3395cf",
+      "destination_path": "workflow_tests/fixtures/plans/problem-fit-missing.expected.json",
+      "destination_sha256": "6245ecb2edfdf66b36d549d715a92d0ffb5eb00c161a593abd1044e07c3395cf",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/progress-control-missing.expected.json",
+      "source_sha256": "ef189e81e762b538f19a732137c75144e6d8a91e14340b2ff65423f55b829d4d",
+      "destination_path": "workflow_tests/fixtures/plans/progress-control-missing.expected.json",
+      "destination_sha256": "ef189e81e762b538f19a732137c75144e6d8a91e14340b2ff65423f55b829d4d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-good.expected.json",
+      "source_sha256": "cbc86ea8dcc29c36abe6910236150a9a67a7c8a0ecefd103a9557c2cd63beb16",
+      "destination_path": "workflow_tests/fixtures/plans/release-good.expected.json",
+      "destination_sha256": "cbc86ea8dcc29c36abe6910236150a9a67a7c8a0ecefd103a9557c2cd63beb16",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-provenance-missing.expected.json",
+      "source_sha256": "5d1751bc87c7d971f15f3fb9de5f468842fefceb69a96ae8c820fce29685333c",
+      "destination_path": "workflow_tests/fixtures/plans/release-provenance-missing.expected.json",
+      "destination_sha256": "5d1751bc87c7d971f15f3fb9de5f468842fefceb69a96ae8c820fce29685333c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/release-weak.expected.json",
+      "source_sha256": "01828aa09e83660a56a6d69263117a740cae7fa5903baa7136d971b65787390a",
+      "destination_path": "workflow_tests/fixtures/plans/release-weak.expected.json",
+      "destination_sha256": "01828aa09e83660a56a6d69263117a740cae7fa5903baa7136d971b65787390a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/rollback-missing.expected.json",
+      "source_sha256": "ceb8a36286e7dbb9bf038883842493b5fbd41a06c99c8d8f25f4d960944de2fe",
+      "destination_path": "workflow_tests/fixtures/plans/rollback-missing.expected.json",
+      "destination_sha256": "ceb8a36286e7dbb9bf038883842493b5fbd41a06c99c8d8f25f4d960944de2fe",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/plans/validation-owner-missing.expected.json",
+      "source_sha256": "4a199bdf26eb87f7e045304b0b8bfb94dc08df928e1ca4a9d4c81c5ced01a168",
+      "destination_path": "workflow_tests/fixtures/plans/validation-owner-missing.expected.json",
+      "destination_sha256": "4a199bdf26eb87f7e045304b0b8bfb94dc08df928e1ca4a9d4c81c5ced01a168",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/achievement-criteria-missing.expected.json",
+      "source_sha256": "d3294f9ed4662229085b35313ad904ee88772e9d37d604a83a5a0734a7dc53dc",
+      "destination_path": "workflow_tests/fixtures/requests/achievement-criteria-missing.expected.json",
+      "destination_sha256": "d3294f9ed4662229085b35313ad904ee88772e9d37d604a83a5a0734a7dc53dc",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/ambiguous.expected.json",
+      "source_sha256": "a04b7cfcac2d02ca58e2ed76326d5ad39a3d7b04b3f56370709656623e8c8fb4",
+      "destination_path": "workflow_tests/fixtures/requests/ambiguous.expected.json",
+      "destination_sha256": "a04b7cfcac2d02ca58e2ed76326d5ad39a3d7b04b3f56370709656623e8c8fb4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/ambiguous.md",
+      "source_sha256": "fb643d5ba7c621afa55947a289a20592c82fcd75d07f2f646bfd305904cbf516",
+      "destination_path": "workflow_tests/fixtures/requests/ambiguous.md",
+      "destination_sha256": "fb643d5ba7c621afa55947a289a20592c82fcd75d07f2f646bfd305904cbf516",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-direction-unbound-with-impact.expected.json",
+      "source_sha256": "ae35dd80b5694613fd2b8acebddf8ba0e11127a81ff2215b4ae9a3dae4796452",
+      "destination_path": "workflow_tests/fixtures/requests/decision-frame-direction-unbound-with-impact.expected.json",
+      "destination_sha256": "ae35dd80b5694613fd2b8acebddf8ba0e11127a81ff2215b4ae9a3dae4796452",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-morphology-disabled.expected.json",
+      "source_sha256": "9bf367f8f141fbcc257b606a3bda4892b7967952bd4283f16cd470469e817e6a",
+      "destination_path": "workflow_tests/fixtures/requests/decision-frame-morphology-disabled.expected.json",
+      "destination_sha256": "9bf367f8f141fbcc257b606a3bda4892b7967952bd4283f16cd470469e817e6a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/decision-frame-order-direction-unspecified.expected.json",
+      "source_sha256": "08a89182720fe4c5f5f7b9d28e173adff462cc8285b45c9709916e815b205757",
+      "destination_path": "workflow_tests/fixtures/requests/decision-frame-order-direction-unspecified.expected.json",
+      "destination_sha256": "08a89182720fe4c5f5f7b9d28e173adff462cc8285b45c9709916e815b205757",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/detailed-search.expected.json",
+      "source_sha256": "17e6869d3148368402028755d3a8199361a64e35e4ecb4783297634ba5725075",
+      "destination_path": "workflow_tests/fixtures/requests/detailed-search.expected.json",
+      "destination_sha256": "17e6869d3148368402028755d3a8199361a64e35e4ecb4783297634ba5725075",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/evidence-artifact-missing.expected.json",
+      "source_sha256": "722601790068434967bd6212224016e069d2163aca86bb0a757710e4983f1699",
+      "destination_path": "workflow_tests/fixtures/requests/evidence-artifact-missing.expected.json",
+      "destination_sha256": "722601790068434967bd6212224016e069d2163aca86bb0a757710e4983f1699",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/field-priority-unprioritized.expected.json",
+      "source_sha256": "68789226eb21f61e07590cc76e718b59ab610b526f7161cbb86f612d9ee21a5c",
+      "destination_path": "workflow_tests/fixtures/requests/field-priority-unprioritized.expected.json",
+      "destination_sha256": "68789226eb21f61e07590cc76e718b59ab610b526f7161cbb86f612d9ee21a5c",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/interface-contract-missing.expected.json",
+      "source_sha256": "69e2f0ae9754ecbb44e00d1122a7025cf8c100f2cc1bdee9f6b158b9e74df79f",
+      "destination_path": "workflow_tests/fixtures/requests/interface-contract-missing.expected.json",
+      "destination_sha256": "69e2f0ae9754ecbb44e00d1122a7025cf8c100f2cc1bdee9f6b158b9e74df79f",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/negated-assurance-fields.expected.json",
+      "source_sha256": "90c45c630c16f2f06f8bfe740ead36f274717d65986ec7774b9b4e992b56e928",
+      "destination_path": "workflow_tests/fixtures/requests/negated-assurance-fields.expected.json",
+      "destination_sha256": "90c45c630c16f2f06f8bfe740ead36f274717d65986ec7774b9b4e992b56e928",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/observable-behavior-missing.expected.json",
+      "source_sha256": "273256c4e7502667e948caeae3f500ac6e94c0ef1259a1b67963025d4f4afdd4",
+      "destination_path": "workflow_tests/fixtures/requests/observable-behavior-missing.expected.json",
+      "destination_sha256": "273256c4e7502667e948caeae3f500ac6e94c0ef1259a1b67963025d4f4afdd4",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/priority-missing.expected.json",
+      "source_sha256": "169b301a3da9aa7eaa02df9f6217e56c59d5b9ad133338249746f3a3c4198591",
+      "destination_path": "workflow_tests/fixtures/requests/priority-missing.expected.json",
+      "destination_sha256": "169b301a3da9aa7eaa02df9f6217e56c59d5b9ad133338249746f3a3c4198591",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/problem-mechanism-fit-good.expected.json",
+      "source_sha256": "62c4076a74416c0c7734226b1a7b23bcd7724608a330770444760883bd6955c2",
+      "destination_path": "workflow_tests/fixtures/requests/problem-mechanism-fit-good.expected.json",
+      "destination_sha256": "62c4076a74416c0c7734226b1a7b23bcd7724608a330770444760883bd6955c2",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/problem-mechanism-fit-missing.expected.json",
+      "source_sha256": "0699596aa98217fb62b47d86c3588a6de707a02e9ebde52c252c9b225d5e7a48",
+      "destination_path": "workflow_tests/fixtures/requests/problem-mechanism-fit-missing.expected.json",
+      "destination_sha256": "0699596aa98217fb62b47d86c3588a6de707a02e9ebde52c252c9b225d5e7a48",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/rejection-condition-missing.expected.json",
+      "source_sha256": "7c216836b455ae1b023b7ab7cab8ea0bf9cc9f722a949fec18dc7278d0e7c24a",
+      "destination_path": "workflow_tests/fixtures/requests/rejection-condition-missing.expected.json",
+      "destination_sha256": "7c216836b455ae1b023b7ab7cab8ea0bf9cc9f722a949fec18dc7278d0e7c24a",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/scenario-context-missing.expected.json",
+      "source_sha256": "3cc93e4e91d9a49e88e76ff9d9ce99bc220a782c6b020a698410ca3af12725ff",
+      "destination_path": "workflow_tests/fixtures/requests/scenario-context-missing.expected.json",
+      "destination_sha256": "3cc93e4e91d9a49e88e76ff9d9ce99bc220a782c6b020a698410ca3af12725ff",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/stakeholder-source-missing.expected.json",
+      "source_sha256": "25d214a6224acee1dd7452035285a8fea7921bb5189f255e22c0194aa182624d",
+      "destination_path": "workflow_tests/fixtures/requests/stakeholder-source-missing.expected.json",
+      "destination_sha256": "25d214a6224acee1dd7452035285a8fea7921bb5189f255e22c0194aa182624d",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/structured-negated-assurance-fields.expected.json",
+      "source_sha256": "1719b44fd896e7a443fcfa4166b90bcb6bcfcd9143087fbe0290d90a48e25e60",
+      "destination_path": "workflow_tests/fixtures/requests/structured-negated-assurance-fields.expected.json",
+      "destination_sha256": "1719b44fd896e7a443fcfa4166b90bcb6bcfcd9143087fbe0290d90a48e25e60",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/uncertainty-classified-good.expected.json",
+      "source_sha256": "1fc107e19ebc0db7f6fae97ac58d2406c4973c6fb4d6a1f75bf922cc4679a9ae",
+      "destination_path": "workflow_tests/fixtures/requests/uncertainty-classified-good.expected.json",
+      "destination_sha256": "1fc107e19ebc0db7f6fae97ac58d2406c4973c6fb4d6a1f75bf922cc4679a9ae",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/uncertainty-unclassified.expected.json",
+      "source_sha256": "e344b1b475e9a67fcd9ce25d0d2a1166adb0c30bb1988c8ed106206b69c7f675",
+      "destination_path": "workflow_tests/fixtures/requests/uncertainty-unclassified.expected.json",
+      "destination_sha256": "e344b1b475e9a67fcd9ce25d0d2a1166adb0c30bb1988c8ed106206b69c7f675",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/verification-method-weak.expected.json",
+      "source_sha256": "ce3992926f36df34d27e29e01d38ec3c713d89b7fcd053b008c09d4b2e223bbd",
+      "destination_path": "workflow_tests/fixtures/requests/verification-method-weak.expected.json",
+      "destination_sha256": "ce3992926f36df34d27e29e01d38ec3c713d89b7fcd053b008c09d4b2e223bbd",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/fixtures/requests/verification-target-mismatch.expected.json",
+      "source_sha256": "f0400ac899fda64fd3fdb200efda4053f503c87daf5fcfa8ae7c82ed4f91aa08",
+      "destination_path": "workflow_tests/fixtures/requests/verification-target-mismatch.expected.json",
+      "destination_sha256": "f0400ac899fda64fd3fdb200efda4053f503c87daf5fcfa8ae7c82ed4f91aa08",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_acceptance_review.py",
+      "source_sha256": "6ab73067ff5fea6c8ccef9ed8465459320faa359d579913cae1a70373bcc1480",
+      "destination_path": "workflow_tests/test_acceptance_review.py",
+      "destination_sha256": "e7d6ede9e966272dd708d25ac6c9cc51e451cfdf353c5ba25983a1941fd45141",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_artifact_membership.py",
+      "source_sha256": "17abd4261a9ecf287ef18d1d4b39e6c37dd45e5e7e9cfb296c0a4b8a003d38f9",
+      "destination_path": "workflow_tests/test_artifact_membership.py",
+      "destination_sha256": "af13aa82cb61c6595d50ded8eace2a93a4675609902273df0156c21bee7605d8",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_assertion_context.py",
+      "source_sha256": "757a5fbddf6eaa2683332c08c0ad39fa0f4286a616ad0c613ce693068f3dafeb",
+      "destination_path": "workflow_tests/test_assertion_context.py",
+      "destination_sha256": "2ee5fd7d2b2da0919da120d2dfc1644ba78e0abced3225c8fc017350bfc7150d",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_behavior_evidence.py",
+      "source_sha256": "7b13cc0cac10ddb2e9b5e15dab4c46db75a3b3205c606e3dbfe22df0c365d63a",
+      "destination_path": "workflow_tests/test_behavior_evidence.py",
+      "destination_sha256": "2b6b7dacdddaad7b399f9b448cd65a2db2339fd03d840d287b4d47ae3bcbb0d5",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_cli.py",
+      "source_sha256": "d3836a3adcdf4d556682e8fd436423844f715fdca3aa402339dc0a713ff28a12",
+      "destination_path": "workflow_tests/test_cli.py",
+      "destination_sha256": "e3dff5b51cc63bee450a627f66923cf32f33c23516439a1bf8ff72715c1fd071",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_cli_input_errors.py",
+      "source_sha256": "66b112728aa7ec7de055c1cadd8fcb8d466d91bcea9f881fd94929083f8e4b8b",
+      "destination_path": "workflow_tests/test_cli_input_errors.py",
+      "destination_sha256": "997e34425665e164a24b0a2f7fb32b71bc9f284dbf3901dee315ba3b91a98845",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_codex_exec_exploration.py",
+      "source_sha256": "414e16c129c38a0abf406997341cbf0c44ca53d5759d1529598f148267318c42",
+      "destination_path": "workflow_tests/test_codex_exec_exploration.py",
+      "destination_sha256": "430aa619a809f7f2bb0252e6be3ca7be55c8431e97dabbcc30b08dc5e91b51bc",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_codex_exec_review.py",
+      "source_sha256": "2298b6a00dfb586dc76fd00e5821144ca7dc52f607e6d67cf82eb08bac1759af",
+      "destination_path": "workflow_tests/test_codex_exec_review.py",
+      "destination_sha256": "a6f1919e54c47e8216be324edb4b6ab28f5c12a479e8d4a99bfb2866e7c9cb1a",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_conventions.py",
+      "source_sha256": "5c64dd0d6fbb7e4c62a42dceb7eeeb4bbe41d2be0083990a103462e868954c3c",
+      "destination_path": "workflow_tests/test_conventions.py",
+      "destination_sha256": "4c695012b228ba0b9a937afb338f0216a8557e1b5260e5441552557a326ce2a6",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_core.py",
+      "source_sha256": "92a2e360fd8733fd54b0b927a3be88a67708bd1f3c99ef91a7839a7fcb9a3029",
+      "destination_path": "workflow_tests/test_core.py",
+      "destination_sha256": "574bcb725c1198dc16051e351bb37d2dcb924e515ef14e31b15de43c1c3eb1a6",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_doctor.py",
+      "source_sha256": "76f7020570856c292ebae0f7d927665a57133b4af11f8a3a54d4c49a836b9e72",
+      "destination_path": "workflow_tests/test_doctor.py",
+      "destination_sha256": "8ba6e3c9c1170db938ff6f567601acc8777b60dd653f995f5d8b79afe664bea7",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_escalation.py",
+      "source_sha256": "65ce71820bc881ef6777ce07bdb30357c84387aed42b7180c70af7bb0c16ef0b",
+      "destination_path": "workflow_tests/test_escalation.py",
+      "destination_sha256": "abbc8f2d1b6003564865271e133f00eb95f68fb8437c0d93fe37f8e8746d574a",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_evaluation.py",
+      "source_sha256": "da50a7665c16505ce2fb418980c5f768ec847798a289087cfb3c49173a72c30c",
+      "destination_path": "workflow_tests/test_evaluation.py",
+      "destination_sha256": "459263799e8f28ccbb2b6f8a39181ab31c9ec2963ea47072689ccc9322cc0179",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_exploration_jobs.py",
+      "source_sha256": "b4accda1bd7fef3a4488bdb40c5d60b896179f07db12d96af23b7955b7a31091",
+      "destination_path": "workflow_tests/test_exploration_jobs.py",
+      "destination_sha256": "58f716df24d5db192963c25541c7816a95be1423a531aad2a2b791bd20824755",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_exploration_schema_conformance.py",
+      "source_sha256": "ee749fa42830e72ac74d62c3a7068f0c7bbe4e6637754429f642ed342730758d",
+      "destination_path": "workflow_tests/test_exploration_schema_conformance.py",
+      "destination_sha256": "b59757e80122958ad7582f89df436f396c407eee4671040c6779b83e89faabf2",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_field_corpus.py",
+      "source_sha256": "802f01ea08f4dcf5922c79ff25f90d4e939671d289b8ad7d53ff7acb3013a0ea",
+      "destination_path": "workflow_tests/test_field_corpus.py",
+      "destination_sha256": "802f01ea08f4dcf5922c79ff25f90d4e939671d289b8ad7d53ff7acb3013a0ea",
+      "transformations": [
+        "byte_preserving_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_finish_evidence.py",
+      "source_sha256": "4b16721fff3e023973fb5f1da89630a96fbcf811730f497a1180c4b86316ae4d",
+      "destination_path": "workflow_tests/test_finish_evidence.py",
+      "destination_sha256": "1ef887a6ba4678f1d1c35da79debfcdced23d46afd599210ac79274d7c0c1773",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_fixtures.py",
+      "source_sha256": "c408c65892e710ef8c75d7b1f0b0d1d19856214774dede3db9e5717db9aed343",
+      "destination_path": "workflow_tests/test_fixtures.py",
+      "destination_sha256": "111e258b77bd395716d905c2d054b743650d883c4f6e6bbfbdfe11099ac33170",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_japanese_morphology.py",
+      "source_sha256": "0a8af0c4c45a0e35884d507992650035818a38ded457058331c4beeec304b905",
+      "destination_path": "workflow_tests/test_japanese_morphology.py",
+      "destination_sha256": "771dfcfe4d76953bd86bd6c817c588885059c9c37ad1ac988e3c0c4e55768693",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_llm_review.py",
+      "source_sha256": "79b049a449f286fed6cc48f630a87607621e9f7873430906afd118e0b5646da1",
+      "destination_path": "workflow_tests/test_llm_review.py",
+      "destination_sha256": "dcdb3d8a002c04206e8ee840cd0937ddce0b597310b82e8aa6158145244188a7",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_logic.py",
+      "source_sha256": "f02e556b64661404738d4dfc47ac0640a690ad64e6e375c06cbbdb4d8d21246a",
+      "destination_path": "workflow_tests/test_logic.py",
+      "destination_sha256": "dcfefbc7cd5c6b30483e9f45bbe9d9a56367050a701d29629d813823f2d9caa8",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_mcp_tools.py",
+      "source_sha256": "4f0bc82126ffd8fe84fa7a19dc399878f341b06bc11249a1e0031d9a9ffc0515",
+      "destination_path": "workflow_tests/test_mcp_tools.py",
+      "destination_sha256": "20579e2937612b8e276bef8911af807d7bf5fcb33302946084ab2ab3cae6cd2f",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_request_decision_frame.py",
+      "source_sha256": "4ba3b2d437e41b46bd79aa186e0e0b59dcaddf83b8a21794b25f9d4c4e8f9cb8",
+      "destination_path": "workflow_tests/test_request_decision_frame.py",
+      "destination_sha256": "43ed9b2c94c660e2f787168fad11e812165379ec11d3bbc0cd3ac66e1c47e5dd",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_request_decision_frame_generalized.py",
+      "source_sha256": "462050076648c2e684d0b1d5aecb481ce9d35092e49db5aae01c825fd2ec53ed",
+      "destination_path": "workflow_tests/test_request_decision_frame_generalized.py",
+      "destination_sha256": "aade6b40c3f8633434bd72054108a614ceb5bc69dd97e086d8f1e6b9810e9aad",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_request_decision_frame_scalar_surfaces.py",
+      "source_sha256": "507037908caf1c268b82a130a1d121051c8c915e855d7edb64494b1189096e81",
+      "destination_path": "workflow_tests/test_request_decision_frame_scalar_surfaces.py",
+      "destination_sha256": "7ca0131fb03c1e0058484c1471f7692db1223144822e910c7e6aed64ab1e9011",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_request_direction_binding.py",
+      "source_sha256": "e8c40ff152a52d6707bf98a332bc6af7621f7513094d0e65e994992d33db5301",
+      "destination_path": "workflow_tests/test_request_direction_binding.py",
+      "destination_sha256": "1ae5b1498727e880a7989e2cd9b9f9a5b4c449292aece4c236a7c41a6b039a44",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_request_exploration_review.py",
+      "source_sha256": "ad42db767e705f6c7f8c72679a149a6c80ace1e00adc160e07b027b2bb19c1f1",
+      "destination_path": "workflow_tests/test_request_exploration_review.py",
+      "destination_sha256": "ab73986cc07797c15acde418f821500dda540a2bce0e33951e4d7d5d4c351dd2",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_requirement_relations.py",
+      "source_sha256": "14717500281445777ffe3006215b4a9b7323c05b5b5848e259506a1c4138e70e",
+      "destination_path": "workflow_tests/test_requirement_relations.py",
+      "destination_sha256": "e2c94948d29f06c6105ba7035423b118bc9e9961a9b712e9d04ba41db4a93c1b",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_resources.py",
+      "source_sha256": "a127e026dc2e4932f303a6cafa97ae060885cb65a3341356e7870e5acf17c746",
+      "destination_path": "workflow_tests/test_resources.py",
+      "destination_sha256": "5c33203e005725c19c5153ce427a3b83bbc6b988f7c0b2cebb8c01382ce9bf20",
+      "transformations": [
+        "python_namespace_and_test_import_relocation",
+        "owned_resource_layout_expectations",
+        "missing_resource_and_path_escape_regressions"
+      ]
+    },
+    {
+      "source_path": "tests/test_review_jobs.py",
+      "source_sha256": "07763c58545e469aea39d1906ccf8f18a14f5d2ff3532ba1e595a5fb9e684590",
+      "destination_path": "workflow_tests/test_review_jobs.py",
+      "destination_sha256": "039a81d1aa86f310ecef5c2455ac99ab1555d36413a455f02d6930617c4d8ab6",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_review_validation_contracts.py",
+      "source_sha256": "13eade6db9a9dadf0dedc6c441d584b4955ab2fcd9e40cb30cd5debd3a139746",
+      "destination_path": "workflow_tests/test_review_validation_contracts.py",
+      "destination_sha256": "016acb6014ab7f622fce9ec6fcff1ede632d35636e8c413c65387781684791c8",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_rules.py",
+      "source_sha256": "f26b07b6481277ed01c622eb06895043798bbaf8eabaa7af12b927adccab7ca6",
+      "destination_path": "workflow_tests/test_rules.py",
+      "destination_sha256": "1eae9285f733c3cb7f6e4719e4739757ecb9083b80af49c5cf77d2f732f38247",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_runtime_package_layout.py",
+      "source_sha256": "566a065e4415dc3860251f97253389c66e9dee4990c478690ed8fac2ecd1f51c",
+      "destination_path": "workflow_tests/test_runtime_package_layout.py",
+      "destination_sha256": "b3d00ad33a3882673c10ab24c848833a1459f864e243e88340261bb711c0b84f",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_semantic_assertions.py",
+      "source_sha256": "1f4eb6f147573785d463853ca7dd195eaf40f7647d54b01607eea2ce53b91c5d",
+      "destination_path": "workflow_tests/test_semantic_assertions.py",
+      "destination_sha256": "492b636c292a7b2381d8a790d6792847b84b7fa1d0d5d75d51c2373379f6c3c1",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_severity_profiles.py",
+      "source_sha256": "e2dac21999d8c9d25425dd2ec2b6a475baf6ebb32bc1ea5443e69704752ffefd",
+      "destination_path": "workflow_tests/test_severity_profiles.py",
+      "destination_sha256": "7be6ade6a31e2b311fd1b0ca5942c9ee85d2026151229eaa7c17471769417d62",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": "tests/test_traceability.py",
+      "source_sha256": "dd484c1f97071ae3e0d3e79083d546e91e314a7b2783a86d2b658eb2ff54b672",
+      "destination_path": "workflow_tests/test_traceability.py",
+      "destination_sha256": "f3b78414f5caac4fe6b23e4f78788e757a2126d61b76f629c500442fa97e14e9",
+      "transformations": [
+        "python_namespace_and_test_import_relocation"
+      ]
+    },
+    {
+      "source_path": null,
+      "source_sha256": null,
+      "destination_path": "workflow_tests/__init__.py",
+      "destination_sha256": "15a063580b9018396a3f51cc009048f62bcb46e7a04ce105e18be40124bb1a25",
+      "transformations": [
+        "generated_test_namespace"
+      ]
+    }
+  ],
+  "verification": {
+    "source_hashes_rechecked": true,
+    "unit_suite": {
+      "harness": "unittest.defaultTestLoader.discover(\"workflow_tests\", top_level_dir=\".\"); unittest.TextTestRunner(verbosity=1).run(suite)",
+      "python": "3.13.12",
+      "tests": 568,
+      "failures": 0,
+      "errors": 0,
+      "external_codex_attempts": 0,
+      "execution_boundary": "Python audit hook rejected any subprocess.Popen whose executable basename was codex; no such event occurred."
+    },
+    "representative_source_parity": {
+      "passed": 15,
+      "total": 15,
+      "cases": [
+        "acceptance",
+        "acceptance_schema",
+        "audit_schema",
+        "conventions",
+        "decision",
+        "diff",
+        "exploration",
+        "exploration_schema",
+        "finish",
+        "membership",
+        "plan",
+        "request",
+        "review_schema",
+        "target",
+        "trace"
+      ],
+      "normalization": [
+        "Python module provenance namespace",
+        "fixed UUID for artifact-membership snapshot identity"
+      ]
+    },
+    "doctor": {
+      "status": "warn",
+      "rule_detector_mapping_count": 49,
+      "fixtures_passed": 57,
+      "fixtures_total": 57,
+      "warning_at_observation": "Canonical CI does not yet contain evaluate-fixtures; parent owns CI integration."
+    },
+    "mcp": {
+      "name": "semantic-guard-workflow",
+      "tool_count": 27
+    },
+    "not_verified": [
+      "Installed wheel by this worker; packaging verifier owns that evidence.",
+      "Real external LLM review execution.",
+      "Human acceptance and public release."
+    ],
+    "cli_entrypoints": [
+      {
+        "command": "semantic-guard-workflow audit-plan --text <bounded sample>",
+        "phase": "audit_plan",
+        "status": "block",
+        "exit_code": 0
+      },
+      {
+        "command": "semantic-guard workflow audit-plan --text <bounded sample>",
+        "phase": "audit_plan",
+        "status": "block",
+        "exit_code": 0
+      }
+    ]
+  }
+}

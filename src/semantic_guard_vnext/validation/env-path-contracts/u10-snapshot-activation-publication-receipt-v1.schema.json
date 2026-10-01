@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-activation-publication-receipt-v1.schema.json",
+  "title": "U-10 active snapshot manifest publication receipt v1",
+  "type": "object",
+  "required": ["schema_version", "receipt_id", "record_kind", "public_operation", "public_identifier", "occurrence_id", "authorization_ref", "consumption_ref", "projection_receipt_ref", "environment_adoption_ref", "activation_ref", "snapshot_manifest_ref", "store_activation_basis_ref", "completion_scope", "publication_not_before", "publication_observed_at", "receipt_recorded_at", "publisher_contract_binding", "publication_occurred", "formal_authority", "positive_assurance_allowed", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-activation-publication-receipt/v1"},
+    "receipt_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "active_snapshot_manifest_publication_occurrence"},
+    "public_operation": {"const": "activate-snapshot"},
+    "public_identifier": {"$ref": "#/$defs/id"},
+    "occurrence_id": {"$ref": "#/$defs/id"},
+    "authorization_ref": {"$ref": "#/$defs/artifact_ref"},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/id"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "projection_receipt_ref": {"$ref": "#/$defs/artifact_ref"},
+    "environment_adoption_ref": {"$ref": "#/$defs/artifact_ref"},
+    "activation_ref": {"$ref": "#/$defs/artifact_ref"},
+    "snapshot_manifest_ref": {"$ref": "#/$defs/artifact_ref"},
+    "store_activation_basis_ref": {"$ref": "#/$defs/artifact_ref"},
+    "completion_scope": {"const": "snapshot_manifest_and_exact_store_basis_candidate_published"},
+    "publication_not_before": {"type": "string", "format": "date-time"},
+    "publication_observed_at": {"type": "string", "format": "date-time"},
+    "receipt_recorded_at": {"type": "string", "format": "date-time"},
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "publication_occurred": {"const": true},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "artifact_ref": {"type": "object", "required": ["record_id", "locator", "artifact_digest", "semantic_digest"], "properties": {"record_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

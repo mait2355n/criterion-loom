@@ -1,0 +1,37 @@
+{
+  "id": "REQ-INTERFACE-CONTRACT-MISSING-001",
+  "title": "API JSON requirement without contract fields is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 連携先。目的: API が JSON を返す。シナリオ: 連携先が API を呼ぶ場合、JSON が返る。受入基準: JSON が返ることを確認。検証方法: pytest。証拠: 試験結果。対象外: 認証。未確定: なし。",
+  "strict": true,
+  "rationale": "Interface-facing requirements must name contract fields, status/error behavior, or schema details.",
+  "labels": {
+    "expected_rules": [
+      "req.interface.contract_missing",
+      "req.acceptance.rejection_condition_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "interface",
+        "rule_id": "req.interface.contract_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "interface",
+        "acceptance"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "interface_contract",
+        "rejection_condition"
+      ]
+    }
+  }
+}

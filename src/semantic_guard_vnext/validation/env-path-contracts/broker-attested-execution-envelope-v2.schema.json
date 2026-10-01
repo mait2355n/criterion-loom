@@ -1,0 +1,569 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/broker-attested-execution-envelope-v2.schema.json",
+  "title": "semantic-guard broker-attested governed execution envelope v2",
+  "description": "An Ed25519 attestation over the complete signed_statement. It records execution occurrence and bound evidence only; it grants no engineering, human-decision, or positive-assurance authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "signed_statement",
+    "signature",
+    "envelope_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-broker-attested-execution-envelope/v2"},
+    "signed_statement": {
+      "type": "object",
+      "required": [
+        "statement_schema_version",
+        "envelope_id",
+        "key_id",
+        "signature_domain",
+        "canonicalization_profile",
+        "broker",
+        "trust_store_ref",
+        "trust_entry_ref",
+        "request",
+        "nonce_consumption",
+        "snapshot_manifest_ref",
+        "preactivation_boundary_binding",
+        "worker_identity",
+        "worker_launch_contract",
+        "worker_reported_observation",
+        "broker_execution_observation",
+        "command_binding",
+        "verification_profile_ref",
+        "environment_profile_ref",
+        "eligibility_source_ref",
+        "execution_nonce",
+        "broker_context_ref",
+        "worker_outcome_ref",
+        "receipt_ref",
+        "started_at",
+        "finished_at",
+        "attested_at",
+        "authority_ceiling"
+      ],
+      "properties": {
+        "statement_schema_version": {"const": "semantic-guard-u10-broker-signed-statement/v2"},
+        "envelope_id": {"$ref": "#/$defs/stable_id"},
+        "key_id": {"$ref": "#/$defs/stable_id"},
+        "signature_domain": {"const": "semantic-guard.u10.broker-execution-attestation/v2"},
+        "canonicalization_profile": {"const": "semantic-guard-canonical-json/v1"},
+        "broker": {
+          "type": "object",
+          "required": ["broker_id", "broker_version", "runtime_ref"],
+          "properties": {
+            "broker_id": {"const": "semantic-guard.u10.root-execution-broker"},
+            "broker_version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "runtime_ref": {"$ref": "#/$defs/root_artifact_ref"}
+          },
+          "unevaluatedProperties": false
+        },
+        "trust_store_ref": {"$ref": "#/$defs/trust_store_ref"},
+        "trust_entry_ref": {"$ref": "#/$defs/trust_entry_ref"},
+        "request": {"$ref": "#/$defs/execution_request"},
+        "nonce_consumption": {
+          "type": "object",
+          "required": ["ledger_root", "nonce_record_ref", "recorded_at", "replay_check"],
+          "properties": {
+            "ledger_root": {"const": "/Library/Application Support/semantic-guard/u10/nonce-ledger"},
+            "nonce_record_ref": {"$ref": "#/$defs/nonce_record_ref"},
+            "recorded_at": {"type": "string", "format": "date-time"},
+            "replay_check": {"const": "record_absent_then_o_excl_created_before_launch"}
+          },
+          "unevaluatedProperties": false
+        },
+        "snapshot_manifest_ref": {"$ref": "#/$defs/snapshot_manifest_ref"},
+        "preactivation_boundary_binding": {"$ref": "#/$defs/preactivation_boundary_binding"},
+        "worker_identity": {"$ref": "#/$defs/worker_identity"},
+        "worker_launch_contract": {"$ref": "#/$defs/worker_launch_contract"},
+        "worker_reported_observation": {"$ref": "#/$defs/worker_reported_observation"},
+        "broker_execution_observation": {"$ref": "#/$defs/broker_execution_observation"},
+        "command_binding": {
+          "type": "object",
+          "required": ["command_id", "command_definition_digest", "closed_test_manifest_ref"],
+          "properties": {
+            "command_id": {"$ref": "#/$defs/stable_id"},
+            "command_definition_digest": {"$ref": "#/$defs/digest"},
+            "closed_test_manifest_ref": {"$ref": "#/$defs/closed_test_manifest_ref"}
+          },
+          "unevaluatedProperties": false
+        },
+        "verification_profile_ref": {"$ref": "#/$defs/verification_profile_ref"},
+        "environment_profile_ref": {"$ref": "#/$defs/environment_profile_ref"},
+        "eligibility_source_ref": {"$ref": "#/$defs/eligibility_source_ref"},
+        "execution_nonce": {"$ref": "#/$defs/nonce"},
+        "broker_context_ref": {"$ref": "#/$defs/broker_context_ref"},
+        "worker_outcome_ref": {"$ref": "#/$defs/worker_outcome_ref"},
+        "receipt_ref": {"$ref": "#/$defs/execution_receipt_ref"},
+        "started_at": {"type": "string", "format": "date-time", "description": "Root-broker UTC observation immediately before Popen."},
+        "finished_at": {"type": "string", "format": "date-time", "description": "Root-broker UTC observation after worker evidence validation and process-group quiescence."},
+        "attested_at": {"type": "string", "format": "date-time"},
+        "authority_ceiling": {
+          "type": "object",
+          "required": [
+            "evidence_authority",
+            "formal_authority",
+            "positive_assurance_allowed",
+            "human_decision_authority",
+            "engineering_correctness_authority",
+            "u4_authority_status"
+          ],
+          "properties": {
+            "evidence_authority": {"const": "broker_observed_execution_occurrence_only"},
+            "formal_authority": {"const": "none"},
+            "positive_assurance_allowed": {"const": false},
+            "human_decision_authority": {"const": "none"},
+            "engineering_correctness_authority": {"const": "none"},
+            "u4_authority_status": {"const": "unresolved"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "encoding", "signed_member", "value"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "encoding": {"const": "base64"},
+        "signed_member": {"const": "signed_statement"},
+        "value": {"type": "string", "pattern": "^[A-Za-z0-9+/]{86}==$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "envelope_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "entity_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_store_ref": {
+      "type": "object",
+      "required": ["schema_version", "store_id", "store_revision_id", "store_version", "lifecycle_state", "locator", "artifact_digest", "semantic_digest", "basis_role"],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-u10-root-trust-store/v2"},
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "active"},
+        "locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/trust-store-history/sha256/[0-9a-f]{64}\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "basis_role": {"const": "current_at_attestation"}
+      },
+      "unevaluatedProperties": false
+    },
+    "nonce_record_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/nonce-ledger/[0-9a-f]{64}\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "execution_request": {
+      "type": "object",
+      "required": ["entry_id", "command_id", "request_nonce"],
+      "properties": {
+        "entry_id": {"$ref": "#/$defs/stable_id"},
+        "command_id": {"$ref": "#/$defs/stable_id"},
+        "request_nonce": {"$ref": "#/$defs/nonce"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_entry_ref": {
+      "type": "object",
+      "required": ["store_id", "store_revision_id", "store_version", "entry_id", "entry_state", "entry_digest"],
+      "properties": {
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "entry_id": {"$ref": "#/$defs/stable_id"},
+        "entry_state": {"const": "active"},
+        "entry_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_manifest_ref": {
+      "type": "object",
+      "required": ["snapshot_id", "snapshot_version", "lifecycle_state", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "snapshot_id": {"$ref": "#/$defs/stable_id"},
+        "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "active"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "candidate_bundle_ref": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_version", "candidate_locator", "artifact_digest", "bundle_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "bundle_id": {"type": "string", "pattern": "^candidate\\.u10\\.[0-9a-f]{64}$"},
+        "bundle_version": {"const": "2.0.0-candidate"},
+        "candidate_locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/candidates/candidate\\.u10\\.[0-9a-f]{64}/bundle-manifest\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "bundle_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_record_ref": {
+      "type": "object",
+      "required": ["record_id", "source_locator", "source_artifact_digest", "candidate_relative_locator", "candidate_artifact_digest", "semantic_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "source_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "source_artifact_digest": {"$ref": "#/$defs/digest"},
+        "candidate_relative_locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "candidate_artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "effective_worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "supplementary_gids", "umask"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_boundary_binding": {
+      "type": "object",
+      "required": ["profile", "candidate_bundle_ref", "boundary_binding_digest", "decision_record_ref", "worker_account_observation_ref", "worker_principal_resolution_ref", "subject_entity_id", "worker_principal_entity_id", "threat_boundary", "worker_identity_policy", "qualification_scope", "hostile_code_assurance", "requalification_triggers", "effective_worker_identity"],
+      "properties": {
+        "profile": {"const": "u10-local-bounded-preactivation-binding/v1"},
+        "candidate_bundle_ref": {"$ref": "#/$defs/candidate_bundle_ref"},
+        "boundary_binding_digest": {"$ref": "#/$defs/digest"},
+        "decision_record_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_account_observation_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_principal_resolution_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "subject_entity_id": {"const": "acfb8b85-2f75-5e82-a641-b3b3b6e023d6"},
+        "worker_principal_entity_id": {"$ref": "#/$defs/entity_id"},
+        "threat_boundary": {"const": "local_bounded_repository_suite_only"},
+        "worker_identity_policy": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+        "qualification_scope": {"const": "repository_owned_closed_verification_suite_only"},
+        "hostile_code_assurance": {"const": "prohibited_requires_separate_external_executor_profile"},
+        "requalification_triggers": {"const": ["threat_boundary_change", "worker_identity_policy_change", "principal_resolution_change", "host_or_os_change", "sandbox_or_external_executor_change", "qualified_test_denominator_change"]},
+        "effective_worker_identity": {"$ref": "#/$defs/effective_worker_identity"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "supplementary_gids", "umask"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_launch_contract": {
+      "type": "object",
+      "required": [
+        "worker_version",
+        "interpreter_ref",
+        "entrypoint_ref",
+        "python_flags",
+        "working_directory",
+        "environment",
+        "process_group_policy"
+      ],
+      "properties": {
+        "worker_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "interpreter_ref": {"$ref": "#/$defs/root_artifact_ref"},
+        "entrypoint_ref": {"$ref": "#/$defs/root_artifact_ref"},
+        "python_flags": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "-I"},
+            {"const": "-S"},
+            {"const": "-B"}
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "working_directory": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "environment": {
+          "type": "object",
+          "required": ["PATH", "LC_ALL", "PYTHONDONTWRITEBYTECODE"],
+          "properties": {
+            "PATH": {"const": ""},
+            "LC_ALL": {"const": "C"},
+            "PYTHONDONTWRITEBYTECODE": {"const": "1"}
+          },
+          "unevaluatedProperties": false
+        },
+        "process_group_policy": {"const": "worker_and_inner_runner_share_root_reaped_group/v1"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_process_report": {
+      "type": "object",
+      "required": ["pid", "parent_pid", "process_group_id", "session_id"],
+      "properties": {
+        "pid": {"type": "integer", "minimum": 1},
+        "parent_pid": {"type": "integer", "minimum": 1},
+        "process_group_id": {"type": "integer", "minimum": 1},
+        "session_id": {"type": "integer", "minimum": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_reported_observation": {
+      "type": "object",
+      "description": "Worker self-report. It is bound evidence, not a root observation.",
+      "required": ["process", "interval"],
+      "properties": {
+        "process": {"$ref": "#/$defs/worker_process_report"},
+        "interval": {
+          "type": "object",
+          "required": ["started_at", "finished_at"],
+          "properties": {
+            "started_at": {"type": "string", "format": "date-time"},
+            "finished_at": {"type": "string", "format": "date-time"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_execution_observation": {
+      "type": "object",
+      "description": "Facts directly observed by the root broker around the launched process.",
+      "required": ["process", "exit_code", "process_group_quiescence"],
+      "properties": {
+        "process": {
+          "type": "object",
+          "required": ["pid", "parent_pid", "process_group_id", "session_id", "observed_at"],
+          "properties": {
+            "pid": {"type": "integer", "minimum": 1},
+            "parent_pid": {"type": "integer", "minimum": 1},
+            "process_group_id": {"type": "integer", "minimum": 1},
+            "session_id": {"type": "integer", "minimum": 1},
+            "observed_at": {"type": "string", "format": "date-time"}
+          },
+          "unevaluatedProperties": false
+        },
+        "exit_code": {"const": 0},
+        "process_group_quiescence": {
+          "type": "object",
+          "required": ["process_group_id", "state", "observed_at"],
+          "properties": {
+            "process_group_id": {"type": "integer", "minimum": 1},
+            "state": {"const": "absent"},
+            "observed_at": {"type": "string", "format": "date-time"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "closed_test_manifest_ref": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "locator", "artifact_digest", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stable_id"},
+        "manifest_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "verification_profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "locator", "artifact_digest", "content_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_profile_ref": {
+      "type": "object",
+      "required": ["environment_profile_id", "environment_profile_version", "locator", "artifact_digest", "basis_digest"],
+      "properties": {
+        "environment_profile_id": {"$ref": "#/$defs/stable_id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "eligibility_source_ref": {
+      "type": "object",
+      "required": ["source_id", "source_version", "lifecycle_state", "locator", "artifact_digest", "source_digest"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "adopted"},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "source_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_context_ref": {
+      "type": "object",
+      "required": ["run_id", "schema_version", "locator", "artifact_digest", "semantic_digest", "phase_budget", "phase_budget_digest"],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/stable_id"},
+        "schema_version": {"const": "semantic-guard-u10-worker-context/v1"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/spool/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "phase_budget": {"$ref": "#/$defs/worker_phase_budget"},
+        "phase_budget_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_phase_budget": {
+      "type": "object",
+      "required": [
+        "profile",
+        "pre_environment_reobservation_seconds",
+        "post_environment_reobservation_seconds",
+        "evidence_finalization_seconds",
+        "process_reap_seconds",
+        "governed_command_timeout_seconds",
+        "whole_run_timeout_seconds"
+      ],
+      "properties": {
+        "profile": {"const": "u10-compositional-worker-budget/v1"},
+        "pre_environment_reobservation_seconds": {"type": "number", "minimum": 240, "maximum": 240},
+        "post_environment_reobservation_seconds": {"type": "number", "minimum": 240, "maximum": 240},
+        "evidence_finalization_seconds": {"type": "number", "minimum": 30, "maximum": 30},
+        "process_reap_seconds": {"type": "number", "minimum": 10, "maximum": 10},
+        "governed_command_timeout_seconds": {"type": "number", "minimum": 1, "maximum": 1800},
+        "whole_run_timeout_seconds": {"type": "number", "minimum": 521, "maximum": 2320}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_outcome_ref": {
+      "type": "object",
+      "required": ["run_id", "schema_version", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "run_id": {"$ref": "#/$defs/stable_id"},
+        "schema_version": {"const": "semantic-guard-u10-worker-outcome/v1"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/spool/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "execution_receipt_ref": {
+      "type": "object",
+      "required": ["receipt_id", "schema_version", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "receipt_id": {"$ref": "#/$defs/stable_id"},
+        "schema_version": {"const": "semantic-guard-governed-environment-execution-receipt/v1"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/spool/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

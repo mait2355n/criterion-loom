@@ -1,0 +1,35 @@
+{
+  "id": "DIFF-FAILURE-HANDLING-MISSING-001",
+  "title": "JSON file loading without error handling is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/loader.py b/src/semantic_guard/loader.py\n--- a/src/semantic_guard/loader.py\n+++ b/src/semantic_guard/loader.py\n@@\n+from pathlib import Path\n+import json\n+\n+def load_config(path: str) -> dict[str, object]:\n+    return json.loads(Path(path).read_text(encoding=\"utf-8\"))\n",
+  "intent": "設定 JSON を読み込む loader を追加する。",
+  "strict": true,
+  "rationale": "File I/O and JSON parsing need failure handling evidence.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.failure_handling_gap"
+    ],
+    "expected_findings": [
+      {
+        "category": "reliability",
+        "rule_id": "diff.implementation.failure_handling_gap"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "reliability"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "failure_handling"
+      ]
+    }
+  }
+}

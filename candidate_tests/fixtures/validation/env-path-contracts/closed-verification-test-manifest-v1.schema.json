@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/closed-verification-test-manifest-v1.schema.json",
+  "title": "semantic-guard closed verification test manifest v1",
+  "description": "Digest-sealed closed denominator for the subject artifacts, test modules, and exact unittest identifiers authorized by one governed command.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "manifest_version",
+    "command_id",
+    "subject_denominator",
+    "test_denominator",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "manifest_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-closed-verification-test-manifest/v1"},
+    "manifest_id": {"$ref": "#/$defs/stable_id"},
+    "manifest_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "command_id": {"$ref": "#/$defs/stable_id"},
+    "subject_denominator": {
+      "type": "object",
+      "required": ["status", "inclusion_rule", "entry_count", "entries"],
+      "properties": {
+        "status": {"const": "closed"},
+        "inclusion_rule": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "entry_count": {"type": "integer", "minimum": 1},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": {
+            "type": "object",
+            "properties": {"role": {"const": "primary_subject"}},
+            "required": ["role"]
+          },
+          "items": {
+            "type": "object",
+            "required": ["role", "artifact_ref"],
+            "properties": {
+              "role": {"enum": ["primary_subject", "component", "configuration"]},
+              "artifact_ref": {"$ref": "#/$defs/digest_bound_ref"}
+            },
+            "unevaluatedProperties": false
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "test_denominator": {
+      "type": "object",
+      "required": ["status", "module_count", "test_count", "modules", "expected_test_ids", "test_source_refs"],
+      "properties": {
+        "status": {"const": "closed"},
+        "module_count": {"type": "integer", "minimum": 1},
+        "test_count": {"type": "integer", "minimum": 1},
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "maxLength": 512}
+        },
+        "expected_test_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "maxLength": 1024}
+        },
+        "test_source_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/digest_bound_ref"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "manifest_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

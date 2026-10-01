@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-activation-authorization-consumption-v1.schema.json",
+  "title": "U-10 snapshot adoption authorization consumption v1",
+  "type": "object",
+  "required": ["schema_version", "consumption_id", "record_kind", "public_operation", "public_identifier", "authorization_ref", "projection_receipt_ref", "environment_adoption_ref", "snapshot_id", "snapshot_basis_digest", "occurrence_id", "reserved_at", "activation_prepared_at", "publisher_contract_binding", "manifest_publication_occurred", "formal_authority", "positive_assurance_allowed", "consumption_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-activation-authorization-consumption/v1"},
+    "consumption_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "snapshot_adoption_authorization_consumption"},
+    "public_operation": {"const": "activate-snapshot"},
+    "public_identifier": {"$ref": "#/$defs/id"},
+    "authorization_ref": {"$ref": "#/$defs/artifact_ref"},
+    "projection_receipt_ref": {"$ref": "#/$defs/artifact_ref"},
+    "environment_adoption_ref": {"$ref": "#/$defs/artifact_ref"},
+    "snapshot_id": {"$ref": "#/$defs/id"},
+    "snapshot_basis_digest": {"$ref": "#/$defs/digest"},
+    "occurrence_id": {"$ref": "#/$defs/id"},
+    "reserved_at": {"type": "string", "format": "date-time"},
+    "activation_prepared_at": {"type": "string", "format": "date-time"},
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "manifest_publication_occurred": {"const": false},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "consumption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "artifact_ref": {"type": "object", "required": ["record_id", "locator", "artifact_digest", "semantic_digest"], "properties": {"record_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

@@ -37,10 +37,19 @@ jobs:
           uv sync --locked --python ${{ matrix.python-version }}
 
       - name: Compile canonical source and tests
-        run: uv run --locked python -m compileall -q src/semantic_guard tests scripts
+        run: uv run --locked python -m compileall -q src tests workflow_tests candidate_tests scripts
 
       - name: Run full canonical test suite
         run: uv run --locked python -m unittest discover -s tests -v
+
+      - name: Run imported workflow regression suite
+        run: uv run --locked python -m unittest discover -s workflow_tests -t . -v
+
+      - name: Run imported candidate regression suite
+        run: uv run --locked python -m unittest discover -s candidate_tests -t . -v
+
+      - name: Replay workflow fixtures
+        run: uv run --locked semantic-guard workflow evaluate-fixtures
 
       - name: Validate verification source
         run: uv run --locked python scripts/validate_verification_source.py
@@ -117,15 +126,15 @@ jobs:
 
       - name: Verify packaged contracts
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
-          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0.tar.gz' -print -quit)"
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.2.0.dev0-*.whl' -print -quit)"
+          SDIST="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.2.0.dev0.tar.gz' -print -quit)"
           test -n "$WHEEL"
           test -n "$SDIST"
           uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"
 
       - name: Verify installed CLI and MCP inventory
         run: |
-          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.1.0-*.whl' -print -quit)"
+          WHEEL="$(find dist -maxdepth 1 -type f -name 'semantic_guard-1.2.0.dev0-*.whl' -print -quit)"
           VENV="$RUNNER_TEMP/semantic-guard-installed"
           python -m venv "$VENV"
           "$VENV/bin/python" -m pip install --upgrade pip
@@ -167,7 +176,7 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v7
         with:
-          name: semantic-guard-1.1.0-distributions
+          name: semantic-guard-1.2.0.dev0-distributions
           path: |
             dist/*.whl
             dist/*.tar.gz

@@ -159,6 +159,12 @@ def build_parser() -> argparse.ArgumentParser:
         default="audit-result",
         nargs="?",
     )
+    for name, description in (
+        ("workflow", "Run the separately versioned workflow audit interface."),
+        ("candidate", "Run the unadopted governed vNext candidate interface."),
+    ):
+        route = subparsers.add_parser(name, help=description, add_help=False)
+        route.add_argument("arguments", nargs=argparse.REMAINDER)
     return parser
 
 
@@ -252,8 +258,19 @@ def _write(payload: object) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    # Dispatch before canonical parsing: each interface owns its options,
+    # help, result contract and exit policy. No process-global argv mutation.
+    if arguments and arguments[0] == "workflow":
+        from semantic_guard_workflow.cli import main as workflow_main
+
+        return workflow_main(arguments[1:], prog="semantic-guard workflow") or 0
+    if arguments and arguments[0] == "candidate":
+        from semantic_guard_vnext.cli import main as candidate_main
+
+        return candidate_main(arguments[1:])
     parser = build_parser()
-    args = parser.parse_args(argv)
+    args = parser.parse_args(arguments)
 
     if args.command == "schema":
         _write(load_public_schema(args.name))

@@ -1,0 +1,44 @@
+{
+  "id": "DIFF-COMMAND-DEFAULTS-001",
+  "title": "Command wording in a test diff is not a security signal",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "input": "command-defaults.diff",
+  "intent": "入力種別 kind の CLI 既定値を記録する。",
+  "strict": true,
+  "rationale": "The word command can appear in ordinary test and CLI documentation context; it must not regress into a generic security false positive.",
+  "labels": {
+    "forbidden_findings": [
+      {
+        "category": "security"
+      },
+      {
+        "category": "meaning"
+      },
+      {
+        "category": "quality"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "security",
+        "meaning",
+        "quality"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "intent",
+        "test_obligation"
+      ]
+    },
+    "details": {
+      "input_kind": "diff-summary",
+      "changed_file_count": 1
+    }
+  }
+}

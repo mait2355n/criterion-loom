@@ -1,0 +1,84 @@
+{
+  "id": "REQ-NEGATED-ASSURANCE-FIELDS-001",
+  "title": "Explicitly absent verification fields cannot satisfy audit obligations",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 開発者。目的: 監査可能性を高める。受入基準は定めない。検証方法はない。証拠は残さない。対象外: UI。未確定: なし。",
+  "strict": true,
+  "rationale": "Explicit absence, empty fields, and placeholders are not accepted facts merely because their field names occur in the request.",
+  "labels": {
+    "expected_rules": [
+      "req.verifiability.acceptance_missing",
+      "req.achievement.criteria_missing",
+      "req.verification.method_detail_missing",
+      "req.evidence.artifact_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "verifiability",
+        "rule_id": "req.verifiability.acceptance_missing"
+      },
+      {
+        "category": "acceptance",
+        "rule_id": "req.achievement.criteria_missing"
+      },
+      {
+        "category": "verification",
+        "rule_id": "req.verification.method_detail_missing"
+      },
+      {
+        "category": "evidence",
+        "rule_id": "req.evidence.artifact_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "verifiability",
+        "acceptance",
+        "verification",
+        "evidence"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "verification_or_acceptance",
+        "achievement_criteria",
+        "verification_method_detail",
+        "evidence_artifact"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": [
+      "req.verifiability.acceptance_missing",
+      "req.achievement.criteria_missing",
+      "req.verification.method_detail_missing",
+      "req.evidence.artifact_missing"
+    ],
+    "logical_trace_summary_rule": [
+      {
+        "rule_id": "req.verifiability.acceptance_missing",
+        "status": "derived",
+        "finding_count": 1
+      },
+      {
+        "rule_id": "req.achievement.criteria_missing",
+        "status": "derived",
+        "finding_count": 1
+      },
+      {
+        "rule_id": "req.verification.method_detail_missing",
+        "status": "derived",
+        "finding_count": 1
+      },
+      {
+        "rule_id": "req.evidence.artifact_missing",
+        "status": "derived",
+        "finding_count": 1
+      }
+    ]
+  }
+}

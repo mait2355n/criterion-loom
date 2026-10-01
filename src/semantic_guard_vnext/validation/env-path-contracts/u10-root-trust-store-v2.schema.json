@@ -1,0 +1,724 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json",
+  "title": "semantic-guard U-10 root trust store v2",
+  "description": "Root-owned composition root for U-10. The caller cannot supply source material, paths, digests, worker identity, signing state, or an eligibility service.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "store_id",
+    "store_revision_id",
+    "store_version",
+    "store_activation_basis_digest",
+    "activation_authorization_ref",
+    "lifecycle_state",
+    "broker_runtime_version",
+    "broker_entrypoint_ref",
+    "broker_outer_launcher_ref",
+    "broker_launch_platform",
+    "broker_runtime_ref",
+    "current_selector",
+    "trust_store_history",
+    "coordination_lock",
+    "snapshot_root",
+    "signing_key",
+    "nonce_ledger",
+    "result_spool",
+    "entries",
+    "u4_authority_resolution",
+    "revocation_ref",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "store_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-root-trust-store/v2"},
+    "store_id": {"$ref": "#/$defs/stable_id"},
+    "store_revision_id": {"$ref": "#/$defs/stable_id"},
+    "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+    "activation_authorization_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_managed_artifact_ref"}
+      ]
+    },
+    "lifecycle_state": {"enum": ["candidate", "active", "revoked"]},
+    "broker_runtime_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "broker_entrypoint_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+    "broker_outer_launcher_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+    "broker_launch_platform": {
+      "type": "object",
+      "required": ["profile", "shell_ref", "shell_flags", "environment_cleaner_ref", "effective_python_ref", "effective_python_path_ref", "effective_runtime_manifest_ref", "environment_policy", "os_injected_environment_policy", "python_flags"],
+      "properties": {
+        "profile": {"const": "darwin-root-wrapper-qualified-effective-python/v2"},
+        "shell_ref": {"$ref": "#/$defs/host_runtime_ref"},
+        "shell_flags": {
+          "type": "array",
+          "prefixItems": [{"const": "-p"}],
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "environment_cleaner_ref": {"$ref": "#/$defs/host_runtime_ref"},
+        "effective_python_ref": {"$ref": "#/$defs/host_runtime_ref"},
+        "effective_python_path_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+        "effective_runtime_manifest_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+        "environment_policy": {"const": "privileged_sh_p_then_env_i_direct_effective_execve/v3"},
+        "os_injected_environment_policy": {"const": "cf_user_text_encoding_uid_bound_then_removed/v1"},
+        "python_flags": {
+          "type": "array",
+          "prefixItems": [{"const": "-I"}, {"const": "-S"}, {"const": "-B"}],
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_runtime_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+    "current_selector": {
+      "type": "object",
+      "required": ["path", "owner_uid", "owner_gid", "mode", "publication_policy", "activation_ledger_path", "activation_ledger_policy", "activation_ledger_retention_policy", "revocation_selector_path", "revocation_history_path", "revocation_ledger_path", "revocation_ledger_policy", "revocation_ledger_retention_policy", "revocation_decision_root_path", "revocation_decision_entry_policy", "revocation_publication_policy"],
+      "properties": {
+        "path": {"const": "/Library/Application Support/semantic-guard/u10/trust-store-current.json"},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "mode": {"const": "0444"},
+        "publication_policy": {"const": "history_fsync_before_atomic_current_replace/v1"},
+        "activation_ledger_path": {"const": "/Library/Application Support/semantic-guard/u10/activations/store-transitions"},
+        "activation_ledger_policy": {"const": "authorization_id_interval_receipt_atomic_publish/v3"},
+        "activation_ledger_retention_policy": {"const": "no_automatic_deletion_while_store_revision_is_retained/v1"},
+        "revocation_selector_path": {"const": "/Library/Application Support/semantic-guard/u10/trust-store-current-revocation.json"},
+        "revocation_history_path": {"const": "/Library/Application Support/semantic-guard/u10/revocations/sha256"},
+        "revocation_ledger_path": {"const": "/Library/Application Support/semantic-guard/u10/activations/store-revocations"},
+        "revocation_ledger_policy": {"const": "authorization_id_interval_receipt_atomic_publish/v2"},
+        "revocation_ledger_retention_policy": {"const": "no_automatic_deletion_while_store_revision_is_retained/v1"},
+        "revocation_decision_root_path": {"const": "/Library/Application Support/semantic-guard/u10/authorizations"},
+        "revocation_decision_entry_policy": {"const": "fixed_root_record_id_resolution_no_caller_raw/v1"},
+        "revocation_publication_policy": {"const": "decision_consumption_history_selector_interval_receipt_recovery/v4"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_store_history": {
+      "type": "object",
+      "required": ["path", "owner_uid", "owner_gid", "directory_mode", "artifact_mode", "address_profile", "write_policy", "retention_policy"],
+      "properties": {
+        "path": {"const": "/Library/Application Support/semantic-guard/u10/trust-store-history/sha256"},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "directory_mode": {"const": "0755"},
+        "artifact_mode": {"const": "0444"},
+        "address_profile": {"const": "sha256_raw_artifact_filename/v1"},
+        "write_policy": {"const": "root_o_excl_create_once_no_replace/v1"},
+        "retention_policy": {"const": "no_automatic_deletion_while_referenced/v1"}
+      },
+      "unevaluatedProperties": false
+    },
+    "coordination_lock": {
+      "type": "object",
+      "required": ["path", "owner_uid", "owner_gid", "mode", "protocol"],
+      "properties": {
+        "path": {"const": "/Library/Application Support/semantic-guard/u10/trust-store.lock"},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "mode": {"const": "0600"},
+        "protocol": {"const": "shared_execution_exclusive_activation_flock/v1"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_root": {
+      "allOf": [
+        {"$ref": "#/$defs/root_directory_binding"},
+        {
+          "type": "object",
+          "properties": {
+            "path": {"const": "/Library/Application Support/semantic-guard/u10/snapshots"},
+            "resource_state": {"enum": ["candidate", "active", "retained_revoked"]},
+            "mode": {"const": "0755"},
+            "write_policy": {"const": "root_broker_content_addressed_snapshot_only/v1"}
+          }
+        }
+      ]
+    },
+    "signing_key": {
+      "type": "object",
+      "required": [
+        "key_id",
+        "key_state",
+        "algorithm",
+        "public_key_base64",
+        "private_key_path",
+        "private_key_owner_uid",
+        "private_key_owner_gid",
+        "private_key_mode",
+        "key_usage"
+      ],
+      "properties": {
+        "key_id": {"$ref": "#/$defs/stable_id"},
+        "key_state": {"enum": ["candidate", "active", "revoked"]},
+        "algorithm": {"const": "ed25519"},
+        "public_key_base64": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$"}
+          ]
+        },
+        "private_key_path": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/keys/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "private_key_owner_uid": {"const": 0},
+        "private_key_owner_gid": {"const": 0},
+        "private_key_mode": {"const": "0600"},
+        "key_usage": {"const": "u10_broker_execution_attestation_only"}
+      },
+      "unevaluatedProperties": false
+    },
+    "nonce_ledger": {
+      "type": "object",
+      "required": [
+        "ledger_root",
+        "resource_state",
+        "owner_uid",
+        "owner_gid",
+        "directory_mode",
+        "record_format",
+        "record_locator_scheme",
+        "write_policy",
+        "replay_policy"
+      ],
+      "properties": {
+        "ledger_root": {"const": "/Library/Application Support/semantic-guard/u10/nonce-ledger"},
+        "resource_state": {"enum": ["candidate", "active", "retained_revoked"]},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "directory_mode": {"const": "0700"},
+        "record_format": {"const": "semantic-guard-u10-request-nonce-record/v1"},
+        "record_locator_scheme": {"const": "sha256(entry_id_nul_request_nonce).json"},
+        "write_policy": {"const": "one_record_per_nonce_o_excl_create_once/v1"},
+        "replay_policy": {"const": "reject_if_nonce_record_already_exists"}
+      },
+      "unevaluatedProperties": false
+    },
+    "result_spool": {
+      "allOf": [
+        {"$ref": "#/$defs/root_directory_binding"},
+        {
+          "type": "object",
+          "properties": {
+            "path": {"const": "/Library/Application Support/semantic-guard/u10/spool"},
+            "resource_state": {"enum": ["candidate", "active", "retained_revoked"]},
+            "mode": {"const": "0755"},
+            "write_policy": {"const": "root_broker_create_once_content_addressed_results/v1"}
+          }
+        }
+      ]
+    },
+    "entries": {
+      "type": "object",
+      "description": "The object member name is the entry_id identity authority; no duplicate inline entry_id is permitted.",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/stable_id"},
+      "additionalProperties": {"$ref": "#/$defs/trust_entry"}
+    },
+    "u4_authority_resolution": {"$ref": "#/$defs/u4_unresolved"},
+    "revocation_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_managed_artifact_ref"}
+      ]
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "store_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "entity_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "snapshot_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "candidate_bundle_ref": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_version", "candidate_locator", "artifact_digest", "bundle_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "bundle_id": {"type": "string", "pattern": "^candidate\\.u10\\.[0-9a-f]{64}$"},
+        "bundle_version": {"const": "2.0.0-candidate"},
+        "candidate_locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/candidates/candidate\\.u10\\.[0-9a-f]{64}/bundle-manifest\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "bundle_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_record_ref": {
+      "type": "object",
+      "required": ["record_id", "source_locator", "source_artifact_digest", "candidate_relative_locator", "candidate_artifact_digest", "semantic_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "source_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "source_artifact_digest": {"$ref": "#/$defs/digest"},
+        "candidate_relative_locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "candidate_artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "effective_worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "effective_supplementary_gids", "umask"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "effective_supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_boundary_binding": {
+      "type": "object",
+      "required": ["profile", "candidate_bundle_ref", "boundary_binding_digest", "decision_record_ref", "worker_account_observation_ref", "worker_principal_resolution_ref", "subject_entity_id", "worker_principal_entity_id", "threat_boundary", "worker_identity_policy", "qualification_scope", "hostile_code_assurance", "requalification_triggers", "effective_worker_identity"],
+      "properties": {
+        "profile": {"const": "u10-local-bounded-preactivation-binding/v1"},
+        "candidate_bundle_ref": {"$ref": "#/$defs/candidate_bundle_ref"},
+        "boundary_binding_digest": {"$ref": "#/$defs/digest"},
+        "decision_record_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_account_observation_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_principal_resolution_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "subject_entity_id": {"const": "acfb8b85-2f75-5e82-a641-b3b3b6e023d6"},
+        "worker_principal_entity_id": {"$ref": "#/$defs/entity_id"},
+        "threat_boundary": {"const": "local_bounded_repository_suite_only"},
+        "worker_identity_policy": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+        "qualification_scope": {"const": "repository_owned_closed_verification_suite_only"},
+        "hostile_code_assurance": {"const": "prohibited_requires_separate_external_executor_profile"},
+        "requalification_triggers": {"const": ["threat_boundary_change", "worker_identity_policy_change", "principal_resolution_change", "host_or_os_change", "sandbox_or_external_executor_change", "qualified_test_denominator_change"]},
+        "effective_worker_identity": {"$ref": "#/$defs/effective_worker_identity"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_managed_artifact_ref": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "locator",
+        "artifact_digest",
+        "semantic_digest",
+        "owner_uid",
+        "owner_gid",
+        "write_protection"
+      ],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "write_protection": {"const": "not_group_or_world_writable"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "host_runtime_ref": {
+      "type": "object",
+      "required": ["logical_id", "locator", "resolved_locator", "artifact_digest", "owner_uid", "write_protection"],
+      "properties": {
+        "logical_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "owner_uid": {"const": 0},
+        "write_protection": {"const": "absolute_ancestor_chain_not_group_or_world_writable"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_directory_binding": {
+      "type": "object",
+      "required": [
+        "path",
+        "resource_state",
+        "owner_uid",
+        "owner_gid",
+        "mode",
+        "write_policy"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10(?:/[^\\u0000]*)?$",
+          "maxLength": 4096
+        },
+        "resource_state": {"enum": ["candidate", "active", "retained_revoked"]},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "mode": {"enum": ["0700", "0750", "0755"]},
+        "write_policy": {"type": "string", "minLength": 1, "maxLength": 256}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_binding": {
+      "type": "object",
+      "required": ["canonical_path", "device_id", "inode"],
+      "properties": {
+        "canonical_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "device_id": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_artifact_binding": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "command_binding": {
+      "type": "object",
+      "required": [
+        "command_definition_digest",
+        "closed_test_manifest_binding",
+        "snapshot_closed_test_manifest_ref"
+      ],
+      "properties": {
+        "command_definition_digest": {"$ref": "#/$defs/digest"},
+        "closed_test_manifest_binding": {"$ref": "#/$defs/closed_test_manifest_binding"},
+        "snapshot_closed_test_manifest_ref": {"$ref": "#/$defs/root_closed_test_manifest_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_manifest_binding": {
+      "type": "object",
+      "required": ["snapshot_id", "snapshot_version", "lifecycle_state", "locator", "artifact_digest", "manifest_digest"],
+      "properties": {
+        "snapshot_id": {"$ref": "#/$defs/stable_id"},
+        "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"enum": ["candidate", "active", "revoked"]},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "eligibility_source_binding": {
+      "type": "object",
+      "required": ["source_id", "source_version", "lifecycle_state", "locator", "artifact_digest", "source_digest"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"enum": ["candidate", "adopted", "stale", "revoked"]},
+        "locator": {"$ref": "#/$defs/repository_locator"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "source_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "verification_profile_binding": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "locator", "artifact_digest", "content_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"$ref": "#/$defs/repository_locator"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_profile_binding": {
+      "type": "object",
+      "required": ["environment_profile_id", "environment_profile_version", "locator", "artifact_digest", "basis_digest"],
+      "properties": {
+        "environment_profile_id": {"$ref": "#/$defs/stable_id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"$ref": "#/$defs/repository_locator"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "adoption_record_binding": {
+      "type": "object",
+      "required": ["adoption_id", "adoption_version", "record_kind", "human_decision", "locator", "artifact_digest", "adoption_digest"],
+      "properties": {
+        "adoption_id": {"$ref": "#/$defs/stable_id"},
+        "adoption_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "record_kind": {"const": "adoption_decision"},
+        "human_decision": {"const": "accept"},
+        "locator": {"$ref": "#/$defs/repository_locator"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "adoption_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_adoption_binding": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_artifact_ref"}
+      ]
+    },
+    "closed_test_manifest_binding": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "locator", "artifact_digest", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stable_id"},
+        "manifest_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"$ref": "#/$defs/repository_locator"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_closed_test_manifest_ref": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "locator", "artifact_digest", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stable_id"},
+        "manifest_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_locator": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+      "maxLength": 4096
+    },
+    "trust_entry": {
+      "type": "object",
+      "required": [
+        "entry_state",
+        "repository_binding",
+        "snapshot_manifest_binding",
+        "preactivation_boundary_binding",
+        "eligibility_source_binding",
+        "verification_profile_binding",
+        "environment_profile_binding",
+        "environment_adoption_binding",
+        "commands",
+        "execution_uid",
+        "execution_gid",
+        "execution_supplementary_gids",
+        "execution_umask",
+        "granted_capability",
+        "formal_authority",
+        "positive_assurance_allowed",
+        "entry_digest"
+      ],
+      "properties": {
+        "entry_state": {"enum": ["candidate", "active", "revoked"]},
+        "repository_binding": {"$ref": "#/$defs/repository_binding"},
+        "snapshot_manifest_binding": {"$ref": "#/$defs/snapshot_manifest_binding"},
+        "preactivation_boundary_binding": {"$ref": "#/$defs/preactivation_boundary_binding"},
+        "eligibility_source_binding": {"$ref": "#/$defs/eligibility_source_binding"},
+        "verification_profile_binding": {"$ref": "#/$defs/verification_profile_binding"},
+        "environment_profile_binding": {"$ref": "#/$defs/environment_profile_binding"},
+        "environment_adoption_binding": {"$ref": "#/$defs/environment_adoption_binding"},
+        "commands": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {"$ref": "#/$defs/stable_id"},
+          "additionalProperties": {"$ref": "#/$defs/command_binding"}
+        },
+        "execution_uid": {"type": "integer", "minimum": 1},
+        "execution_gid": {"type": "integer", "minimum": 1},
+        "execution_supplementary_gids": {"type": "array", "maxItems": 0},
+        "execution_umask": {"const": 63},
+        "granted_capability": {"const": "verification_process_launch"},
+        "formal_authority": {"const": "none"},
+        "positive_assurance_allowed": {"const": false},
+        "entry_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"entry_state": {"const": "candidate"}}, "required": ["entry_state"]},
+          "then": {
+            "properties": {
+              "snapshot_manifest_binding": {"properties": {"lifecycle_state": {"const": "candidate"}}},
+              "eligibility_source_binding": {"properties": {"lifecycle_state": {"const": "candidate"}}},
+              "environment_adoption_binding": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"entry_state": {"const": "active"}}, "required": ["entry_state"]},
+          "then": {
+            "properties": {
+              "snapshot_manifest_binding": {"properties": {"lifecycle_state": {"const": "active"}}},
+              "eligibility_source_binding": {"properties": {"lifecycle_state": {"const": "candidate"}}},
+              "environment_adoption_binding": {"$ref": "#/$defs/root_artifact_ref"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"entry_state": {"const": "revoked"}}, "required": ["entry_state"]},
+          "then": {
+            "properties": {
+              "snapshot_manifest_binding": {"properties": {"lifecycle_state": {"const": "revoked"}}},
+              "eligibility_source_binding": {"properties": {"lifecycle_state": {"const": "candidate"}}},
+              "environment_adoption_binding": {"$ref": "#/$defs/root_artifact_ref"}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "u4_unresolved": {
+      "type": "object",
+      "required": ["requirement_id", "status", "consequence", "resolution_ref"],
+      "properties": {
+        "requirement_id": {"const": "U-4"},
+        "status": {"const": "unresolved"},
+        "consequence": {"const": "does_not_establish_principal_identity_delegation_or_revocation_authority"},
+        "resolution_ref": {"type": "null"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "candidate"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "snapshot_root": {"properties": {"resource_state": {"const": "candidate"}}},
+          "activation_authorization_ref": {"type": "null"},
+          "signing_key": {
+            "properties": {
+              "key_state": {"const": "candidate"}
+            }
+          },
+          "nonce_ledger": {"properties": {"resource_state": {"const": "candidate"}}},
+          "result_spool": {"properties": {"resource_state": {"const": "candidate"}}},
+          "entries": {
+            "additionalProperties": {
+              "allOf": [
+                {"$ref": "#/$defs/trust_entry"},
+                {"properties": {"entry_state": {"const": "candidate"}}}
+              ]
+            }
+          },
+          "revocation_ref": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "active"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "snapshot_root": {"properties": {"resource_state": {"const": "active"}}},
+          "activation_authorization_ref": {"$ref": "#/$defs/root_managed_artifact_ref"},
+          "signing_key": {
+            "properties": {
+              "key_state": {"const": "active"},
+              "public_key_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$"}
+            }
+          },
+          "nonce_ledger": {"properties": {"resource_state": {"const": "active"}}},
+          "result_spool": {"properties": {"resource_state": {"const": "active"}}},
+          "entries": {
+            "additionalProperties": {
+              "allOf": [
+                {"$ref": "#/$defs/trust_entry"},
+                {"properties": {"entry_state": {"const": "active"}}}
+              ]
+            }
+          },
+          "revocation_ref": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "revoked"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "snapshot_root": {"properties": {"resource_state": {"const": "retained_revoked"}}},
+          "signing_key": {
+            "properties": {
+              "key_state": {"const": "revoked"},
+              "public_key_base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]{43}=$"}
+            }
+          },
+          "nonce_ledger": {"properties": {"resource_state": {"const": "retained_revoked"}}},
+          "result_spool": {"properties": {"resource_state": {"const": "retained_revoked"}}},
+          "entries": {
+            "additionalProperties": {
+              "allOf": [
+                {"$ref": "#/$defs/trust_entry"},
+                {"properties": {"entry_state": {"const": "revoked"}}}
+              ]
+            }
+          },
+          "revocation_ref": {"$ref": "#/$defs/root_managed_artifact_ref"}
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

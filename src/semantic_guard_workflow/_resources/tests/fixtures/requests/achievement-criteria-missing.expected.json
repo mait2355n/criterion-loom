@@ -1,0 +1,45 @@
+{
+  "id": "REQ-ACHIEVEMENT-CRITERIA-MISSING-001",
+  "title": "Verification language without achievement criteria is logically derived",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: 検索機能を改善する。検証: 動作確認する。対象外: UI刷新。未確定: なし。",
+  "strict": true,
+  "rationale": "Verification language puts achievement criteria in scope; missing criteria should derive the achievement-criteria rule.",
+  "labels": {
+    "expected_rules": [
+      "req.achievement.criteria_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "acceptance",
+        "rule_id": "req.achievement.criteria_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "acceptance"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "achievement_criteria"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.achievement.criteria_missing",
+    "derivation_missing_obligation": "obl.req.achievement.criteria",
+    "derivation_countercondition": "ctr.req.achievement.criteria_not_in_scope",
+    "derivation_fact": "text.has_acceptance_criteria",
+    "logical_trace_summary_rule": {
+      "rule_id": "req.achievement.criteria_missing",
+      "status": "derived",
+      "finding_count": 1,
+      "missing_obligation_count": 1
+    }
+  }
+}

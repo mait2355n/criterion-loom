@@ -1,0 +1,34 @@
+{
+  "id": "REQ-REJECTION-CONDITION-MISSING-001",
+  "title": "Sensitive requirement without rejection condition is logically derived",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 管理者。目的: 権限設定を安全にする。受入基準: 管理者以外は設定変更できないことを確認。検証方法: pytest。証拠: 試験結果。対象外: UI。未確定: なし。",
+  "strict": true,
+  "rationale": "High-impact permission or safety scope requires an explicit rejection, fail, rollback, or defer condition.",
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "acceptance"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "rejection_condition"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.acceptance.rejection_condition_missing",
+    "derivation_missing_obligation": "obl.req.acceptance.rejection_condition",
+    "derivation_countercondition": "ctr.req.acceptance.rejection_not_in_scope",
+    "derivation_fact": "text.has_rejection_condition",
+    "logical_trace_summary_rule": {
+      "rule_id": "req.acceptance.rejection_condition_missing",
+      "status": "derived",
+      "finding_count": 1,
+      "missing_obligation_count": 1
+    }
+  }
+}

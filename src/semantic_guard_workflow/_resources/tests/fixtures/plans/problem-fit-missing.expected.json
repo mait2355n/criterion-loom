@@ -1,0 +1,34 @@
+{
+  "id": "PLAN-PROBLEM-FIT-MISSING-001",
+  "title": "Implementation plan without validation route is blocked",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: fixture coverage を改善する。対象外: release 作業はしない。成果物: expected.json と tests。手順: 調査、実装、検証。依存: 既存 fixtures。リスク: 過剰警告が増える。対策: false positive fixture を併置する。検証: unittest と evaluate-fixtures。戻し方: 差分を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "Verification alone does not prove that the work solved the intended problem.",
+  "labels": {
+    "expected_rules": [
+      "plan.validation.problem_fit_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "validation",
+        "rule_id": "plan.validation.problem_fit_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "validation"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "validation_plan"
+      ]
+    }
+  }
+}

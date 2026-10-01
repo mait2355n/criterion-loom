@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/local-host-identity-evidence-v1.schema.json",
+  "title": "semantic-guard privacy-preserving local host identity evidence v1",
+  "description": "Environment-local host evidence. It supports exact re-observation but does not prove natural-person or machine ownership.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "observed_platform",
+    "node_name_digest",
+    "hardware_identifier_digest",
+    "identity_digest",
+    "observation_method",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "evidence_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-host-identity-evidence/v1"},
+    "evidence_id": {"$ref": "#/$defs/stable_id"},
+    "observed_platform": {"$ref": "#/$defs/platform"},
+    "node_name_digest": {"$ref": "#/$defs/digest"},
+    "hardware_identifier_digest": {"$ref": "#/$defs/digest"},
+    "identity_digest": {"$ref": "#/$defs/digest"},
+    "observation_method": {"const": "platform-node-and-uuid-getnode-hashed/v1"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "evidence_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "platform": {
+      "type": "object",
+      "required": ["system", "release", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 128},
+        "release": {"type": "string", "minLength": 1, "maxLength": 256},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

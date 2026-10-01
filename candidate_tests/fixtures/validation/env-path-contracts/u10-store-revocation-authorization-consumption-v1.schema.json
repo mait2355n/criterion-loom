@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-store-revocation-authorization-consumption-v1.schema.json",
+  "title": "semantic-guard U-10 append-only store revocation authorization consumption v1",
+  "description": "A durable pre-publication consumption of one exact human revocation decision. It does not claim that revocation publication occurred.",
+  "type": "object",
+  "required": [
+    "schema_version", "consumption_id", "record_kind", "revocation_id",
+    "revocation_digest", "target_store_ref", "target_activation_receipt_ref",
+    "publisher_contract_binding",
+    "consumed_at", "publication_occurred", "formal_authority",
+    "positive_assurance_allowed", "consumption_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-store-revocation-authorization-consumption/v1"},
+    "consumption_id": {"$ref": "#/$defs/stable_id"},
+    "record_kind": {"const": "revocation_authorization_consumption"},
+    "revocation_id": {"$ref": "#/$defs/stable_id"},
+    "revocation_digest": {"$ref": "#/$defs/digest"},
+    "target_store_ref": {"$ref": "#/$defs/store_ref"},
+    "target_activation_receipt_ref": {"$ref": "#/$defs/activation_receipt_ref"},
+    "publisher_contract_binding": {"$ref": "#/$defs/publisher_contract_binding"},
+    "consumed_at": {"type": "string", "format": "date-time"},
+    "publication_occurred": {"const": false},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "consumption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object", "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "store_ref": {
+      "type": "object",
+      "required": ["store_id", "store_revision_id", "store_version", "store_activation_basis_digest", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "activation_receipt_ref": {
+      "type": "object", "required": ["receipt_id", "receipt_digest", "publication_observed_at", "receipt_recorded_at"],
+      "properties": {
+        "receipt_id": {"$ref": "#/$defs/stable_id"},
+        "receipt_digest": {"$ref": "#/$defs/digest"},
+        "publication_observed_at": {"type": "string", "format": "date-time"},
+        "receipt_recorded_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    },
+    "publisher_contract_binding": {
+      "type": "object",
+      "required": ["schema_version", "contract_id", "binding_digest"],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-u10-control-publisher-contract-binding/v1"},
+        "contract_id": {"const": "semantic-guard.u10.fixed-root-control-publisher.v1"},
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-root-candidate-bundle-v1.schema.json",
+  "title": "semantic-guard U-10 inactive root candidate bundle v1",
+  "description": "The closed machine shape of one uninstalled U-10 candidate bundle. Semantic digest recomputation, exact fixed paths, payload closure, source/dependency separation, and installer-runtime qualification remain mandatory implementation checks in addition to this schema.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "bundle_version",
+    "bundle_state",
+    "notation_profile",
+    "source_repository_binding",
+    "preactivation_boundary_refs",
+    "installer_ref",
+    "worker_identity",
+    "target",
+    "payload_denominator",
+    "dependency_environment_policy",
+    "root_generated_entries",
+    "human_install_authorization",
+    "snapshot_activation",
+    "u4_principal_authenticity",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-root-candidate-bundle/v1"},
+    "bundle_id": {"type": "string", "pattern": "^candidate\\.u10\\.[0-9a-f]{64}$"},
+    "bundle_version": {"const": "2.0.0-candidate"},
+    "bundle_state": {"const": "candidate_uninstalled"},
+    "notation_profile": {"const": "entity-reference-notation/v0"},
+    "source_repository_binding": {"$ref": "#/$defs/repository_binding"},
+    "preactivation_boundary_refs": {"$ref": "#/$defs/preactivation_boundary_refs"},
+    "installer_ref": {"$ref": "#/$defs/installer_ref"},
+    "worker_identity": {"$ref": "#/$defs/worker_identity"},
+    "target": {"$ref": "#/$defs/target"},
+    "payload_denominator": {"$ref": "#/$defs/payload_denominator"},
+    "dependency_environment_policy": {"$ref": "#/$defs/dependency_policy"},
+    "root_generated_entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "prefixItems": [{"$ref": "#/$defs/generated_entry"}],
+      "items": false
+    },
+    "human_install_authorization": {"$ref": "#/$defs/pending_authorization"},
+    "snapshot_activation": {"$ref": "#/$defs/pending_activation"},
+    "u4_principal_authenticity": {"$ref": "#/$defs/u4_state"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "absolute_path": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "maxLength": 240},
+    "boundary_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "source_locator", "source_artifact_digest", "bundled_locator", "bundled_artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "source_locator": {"$ref": "#/$defs/absolute_path"},
+        "source_artifact_digest": {"$ref": "#/$defs/digest"},
+        "bundled_locator": {"$ref": "#/$defs/relative_path"},
+        "bundled_artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_boundary_refs": {
+      "type": "object",
+      "required": ["profile", "decision_record_ref", "worker_account_observation_ref", "worker_principal_resolution_ref", "threat_boundary", "worker_identity_policy", "qualification_scope", "hostile_code_assurance", "requalification_triggers", "binding_digest"],
+      "properties": {
+        "profile": {"const": "u10-local-bounded-preactivation-binding/v1"},
+        "decision_record_ref": {"$ref": "#/$defs/boundary_artifact_ref"},
+        "worker_account_observation_ref": {"$ref": "#/$defs/boundary_artifact_ref"},
+        "worker_principal_resolution_ref": {"$ref": "#/$defs/boundary_artifact_ref"},
+        "threat_boundary": {"const": "local_bounded_repository_suite_only"},
+        "worker_identity_policy": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+        "qualification_scope": {"const": "repository_owned_closed_verification_suite_only"},
+        "hostile_code_assurance": {"const": "prohibited_requires_separate_external_executor_profile"},
+        "requalification_triggers": {"const": ["threat_boundary_change", "worker_identity_policy_change", "principal_resolution_change", "host_or_os_change", "sandbox_or_external_executor_change", "qualified_test_denominator_change"]},
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_binding": {
+      "type": "object",
+      "required": ["canonical_path", "device_id", "inode"],
+      "properties": {
+        "canonical_path": {"$ref": "#/$defs/absolute_path"},
+        "device_id": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1}
+      },
+      "unevaluatedProperties": false
+    },
+    "installer_ref": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "source_locator",
+        "required_bootstrap_locator",
+        "entrypoint_source_locator",
+        "required_entrypoint_locator",
+        "entrypoint_artifact_digest",
+        "required_shell_locator",
+        "shell_resolved_locator",
+        "shell_artifact_digest",
+        "shell_flags",
+        "environment_cleaner_locator",
+        "environment_cleaner_resolved_locator",
+        "environment_cleaner_artifact_digest",
+        "environment_policy",
+        "os_injected_environment_policy",
+        "discovery_launcher_locator",
+        "discovery_launcher_resolved_locator",
+        "discovery_launcher_artifact_digest",
+        "effective_interpreter_locator",
+        "effective_interpreter_artifact_digest",
+        "required_effective_interpreter_path_locator",
+        "effective_interpreter_path_artifact_digest",
+        "artifact_digest"
+      ],
+      "properties": {
+        "record_id": {"const": "installer.semantic-guard.u10.root-candidate.v1"},
+        "source_locator": {"$ref": "#/$defs/absolute_path"},
+        "required_bootstrap_locator": {"$ref": "#/$defs/absolute_path"},
+        "entrypoint_source_locator": {"$ref": "#/$defs/absolute_path"},
+        "required_entrypoint_locator": {"$ref": "#/$defs/absolute_path"},
+        "entrypoint_artifact_digest": {"$ref": "#/$defs/digest"},
+        "required_shell_locator": {"$ref": "#/$defs/absolute_path"},
+        "shell_resolved_locator": {"$ref": "#/$defs/absolute_path"},
+        "shell_artifact_digest": {"$ref": "#/$defs/digest"},
+        "shell_flags": {"const": ["-p"]},
+        "environment_cleaner_locator": {"$ref": "#/$defs/absolute_path"},
+        "environment_cleaner_resolved_locator": {"$ref": "#/$defs/absolute_path"},
+        "environment_cleaner_artifact_digest": {"$ref": "#/$defs/digest"},
+        "environment_policy": {"const": "privileged_sh_p_then_env_i_direct_effective_execve/v3"},
+        "os_injected_environment_policy": {"const": "cf_user_text_encoding_uid_bound_then_removed/v1"},
+        "discovery_launcher_locator": {"$ref": "#/$defs/absolute_path"},
+        "discovery_launcher_resolved_locator": {"$ref": "#/$defs/absolute_path"},
+        "discovery_launcher_artifact_digest": {"$ref": "#/$defs/digest"},
+        "effective_interpreter_locator": {"$ref": "#/$defs/absolute_path"},
+        "effective_interpreter_artifact_digest": {"$ref": "#/$defs/digest"},
+        "required_effective_interpreter_path_locator": {"$ref": "#/$defs/absolute_path"},
+        "effective_interpreter_path_artifact_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "account_supplementary_gids", "effective_supplementary_gids", "umask", "login_shell", "non_login", "root_prohibited", "principal_entity_ref", "principal_resolution_digest"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "account_supplementary_gids": {"type": "array", "uniqueItems": true, "maxItems": 4096, "items": {"type": "integer", "minimum": 1}},
+        "effective_supplementary_gids": {"const": []},
+        "umask": {"const": 63},
+        "login_shell": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "non_login": {"type": "boolean"},
+        "root_prohibited": {"const": true},
+        "principal_entity_ref": {"$ref": "#/$defs/entity_ref"},
+        "principal_resolution_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "ledger_policy": {
+      "type": "object",
+      "required": ["profile", "record_set", "publication", "coordination", "retention", "temporary_artifacts"],
+      "properties": {
+        "profile": {"const": "append-only-candidate-install-transaction-ledger/v1"},
+        "record_set": {"const": ["immutable_authorization_copy", "prepublication_authorization_consumption", "postpublication_occurrence_receipt"]},
+        "publication": {"const": "complete_file_fsync_atomic_link_no_replace_directory_fsync"},
+        "coordination": {"const": "target_bundle_flock_with_per_authorization_stale_stage_cleanup"},
+        "retention": {"const": "retain_authorization_consumption_and_receipt_while_candidate_or_downstream_evidence_is_referenced"},
+        "temporary_artifacts": {"const": "non_occurrence_cleanup_under_target_bundle_transaction_lock"}
+      },
+      "unevaluatedProperties": false
+    },
+    "target": {
+      "type": "object",
+      "required": ["candidate_root", "candidate_path", "candidate_install_ledger_root", "candidate_install_ledger_policy", "active_snapshot_root", "active_trust_store", "install_scope"],
+      "properties": {
+        "candidate_root": {"$ref": "#/$defs/absolute_path"},
+        "candidate_path": {"$ref": "#/$defs/absolute_path"},
+        "candidate_install_ledger_root": {"$ref": "#/$defs/absolute_path"},
+        "candidate_install_ledger_policy": {"$ref": "#/$defs/ledger_policy"},
+        "active_snapshot_root": {"$ref": "#/$defs/absolute_path"},
+        "active_trust_store": {"$ref": "#/$defs/absolute_path"},
+        "install_scope": {"const": "inactive_candidate_tree_and_append_only_install_ledger_only"}
+      },
+      "unevaluatedProperties": false
+    },
+    "source_ref": {
+      "type": "object",
+      "required": ["origin_kind", "locator", "resolved_locator", "artifact_digest"],
+      "properties": {
+        "origin_kind": {"type": "string", "minLength": 1, "maxLength": 256},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "resolved_locator": {"$ref": "#/$defs/absolute_path"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "payload_entry": {
+      "type": "object",
+      "required": ["path", "role", "source_ref", "artifact_digest", "size", "intended_mode"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relative_path"},
+        "role": {"type": "string", "minLength": 1, "maxLength": 256},
+        "source_ref": {"$ref": "#/$defs/source_ref"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "size": {"type": "integer", "minimum": 0},
+        "intended_mode": {"enum": ["0400", "0500"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "payload_denominator": {
+      "type": "object",
+      "required": ["status", "directory_count", "directories", "entry_count", "entries", "payload_digest"],
+      "properties": {
+        "status": {"const": "closed"},
+        "directory_count": {"type": "integer", "minimum": 1},
+        "directories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/relative_path"}},
+        "entry_count": {"type": "integer", "minimum": 1},
+        "entries": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/payload_entry"}},
+        "payload_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "lock_validation": {
+      "type": "object",
+      "required": ["profile", "working_directory", "uv_executable", "python_executable", "arguments", "execution_identity", "success_condition"],
+      "properties": {
+        "profile": {"const": "uv-sync-offline-frozen-no-install-project/v1"},
+        "working_directory": {"const": "vnext"},
+        "uv_executable": {"const": "vnext/tools/uv"},
+        "python_executable": {"const": "vnext/.venv/bin/python"},
+        "arguments": {"type": "array", "minItems": 1, "uniqueItems": false, "items": {"type": "string", "minLength": 1, "maxLength": 4096}},
+        "execution_identity": {"const": "non_root_worker"},
+        "success_condition": {"const": "exit_0_from_non_mutating_check"}
+      },
+      "unevaluatedProperties": false
+    },
+    "dependency_policy": {
+      "type": "object",
+      "required": ["profile", "status", "project_distribution", "dependency_import_root", "excluded_project_entries", "snapshot_source_root", "required_repository_entries", "lock_validation"],
+      "properties": {
+        "profile": {"const": "u10-subject-source-separated-dependency-environment/v1"},
+        "status": {"const": "candidate_prepared"},
+        "project_distribution": {"const": "semantic-guard-vnext"},
+        "dependency_import_root": {"type": "string", "pattern": "^vnext/\\.venv/lib/python[0-9]+\\.[0-9]+/site-packages$"},
+        "excluded_project_entries": {"type": "array", "minItems": 3, "uniqueItems": true, "items": {"type": "string", "pattern": "^[^/\\\\]+$", "minLength": 1, "maxLength": 255}},
+        "snapshot_source_root": {"const": "vnext/src"},
+        "required_repository_entries": {"const": ["vnext/scripts/u10_root_broker_bootstrap.py", "vnext/scripts/u10_root_broker_entrypoint.sh", "vnext/scripts/u10_root_broker_outer_launcher.py", "vnext/scripts/u10_root_candidate_installer_entrypoint.sh"]},
+        "lock_validation": {"$ref": "#/$defs/lock_validation"}
+      },
+      "unevaluatedProperties": false
+    },
+    "generated_entry": {
+      "type": "object",
+      "required": ["path", "generation_profile", "content_template", "intended_mode"],
+      "properties": {
+        "path": {"const": "vnext/.venv/pyvenv.cfg"},
+        "generation_profile": {"const": "u10-relocatable-pyvenv-config/v1"},
+        "content_template": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "intended_mode": {"const": "0400"}
+      },
+      "unevaluatedProperties": false
+    },
+    "pending_authorization": {
+      "type": "object",
+      "required": ["status", "authorized_operation", "authorization_ref"],
+      "properties": {
+        "status": {"const": "pending"},
+        "authorized_operation": {"type": "null"},
+        "authorization_ref": {"type": "null"}
+      },
+      "unevaluatedProperties": false
+    },
+    "pending_activation": {
+      "type": "object",
+      "required": ["status", "required_follow_up"],
+      "properties": {
+        "status": {"const": "not_authorized"},
+        "required_follow_up": {"type": "string", "minLength": 1, "maxLength": 4096}
+      },
+      "unevaluatedProperties": false
+    },
+    "u4_state": {
+      "type": "object",
+      "required": ["requirement_id", "status", "consequence"],
+      "properties": {
+        "requirement_id": {"const": "U-4"},
+        "status": {"const": "unresolved"},
+        "consequence": {"type": "string", "minLength": 1, "maxLength": 4096}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

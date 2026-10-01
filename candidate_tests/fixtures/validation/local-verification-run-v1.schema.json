@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/validation/local-verification-run-v1.schema.json",
+  "title": "semantic-guard vNext self-contained bound local verification run v1",
+  "type": "object",
+  "required": [
+    "schema_version", "run_id", "started_at", "finished_at", "duration_seconds",
+    "status", "execution_limits", "profile", "environment", "subject", "artifacts",
+    "commands", "claims", "limitations", "run_record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-verification-run/v1"},
+    "run_id": {"type": "string", "pattern": "^(?!.*\\.\\.)[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "duration_seconds": {"type": "number", "minimum": 0},
+    "status": {"enum": ["passed", "failed", "invalid"]},
+    "execution_limits": {
+      "type": "object",
+      "required": ["max_output_bytes_per_stream", "fail_fast", "shell"],
+      "properties": {
+        "max_output_bytes_per_stream": {"type": "integer", "minimum": 1, "maximum": 1073741824},
+        "fail_fast": {"const": true},
+        "shell": {"const": false}
+      },
+      "unevaluatedProperties": false
+    },
+    "profile": {"$ref": "#/$defs/bound_file"},
+    "environment": {"$ref": "#/$defs/bound_file"},
+    "subject": {
+      "allOf": [
+        {"$ref": "#/$defs/bound_file"},
+        {
+          "type": "object",
+          "required": ["manifest_id", "manifest_version", "entry_count", "identity_digest"],
+          "properties": {
+            "manifest_id": {"$ref": "#/$defs/stable_id"},
+            "manifest_version": {"type": "string", "minLength": 1},
+            "entry_count": {"type": "integer", "minimum": 1},
+            "identity_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "commands": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/command"}},
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "required_command_ids", "status"],
+        "properties": {
+          "claim_id": {"$ref": "#/$defs/stable_id"},
+          "required_command_ids": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/stable_id"}, "uniqueItems": true},
+          "status": {"enum": ["passed", "failed", "not_observed"]}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "run_record_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "bound_file": {
+      "type": "object",
+      "required": ["locator", "file_digest"],
+      "properties": {
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "file_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/bound_file"},
+        {"type": "object", "required": ["size_bytes"], "properties": {"size_bytes": {"type": "integer", "minimum": 0}}}
+      ]
+    },
+    "raw_output": {
+      "type": "object",
+      "required": ["locator", "file_digest", "size_bytes", "observed_size_bytes", "truncated"],
+      "properties": {
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "file_digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "observed_size_bytes": {"type": "integer", "minimum": 0},
+        "truncated": {"type": "boolean"}
+      },
+      "unevaluatedProperties": false
+    },
+    "command": {
+      "type": "object",
+      "required": [
+        "command_id", "argv", "cwd", "executable", "started_at", "finished_at",
+        "duration_seconds", "status", "exit_code", "timed_out",
+        "pre_manifest_identity_digest", "post_manifest_identity_digest",
+        "mutation_detected", "stdout", "stderr"
+      ],
+      "properties": {
+        "command_id": {"$ref": "#/$defs/stable_id"},
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "cwd": {"type": "string", "minLength": 1},
+        "executable": {
+          "type": "object",
+          "required": ["resolved_path", "file_digest"],
+          "properties": {
+            "resolved_path": {"type": "string", "minLength": 1},
+            "file_digest": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        },
+        "started_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": "string", "format": "date-time"},
+        "duration_seconds": {"type": "number", "minimum": 0},
+        "status": {"enum": ["passed", "failed", "timed_out", "invalid"]},
+        "exit_code": {"type": ["integer", "null"]},
+        "timed_out": {"type": "boolean"},
+        "pre_manifest_identity_digest": {"$ref": "#/$defs/digest"},
+        "post_manifest_identity_digest": {"$ref": "#/$defs/digest"},
+        "mutation_detected": {"type": "boolean"},
+        "stdout": {"$ref": "#/$defs/raw_output"},
+        "stderr": {"$ref": "#/$defs/raw_output"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -14,12 +14,16 @@ AI と進めた作業では、事実、仮説、証拠不足、人間受理の�
 修正や判断をやり直せる状態へ変えるためのプロジェクトだ。
 
 `Criterion Loom` は公開プロジェクト名である。現行の配布物と CLI は
-`semantic-guard` 版 `1.1.0`、Python で読み込むパッケージ名は `semantic_guard`、
+`semantic-guard` 開発版 `1.2.0.dev0`、基幹の Python パッケージ名は `semantic_guard`、
 MCP サーバーの入口は `semantic-guard-mcp` である。
 
 > 現行 v1 で公開している監査対象は、一度に一件の構造化された機能要求と、
-> それとは独立した限定的な日本語の方向指定（方向拘束）である。計画、差分、完了の主張、
-> 開発工程全体の監査は、まだ v1 の CLI / MCP から一貫して利用できない。
+> それとは独立した限定的な日本語の方向指定（方向拘束）である。計画、差分、完了などの
+> 監査は明示的な `workflow` 入口で扱う。未採用の統治付き vNext は `candidate` 入口で扱う。
+
+この開発版では三実装を一つの導入環境にまとめ、各々の結果契約を保持する。
+[結合版の利用手引](docs/local-integration.md)で使う入口を選ぶ。
+この結合は、正式リリースや稼働環境の既定切替を意味しない。
 
 ## 何が違うのか
 
@@ -83,6 +87,10 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 
 現行ソースコードには、工程横断と保証に関する候補契約も存在する。設計や試験の材料では
 あるが、公開 CLI / MCP から一貫して利用できる機能としては扱っていない。
+
+追加入口の `workflow COMMAND` と `candidate COMMAND` は別々の結果契約を選ぶ。
+専用サーバーは `semantic-guard-workflow-mcp`（27工具）と
+`semantic-guard-vnext-mcp`（3工具）であり、基幹サーバーの4工具は保持する。
 
 ## 実行面を選ぶ
 

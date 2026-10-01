@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-store-activation-basis-v2.schema.json",
+  "title": "U-10 exact store activation basis candidate v2",
+  "description": "An authority-free, append-only store candidate bound to one fully replayed v2 signing-key selector chain. It is not an active trust store or a human decision.",
+  "type": "object",
+  "required": [
+    "schema_version", "basis_id", "basis_version", "record_kind",
+    "store_content", "store_activation_basis_digest",
+    "store_transition_digest", "entry_id", "snapshot_manifest_ref",
+    "snapshot_activation_authorization_ref", "signing_key_ref",
+    "signing_key_selector_ref",
+    "prior_store_ref", "prior_revocation_ref",
+    "publisher_contract_binding", "prepared_at", "publication_state",
+    "formal_authority", "positive_assurance_allowed", "basis_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-store-activation-basis/v2"},
+    "basis_id": {"$ref": "#/$defs/stable_id"},
+    "basis_version": {"const": "2.0.0"},
+    "record_kind": {"const": "exact_store_activation_basis_candidate"},
+    "store_content": {
+      "type": "object",
+      "required": [
+        "schema_version", "store_id", "store_revision_id", "store_version",
+        "broker_runtime_version", "broker_entrypoint_ref",
+        "broker_outer_launcher_ref", "broker_launch_platform",
+        "broker_runtime_ref", "current_selector", "trust_store_history",
+        "coordination_lock", "snapshot_root", "signing_key", "nonce_ledger",
+        "result_spool", "entries", "u4_authority_resolution",
+        "formal_authority", "positive_assurance_allowed"
+      ],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-u10-root-trust-store/v2"},
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "broker_runtime_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "broker_entrypoint_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/$defs/root_managed_artifact_ref"},
+        "broker_outer_launcher_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/$defs/root_managed_artifact_ref"},
+        "broker_launch_platform": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/broker_launch_platform"},
+        "broker_runtime_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/$defs/root_managed_artifact_ref"},
+        "current_selector": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/current_selector"},
+        "trust_store_history": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/trust_store_history"},
+        "coordination_lock": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/coordination_lock"},
+        "snapshot_root": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/snapshot_root"},
+        "signing_key": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/signing_key"},
+        "nonce_ledger": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/nonce_ledger"},
+        "result_spool": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/result_spool"},
+        "entries": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/properties/entries"},
+        "u4_authority_resolution": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-root-trust-store-v2.schema.json#/$defs/u4_unresolved"},
+        "formal_authority": {"const": "none"},
+        "positive_assurance_allowed": {"const": false}
+      },
+      "unevaluatedProperties": false
+    },
+    "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+    "store_transition_digest": {"$ref": "#/$defs/digest"},
+    "entry_id": {"$ref": "#/$defs/stable_id"},
+    "snapshot_manifest_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "snapshot_activation_authorization_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "signing_key_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-signing-key-selector-v2.schema.json#/$defs/public_metadata_ref"},
+    "signing_key_selector_ref": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-signing-key-selector-v2.schema.json#/$defs/selector_ref"},
+    "prior_store_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/store_ref"}]
+    },
+    "prior_revocation_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/revocation_ref"}]
+    },
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "prepared_at": {"type": "string", "format": "date-time"},
+    "publication_state": {"const": "not_published"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "basis_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "store_ref": {
+      "type": "object",
+      "required": ["store_id", "store_revision_id", "store_version", "store_activation_basis_digest", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "revocation_ref": {
+      "type": "object",
+      "required": ["revocation_id", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "revocation_id": {"$ref": "#/$defs/stable_id"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

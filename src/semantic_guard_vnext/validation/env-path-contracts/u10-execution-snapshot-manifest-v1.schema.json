@@ -1,0 +1,652 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-execution-snapshot-manifest-v1.schema.json",
+  "title": "semantic-guard U-10 root execution snapshot manifest v1",
+  "description": "Closed, content-addressed manifest for a root-owned execution snapshot. It separates the mutable source repository from the exact broker runtime inputs and test denominator.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "snapshot_version",
+    "lifecycle_state",
+    "prepared_for_entry_id",
+    "source_repository_binding",
+    "preactivation_boundary_binding",
+    "root_storage",
+    "broker_runtime_ref",
+    "broker_launch_contract",
+    "eligibility_source_ref",
+    "verification_profile_ref",
+    "environment_profile_ref",
+    "environment_adoption_ref",
+    "worker_identity",
+    "worker_runtime",
+    "artifact_denominator",
+    "command_bindings",
+    "immutability_verification",
+    "snapshot_adoption_authorization_ref",
+    "activation_ref",
+    "revocation_ref",
+    "u4_authority_resolution",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "snapshot_basis_digest",
+    "manifest_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-execution-snapshot-manifest/v1"},
+    "snapshot_id": {"$ref": "#/$defs/stable_id"},
+    "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "lifecycle_state": {"enum": ["candidate", "active", "revoked"]},
+    "prepared_for_entry_id": {"$ref": "#/$defs/stable_id"},
+    "source_repository_binding": {
+      "type": "object",
+      "required": ["canonical_path", "device_id", "inode", "observed_at"],
+      "properties": {
+        "canonical_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "device_id": {"type": "integer", "minimum": 0},
+        "inode": {"type": "integer", "minimum": 1},
+        "observed_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_boundary_binding": {"$ref": "#/$defs/preactivation_boundary_binding"},
+    "root_storage": {
+      "type": "object",
+      "required": [
+        "snapshot_root",
+        "snapshot_path",
+        "storage_state",
+        "owner_uid",
+        "owner_gid",
+        "directory_mode",
+        "mutation_policy",
+        "tree_digest"
+      ],
+      "properties": {
+        "snapshot_root": {"const": "/Library/Application Support/semantic-guard/u10/snapshots"},
+        "snapshot_path": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "storage_state": {"enum": ["candidate", "immutable_active", "retained_revoked"]},
+        "owner_uid": {"const": 0},
+        "owner_gid": {"const": 0},
+        "directory_mode": {"enum": ["0500", "0550", "0555"]},
+        "mutation_policy": {"const": "no_mutation_after_manifest_seal/v1"},
+        "tree_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_runtime_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "broker_launch_contract": {
+      "type": "object",
+      "required": ["invocation_mode", "entrypoint_ref", "outer_launcher_ref", "platform_binding_digest", "python_flags", "caller_fields", "environment_policy"],
+      "properties": {
+        "invocation_mode": {"const": "fixed_root_wrapper_outer_verifier_then_snapshot_execve/v2"},
+        "entrypoint_ref": {"$ref": "#/$defs/root_artifact_ref"},
+        "outer_launcher_ref": {"$ref": "#/$defs/root_artifact_ref"},
+        "platform_binding_digest": {"$ref": "#/$defs/digest"},
+        "python_flags": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "-I"},
+            {"const": "-S"},
+            {"const": "-B"}
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "caller_fields": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "entry_id"},
+            {"const": "command_id"},
+            {"const": "request_nonce"}
+          ],
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "environment_policy": {"const": "env_i_direct_qualified_python_then_exact_snapshot_execve/v3"}
+      },
+      "unevaluatedProperties": false
+    },
+    "eligibility_source_ref": {"$ref": "#/$defs/eligibility_source_ref"},
+    "verification_profile_ref": {"$ref": "#/$defs/verification_profile_ref"},
+    "environment_profile_ref": {"$ref": "#/$defs/environment_profile_ref"},
+    "environment_adoption_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_artifact_ref"}
+      ]
+    },
+    "worker_identity": {"$ref": "#/$defs/worker_identity"},
+    "worker_runtime": {
+      "type": "object",
+      "required": [
+        "worker_version",
+        "interpreter_snapshot_ref",
+        "worker_entrypoint_snapshot_ref",
+        "subject_source_root",
+        "dependency_import_roots",
+        "phase_budget",
+        "launch_contract"
+      ],
+      "properties": {
+        "worker_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "interpreter_snapshot_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "worker_entrypoint_snapshot_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "subject_source_root": {"$ref": "#/$defs/snapshot_tree_ref"},
+        "dependency_import_roots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/snapshot_tree_ref"}
+        },
+        "phase_budget": {
+          "type": "object",
+          "required": ["profile", "pre_environment_reobservation_seconds", "post_environment_reobservation_seconds", "evidence_finalization_seconds", "process_reap_seconds"],
+          "properties": {
+            "profile": {"const": "u10-compositional-worker-budget/v1"},
+            "pre_environment_reobservation_seconds": {"type": "number", "minimum": 240, "maximum": 240},
+            "post_environment_reobservation_seconds": {"type": "number", "minimum": 240, "maximum": 240},
+            "evidence_finalization_seconds": {"type": "number", "minimum": 30, "maximum": 30},
+            "process_reap_seconds": {"type": "number", "minimum": 10, "maximum": 10}
+          },
+          "unevaluatedProperties": false
+        },
+        "launch_contract": {
+          "type": "object",
+          "required": ["invocation_mode", "python_flags", "caller_supplied_argv_allowed", "working_directory_policy", "process_group_policy"],
+          "properties": {
+            "invocation_mode": {"const": "root_supervisor_exact_snapshot_worker/v1"},
+            "python_flags": {
+              "type": "array",
+              "prefixItems": [
+                {"const": "-I"},
+                {"const": "-S"},
+                {"const": "-B"}
+              ],
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "caller_supplied_argv_allowed": {"const": false},
+            "working_directory_policy": {"const": "snapshot_root_exact"},
+            "process_group_policy": {"const": "worker_and_inner_runner_share_root_reaped_group/v1"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "artifact_denominator": {
+      "type": "object",
+      "required": ["status", "entries"],
+      "properties": {
+        "status": {"const": "closed"},
+        "entries": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {"$ref": "#/$defs/stable_id"},
+          "additionalProperties": {"$ref": "#/$defs/snapshot_artifact_entry"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "command_bindings": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/stable_id"},
+      "additionalProperties": {"$ref": "#/$defs/snapshot_command_binding"}
+    },
+    "immutability_verification": {
+      "type": "object",
+      "required": ["status", "verified_at", "verifier_runtime_ref", "checks"],
+      "properties": {
+        "status": {"enum": ["pending", "verified", "revoked"]},
+        "verified_at": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "format": "date-time"}
+          ]
+        },
+        "verifier_runtime_ref": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/root_artifact_ref"}
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "root_ownership_exact",
+              "directory_not_writable_by_worker",
+              "artifact_denominator_digest_exact",
+              "tree_digest_exact",
+              "command_manifest_bindings_exact",
+              "broker_runtime_digest_exact"
+            ]
+          },
+          "allOf": [
+            {"contains": {"const": "root_ownership_exact"}},
+            {"contains": {"const": "directory_not_writable_by_worker"}},
+            {"contains": {"const": "artifact_denominator_digest_exact"}},
+            {"contains": {"const": "tree_digest_exact"}},
+            {"contains": {"const": "command_manifest_bindings_exact"}},
+            {"contains": {"const": "broker_runtime_digest_exact"}}
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_adoption_authorization_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_artifact_ref"}
+      ]
+    },
+    "activation_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "allOf": [
+            {"$ref": "#/$defs/root_artifact_ref"},
+            {
+              "type": "object",
+              "properties": {
+                "locator": {
+                  "type": "string",
+                  "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/activations/[^\\u0000]+$",
+                  "maxLength": 4096
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "revocation_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/root_artifact_ref"}
+      ]
+    },
+    "u4_authority_resolution": {"$ref": "#/$defs/u4_unresolved"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "snapshot_basis_digest": {"$ref": "#/$defs/digest"},
+    "manifest_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "entity_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "candidate_bundle_ref": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_version", "candidate_locator", "artifact_digest", "bundle_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "bundle_id": {"type": "string", "pattern": "^candidate\\.u10\\.[0-9a-f]{64}$"},
+        "bundle_version": {"const": "2.0.0-candidate"},
+        "candidate_locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/candidates/candidate\\.u10\\.[0-9a-f]{64}/bundle-manifest\\.json$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "bundle_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_record_ref": {
+      "type": "object",
+      "required": ["record_id", "source_locator", "source_artifact_digest", "candidate_relative_locator", "candidate_artifact_digest", "semantic_digest", "snapshot_artifact_ref"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "source_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "source_artifact_digest": {"$ref": "#/$defs/digest"},
+        "candidate_relative_locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "candidate_artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "effective_worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "effective_supplementary_gids", "umask"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "effective_supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63}
+      },
+      "unevaluatedProperties": false
+    },
+    "preactivation_boundary_binding": {
+      "type": "object",
+      "required": ["profile", "candidate_bundle_ref", "boundary_binding_digest", "decision_record_ref", "worker_account_observation_ref", "worker_principal_resolution_ref", "subject_entity_id", "worker_principal_entity_id", "threat_boundary", "worker_identity_policy", "qualification_scope", "hostile_code_assurance", "requalification_triggers", "effective_worker_identity"],
+      "properties": {
+        "profile": {"const": "u10-local-bounded-preactivation-binding/v1"},
+        "candidate_bundle_ref": {"$ref": "#/$defs/candidate_bundle_ref"},
+        "boundary_binding_digest": {"$ref": "#/$defs/digest"},
+        "decision_record_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_account_observation_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "worker_principal_resolution_ref": {"$ref": "#/$defs/preactivation_record_ref"},
+        "subject_entity_id": {"const": "acfb8b85-2f75-5e82-a641-b3b3b6e023d6"},
+        "worker_principal_entity_id": {"$ref": "#/$defs/entity_id"},
+        "threat_boundary": {"const": "local_bounded_repository_suite_only"},
+        "worker_identity_policy": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+        "qualification_scope": {"const": "repository_owned_closed_verification_suite_only"},
+        "hostile_code_assurance": {"const": "prohibited_requires_separate_external_executor_profile"},
+        "requalification_triggers": {"const": ["threat_boundary_change", "worker_identity_policy_change", "principal_resolution_change", "host_or_os_change", "sandbox_or_external_executor_change", "qualified_test_denominator_change"]},
+        "effective_worker_identity": {"$ref": "#/$defs/effective_worker_identity"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_tree_ref": {
+      "type": "object",
+      "required": ["tree_id", "locator", "tree_digest", "required_artifact_ids"],
+      "properties": {
+        "tree_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "tree_digest": {"$ref": "#/$defs/digest"},
+        "required_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "host_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "source_artifact_ref": {
+      "oneOf": [
+        {"$ref": "#/$defs/repository_artifact_ref"},
+        {"$ref": "#/$defs/host_artifact_ref"}
+      ]
+    },
+    "eligibility_source_ref": {
+      "type": "object",
+      "required": ["source_id", "source_version", "lifecycle_state", "source_artifact_ref", "snapshot_artifact_ref", "source_digest"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"enum": ["candidate", "adopted", "stale", "revoked"]},
+        "source_artifact_ref": {"$ref": "#/$defs/repository_artifact_ref"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "source_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "verification_profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "source_artifact_ref", "snapshot_artifact_ref", "content_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_artifact_ref": {"$ref": "#/$defs/repository_artifact_ref"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_profile_ref": {
+      "type": "object",
+      "required": ["environment_profile_id", "environment_profile_version", "source_artifact_ref", "snapshot_artifact_ref", "basis_digest"],
+      "properties": {
+        "environment_profile_id": {"$ref": "#/$defs/stable_id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_artifact_ref": {"$ref": "#/$defs/repository_artifact_ref"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "worker_identity": {
+      "type": "object",
+      "required": ["uid", "gid", "account_supplementary_gids", "effective_supplementary_gids", "umask", "login_shell", "non_login", "root_prohibited", "principal_entity_id", "principal_resolution_digest"],
+      "properties": {
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "account_supplementary_gids": {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}},
+        "effective_supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63},
+        "login_shell": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "non_login": {"type": "boolean"},
+        "root_prohibited": {"const": true},
+        "principal_entity_id": {"$ref": "#/$defs/entity_id"},
+        "principal_resolution_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_artifact_entry": {
+      "type": "object",
+      "required": ["role", "source_ref", "snapshot_ref"],
+      "properties": {
+        "role": {
+          "enum": [
+        "python_interpreter",
+        "python_runtime",
+        "broker_runtime",
+        "dependency",
+            "runner",
+            "worker_entrypoint",
+            "subject",
+            "test_source",
+            "closed_test_manifest",
+            "verification_profile",
+          "environment_profile",
+          "host_identity_evidence",
+          "containment_probe_evidence",
+          "containment_trace",
+          "eligibility_source",
+          "adoption_record",
+          "environment_adoption_request",
+          "environment_projector",
+            "u10_candidate_bundle_manifest",
+            "u10_candidate_install_projection",
+            "u10_preactivation_decision_record",
+            "u10_worker_account_observation",
+            "u10_worker_principal_resolution",
+            "contract_schema",
+            "dependency_lock"
+          ]
+        },
+        "source_ref": {"$ref": "#/$defs/source_artifact_ref"},
+        "snapshot_ref": {"$ref": "#/$defs/snapshot_artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "closed_test_manifest_ref": {
+      "type": "object",
+      "required": ["manifest_id", "manifest_version", "source_artifact_ref", "snapshot_artifact_ref", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stable_id"},
+        "manifest_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_artifact_ref": {"$ref": "#/$defs/repository_artifact_ref"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_command_binding": {
+      "type": "object",
+      "required": [
+        "command_definition_digest",
+        "closed_test_manifest_ref",
+        "governed_command_timeout_seconds",
+        "required_snapshot_artifact_ids"
+      ],
+      "properties": {
+        "command_definition_digest": {"$ref": "#/$defs/digest"},
+        "closed_test_manifest_ref": {"$ref": "#/$defs/closed_test_manifest_ref"},
+        "governed_command_timeout_seconds": {"type": "number", "minimum": 1, "maximum": 1800},
+        "required_snapshot_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "u4_unresolved": {
+      "type": "object",
+      "required": ["requirement_id", "status", "consequence", "resolution_ref"],
+      "properties": {
+        "requirement_id": {"const": "U-4"},
+        "status": {"const": "unresolved"},
+        "consequence": {"const": "does_not_establish_principal_identity_delegation_or_revocation_authority"},
+        "resolution_ref": {"type": "null"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "candidate"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "root_storage": {"properties": {"storage_state": {"const": "candidate"}}},
+          "immutability_verification": {
+            "properties": {
+              "status": {"const": "pending"},
+              "verified_at": {"type": "null"},
+              "verifier_runtime_ref": {"type": "null"}
+            }
+          },
+          "activation_ref": {"type": "null"},
+          "environment_adoption_ref": {"type": "null"},
+          "snapshot_adoption_authorization_ref": {"type": "null"},
+          "revocation_ref": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "active"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "root_storage": {"properties": {"storage_state": {"const": "immutable_active"}, "directory_mode": {"const": "0555"}}},
+          "eligibility_source_ref": {"properties": {"lifecycle_state": {"const": "candidate"}}},
+          "immutability_verification": {
+            "properties": {
+              "status": {"const": "verified"},
+              "verified_at": {"type": "string", "format": "date-time"},
+              "verifier_runtime_ref": {"$ref": "#/$defs/root_artifact_ref"}
+            }
+          },
+          "activation_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "environment_adoption_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "snapshot_adoption_authorization_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "revocation_ref": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"lifecycle_state": {"const": "revoked"}}, "required": ["lifecycle_state"]},
+      "then": {
+        "properties": {
+          "root_storage": {"properties": {"storage_state": {"const": "retained_revoked"}}},
+          "immutability_verification": {"properties": {"status": {"const": "revoked"}}},
+          "activation_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "environment_adoption_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "snapshot_adoption_authorization_ref": {"$ref": "#/$defs/root_artifact_ref"},
+          "revocation_ref": {"$ref": "#/$defs/root_artifact_ref"}
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

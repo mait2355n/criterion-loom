@@ -1,0 +1,899 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/engineering-rule-governance-v1.schema.json",
+  "title": "semantic-guard vNext engineering-rule governance bundle",
+  "description": "Closed sidecar contract for rule basis, review, human decision, implementation binding, pack denominator, runtime resolution, and the derived H1 gate view. Structural validity is not engineering correctness, human authenticity, adoption, or formal authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "bundle_version",
+    "normalization_profile",
+    "rule_bases",
+    "reviews",
+    "human_decisions",
+    "implementation_bindings",
+    "pack_manifest",
+    "runtime_resolution",
+    "h1_gate_view",
+    "limitations",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "engineering-rule-governance-bundle/v1"},
+    "bundle_id": {"$ref": "#/$defs/stable_id"},
+    "bundle_version": {"$ref": "#/$defs/non_empty"},
+    "normalization_profile": {"const": "semantic-guard-canonical-json/v1"},
+    "rule_bases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/rule_basis"}
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/review"}
+    },
+    "human_decisions": {
+      "type": "array",
+      "minItems": 2,
+      "items": {"$ref": "#/$defs/human_decision"}
+    },
+    "implementation_bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/implementation_binding"}
+    },
+    "pack_manifest": {"$ref": "#/$defs/pack_manifest"},
+    "runtime_resolution": {"$ref": "#/$defs/runtime_resolution"},
+    "h1_gate_view": {"$ref": "#/$defs/h1_gate_view"},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "bundle_digest": {"$ref": "#/$defs/sha256_digest"}
+  },
+  "unevaluatedProperties": false,
+  "$defs": {
+    "non_empty": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "nullable_stable_id": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/stable_id"}
+      ]
+    },
+    "sha256_digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "record_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"$ref": "#/$defs/non_empty"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "nullable_record_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/record_ref"}
+      ]
+    },
+    "string_set": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/non_empty"}
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "finding_authority",
+        "routing_authority",
+        "nonconformance_authority",
+        "satisfaction_authority",
+        "not_applicable_authority",
+        "hold_apply_authority",
+        "hold_release_authority",
+        "final_verdict_authority"
+      ],
+      "properties": {
+        "finding_authority": {"enum": ["candidate_only", "formal_finding"]},
+        "routing_authority": {"enum": ["prohibited", "may_escalate_unresolved"]},
+        "nonconformance_authority": {"enum": ["prohibited", "permitted"]},
+        "satisfaction_authority": {"enum": ["prohibited", "permitted"]},
+        "not_applicable_authority": {"enum": ["prohibited", "permitted"]},
+        "hold_apply_authority": {"enum": ["prohibited", "permitted"]},
+        "hold_release_authority": {"enum": ["prohibited", "permitted"]},
+        "final_verdict_authority": {"enum": ["prohibited", "permitted"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "candidate_authority": {
+      "const": {
+        "finding_authority": "candidate_only",
+        "routing_authority": "may_escalate_unresolved",
+        "nonconformance_authority": "prohibited",
+        "satisfaction_authority": "prohibited",
+        "not_applicable_authority": "prohibited",
+        "hold_apply_authority": "prohibited",
+        "hold_release_authority": "prohibited",
+        "final_verdict_authority": "prohibited"
+      }
+    },
+    "rule_identity_ref": {
+      "type": "object",
+      "required": ["rule_id", "rule_version", "basis_digest"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stable_id"},
+        "rule_version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+        "basis_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "source_binding": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "source_version",
+        "locator",
+        "section_locator",
+        "content_digest",
+        "binding_status"
+      ],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/stable_id"},
+        "source_version": {"$ref": "#/$defs/non_empty"},
+        "locator": {"$ref": "#/$defs/non_empty"},
+        "section_locator": {"$ref": "#/$defs/non_empty"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "binding_status": {"enum": ["verified", "unverified", "conflicting"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "applicability": {
+      "type": "object",
+      "required": ["scope_ids", "conditions"],
+      "properties": {
+        "scope_ids": {"$ref": "#/$defs/string_set"},
+        "conditions": {"$ref": "#/$defs/string_set"}
+      },
+      "unevaluatedProperties": false
+    },
+    "exception": {
+      "type": "object",
+      "required": ["exception_id", "condition", "effect"],
+      "properties": {
+        "exception_id": {"$ref": "#/$defs/stable_id"},
+        "condition": {"$ref": "#/$defs/non_empty"},
+        "effect": {"enum": ["candidate_only", "unresolved"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "semantic_content": {
+      "type": "object",
+      "required": [
+        "engineering_proposition",
+        "interpretation",
+        "required_evidence",
+        "limitations"
+      ],
+      "properties": {
+        "engineering_proposition": {"$ref": "#/$defs/non_empty"},
+        "interpretation": {"$ref": "#/$defs/non_empty"},
+        "required_evidence": {"$ref": "#/$defs/string_set"},
+        "limitations": {"$ref": "#/$defs/string_set"}
+      },
+      "unevaluatedProperties": false
+    },
+    "rule_basis": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "rule_id",
+        "rule_version",
+        "normalization_profile",
+        "artifact_locator",
+        "artifact_digest",
+        "semantic_content",
+        "content_digest",
+        "source_bindings",
+        "applicability",
+        "exceptions",
+        "requested_authority",
+        "basis_digest",
+        "record_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-basis/v1"},
+        "rule_id": {"$ref": "#/$defs/stable_id"},
+        "rule_version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+        "normalization_profile": {"const": "semantic-guard-canonical-json/v1"},
+        "artifact_locator": {"$ref": "#/$defs/non_empty"},
+        "artifact_digest": {"$ref": "#/$defs/sha256_digest"},
+        "semantic_content": {"$ref": "#/$defs/semantic_content"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"},
+        "source_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/source_binding"}
+        },
+        "applicability": {"$ref": "#/$defs/applicability"},
+        "exceptions": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/exception"}
+        },
+        "requested_authority": {"$ref": "#/$defs/authority"},
+        "basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "record_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "review_id",
+        "rule_ref",
+        "review_source",
+        "reviewer_ref",
+        "reviewer_kind",
+        "review_independence",
+        "review_authority",
+        "reviewer_qualification_refs",
+        "audit_assessment",
+        "finding_refs",
+        "evidence_status",
+        "non_binding_recommendation",
+        "recommendation_rationale",
+        "review_evidence_refs",
+        "review_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-review/v1"},
+        "review_id": {"$ref": "#/$defs/stable_id"},
+        "rule_ref": {"$ref": "#/$defs/rule_identity_ref"},
+        "review_source": {"enum": ["audit_generated_candidate", "external_human_record"]},
+        "reviewer_ref": {"$ref": "#/$defs/stable_id"},
+        "reviewer_kind": {"enum": ["ai", "human", "tool"]},
+        "review_independence": {
+          "enum": [
+            "self_review",
+            "isolated_context_review",
+            "separate_runtime_review",
+            "independent_human_review"
+          ]
+        },
+        "review_authority": {"enum": ["candidate_only", "adoption_material"]},
+        "reviewer_qualification_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "audit_assessment": {
+          "enum": ["adoption_ready", "adoption_not_ready", "conflicting", "not_assessed"]
+        },
+        "finding_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "evidence_status": {
+          "enum": ["sufficient", "insufficient", "conflicting", "unverified", "not_applicable"]
+        },
+        "non_binding_recommendation": {
+          "enum": ["none", "accept", "request_revision", "defer", "reject"]
+        },
+        "recommendation_rationale": {"$ref": "#/$defs/non_empty"},
+        "review_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "review_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "authenticity": {
+      "type": "object",
+      "required": ["status", "evidence_ref"],
+      "properties": {
+        "status": {"enum": ["unproved", "verified", "invalid"]},
+        "evidence_ref": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/non_empty"}]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "revision": {
+      "type": "object",
+      "required": [
+        "revision_targets",
+        "revision_reasons",
+        "revision_owner_ref",
+        "next_action",
+        "resolution_conditions",
+        "re_review_condition",
+        "audit_finding_refs"
+      ],
+      "properties": {
+        "revision_targets": {"$ref": "#/$defs/string_set"},
+        "revision_reasons": {"$ref": "#/$defs/string_set"},
+        "revision_owner_ref": {"$ref": "#/$defs/stable_id"},
+        "next_action": {"$ref": "#/$defs/non_empty"},
+        "resolution_conditions": {"$ref": "#/$defs/string_set"},
+        "re_review_condition": {"$ref": "#/$defs/non_empty"},
+        "audit_finding_refs": {"$ref": "#/$defs/string_set"}
+      },
+      "unevaluatedProperties": false
+    },
+    "human_decision": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "decision_id",
+        "target_kind",
+        "target_id",
+        "target_version",
+        "target_digest",
+        "target_pack_manifest_digest",
+        "human_decision",
+        "decision_source",
+        "decision_owner_ref",
+        "decision_actor_kind",
+        "decision_authenticity",
+        "decided_at",
+        "record_ref",
+        "rationale",
+        "granted_authority",
+        "revision",
+        "decision_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-human-decision/v1"},
+        "decision_id": {"$ref": "#/$defs/stable_id"},
+        "target_kind": {"enum": ["rule", "h1_gate"]},
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_version": {"$ref": "#/$defs/non_empty"},
+        "target_digest": {"$ref": "#/$defs/sha256_digest"},
+        "target_pack_manifest_digest": {"$ref": "#/$defs/sha256_digest"},
+        "human_decision": {"enum": ["pending", "accept", "request_revision", "defer", "reject"]},
+        "decision_source": {"enum": ["pending_gate_request", "external_human_record"]},
+        "decision_owner_ref": {"$ref": "#/$defs/stable_id"},
+        "decision_actor_kind": {"const": "human"},
+        "decision_authenticity": {"$ref": "#/$defs/authenticity"},
+        "decided_at": {
+          "oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]
+        },
+        "record_ref": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/non_empty"}]
+        },
+        "rationale": {"$ref": "#/$defs/non_empty"},
+        "granted_authority": {"$ref": "#/$defs/authority"},
+        "revision": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/revision"}]
+        },
+        "decision_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "implementation_artifact": {
+      "type": "object",
+      "required": ["locator", "content_digest"],
+      "properties": {
+        "locator": {"$ref": "#/$defs/non_empty"},
+        "content_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "implementation_binding": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "binding_id",
+        "rule_ref",
+        "implementation_id",
+        "implementation_version",
+        "entry_point",
+        "artifacts",
+        "implementation_digest",
+        "implementation_status",
+        "verification_evidence_refs",
+        "binding_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-implementation-binding/v1"},
+        "binding_id": {"$ref": "#/$defs/stable_id"},
+        "rule_ref": {"$ref": "#/$defs/rule_identity_ref"},
+        "implementation_id": {"$ref": "#/$defs/stable_id"},
+        "implementation_version": {"$ref": "#/$defs/non_empty"},
+        "entry_point": {"$ref": "#/$defs/non_empty"},
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/implementation_artifact"}
+        },
+        "implementation_digest": {"$ref": "#/$defs/sha256_digest"},
+        "implementation_status": {
+          "enum": ["not_implemented", "partially_implemented", "implemented", "verified", "retired"]
+        },
+        "verification_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "binding_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "pack_rule_ref": {
+      "type": "object",
+      "required": ["rule_id", "rule_version", "basis_digest"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stable_id"},
+        "rule_version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+        "basis_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "excluded_rule_ref": {
+      "type": "object",
+      "required": ["rule_ref", "reason"],
+      "properties": {
+        "rule_ref": {"$ref": "#/$defs/pack_rule_ref"},
+        "reason": {"$ref": "#/$defs/non_empty"}
+      },
+      "unevaluatedProperties": false
+    },
+    "pack_manifest": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "pack_id",
+        "pack_version",
+        "subject_scope_ids",
+        "required_rule_denominator",
+        "optional_rule_denominator",
+        "excluded_rules",
+        "aggregation_conditions",
+        "manifest_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-pack-manifest/v1"},
+        "pack_id": {"$ref": "#/$defs/stable_id"},
+        "pack_version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+        "subject_scope_ids": {"$ref": "#/$defs/string_set"},
+        "required_rule_denominator": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/pack_rule_ref"}
+        },
+        "optional_rule_denominator": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/pack_rule_ref"}
+        },
+        "excluded_rules": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/excluded_rule_ref"}
+        },
+        "aggregation_conditions": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "resolved_required_rules_equal_denominator",
+              "blocking_unresolved_count_zero",
+              "all_required_obligations_satisfied",
+              "all_required_rules_grant_final_verdict"
+            ]
+          }
+        },
+        "manifest_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "profile_resolution": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "basis_digest", "resolution_status"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"$ref": "#/$defs/non_empty"},
+        "basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "resolution_status": {"enum": ["resolved_formal", "candidate_only", "unresolved"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_rule_request": {
+      "type": "object",
+      "required": [
+        "rule_id",
+        "rule_version",
+        "basis_digest",
+        "artifact_digest",
+        "implementation_digest",
+        "requested_authority"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stable_id"},
+        "rule_version": {"$ref": "#/$defs/non_empty"},
+        "basis_digest": {"$ref": "#/$defs/sha256_digest"},
+        "artifact_digest": {"$ref": "#/$defs/sha256_digest"},
+        "implementation_digest": {"$ref": "#/$defs/sha256_digest"},
+        "requested_authority": {"$ref": "#/$defs/authority"}
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_receipt": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "receipt_id",
+        "receipt_source",
+        "claim_kind",
+        "target_ref",
+        "claim_digest",
+        "issuer_ref",
+        "issued_at",
+        "record_ref",
+        "evidence_refs",
+        "receipt_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-runtime-receipt/v1"},
+        "receipt_id": {"$ref": "#/$defs/stable_id"},
+        "receipt_source": {"const": "external_resolution_record"},
+        "claim_kind": {
+          "enum": [
+            "profile_resolution",
+            "evidence_currency",
+            "obligation_assessment",
+            "source_binding",
+            "implementation_verification"
+          ]
+        },
+        "target_ref": {"$ref": "#/$defs/non_empty"},
+        "claim_digest": {"$ref": "#/$defs/sha256_digest"},
+        "issuer_ref": {"$ref": "#/$defs/stable_id"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "record_ref": {"$ref": "#/$defs/non_empty"},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "receipt_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_request": {
+      "type": "object",
+      "required": [
+        "request_id",
+        "subject_scope_id",
+        "profile_resolution",
+        "evidence_currency",
+        "all_required_obligations_satisfied",
+        "obligation_assessment_digest",
+        "active_exception_ids",
+        "runtime_receipts",
+        "rule_requests"
+      ],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/stable_id"},
+        "subject_scope_id": {"$ref": "#/$defs/non_empty"},
+        "profile_resolution": {"$ref": "#/$defs/profile_resolution"},
+        "evidence_currency": {"enum": ["current", "stale", "unbound"]},
+        "all_required_obligations_satisfied": {"type": "boolean"},
+        "obligation_assessment_digest": {"$ref": "#/$defs/sha256_digest"},
+        "active_exception_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "runtime_receipts": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/runtime_receipt"}
+        },
+        "rule_requests": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/runtime_rule_request"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "trace_ref": {
+      "type": "object",
+      "required": [
+        "rule_ref",
+        "source_bindings",
+        "subject_scope_id",
+        "finding_refs",
+        "basis_record_digest",
+        "review_digest",
+        "human_decision_digest",
+        "implementation_binding_digest",
+        "pack_manifest_digest",
+        "profile_basis_digest"
+      ],
+      "properties": {
+        "rule_ref": {"$ref": "#/$defs/rule_identity_ref"},
+        "source_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/source_binding"}
+        },
+        "subject_scope_id": {"$ref": "#/$defs/non_empty"},
+        "finding_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/non_empty"}
+        },
+        "basis_record_digest": {"$ref": "#/$defs/sha256_digest"},
+        "review_digest": {"$ref": "#/$defs/sha256_digest"},
+        "human_decision_digest": {"$ref": "#/$defs/sha256_digest"},
+        "implementation_binding_digest": {"$ref": "#/$defs/sha256_digest"},
+        "pack_manifest_digest": {"$ref": "#/$defs/sha256_digest"},
+        "profile_basis_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "nullable_trace_ref": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/trace_ref"}]
+    },
+    "trust_input": {
+      "type": "object",
+      "required": ["target_id", "target_record_digest", "trust_status"],
+      "properties": {
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_record_digest": {"$ref": "#/$defs/sha256_digest"},
+        "trust_status": {
+          "enum": ["not_applicable", "verifier_claim_accepted", "missing_verifier", "verification_failed"]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_receipt_input": {
+      "type": "object",
+      "required": ["target_id", "target_record_digest"],
+      "properties": {
+        "target_id": {"$ref": "#/$defs/stable_id"},
+        "target_record_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_context": {
+      "type": "object",
+      "required": [
+        "reviewer_verifier_ref",
+        "decision_verifier_ref",
+        "runtime_verifier_ref",
+        "review_inputs",
+        "decision_inputs",
+        "runtime_receipt_inputs",
+        "context_digest"
+      ],
+      "properties": {
+        "reviewer_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "decision_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "runtime_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "review_inputs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/trust_input"}
+        },
+        "decision_inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/trust_input"}
+        },
+        "runtime_receipt_inputs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/runtime_receipt_input"}
+        },
+        "context_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "rule_resolution": {
+      "type": "object",
+      "required": [
+        "rule_id",
+        "rule_version",
+        "resolution_status",
+        "governance_states",
+        "effective_authority",
+        "reason_codes",
+        "trace",
+        "resolution_digest"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stable_id"},
+        "rule_version": {"$ref": "#/$defs/non_empty"},
+        "resolution_status": {"enum": ["candidate_only", "unresolved"]},
+        "governance_states": {
+          "type": "object",
+          "required": [
+            "evidence_status",
+            "adoption_status",
+            "implementation_status",
+            "review_trust_status",
+            "decision_trust_status"
+          ],
+          "properties": {
+            "evidence_status": {
+              "enum": ["sufficient", "insufficient", "conflicting", "unverified", "not_applicable"]
+            },
+            "adoption_status": {
+              "enum": ["candidate", "adopted", "conditionally_adopted", "deferred", "rejected", "expired"]
+            },
+            "implementation_status": {
+              "enum": ["not_implemented", "partially_implemented", "implemented", "verified", "retired", "unknown"]
+            },
+            "review_trust_status": {
+              "enum": ["not_applicable", "verifier_claim_accepted", "missing_verifier", "verification_failed"]
+            },
+            "decision_trust_status": {
+              "enum": ["not_applicable", "verifier_claim_accepted", "missing_verifier", "verification_failed"]
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "effective_authority": {"$ref": "#/$defs/candidate_authority"},
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        },
+        "trace": {"$ref": "#/$defs/nullable_trace_ref"},
+        "resolution_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "pack_resolution": {
+      "type": "object",
+      "required": [
+        "status",
+        "required_rule_count",
+        "resolved_formal_count",
+        "candidate_count",
+        "unresolved_count",
+        "blocking_unresolved_count",
+        "formal_verdict_authority",
+        "h1_decision_trust_status",
+        "reviewer_verifier_ref",
+        "decision_verifier_ref",
+        "runtime_verifier_ref",
+        "reason_codes"
+      ],
+      "properties": {
+        "status": {"enum": ["candidate_only", "unresolved"]},
+        "required_rule_count": {"type": "integer", "minimum": 1},
+        "resolved_formal_count": {"const": 0},
+        "candidate_count": {"type": "integer", "minimum": 0},
+        "unresolved_count": {"type": "integer", "minimum": 0},
+        "blocking_unresolved_count": {"type": "integer", "minimum": 0},
+        "formal_verdict_authority": {"const": "none"},
+        "h1_decision_trust_status": {
+          "enum": ["not_applicable", "verifier_claim_accepted", "missing_verifier", "verification_failed"]
+        },
+        "reviewer_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "decision_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "runtime_verifier_ref": {"$ref": "#/$defs/nullable_record_ref"},
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "runtime_resolution": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "resolution_id",
+        "pack_ref",
+        "runtime_request",
+        "trust_context",
+        "rule_resolutions",
+        "pack_resolution",
+        "resolution_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-runtime-resolution/v1"},
+        "resolution_id": {"$ref": "#/$defs/stable_id"},
+        "pack_ref": {
+          "type": "object",
+          "required": ["pack_id", "pack_version", "manifest_digest"],
+          "properties": {
+            "pack_id": {"$ref": "#/$defs/stable_id"},
+            "pack_version": {"$ref": "#/$defs/non_empty"},
+            "manifest_digest": {"$ref": "#/$defs/sha256_digest"}
+          },
+          "unevaluatedProperties": false
+        },
+        "runtime_request": {"$ref": "#/$defs/runtime_request"},
+        "trust_context": {"$ref": "#/$defs/trust_context"},
+        "rule_resolutions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/rule_resolution"}
+        },
+        "pack_resolution": {"$ref": "#/$defs/pack_resolution"},
+        "resolution_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "h1_gate_view": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "gate_id",
+        "subject",
+        "assessment_scope",
+        "non_required_review_count",
+        "non_required_review_assessments",
+        "audit_assessment",
+        "non_binding_recommendation",
+        "human_decision",
+        "reported_human_decision",
+        "decision_trust_status",
+        "human_decision_ref",
+        "decision_owner",
+        "blocking_status",
+        "next_action",
+        "resolution_condition",
+        "verdict_authority",
+        "gate_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-governance-gate-view/v1"},
+        "gate_id": {"const": "H1"},
+        "subject": {"const": "engineering_rule_pack"},
+        "assessment_scope": {"const": "required_rule_denominator"},
+        "non_required_review_count": {"type": "integer", "minimum": 0},
+        "non_required_review_assessments": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["adoption_ready", "adoption_not_ready", "conflicting", "not_assessed"]
+          }
+        },
+        "audit_assessment": {
+          "enum": ["adoption_ready_for_human_decision", "adoption_not_ready", "conflicting", "not_assessed"]
+        },
+        "non_binding_recommendation": {"enum": ["none", "accept", "request_revision", "defer", "reject"]},
+        "human_decision": {"const": "pending"},
+        "reported_human_decision": {"enum": ["pending", "accept", "request_revision", "defer", "reject"]},
+        "decision_trust_status": {
+          "enum": ["not_applicable", "verifier_claim_accepted", "missing_verifier", "verification_failed"]
+        },
+        "human_decision_ref": {"$ref": "#/$defs/stable_id"},
+        "decision_owner": {"const": "human"},
+        "blocking_status": {"const": "blocking_positive_assurance"},
+        "next_action": {"$ref": "#/$defs/non_empty"},
+        "resolution_condition": {"$ref": "#/$defs/non_empty"},
+        "verdict_authority": {"const": "none"},
+        "gate_digest": {"$ref": "#/$defs/sha256_digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

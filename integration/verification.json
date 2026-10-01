@@ -1,0 +1,166 @@
+{
+  "internal_format_label": "criterion-loom-local-integration-verification/v1",
+  "purpose": "Evidence for a local executable and distribution integration candidate; not a public audit result or release approval.",
+  "subject": {
+    "project": "Criterion Loom",
+    "distribution": "semantic-guard",
+    "version": "1.2.0.dev0",
+    "branch": "integration/local-workflows-20261001",
+    "canonical_baseline": "0a38d9bb82c593ccdd794ec08fbaf514dea135a9",
+    "local_source_baseline": "eb34d0f9c81342ad4f0ed6bac42c3614d9424fd2"
+  },
+  "current_state": "Local candidate implemented and verified; public main and active MCP configuration unchanged.",
+  "scope": {
+    "canonical_namespace": "semantic_guard",
+    "workflow_namespace": "semantic_guard_workflow",
+    "candidate_namespaces": [
+      "semantic_guard_vnext",
+      "semantic_guard_u10_broker"
+    ],
+    "routes": [
+      "semantic-guard workflow COMMAND",
+      "semantic-guard candidate COMMAND"
+    ],
+    "mcp_tool_counts": {
+      "canonical": 4,
+      "workflow": 27,
+      "candidate": 3
+    },
+    "console_entrypoints": 6,
+    "result_contracts": "Preserved separately; no synthesis into a single verdict."
+  },
+  "source_equality": {
+    "migration_entries_checked": {
+      "workflow-migration.json": 235,
+      "candidate-migration.json": 361
+    },
+    "all_source_and_destination_hashes_match": true,
+    "wheel_namespace_files_byte_equal_to_working_source": 384,
+    "legacy_archive_diff": "empty against canonical baseline"
+  },
+  "verification": {
+    "canonical": {
+      "python_3_13": {
+        "tests": 625,
+        "status": "pass",
+        "log": "criterion-loom-integrated-canonical-final-20261001.log"
+      },
+      "python_3_11": {
+        "tests": 625,
+        "status": "pass",
+        "log": "criterion-loom-canonical-py311-final-20261001.log"
+      },
+      "command": "python -m unittest discover -s tests -v"
+    },
+    "workflow": {
+      "python_3_13": {
+        "tests": 568,
+        "status": "pass",
+        "evidence": "workflow-migration.json#/verification/unit_suite"
+      },
+      "python_3_11": {
+        "tests": 568,
+        "status": "pass",
+        "log": "criterion-loom-workflow-py311-20261001.log"
+      },
+      "command": "python -m unittest discover -s workflow_tests -t . -v",
+      "representative_original_output_parity": "15/15 passed with documented module/UUID normalization",
+      "doctor": {
+        "status": "pass",
+        "checks": 9,
+        "fixtures": "57/57",
+        "log": "criterion-loom-workflow-doctor-20261001.json",
+        "supersedes": "The worker migration record retains its earlier CI warning; adding fixture replay to CI resolved it."
+      }
+    },
+    "candidate": {
+      "python_3_13": {
+        "initial_core": 680,
+        "additional_core": 31,
+        "u10_unit_executions": 248,
+        "qualified_profile_contracts": 7,
+        "all_groups_status": "pass",
+        "evidence": "candidate-migration.json#/verification",
+        "note": "The 680-test command was observed before the later test port; it is not the count of final full discovery. U10 executions include imported helper cases."
+      },
+      "python_3_11": {
+        "core_tests": 711,
+        "status": "pass",
+        "excluded_from_this_run": [
+          "test_u10*.py",
+          "test_qualified_environment_u10.py"
+        ],
+        "log": "criterion-loom-candidate-core-py311-20261001.log"
+      },
+      "resource_negative_controls": "7 passed; source-relative/canonical/adjacent fallback forbidden"
+    },
+    "packaged_contracts": {
+      "status": "pass",
+      "checks": 31,
+      "log": "criterion-loom-packaged-final-20261001.json",
+      "isolated_install": true,
+      "required_extra_resource_paths": 184,
+      "negative_control": "Removing acceptance-review-bundle.schema.json is rejected as wheel_required_resource_missing"
+    },
+    "mcp_stdio": {
+      "status": "pass",
+      "servers": 3,
+      "operations": [
+        "initialize",
+        "list_tools",
+        "call schema tool"
+      ],
+      "installed_namespace_files_byte_equal": 384,
+      "wheel_sha256": "fa37625e3ada34e2f7e0c4469eaf1367a7bb6b4491796e7a69f6a1caae10b290",
+      "log": "criterion-loom-mcp-stdio-20261001.json"
+    },
+    "source_validators": {
+      "verification_source": "pass",
+      "verification_projection": "pass",
+      "engineering_rule_pack": "pass",
+      "uv_lock_check": "pass",
+      "git_diff_check": {
+        "tracked_edits": "pass",
+        "full_staged_tree_exit_code": 2,
+        "warnings": [
+          "src/semantic_guard_vnext/verification_projection.py:223: new blank line at EOF.",
+          "src/semantic_guard_workflow/expression_terms.py:612: new blank line at EOF."
+        ],
+        "disposition": "Both imported source files already end with an extra blank line. Preserve source bytes for this port; these whitespace observations do not change executable behavior."
+      }
+    }
+  },
+  "artifacts": {
+    "wheel": {
+      "file": "semantic_guard-1.2.0.dev0-py3-none-any.whl",
+      "sha256": "fa37625e3ada34e2f7e0c4469eaf1367a7bb6b4491796e7a69f6a1caae10b290"
+    },
+    "sdist": {
+      "file": "semantic_guard-1.2.0.dev0.tar.gz",
+      "sha256": "6747ff0e31cac0212c4d0bd9506c3a8d69167e2b5edad0e606c34a08957b5fbe"
+    },
+    "evidence_directory": "/Users/aster00/criterion-loom-unification-evidence-20261001"
+  },
+  "review": {
+    "fixed_findings": [
+      "CI artifact names updated to development version",
+      "All additional packaged resource paths made mandatory, not merely allowed"
+    ],
+    "open_concrete_findings": [],
+    "machine_audit_boundary": "Heuristic plan/diff/document warnings are observations, not human acceptance; raw results and manual dispositions are stored in the local evidence directory."
+  },
+  "not_verified_or_not_performed": [
+    "GitHub Actions and Linux/Windows execution of this branch; CI configuration has been updated but not run remotely.",
+    "13 original host-qualified candidate methods requiring original interpreter/lock/Homebrew/source snapshot; exclusions named in candidate-migration.json.",
+    "Five old candidate packaging/verification-history test modules; exclusions named in candidate-migration.json.",
+    "Python 3.11 U10 tests and real external LLM jobs.",
+    "Field validity, U10 privileged installation/activation, governance adoption, and human acceptance.",
+    "Cross-contract verdict synthesis, common implementation deduplication, and integration of other unmerged public development branches."
+  ],
+  "next_action": "Review the local candidate and choose any later publication, runtime cutover or further semantic integration separately.",
+  "detail_refs": [
+    "../docs/local-integration.md",
+    "workflow-migration.json",
+    "candidate-migration.json"
+  ]
+}

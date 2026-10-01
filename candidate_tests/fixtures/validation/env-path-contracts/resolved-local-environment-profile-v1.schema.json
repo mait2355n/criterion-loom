@@ -1,0 +1,478 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/resolved-local-environment-profile-v1.schema.json",
+  "title": "semantic-guard dependency-bound local environment candidate v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "environment_profile_id",
+    "environment_profile_version",
+    "lifecycle_state",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "verification_profile_ref",
+    "platform",
+    "host_identity_ref",
+    "resolved_tools",
+    "effective_path",
+    "containment_capability",
+    "limitations",
+    "basis_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-resolved-local-environment-profile/v1"},
+    "environment_profile_id": {"$ref": "#/$defs/stable_id"},
+    "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "lifecycle_state": {"const": "candidate"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "verification_profile_ref": {"$ref": "#/$defs/verification_profile_ref"},
+    "platform": {"$ref": "#/$defs/platform"},
+    "host_identity_ref": {"$ref": "#/$defs/host_identity_ref"},
+    "resolved_tools": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/resolved_tool"},
+      "allOf": [
+        {
+          "contains": {"properties": {"tool_id": {"const": "python.vnext"}}, "required": ["tool_id"]},
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {"properties": {"tool_id": {"const": "test_runner.vnext"}}, "required": ["tool_id"]},
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {"properties": {"tool_id": {"const": "containment_launcher.vnext"}}, "required": ["tool_id"]},
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    },
+    "effective_path": {"$ref": "#/$defs/effective_path"},
+    "containment_capability": {"$ref": "#/$defs/containment_capability"},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "basis_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "host_identity_ref": {
+      "type": "object",
+      "required": ["host_id", "identity_digest", "evidence_ref"],
+      "properties": {
+        "host_id": {"$ref": "#/$defs/stable_id"},
+        "identity_digest": {"$ref": "#/$defs/digest"},
+        "evidence_ref": {"$ref": "#/$defs/digest_bound_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "verification_profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "content_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stable_id"},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "platform": {
+      "type": "object",
+      "required": ["system", "release", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 128},
+        "release": {"type": "string", "minLength": 1, "maxLength": 256},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    },
+    "invocation_identity": {
+      "type": "object",
+      "required": ["path_kind", "symlink_target", "identity_digest"],
+      "properties": {
+        "path_kind": {"enum": ["regular", "symlink"]},
+        "symlink_target": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "string", "minLength": 1, "maxLength": 4096}
+          ]
+        },
+        "identity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "distribution": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "maxLength": 256},
+        "version": {"type": "string", "minLength": 1, "maxLength": 512}
+      },
+      "unevaluatedProperties": false
+    },
+    "lock_binding": {
+      "type": "object",
+      "required": ["path", "resolved_path", "file_digest"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "resolved_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "file_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "module_observation": {
+      "type": "object",
+      "required": ["module", "available"],
+      "properties": {
+        "module": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$", "maxLength": 256},
+        "available": {"const": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "lock_environment_match": {
+      "type": "object",
+      "required": [
+        "verification_mode",
+        "tool_id",
+        "invocation_path",
+        "resolved_path",
+        "version",
+        "file_digest",
+        "selected_extras",
+        "command",
+        "effective_environment",
+        "checked_package_count",
+        "match_status",
+        "result_digest"
+      ],
+      "properties": {
+        "verification_mode": {"const": "uv_sync_check_frozen_exact/v1"},
+        "tool_id": {"const": "uv.vnext"},
+        "invocation_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "file_digest": {"$ref": "#/$defs/digest"},
+        "selected_extras": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "maxLength": 128}
+        },
+        "command": {
+          "type": "array",
+          "minItems": 7,
+          "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+        },
+        "effective_environment": {
+          "type": "object",
+          "required": ["LC_ALL", "NO_COLOR", "PATH", "PYTHONDONTWRITEBYTECODE", "UV_NO_PROGRESS", "UV_OFFLINE", "UV_PYTHON_DOWNLOADS"],
+          "properties": {
+            "LC_ALL": {"const": "C"},
+            "NO_COLOR": {"const": "1"},
+            "PATH": {"type": "string", "maxLength": 4096},
+            "PYTHONDONTWRITEBYTECODE": {"const": "1"},
+            "UV_NO_PROGRESS": {"const": "1"},
+            "UV_OFFLINE": {"const": "1"},
+            "UV_PYTHON_DOWNLOADS": {"const": "never"}
+          },
+          "unevaluatedProperties": false
+        },
+        "checked_package_count": {"type": "integer", "minimum": 1},
+        "match_status": {"const": "exact_no_changes"},
+        "result_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "python_runtime": {
+      "type": "object",
+      "required": [
+        "reported_executable",
+        "environment_root",
+        "sys_prefix",
+        "sys_base_prefix",
+        "implementation",
+        "python_version",
+        "pyvenv_config",
+        "distributions",
+        "distributions_digest",
+        "required_modules",
+        "dependency_import_roots",
+        "lock_environment_match"
+      ],
+      "properties": {
+        "reported_executable": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "environment_root": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "sys_prefix": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "sys_base_prefix": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "implementation": {"type": "string", "minLength": 1, "maxLength": 128},
+        "python_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "pyvenv_config": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/lock_binding"}
+          ]
+        },
+        "distributions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/distribution"}
+        },
+        "distributions_digest": {"$ref": "#/$defs/digest"},
+        "required_modules": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/module_observation"}
+        },
+        "dependency_import_roots": {
+          "type": "array",
+          "minItems": 2,
+          "items": {"$ref": "#/$defs/import_root_binding"}
+        },
+        "lock_environment_match": {"$ref": "#/$defs/lock_environment_match"}
+      },
+      "unevaluatedProperties": false
+    },
+    "import_root_binding": {
+      "type": "object",
+      "required": ["root_kind", "path", "file_count", "manifest_digest"],
+      "properties": {
+        "root_kind": {"enum": ["stdlib", "platstdlib", "site_packages"]},
+        "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "file_count": {"type": "integer", "minimum": 1},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "bootstrap_runtime": {
+      "type": "object",
+      "required": ["interpreter_tool_id", "startup_flags", "containment_before_external_import"],
+      "properties": {
+        "interpreter_tool_id": {"const": "python.vnext"},
+        "startup_flags": {
+          "type": "array",
+          "prefixItems": [{"const": "-I"}, {"const": "-S"}],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "containment_before_external_import": {"const": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "containment_runtime": {
+      "type": "object",
+      "required": ["provider_id", "install_name", "outer_policy", "inner_protocol"],
+      "properties": {
+        "provider_id": {"const": "macos.sandbox-exec"},
+        "install_name": {"const": "/usr/bin/sandbox-exec"},
+        "outer_policy": {"const": "deny_file_write_fork_and_non_python_exec_before_runner"},
+        "inner_protocol": {"const": "macos-sandbox-no-process-creation/v1"}
+      },
+      "unevaluatedProperties": false
+    },
+    "capability_binding": {
+      "type": "object",
+      "required": ["kind", "python_runtime", "bootstrap_runtime", "containment_runtime", "lock_bindings", "lock_set_digest", "binding_digest"],
+      "properties": {
+        "kind": {"enum": ["python_environment", "python_bootstrap", "containment_launcher"]},
+        "python_runtime": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/python_runtime"}
+          ]
+        },
+        "bootstrap_runtime": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/bootstrap_runtime"}
+          ]
+        },
+        "containment_runtime": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/containment_runtime"}
+          ]
+        },
+        "lock_bindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/lock_binding"}
+        },
+        "lock_set_digest": {"$ref": "#/$defs/digest"},
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "python_environment"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "python_runtime": {"$ref": "#/$defs/python_runtime"},
+              "bootstrap_runtime": {"type": "null"},
+              "containment_runtime": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "python_bootstrap"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "python_runtime": {"type": "null"},
+              "bootstrap_runtime": {"$ref": "#/$defs/bootstrap_runtime"},
+              "containment_runtime": {"type": "null"},
+              "lock_bindings": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "containment_launcher"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "python_runtime": {"type": "null"},
+              "bootstrap_runtime": {"type": "null"},
+              "containment_runtime": {"$ref": "#/$defs/containment_runtime"},
+              "lock_bindings": {"maxItems": 0}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "constraint_evaluation": {
+      "type": "object",
+      "required": ["version_matches", "digest_matches", "platform_matches", "capability_matches"],
+      "properties": {
+        "version_matches": {"const": true},
+        "digest_matches": {"const": true},
+        "platform_matches": {"const": true},
+        "capability_matches": {"const": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "resolved_tool": {
+      "type": "object",
+      "required": [
+        "tool_id",
+        "logical_role",
+        "candidate_source",
+        "candidate_locator",
+        "invocation_path",
+        "invocation_identity",
+        "resolved_path",
+        "version",
+        "version_probe",
+        "file_digest",
+        "capability_binding",
+        "constraint_evaluation"
+      ],
+      "properties": {
+        "tool_id": {"$ref": "#/$defs/stable_id"},
+        "logical_role": {"enum": ["python_interpreter", "python_test_runner", "containment_launcher"]},
+        "candidate_source": {"enum": ["repository_relative", "platform_install_name"]},
+        "candidate_locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "invocation_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "invocation_identity": {"$ref": "#/$defs/invocation_identity"},
+        "resolved_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "version_probe": {"enum": ["python", "python_script_header", "platform_release"]},
+        "file_digest": {"$ref": "#/$defs/digest"},
+        "capability_binding": {"$ref": "#/$defs/capability_binding"},
+        "constraint_evaluation": {"$ref": "#/$defs/constraint_evaluation"}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "tool_id": {"const": "python.vnext"},
+            "logical_role": {"const": "python_interpreter"},
+            "version_probe": {"const": "python"},
+            "capability_binding": {"properties": {"kind": {"const": "python_environment"}}}
+          }
+        },
+        {
+          "properties": {
+            "tool_id": {"const": "test_runner.vnext"},
+            "logical_role": {"const": "python_test_runner"},
+            "version_probe": {"const": "python_script_header"},
+            "capability_binding": {"properties": {"kind": {"const": "python_bootstrap"}}}
+          }
+        },
+        {
+          "properties": {
+            "tool_id": {"const": "containment_launcher.vnext"},
+            "logical_role": {"const": "containment_launcher"},
+            "candidate_source": {"const": "platform_install_name"},
+            "candidate_locator": {"const": "macos.sandbox-exec"},
+            "version_probe": {"const": "platform_release"},
+            "capability_binding": {"properties": {"kind": {"const": "containment_launcher"}}}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "path_entry": {
+      "type": "object",
+      "required": ["directory", "source_tool_ids"],
+      "properties": {
+        "directory": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "source_tool_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stable_id"}
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "effective_path": {
+      "type": "object",
+      "required": ["policy", "entries", "rendered_value", "content_digest"],
+      "properties": {
+        "policy": {"const": "managed_minimal_from_adopted_invocation_paths"},
+        "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/path_entry"}},
+        "rendered_value": {"type": "string", "minLength": 1, "maxLength": 32768},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "containment_capability": {
+      "type": "object",
+      "required": ["protocol", "platform_scope", "process_creation_policy", "qualification_status", "probe_evidence_ref", "capability_digest"],
+      "properties": {
+        "protocol": {"const": "macos-sandbox-no-process-creation/v1"},
+        "platform_scope": {"$ref": "#/$defs/platform"},
+        "process_creation_policy": {"const": "prohibited_after_runner_start"},
+        "qualification_status": {"const": "candidate_observed"},
+        "probe_evidence_ref": {"$ref": "#/$defs/digest_bound_ref"},
+        "capability_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

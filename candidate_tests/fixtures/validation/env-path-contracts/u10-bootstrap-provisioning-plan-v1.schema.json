@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-provisioning-plan-v1.schema.json",
+  "title": "U-10 exact initial root provisioning plan v1",
+  "type": "object",
+  "required": ["schema_version", "plan_id", "plan_version", "record_kind", "target_root", "target_root_mode", "expected_authorization_id", "preboot_ledger_binding", "runtime_bindings", "bootstrap_kit_denominator", "root_observation_ref", "target_denominator", "trust_boundary", "formal_authority", "positive_assurance_allowed", "plan_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-provisioning-plan/v1"},
+    "plan_id": {"$ref": "#/$defs/id"},
+    "plan_version": {"const": "1.0.0"},
+    "record_kind": {"const": "initial_u10_root_provisioning_plan"},
+    "target_root": {"const": "/Library/Application Support/semantic-guard/u10"},
+    "target_root_mode": {"const": 493},
+    "expected_authorization_id": {"$ref": "#/$defs/id"},
+    "preboot_ledger_binding": {
+      "type": "object", "required": ["root", "policy", "authorization_record", "plan_record", "consumption_record", "receipt_record"],
+      "properties": {
+        "root": {"const": "/Library/Application Support/semantic-guard/u10-bootstrap-ledger"},
+        "policy": {"const": "append_only_exact_id_resolution_outside_target/v1"},
+        "authorization_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"},
+        "plan_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.plan\\.json$"},
+        "consumption_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"},
+        "receipt_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"}
+      }, "unevaluatedProperties": false
+    },
+    "runtime_bindings": {
+      "type": "object", "required": ["broker", "control"],
+      "properties": {
+        "broker": {"$ref": "#/$defs/broker_runtime"},
+        "control": {"$ref": "#/$defs/control_runtime"}
+      }, "unevaluatedProperties": false
+    },
+    "bootstrap_kit_denominator": {"$ref": "#/$defs/kit_denominator"},
+    "root_observation_ref": {
+      "type": "object",
+      "required": ["request_id", "receipt_id", "receipt_member", "receipt_artifact_digest", "receipt_digest", "broker_manifest_member", "broker_manifest_artifact_digest", "broker_manifest_digest", "control_manifest_member", "control_manifest_artifact_digest", "control_manifest_digest"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/id"}, "receipt_id": {"$ref": "#/$defs/id"},
+        "receipt_member": {"$ref": "#/$defs/member"}, "receipt_artifact_digest": {"$ref": "#/$defs/digest"}, "receipt_digest": {"$ref": "#/$defs/digest"},
+        "broker_manifest_member": {"$ref": "#/$defs/member"}, "broker_manifest_artifact_digest": {"$ref": "#/$defs/digest"}, "broker_manifest_digest": {"$ref": "#/$defs/digest"},
+        "control_manifest_member": {"$ref": "#/$defs/member"}, "control_manifest_artifact_digest": {"$ref": "#/$defs/digest"}, "control_manifest_digest": {"$ref": "#/$defs/digest"}
+      }, "unevaluatedProperties": false
+    },
+    "target_denominator": {"$ref": "#/$defs/target_denominator"},
+    "trust_boundary": {
+      "type": "object", "required": ["covered", "not_claimed"],
+      "properties": {
+        "covered": {"const": "exact_capsule_bytes_root_observation_and_atomic_initial_publication"},
+        "not_claimed": {"const": "root_os_or_hardware_compromise_resistance"}
+      }, "unevaluatedProperties": false
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "plan_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"},
+    "path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "member": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,1023}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "runtime_common": {
+      "type": "object",
+      "required": ["effective_interpreter_locator", "effective_interpreter_artifact_digest", "python_flags", "effective_path_target", "manifest_target", "manifest_generator_role", "expected_manifest_digest"],
+      "properties": {
+        "effective_interpreter_locator": {"$ref": "#/$defs/path"},
+        "effective_interpreter_artifact_digest": {"$ref": "#/$defs/digest"},
+        "python_flags": {"type": "array"},
+        "effective_path_target": {"$ref": "#/$defs/path"},
+        "manifest_target": {"$ref": "#/$defs/path"},
+        "manifest_generator_role": {"$ref": "#/$defs/id"},
+        "expected_manifest_digest": {"$ref": "#/$defs/digest"}
+      }, "unevaluatedProperties": false
+    },
+    "broker_runtime": {"$ref": "#/$defs/runtime_common", "properties": {"python_flags": {"const": ["-I", "-S", "-B"]}, "effective_path_target": {"const": "/Library/Application Support/semantic-guard/u10/bootstrap/effective-python.path"}, "manifest_target": {"const": "/Library/Application Support/semantic-guard/u10/bootstrap/effective-python-runtime-manifest.json"}, "manifest_generator_role": {"const": "broker_runtime_manifest_generator"}}},
+    "control_runtime": {"$ref": "#/$defs/runtime_common", "properties": {"python_flags": {"const": ["-I", "-B"]}, "effective_path_target": {"const": "/Library/Application Support/semantic-guard/u10/bootstrap/control-effective-python.path"}, "manifest_target": {"const": "/Library/Application Support/semantic-guard/u10/bootstrap/control-python-runtime-manifest.json"}, "manifest_generator_role": {"const": "control_runtime_manifest_generator"}}},
+    "kit_entry": {"type": "object", "required": ["role", "member", "artifact_digest"], "properties": {"role": {"$ref": "#/$defs/id"}, "member": {"$ref": "#/$defs/member"}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "kit_denominator": {"type": "object", "required": ["status", "entry_count", "entries", "denominator_digest"], "properties": {"status": {"const": "closed"}, "entry_count": {"type": "integer", "minimum": 4}, "entries": {"type": "array", "minItems": 4, "items": {"$ref": "#/$defs/kit_entry"}}, "denominator_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "target_entry": {
+      "oneOf": [
+        {"type": "object", "required": ["relative_path", "kind", "mode", "uid", "gid", "role"], "properties": {"relative_path": {"$ref": "#/$defs/member"}, "kind": {"const": "directory"}, "mode": {"type": "integer", "minimum": 0, "maximum": 4095}, "uid": {"const": 0}, "gid": {"const": 0}, "role": {"$ref": "#/$defs/id"}}, "unevaluatedProperties": false},
+        {"type": "object", "required": ["relative_path", "kind", "mode", "uid", "gid", "role", "artifact_digest", "source"], "properties": {"relative_path": {"$ref": "#/$defs/member"}, "kind": {"const": "file"}, "mode": {"type": "integer", "minimum": 0, "maximum": 4095}, "uid": {"const": 0}, "gid": {"const": 0}, "role": {"$ref": "#/$defs/id"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "source": {"oneOf": [{"$ref": "#/$defs/member"}, {"enum": ["generated_broker_effective_path", "generated_broker_runtime_manifest", "generated_control_effective_path", "generated_control_runtime_manifest", "generated_bootstrap_provenance_binding", "generated_empty_lock_file"]}]}}, "unevaluatedProperties": false}
+      ]
+    },
+    "target_denominator": {
+      "type": "object",
+      "required": ["status", "entry_count", "entries", "tree_digest"],
+      "properties": {
+        "status": {"const": "closed"},
+        "entry_count": {"type": "integer", "minimum": 45},
+        "entries": {
+          "type": "array",
+          "minItems": 45,
+          "items": {"$ref": "#/$defs/target_entry"},
+          "allOf": [
+            {"contains": {"required": ["role", "relative_path", "kind", "source"], "properties": {"role": {"const": "broker_effective_python_path"}, "relative_path": {"const": "bootstrap/effective-python.path"}, "kind": {"const": "file"}, "source": {"const": "generated_broker_effective_path"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "source"], "properties": {"role": {"const": "broker_runtime_manifest"}, "relative_path": {"const": "bootstrap/effective-python-runtime-manifest.json"}, "kind": {"const": "file"}, "source": {"const": "generated_broker_runtime_manifest"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "source"], "properties": {"role": {"const": "control_effective_python_path"}, "relative_path": {"const": "bootstrap/control-effective-python.path"}, "kind": {"const": "file"}, "source": {"const": "generated_control_effective_path"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "source"], "properties": {"role": {"const": "control_runtime_manifest"}, "relative_path": {"const": "bootstrap/control-python-runtime-manifest.json"}, "kind": {"const": "file"}, "source": {"const": "generated_control_runtime_manifest"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "source"], "properties": {"role": {"const": "bootstrap_provenance_binding"}, "relative_path": {"const": "bootstrap/initial-bootstrap-provenance-binding.json"}, "kind": {"const": "file"}, "source": {"const": "generated_bootstrap_provenance_binding"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_execution_entrypoint"}, "relative_path": {"const": "bootstrap/u10_root_broker_entrypoint.sh"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_execution_outer"}, "relative_path": {"const": "bootstrap/u10_root_broker_outer_launcher.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_candidate_installer_entrypoint"}, "relative_path": {"const": "bootstrap/u10_root_candidate_installer_entrypoint.sh"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_candidate_installer"}, "relative_path": {"const": "bootstrap/prepare_u10_root_candidate.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_control_entrypoint"}, "relative_path": {"const": "bootstrap/u10_root_control_entrypoint.sh"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_control_outer"}, "relative_path": {"const": "bootstrap/u10_root_control_outer_launcher.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "root_control_dispatcher"}, "relative_path": {"const": "bootstrap/u10_root_control_dispatcher.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "broker_runtime_manifest_generator"}, "relative_path": {"const": "bootstrap/prepare_u10_bootstrap_runtime_manifest.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "control_runtime_manifest_generator"}, "relative_path": {"const": "bootstrap/prepare_u10_control_runtime_manifest.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode", "source"], "properties": {"role": {"const": "snapshot_store_producer"}, "relative_path": {"const": "bootstrap/u10_snapshot_store_production.py"}, "kind": {"const": "file"}, "mode": {"const": 256}, "source": {"const": "bootstrap/u10_snapshot_store_production.py"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "initial_fixed_entrypoint"}, "relative_path": {"const": "bootstrap/u10_initial_trust_entrypoint.sh"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "initial_capsule_provisioner"}, "relative_path": {"const": "bootstrap/u10_initial_trust_provisioner.py"}, "kind": {"const": "file"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "broker_package_closure"}, "relative_path": {"const": "bootstrap/semantic_guard_u10_broker"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "bootstrap_directory"}, "relative_path": {"const": "bootstrap"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "authorizations_directory"}, "relative_path": {"const": "authorizations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_authorizations_directory"}, "relative_path": {"const": "authorizations/key"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "activations_directory"}, "relative_path": {"const": "activations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "store_transition_directory"}, "relative_path": {"const": "activations/store-transitions"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "store_revocation_transition_directory"}, "relative_path": {"const": "activations/store-revocations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode"], "properties": {"role": {"const": "snapshot_projection_ledger_directory"}, "relative_path": {"const": "activations/snapshot-projections"}, "kind": {"const": "directory"}, "mode": {"const": 448}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode"], "properties": {"role": {"const": "snapshot_activation_ledger_directory"}, "relative_path": {"const": "activations/snapshot-activations"}, "kind": {"const": "directory"}, "mode": {"const": 448}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode"], "properties": {"role": {"const": "snapshot_activation_record_directory"}, "relative_path": {"const": "activations/snapshots"}, "kind": {"const": "directory"}, "mode": {"const": 448}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode"], "properties": {"role": {"const": "store_activation_basis_directory"}, "relative_path": {"const": "store-activation-bases"}, "kind": {"const": "directory"}, "mode": {"const": 448}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode", "source", "artifact_digest"], "properties": {"role": {"const": "snapshot_projection_lock"}, "relative_path": {"const": "activations/snapshot-projections/snapshot-projection.lock"}, "kind": {"const": "file"}, "mode": {"const": 384}, "source": {"const": "generated_empty_lock_file"}, "artifact_digest": {"const": {"algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode", "source", "artifact_digest"], "properties": {"role": {"const": "snapshot_activation_lock"}, "relative_path": {"const": "activations/snapshot-activations/snapshot-activation.lock"}, "kind": {"const": "file"}, "mode": {"const": 384}, "source": {"const": "generated_empty_lock_file"}, "artifact_digest": {"const": {"algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_transition_directory"}, "relative_path": {"const": "activations/key-transitions"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "keys_directory"}, "relative_path": {"const": "keys"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_generations_directory"}, "relative_path": {"const": "keys/generations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_revocations_directory"}, "relative_path": {"const": "keys/revocations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_selector_history_directory"}, "relative_path": {"const": "keys/selector-history"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "key_selector_digest_directory"}, "relative_path": {"const": "keys/selector-history/sha256"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "snapshots_directory"}, "relative_path": {"const": "snapshots"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "evidence_spool_directory"}, "relative_path": {"const": "spool"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "nonce_ledger_directory"}, "relative_path": {"const": "nonce-ledger"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "trust_store_history_directory"}, "relative_path": {"const": "trust-store-history"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "trust_store_history_digest_directory"}, "relative_path": {"const": "trust-store-history/sha256"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "revocations_directory"}, "relative_path": {"const": "revocations"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind"], "properties": {"role": {"const": "revocation_digest_directory"}, "relative_path": {"const": "revocations/sha256"}, "kind": {"const": "directory"}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode", "source", "artifact_digest"], "properties": {"role": {"const": "root_trust_store_lock"}, "relative_path": {"const": "trust-store.lock"}, "kind": {"const": "file"}, "mode": {"const": 384}, "source": {"const": "generated_empty_lock_file"}, "artifact_digest": {"const": {"algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}}}}},
+            {"contains": {"required": ["role", "relative_path", "kind", "mode", "source", "artifact_digest"], "properties": {"role": {"const": "root_key_transition_lock"}, "relative_path": {"const": "keys/key-transition.lock"}, "kind": {"const": "file"}, "mode": {"const": 384}, "source": {"const": "generated_empty_lock_file"}, "artifact_digest": {"const": {"algorithm": "sha256", "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}}}}}
+          ]
+        },
+        "tree_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

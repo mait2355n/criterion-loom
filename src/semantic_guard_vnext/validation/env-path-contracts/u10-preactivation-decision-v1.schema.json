@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-preactivation-decision-v1.schema.json",
+  "title": "semantic-guard U-10 preactivation scope decision v1",
+  "description": "A human scope-selection record for the U-10 threat boundary and, only for the local bounded profile, the worker-identity policy. Evidence locators are canonical absolute local paths whose complete path chain must contain no symlink; repository-relative and search-path resolution are outside v1. It is not U-10 adoption or positive assurance.",
+  "type": "object",
+  "required": [
+    "schema_version", "decision_id", "decision_version", "record_kind",
+    "notation_profile", "decision_entity_ref", "subject_entity_ref", "human_decision",
+    "decision_owner", "threat_boundary_selection",
+    "worker_identity_selection", "decision_evidence_ref",
+    "trusted_entrypoint_ref", "recorded_at", "requalification_triggers",
+    "u4_principal_authenticity", "authority_scope", "formal_authority",
+    "positive_assurance_allowed", "decision_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-preactivation-decision/v1"},
+    "decision_id": {"$ref": "#/$defs/stable_id"},
+    "decision_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "u10_preactivation_scope_decision"},
+    "notation_profile": {"const": "entity-reference-notation/v0"},
+    "decision_entity_ref": {"$ref": "#/$defs/entity_ref"},
+    "subject_entity_ref": {"$ref": "#/$defs/u10_subject_entity_ref"},
+    "human_decision": {"enum": ["accept", "defer"]},
+    "decision_owner": {"const": "human"},
+    "threat_boundary_selection": {"enum": ["local_bounded_repository_suite_only", "hostile_code_in_scope_requires_external_executor", "defer"]},
+    "worker_identity_selection": {"oneOf": [{"type": "null"}, {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups", "defer"]}]},
+    "decision_evidence_ref": {"$ref": "#/$defs/evidence_ref"},
+    "trusted_entrypoint_ref": {"$ref": "#/$defs/digest_bound_ref"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "requalification_triggers": {"const": ["threat_boundary_change", "worker_identity_policy_change", "principal_resolution_change", "host_or_os_change", "sandbox_or_external_executor_change", "qualified_test_denominator_change"]},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_preactivation_scope_selection_only"},
+    "formal_authority": {"const": "human_scope_selection_only"},
+    "positive_assurance_allowed": {"const": false},
+    "decision_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"threat_boundary_selection": {"const": "local_bounded_repository_suite_only"}}, "required": ["threat_boundary_selection"]},
+      "then": {"properties": {"worker_identity_selection": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups", "defer"]}}}
+    },
+    {
+      "if": {"properties": {"threat_boundary_selection": {"enum": ["hostile_code_in_scope_requires_external_executor", "defer"]}}, "required": ["threat_boundary_selection"]},
+      "then": {"properties": {"worker_identity_selection": {"type": "null"}}}
+    },
+    {
+      "if": {"anyOf": [{"properties": {"threat_boundary_selection": {"const": "defer"}}}, {"properties": {"worker_identity_selection": {"const": "defer"}}}]},
+      "then": {"properties": {"human_decision": {"const": "defer"}}}
+    },
+    {
+      "if": {"properties": {"threat_boundary_selection": {"enum": ["local_bounded_repository_suite_only", "hostile_code_in_scope_requires_external_executor"]}, "worker_identity_selection": {"not": {"const": "defer"}}}, "required": ["threat_boundary_selection"]},
+      "then": {"properties": {"human_decision": {"const": "accept"}}}
+    }
+  ],
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "maxLength": 240},
+    "u10_subject_entity_ref": {"type": "string", "pattern": "^.{1,200}・acfb8b85-2f75-5e82-a641-b3b3b6e023d6$", "maxLength": 240},
+    "digest_bound_ref": {"type": "object", "required": ["record_id", "locator", "content_digest"], "properties": {"record_id": {"$ref": "#/$defs/stable_id"}, "locator": {"type": "string", "pattern": "^/", "minLength": 1, "maxLength": 4096}, "content_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "evidence_ref": {"type": "object", "required": ["record_id", "locator", "content_digest", "trust_domain"], "properties": {"record_id": {"$ref": "#/$defs/stable_id"}, "locator": {"type": "string", "pattern": "^/", "minLength": 1, "maxLength": 4096}, "content_digest": {"$ref": "#/$defs/digest"}, "trust_domain": {"$ref": "#/$defs/stable_id"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

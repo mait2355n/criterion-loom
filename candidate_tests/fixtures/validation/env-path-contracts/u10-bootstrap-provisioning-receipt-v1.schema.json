@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-provisioning-receipt-v1.schema.json",
+  "title": "U-10 initial root publication occurrence receipt v1",
+  "type": "object",
+  "required": ["schema_version", "receipt_id", "record_kind", "occurrence_id", "authorization_ref", "consumption_ref", "plan_ref", "capsule_digest", "target_root", "target_tree_digest", "broker_runtime_manifest_digest", "control_runtime_manifest_digest", "publication_not_before", "publication_observed_at", "receipt_recorded_at", "publication_occurred", "installation_state", "key_state", "human_adoption_status", "u4_principal_authenticity", "formal_authority", "positive_assurance_allowed", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-provisioning-receipt/v1"}, "receipt_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "initial_u10_root_publication_occurrence"}, "occurrence_id": {"$ref": "#/$defs/id"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"}, "consumption_ref": {"$ref": "#/$defs/consumption_ref"}, "plan_ref": {"$ref": "#/$defs/plan_ref"},
+    "capsule_digest": {"$ref": "#/$defs/digest"}, "target_root": {"type": "string", "pattern": "^/", "maxLength": 4096}, "target_tree_digest": {"$ref": "#/$defs/digest"},
+    "broker_runtime_manifest_digest": {"$ref": "#/$defs/digest"}, "control_runtime_manifest_digest": {"$ref": "#/$defs/digest"},
+    "publication_not_before": {"type": "string", "format": "date-time"}, "publication_observed_at": {"type": "string", "format": "date-time"}, "receipt_recorded_at": {"type": "string", "format": "date-time"},
+    "publication_occurred": {"const": true}, "installation_state": {"const": "initial_root_published_not_activated"}, "key_state": {"const": "not_generated"}, "human_adoption_status": {"const": "pending"}, "u4_principal_authenticity": {"const": "unresolved"},
+    "formal_authority": {"const": "none"}, "positive_assurance_allowed": {"const": false}, "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "authorization_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/id"}, "authorization_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/id"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "plan_ref": {"type": "object", "required": ["plan_id", "plan_digest"], "properties": {"plan_id": {"$ref": "#/$defs/id"}, "plan_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

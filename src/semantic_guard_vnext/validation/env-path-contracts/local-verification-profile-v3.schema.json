@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/local-verification-profile-v3.schema.json",
+  "title": "semantic-guard portable local verification profile v3",
+  "description": "Portable logical-tool definition. It contains no environment adoption and grants no formal authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_version",
+    "repository_root",
+    "environment_contract",
+    "commands",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-verification-profile/v3"},
+    "profile_id": {"$ref": "#/$defs/stable_id"},
+    "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "repository_root": {"const": "."},
+    "environment_contract": {
+      "type": "object",
+      "required": [
+        "tool_requirements",
+        "inherited_environment_allowlist",
+        "fixed_environment",
+        "path_policy",
+        "adoption_required",
+        "child_process_trace_required"
+      ],
+      "properties": {
+        "tool_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/tool_requirement"}
+        },
+        "inherited_environment_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(?!PATH$)[A-Z_][A-Z0-9_]*$",
+            "maxLength": 128
+          }
+        },
+        "fixed_environment": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^(?!PATH$)[A-Z_][A-Z0-9_]*$",
+            "maxLength": 128
+          },
+          "additionalProperties": {"type": "string", "maxLength": 4096}
+        },
+        "path_policy": {"const": "managed_minimal_from_adopted_tools"},
+        "adoption_required": {"const": true},
+        "child_process_trace_required": {"const": true}
+      },
+      "unevaluatedProperties": false
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "command_id",
+          "tool_id",
+          "cwd",
+          "arguments",
+          "timeout_seconds",
+          "artifact_effect"
+        ],
+        "properties": {
+          "command_id": {"$ref": "#/$defs/stable_id"},
+          "tool_id": {"$ref": "#/$defs/stable_id"},
+          "cwd": {"$ref": "#/$defs/repository_path"},
+          "arguments": {
+            "type": "array",
+            "items": {"type": "string", "maxLength": 16384}
+          },
+          "timeout_seconds": {"type": "number", "minimum": 1, "maximum": 1800},
+          "artifact_effect": {"enum": ["none", "may_add"]}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    }
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:\\.|(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+)$"
+    },
+    "version_constraint": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "exact": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128},
+        "minimum_inclusive": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128},
+        "maximum_exclusive": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_constraint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["policy"],
+          "properties": {"policy": {"const": "adopted_exact"}},
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["policy", "digest"],
+          "properties": {
+            "policy": {"const": "exact"},
+            "digest": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "supported_platform": {
+      "type": "object",
+      "required": ["system", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 128},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128},
+        "release_pattern": {"type": "string", "minLength": 1, "maxLength": 256}
+      },
+      "unevaluatedProperties": false
+    },
+    "tool_requirement": {
+      "type": "object",
+      "required": [
+        "tool_id",
+        "candidate_source",
+        "version_probe",
+        "version_constraint",
+        "digest_constraint",
+        "supported_platforms"
+      ],
+      "properties": {
+        "tool_id": {"$ref": "#/$defs/stable_id"},
+        "candidate_source": {
+          "enum": ["repository_relative", "explicit", "parent_path_discovery_only"]
+        },
+        "version_probe": {"enum": ["python", "uv"]},
+        "version_constraint": {"$ref": "#/$defs/version_constraint"},
+        "digest_constraint": {"$ref": "#/$defs/digest_constraint"},
+        "supported_platforms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/supported_platform"}
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

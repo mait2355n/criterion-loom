@@ -1,0 +1,50 @@
+{
+  "id": "DOC-OVERCLAIM-001",
+  "title": "Strong completion and security claim without local support",
+  "phase": "audit_request",
+  "kind": "document",
+  "input": "overclaim.md",
+  "strict": true,
+  "rationale": "A document that claims production readiness, security, and completeness without executable evidence or stated limits must not pass as a trustworthy record.",
+  "labels": {
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "finding_contains": "強い完成度"
+      },
+      {
+        "category": "documentation",
+        "finding_contains": "実行例"
+      }
+    ],
+    "forbidden_findings": [
+      {
+        "category": "security"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "documentation",
+        "evidence"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "executable_example"
+      ]
+    },
+    "details": {
+      "input_kind": "document",
+      "claim_triples": {
+        "any": {
+          "support": "unsupported",
+          "strong": true
+        }
+      }
+    }
+  }
+}

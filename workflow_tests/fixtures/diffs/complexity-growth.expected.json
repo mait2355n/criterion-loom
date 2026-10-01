@@ -1,0 +1,34 @@
+{
+  "id": "DIFF-COMPLEXITY-GROWTH-001",
+  "title": "Complex source growth is flagged as a minimality concern",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/example.py b/src/semantic_guard/example.py\n--- a/src/semantic_guard/example.py\n+++ b/src/semantic_guard/example.py\n@@\n+def collect_visible(rows):\n+    try:\n+        output = []\n+        for row in rows:\n+            if row.enabled:\n+                for item in row.items:\n+                    if item.visible:\n+                        output.append(item)\n+        while rows:\n+            if len(rows) > 1:\n+                for extra in rows[0].extras:\n+                    if extra.active:\n+                        output.append(extra)\n+        return output\n+    except Exception:\n+        return []\n",
+  "intent": "既存処理を読みやすくする。",
+  "strict": true,
+  "rationale": "Large added control-flow structure should surface a minimality check unless the added complexity has a visible reason.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.complexity_growth"
+    ],
+    "expected_findings": [
+      {
+        "category": "minimality",
+        "rule_id": "diff.implementation.complexity_growth"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "minimality"
+      ]
+    },
+    "details": {
+      "input_kind": "diff-summary",
+      "changed_file_count": 1
+    }
+  }
+}

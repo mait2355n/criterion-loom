@@ -1,0 +1,744 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/field-performance-governance.schema.json",
+  "title": "semantic-guard governed D7 field-performance evidence",
+  "description": "A closed supplement that computes false-pass, false-nonconformance, unresolved, abstention, coverage, authority-violation, and traceability-loss rates while preserving human ownership of thresholds and qualification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "policy",
+    "human_decision_records",
+    "base_field_evaluation_ref",
+    "route_implementation_ref",
+    "metric_definition_profile",
+    "evaluation_material_digest",
+    "dataset_partition",
+    "access_records",
+    "dataset_diagnostics",
+    "cohorts",
+    "cases",
+    "metrics",
+    "evaluation_as_of",
+    "review_due_at",
+    "assessment",
+    "authority_boundary",
+    "limitations",
+    "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "field-performance-governance/v1"},
+    "evaluation_id": {"$ref": "#/$defs/nonEmptyString"},
+    "policy": {"$ref": "#/$defs/policy"},
+    "human_decision_records": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {"$ref": "#/$defs/humanDecision"}
+    },
+    "base_field_evaluation_ref": {"$ref": "#/$defs/versionedRef"},
+    "route_implementation_ref": {"$ref": "#/$defs/versionedRef"},
+    "metric_definition_profile": {"$ref": "#/$defs/metricDefinitionProfile"},
+    "evaluation_material_digest": {"$ref": "#/$defs/digest"},
+    "dataset_partition": {"$ref": "#/$defs/datasetPartition"},
+    "access_records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 65536,
+      "items": {"$ref": "#/$defs/accessRecord"}
+    },
+    "dataset_diagnostics": {"$ref": "#/$defs/datasetDiagnostics"},
+    "cohorts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/cohort"}
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 65536,
+      "items": {"$ref": "#/$defs/case"}
+    },
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "evaluation_as_of": {"type": "string", "format": "date-time"},
+    "review_due_at": {"type": "string", "format": "date-time"},
+    "assessment": {"$ref": "#/$defs/assessment"},
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "idStrings": {
+      "type": "array",
+      "maxItems": 65536,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "digestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/nonEmptyString"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "version", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/nonEmptyString"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "metricName": {
+      "enum": [
+        "false_pass_rate",
+        "false_nonconformance_rate",
+        "unresolved_rate",
+        "abstention_rate",
+        "coverage",
+        "authority_violation_rate",
+        "traceability_loss_rate"
+      ]
+    },
+    "metricDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "direction",
+        "numerator_definition",
+        "denominator_definition",
+        "reference_unresolved_treatment",
+        "observed_unresolved_treatment",
+        "abstention_treatment"
+      ],
+      "properties": {
+        "metric": {"$ref": "#/$defs/metricName"},
+        "direction": {"enum": ["lower_is_better", "higher_is_better"]},
+        "numerator_definition": {"$ref": "#/$defs/nonEmptyString"},
+        "denominator_definition": {"$ref": "#/$defs/nonEmptyString"},
+        "reference_unresolved_treatment": {"$ref": "#/$defs/nonEmptyString"},
+        "observed_unresolved_treatment": {"$ref": "#/$defs/nonEmptyString"},
+        "abstention_treatment": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "metricDefinitionProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "profile_version",
+        "adoption_status",
+        "formal_authority",
+        "definitions",
+        "profile_digest"
+      ],
+      "properties": {
+        "profile_id": {"const": "field-performance-metric-definitions"},
+        "profile_version": {"const": "candidate.v1"},
+        "adoption_status": {"const": "candidate"},
+        "formal_authority": {"const": "none"},
+        "definitions": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {"$ref": "#/$defs/metricDefinition"}
+        },
+        "profile_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "targetPopulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population_id",
+        "description",
+        "sampling_frame",
+        "unit_of_analysis",
+        "inclusion_criteria",
+        "exclusion_criteria",
+        "population_digest"
+      ],
+      "properties": {
+        "population_id": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "sampling_frame": {"$ref": "#/$defs/nonEmptyString"},
+        "unit_of_analysis": {"$ref": "#/$defs/nonEmptyString"},
+        "inclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "exclusion_criteria": {"$ref": "#/$defs/nonEmptyStrings"},
+        "population_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "false_pass_rate",
+        "false_nonconformance_rate",
+        "unresolved_rate",
+        "abstention_rate",
+        "coverage",
+        "authority_violation_rate",
+        "traceability_loss_rate"
+      ],
+      "properties": {
+        "false_pass_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "false_nonconformance_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "unresolved_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "abstention_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "coverage": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "authority_violation_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "traceability_loss_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "false_pass_cost",
+        "false_nonconformance_cost",
+        "unresolved_cost",
+        "abstention_cost",
+        "authority_violation_cost",
+        "traceability_loss_cost"
+      ],
+      "properties": {
+        "false_pass_cost": {"type": "number", "exclusiveMinimum": 0},
+        "false_nonconformance_cost": {"type": "number", "minimum": 0},
+        "unresolved_cost": {"type": "number", "minimum": 0},
+        "abstention_cost": {"type": "number", "minimum": 0},
+        "authority_violation_cost": {"type": "number", "minimum": 0},
+        "traceability_loss_cost": {"type": "number", "minimum": 0}
+      }
+    },
+    "riskClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk_class_id", "description", "costs", "thresholds", "rationale"],
+      "properties": {
+        "risk_class_id": {"$ref": "#/$defs/nonEmptyString"},
+        "description": {"$ref": "#/$defs/nonEmptyString"},
+        "costs": {"$ref": "#/$defs/costs"},
+        "thresholds": {"$ref": "#/$defs/thresholds"},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "version",
+        "owner_kind",
+        "reported_status",
+        "threshold_decision_ref",
+        "metric_definition_profile_ref",
+        "target_population",
+        "risk_classes",
+        "confidence_level",
+        "minimum_overall_sample",
+        "minimum_per_risk_class",
+        "review_period_days",
+        "reevaluation_triggers",
+        "policy_digest"
+      ],
+      "properties": {
+        "policy_id": {"$ref": "#/$defs/nonEmptyString"},
+        "version": {"$ref": "#/$defs/nonEmptyString"},
+        "owner_kind": {"const": "human"},
+        "reported_status": {"enum": ["pending", "adoption_claimed", "retired"]},
+        "threshold_decision_ref": {"type": ["string", "null"], "minLength": 1},
+        "metric_definition_profile_ref": {"$ref": "#/$defs/versionedRef"},
+        "target_population": {"$ref": "#/$defs/targetPopulation"},
+        "risk_classes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/riskClass"}
+        },
+        "confidence_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "minimum_overall_sample": {"type": "integer", "minimum": 1},
+        "minimum_per_risk_class": {"type": "integer", "minimum": 1},
+        "review_period_days": {"type": "integer", "minimum": 1},
+        "reevaluation_triggers": {"$ref": "#/$defs/nonEmptyStrings"},
+        "policy_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "evaluationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluation_id",
+        "evaluation_material_digest",
+        "metric_definition_profile_ref",
+        "route_implementation_ref",
+        "evaluation_completed_at"
+      ],
+      "properties": {
+        "evaluation_id": {"$ref": "#/$defs/nonEmptyString"},
+        "evaluation_material_digest": {"$ref": "#/$defs/digest"},
+        "metric_definition_profile_ref": {"$ref": "#/$defs/versionedRef"},
+        "route_implementation_ref": {"$ref": "#/$defs/versionedRef"},
+        "evaluation_completed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "humanDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_type",
+        "issuer_kind",
+        "human_actor_ref",
+        "trusted_entry_ref",
+        "authenticity_evidence_ref",
+        "policy_id",
+        "policy_version",
+        "policy_digest",
+        "rationale",
+        "recorded_at",
+        "decision_digest"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/nonEmptyString"},
+        "decision_type": {"const": "adopt_thresholds"},
+        "issuer_kind": {"const": "human"},
+        "human_actor_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "trusted_entry_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "authenticity_evidence_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "policy_id": {"$ref": "#/$defs/nonEmptyString"},
+        "policy_version": {"$ref": "#/$defs/nonEmptyString"},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "evaluation_binding": {"$ref": "#/$defs/evaluationBinding"},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "decision_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "datasetPartition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tuning_refs",
+        "holdout_refs",
+        "holdout_sealed_at",
+        "predictions_sealed_at",
+        "labels_released_at",
+        "access_log_coverage",
+        "partition_digest"
+      ],
+      "properties": {
+        "tuning_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65536,
+          "items": {"$ref": "#/$defs/digestRef"}
+        },
+        "holdout_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65536,
+          "items": {"$ref": "#/$defs/digestRef"}
+        },
+        "holdout_sealed_at": {"type": "string", "format": "date-time"},
+        "predictions_sealed_at": {"type": "string", "format": "date-time"},
+        "labels_released_at": {"type": "string", "format": "date-time"},
+        "access_log_coverage": {"enum": ["claimed_complete", "partial", "unknown"]},
+        "partition_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "accessRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "access_id",
+        "actor_ref",
+        "actor_role",
+        "material_ref",
+        "material_partition",
+        "material_kind",
+        "purpose",
+        "accessed_at",
+        "authorized",
+        "access_digest"
+      ],
+      "properties": {
+        "access_id": {"$ref": "#/$defs/nonEmptyString"},
+        "actor_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "actor_role": {"enum": ["model_or_rule_developer", "evaluation_runtime", "label_reviewer", "adjudicator", "data_custodian", "unknown"]},
+        "material_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "material_partition": {"enum": ["tuning", "holdout"]},
+        "material_kind": {"enum": ["subject", "reference_label", "adjudication", "route_result"]},
+        "purpose": {"enum": ["implementation", "tuning", "evaluation", "labeling", "adjudication", "custody"]},
+        "accessed_at": {"type": "string", "format": "date-time"},
+        "authorized": {"type": "boolean"},
+        "access_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "datasetDiagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["split_overlap_refs", "leakage_status", "leaked_access_refs"],
+      "properties": {
+        "split_overlap_refs": {"$ref": "#/$defs/idStrings"},
+        "leakage_status": {"enum": ["not_observed_in_supplied_records", "detected", "unknown"]},
+        "leaked_access_refs": {"$ref": "#/$defs/idStrings"}
+      }
+    },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cohort_id", "observed_from", "observed_until", "case_refs", "cohort_digest"],
+      "properties": {
+        "cohort_id": {"$ref": "#/$defs/nonEmptyString"},
+        "observed_from": {"type": "string", "format": "date-time"},
+        "observed_until": {"type": "string", "format": "date-time"},
+        "case_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65536,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "cohort_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "subject_ref",
+        "subject_digest",
+        "risk_class_id",
+        "cohort_id",
+        "source_class",
+        "reference_outcome",
+        "observed_disposition",
+        "authority_status",
+        "traceability_status",
+        "evidence_refs",
+        "case_digest"
+      ],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/nonEmptyString"},
+        "subject_ref": {"$ref": "#/$defs/nonEmptyString"},
+        "subject_digest": {"$ref": "#/$defs/digest"},
+        "risk_class_id": {"$ref": "#/$defs/nonEmptyString"},
+        "cohort_id": {"$ref": "#/$defs/nonEmptyString"},
+        "source_class": {"enum": ["field_sample", "synthetic", "local_fixture", "smoke"]},
+        "reference_outcome": {"enum": ["satisfied", "nonconforming", "unresolved"]},
+        "observed_disposition": {"enum": ["pass", "nonconformance", "unresolved", "abstain"]},
+        "authority_status": {"enum": ["within_authority", "violation", "unknown"]},
+        "traceability_status": {"enum": ["complete", "partial", "lost", "unknown"]},
+        "evidence_refs": {"$ref": "#/$defs/nonEmptyStrings"},
+        "case_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confidence_level", "lower", "upper"],
+      "properties": {
+        "confidence_level": {"type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1},
+        "lower": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "upper": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["numerator", "denominator", "value", "wilson_interval"],
+      "properties": {
+        "numerator": {"type": "integer", "minimum": 0},
+        "denominator": {"type": "integer", "minimum": 0},
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "wilson_interval": {"$ref": "#/$defs/interval"}
+      }
+    },
+    "rateSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "false_pass_rate",
+        "false_nonconformance_rate",
+        "unresolved_rate",
+        "abstention_rate",
+        "coverage",
+        "authority_violation_rate",
+        "traceability_loss_rate"
+      ],
+      "properties": {
+        "false_pass_rate": {"$ref": "#/$defs/rate"},
+        "false_nonconformance_rate": {"$ref": "#/$defs/rate"},
+        "unresolved_rate": {"$ref": "#/$defs/rate"},
+        "abstention_rate": {"$ref": "#/$defs/rate"},
+        "coverage": {"$ref": "#/$defs/rate"},
+        "authority_violation_rate": {"$ref": "#/$defs/rate"},
+        "traceability_loss_rate": {"$ref": "#/$defs/rate"}
+      }
+    },
+    "metricSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_count", "rates"],
+      "properties": {
+        "case_count": {"type": "integer", "minimum": 0},
+        "rates": {"$ref": "#/$defs/rateSet"}
+      }
+    },
+    "riskMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["risk_class_id", "metric_set"],
+      "properties": {
+        "risk_class_id": {"$ref": "#/$defs/nonEmptyString"},
+        "metric_set": {"$ref": "#/$defs/metricSet"}
+      }
+    },
+    "cohortMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cohort_id", "observed_from", "observed_until", "metric_set"],
+      "properties": {
+        "cohort_id": {"$ref": "#/$defs/nonEmptyString"},
+        "observed_from": {"type": "string", "format": "date-time"},
+        "observed_until": {"type": "string", "format": "date-time"},
+        "metric_set": {"$ref": "#/$defs/metricSet"}
+      }
+    },
+    "thresholdResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk_class_id",
+        "metric",
+        "operator",
+        "point_estimate",
+        "comparison_value",
+        "comparison_basis",
+        "threshold",
+        "candidate_comparison_outcome"
+      ],
+      "properties": {
+        "risk_class_id": {"$ref": "#/$defs/nonEmptyString"},
+        "metric": {"enum": ["false_pass_rate", "false_nonconformance_rate", "unresolved_rate", "abstention_rate", "coverage", "authority_violation_rate", "traceability_loss_rate"]},
+        "operator": {"enum": ["<=", ">="]},
+        "point_estimate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "comparison_value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "comparison_basis": {"enum": ["wilson_upper", "wilson_lower"]},
+        "threshold": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "candidate_comparison_outcome": {
+          "enum": ["within_claimed_threshold", "outside_claimed_threshold", "not_computable"]
+        }
+      }
+    },
+    "temporalComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comparison_id",
+        "from_cohort_id",
+        "to_cohort_id",
+        "risk_class_id",
+        "metric",
+        "direction",
+        "comparison_basis",
+        "from_case_count",
+        "to_case_count",
+        "from_denominator",
+        "to_denominator",
+        "from_value",
+        "to_value",
+        "from_interval",
+        "to_interval",
+        "comparable",
+        "degradation_observed"
+      ],
+      "properties": {
+        "comparison_id": {"$ref": "#/$defs/nonEmptyString"},
+        "from_cohort_id": {"$ref": "#/$defs/nonEmptyString"},
+        "to_cohort_id": {"$ref": "#/$defs/nonEmptyString"},
+        "risk_class_id": {"$ref": "#/$defs/nonEmptyString"},
+        "metric": {"$ref": "#/$defs/metricName"},
+        "direction": {"enum": ["increase_is_degradation", "decrease_is_degradation"]},
+        "comparison_basis": {"const": "point_estimate_candidate_direction_only"},
+        "from_case_count": {"type": "integer", "minimum": 0},
+        "to_case_count": {"type": "integer", "minimum": 0},
+        "from_denominator": {"type": "integer", "minimum": 0},
+        "to_denominator": {"type": "integer", "minimum": 0},
+        "from_value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "to_value": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "from_interval": {"$ref": "#/$defs/interval"},
+        "to_interval": {"$ref": "#/$defs/interval"},
+        "comparable": {"type": "boolean"},
+        "degradation_observed": {"type": "boolean"}
+      }
+    },
+    "temporalAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "comparison_scope",
+        "comparisons",
+        "directional_degradation_observed",
+        "degraded_comparison_refs",
+        "reevaluation_required",
+        "thresholded_degradation_claim"
+      ],
+      "properties": {
+        "status": {"enum": ["assessed", "partially_assessed", "not_assessed"]},
+        "comparison_scope": {"const": "adjacent_cohort_by_risk_class_all_seven_metrics"},
+        "comparisons": {
+          "type": "array",
+          "maxItems": 57120,
+          "items": {"$ref": "#/$defs/temporalComparison"}
+        },
+        "directional_degradation_observed": {"type": "boolean"},
+        "degraded_comparison_refs": {"$ref": "#/$defs/idStrings"},
+        "reevaluation_required": {"type": "boolean"},
+        "thresholded_degradation_claim": {"const": "not_established_candidate_direction_only"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall", "by_risk_class", "by_temporal_cohort", "threshold_results", "temporal_assessment", "metrics_digest"],
+      "properties": {
+        "overall": {"$ref": "#/$defs/metricSet"},
+        "by_risk_class": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {"$ref": "#/$defs/riskMetric"}
+        },
+        "by_temporal_cohort": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {"$ref": "#/$defs/cohortMetric"}
+        },
+        "threshold_results": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 224,
+          "items": {"$ref": "#/$defs/thresholdResult"}
+        },
+        "temporal_assessment": {"$ref": "#/$defs/temporalAssessment"},
+        "metrics_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "unresolvedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unresolved_id",
+        "uncertainty_kind",
+        "owner",
+        "needed_for",
+        "blocking_status",
+        "next_action",
+        "resolution_condition",
+        "review_at",
+        "fallback",
+        "retirement_condition",
+        "evidence_refs"
+      ],
+      "properties": {
+        "unresolved_id": {"$ref": "#/$defs/nonEmptyString"},
+        "uncertainty_kind": {"$ref": "#/$defs/nonEmptyString"},
+        "owner": {"$ref": "#/$defs/nonEmptyString"},
+        "needed_for": {"const": "field_qualification"},
+        "blocking_status": {"const": "blocking_field_qualification"},
+        "next_action": {"$ref": "#/$defs/nonEmptyString"},
+        "resolution_condition": {"$ref": "#/$defs/nonEmptyString"},
+        "review_at": {"type": "string", "format": "date-time"},
+        "fallback": {"const": "retain_candidate_only_and_formal_authority_none"},
+        "retirement_condition": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_refs": {"$ref": "#/$defs/idStrings"}
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calculation_replay_state",
+        "input_resolution_state",
+        "evidence_sufficiency_state",
+        "currency_state",
+        "threshold_adoption_state",
+        "qualification_state",
+        "formal_authority",
+        "reasons",
+        "unresolved_records",
+        "not_inferred"
+      ],
+      "properties": {
+        "calculation_replay_state": {"const": "replayed"},
+        "input_resolution_state": {"const": "unresolved_external_bindings"},
+        "evidence_sufficiency_state": {"const": "insufficient"},
+        "currency_state": {"const": "review_schedule_bound_runtime_clock_unresolved"},
+        "threshold_adoption_state": {
+          "enum": [
+            "pending_human_decision",
+            "claimed_adopted_unverified",
+            "claimed_retired_unverified"
+          ]
+        },
+        "qualification_state": {"const": "not_established"},
+        "formal_authority": {"const": "none"},
+        "reasons": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "unresolved_records": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65536,
+          "items": {"$ref": "#/$defs/unresolvedRecord"}
+        },
+        "not_inferred": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["runtime_cutover", "engineering_correctness", "operational_qualification", "human_acceptance"]}
+        }
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_guard_role", "threshold_adoption", "field_qualification", "runtime_cutover", "final_acceptance", "threshold_owner", "cutover_owner", "final_acceptance_owner"],
+      "properties": {
+        "semantic_guard_role": {"const": "compute_and_validate_audit_material_only"},
+        "threshold_adoption": {"const": false},
+        "field_qualification": {"const": false},
+        "runtime_cutover": {"const": false},
+        "final_acceptance": {"const": false},
+        "threshold_owner": {"const": "human"},
+        "cutover_owner": {"const": "external_control_plane_and_human"},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    }
+  }
+}

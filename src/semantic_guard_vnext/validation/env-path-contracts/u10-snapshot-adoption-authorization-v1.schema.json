@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-adoption-authorization-v1.schema.json",
+  "title": "semantic-guard U-10 exact snapshot adoption authorization v1",
+  "description": "A human decision adopting one exact immutable snapshot basis for one trust entry. It does not activate the root store, prove U-4 identity, or grant positive assurance.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "authorization_id",
+    "authorization_version",
+    "record_kind",
+    "human_decision",
+    "decision_owner",
+    "snapshot_id",
+    "snapshot_version",
+    "snapshot_basis_digest",
+    "projection_receipt_ref",
+    "environment_adoption_ref",
+    "entry_id",
+    "authorized_operation",
+    "recorded_at",
+    "u4_principal_authenticity",
+    "authority_scope",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "authorization_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-adoption-authorization/v1"},
+    "authorization_id": {"$ref": "#/$defs/stable_id"},
+    "authorization_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "snapshot_adoption_authorization"},
+    "human_decision": {"const": "accept"},
+    "decision_owner": {"const": "human"},
+    "snapshot_id": {"$ref": "#/$defs/stable_id"},
+    "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "snapshot_basis_digest": {"$ref": "#/$defs/digest"},
+    "projection_receipt_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "environment_adoption_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "entry_id": {"$ref": "#/$defs/stable_id"},
+    "authorized_operation": {"const": "adopt_exact_immutable_snapshot"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_snapshot_adoption_only"},
+    "formal_authority": {"const": "human_snapshot_adoption_decision_only"},
+    "positive_assurance_allowed": {"const": false},
+    "authorization_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-key-operation-receipt-v1.schema.json",
+  "title": "U-10 key operation occurrence receipt v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "record_kind",
+    "occurrence_id",
+    "authorization_ref",
+    "consumption_ref",
+    "key_operation",
+    "key_id",
+    "public_metadata_ref",
+    "generation_evidence_selector",
+    "publisher_contract_binding",
+    "private_material_evidence",
+    "publication_not_before",
+    "publication_observed_at",
+    "receipt_recorded_at",
+    "publication_occurred",
+    "key_state",
+    "human_adoption_status",
+    "u4_principal_authenticity",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "semantic-guard-u10-key-operation-receipt/v1"
+    },
+    "receipt_id": {
+      "$ref": "#/$defs/id"
+    },
+    "record_kind": {
+      "const": "signing_key_operation_occurrence"
+    },
+    "occurrence_id": {
+      "$ref": "#/$defs/id"
+    },
+    "authorization_ref": {
+      "$ref": "#/$defs/auth_ref"
+    },
+    "consumption_ref": {
+      "$ref": "#/$defs/consumption_ref"
+    },
+    "key_operation": {
+      "enum": [
+        "generate",
+        "rotate",
+        "revoke"
+      ]
+    },
+    "key_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "public_metadata_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/public_metadata_ref"
+        }
+      ]
+    },
+    "generation_evidence_selector": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/generation_evidence_selector"
+        }
+      ]
+    },
+    "publisher_contract_binding": {
+      "$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"
+    },
+    "private_material_evidence": {
+      "enum": [
+        "root_owned_0600_present_not_disclosed",
+        "unchanged_not_disclosed"
+      ]
+    },
+    "publication_not_before": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "publication_observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "publication_occurred": {
+      "const": true
+    },
+    "key_state": {
+      "enum": [
+        "active",
+        "revoked_no_active_key"
+      ]
+    },
+    "human_adoption_status": {
+      "const": "pending"
+    },
+    "u4_principal_authenticity": {
+      "const": "unresolved"
+    },
+    "formal_authority": {
+      "const": "none"
+    },
+    "positive_assurance_allowed": {
+      "const": false
+    },
+    "receipt_digest": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "key_operation": {
+            "enum": [
+              "generate",
+              "rotate"
+            ]
+          }
+        },
+        "required": [
+          "key_operation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "public_metadata_ref": {
+            "$ref": "#/$defs/public_metadata_ref"
+          },
+          "generation_evidence_selector": {
+            "$ref": "#/$defs/generation_evidence_selector"
+          },
+          "private_material_evidence": {
+            "const": "root_owned_0600_present_not_disclosed"
+          },
+          "key_state": {
+            "const": "active"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "public_metadata_ref": {
+            "type": "null"
+          },
+          "generation_evidence_selector": {
+            "type": "null"
+          },
+          "private_material_evidence": {
+            "const": "unchanged_not_disclosed"
+          },
+          "key_state": {
+            "const": "revoked_no_active_key"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "entity_ref": {
+      "type": "string",
+      "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "auth_ref": {
+      "type": "object",
+      "required": [
+        "authorization_id",
+        "authorization_digest"
+      ],
+      "properties": {
+        "authorization_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authorization_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "consumption_ref": {
+      "type": "object",
+      "required": [
+        "consumption_id",
+        "consumption_digest"
+      ],
+      "properties": {
+        "consumption_id": {
+          "$ref": "#/$defs/id"
+        },
+        "consumption_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "generation_evidence_selector": {
+      "type": "object",
+      "required": [
+        "ledger_root",
+        "authorization_record",
+        "consumption_record",
+        "receipt_record",
+        "resolution_policy"
+      ],
+      "properties": {
+        "ledger_root": {
+          "const": "/Library/Application Support/semantic-guard/u10/activations/key-transitions"
+        },
+        "authorization_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"
+        },
+        "consumption_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"
+        },
+        "receipt_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"
+        },
+        "resolution_policy": {
+          "const": "resolve_exact_generation_authorization_consumption_receipt/v1"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "generation_receipt_selector": {
+      "type": "object",
+      "required": [
+        "ledger_root",
+        "receipt_record",
+        "resolution_policy"
+      ],
+      "properties": {
+        "ledger_root": {
+          "const": "/Library/Application Support/semantic-guard/u10/activations/key-transitions"
+        },
+        "receipt_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"
+        },
+        "resolution_policy": {
+          "const": "resolve_exact_generation_receipt/v1"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "public_metadata_ref": {
+      "type": "object",
+      "required": [
+        "key_id",
+        "key_entity_ref",
+        "metadata_locator",
+        "metadata_artifact_digest",
+        "metadata_digest",
+        "generation_authorization_ref",
+        "generation_receipt_selector"
+      ],
+      "properties": {
+        "key_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "key_entity_ref": {
+          "$ref": "#/$defs/entity_ref"
+        },
+        "metadata_locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/public-metadata\\.json$"
+        },
+        "metadata_artifact_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "metadata_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "generation_authorization_ref": {
+          "$ref": "#/$defs/auth_ref"
+        },
+        "generation_receipt_selector": {
+          "$ref": "#/$defs/generation_receipt_selector"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

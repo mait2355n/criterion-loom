@@ -22,6 +22,8 @@ the repository is not authority. Links to Japanese-language detail are marked
 
 ## Current reference
 
+- [Integrated workflow and candidate interfaces](local-integration.md) (Japanese): development-version entry points, independent contracts, and migration limits.
+
 These documents describe the current source line or its current reading rules.
 They do not, by themselves, establish field validity or human acceptance.
 

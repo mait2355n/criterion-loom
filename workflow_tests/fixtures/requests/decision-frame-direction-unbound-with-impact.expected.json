@@ -1,0 +1,124 @@
+{
+  "id": "REQ-DECISION-FRAME-DIRECTION-UNBOUND-WITH-IMPACT-001",
+  "title": "Direction-open expression lacks a bound constraint while numeric impact stays auxiliary",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "A：50kg\nB：60kg\nC：70kg\nD：80kg\nE：90kg\nこの5人の中で、Cの次に体重が重い人は誰か？",
+  "strict": true,
+  "morphology": {
+    "source_text": "A：50kg\nB：60kg\nC：70kg\nD：80kg\nE：90kg\nこの5人の中で、Cの次に体重が重い人は誰か？",
+    "result": {
+      "provider_id": "fixture-morphology",
+      "provider_version": "1",
+      "resource_version": "closed-fixture",
+      "split_mode": "C",
+      "tokens": [
+        {
+          "surface": "C",
+          "normalized": "C",
+          "lemma": "C",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 43,
+          "end": 44
+        },
+        {
+          "surface": "の",
+          "normalized": "の",
+          "lemma": "の",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 44,
+          "end": 45
+        },
+        {
+          "surface": "次",
+          "normalized": "次",
+          "lemma": "次",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 45,
+          "end": 46
+        },
+        {
+          "surface": "に",
+          "normalized": "に",
+          "lemma": "に",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 46,
+          "end": 47
+        },
+        {
+          "surface": "体重",
+          "normalized": "体重",
+          "lemma": "体重",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 47,
+          "end": 49
+        },
+        {
+          "surface": "が",
+          "normalized": "が",
+          "lemma": "が",
+          "pos": ["助詞", "格助詞", "*", "*", "*", "*"],
+          "start": 49,
+          "end": 50
+        },
+        {
+          "surface": "重い",
+          "normalized": "重い",
+          "lemma": "重い",
+          "pos": ["形容詞", "一般", "*", "*", "形容詞", "連体形-一般"],
+          "start": 50,
+          "end": 52
+        },
+        {
+          "surface": "人",
+          "normalized": "人",
+          "lemma": "人",
+          "pos": ["名詞", "普通名詞", "一般", "*", "*", "*"],
+          "start": 52,
+          "end": 53
+        },
+        {
+          "surface": "誰",
+          "normalized": "誰",
+          "lemma": "誰",
+          "pos": ["代名詞", "*", "*", "*", "*", "*"],
+          "start": 54,
+          "end": 55
+        }
+      ]
+    }
+  },
+  "rationale": "Fixed grammar and bounded attachment derive the direction gap; closed numeric counterfactuals are auxiliary impact evidence and do not select or strengthen the primary rule.",
+  "labels": {
+    "expected_rules": [
+      "req.precondition.order_direction_unspecified"
+    ],
+    "expected_findings": [
+      {
+        "severity": "minor",
+        "category": "decision_frame",
+        "rule_id": "req.precondition.order_direction_unspecified",
+        "match_status": "matched",
+        "confidence": "medium",
+        "evidence_contains": "direction_binding=missing",
+        "ambiguity_reason": "missing_condition:order_direction"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block",
+    "categories": {
+      "includes": [
+        "decision_frame"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "order_direction"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.precondition.order_direction_unspecified"
+  }
+}

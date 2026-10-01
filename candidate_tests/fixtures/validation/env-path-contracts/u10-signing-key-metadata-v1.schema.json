@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-signing-key-metadata-v1.schema.json",
+  "title": "U-10 Ed25519 public key metadata v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "key_id",
+    "key_entity_ref",
+    "record_kind",
+    "algorithm",
+    "public_key",
+    "private_material",
+    "authorization_ref",
+    "generation_evidence_selector",
+    "created_at",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "metadata_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "semantic-guard-u10-signing-key-metadata/v1"
+    },
+    "key_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "key_entity_ref": {
+      "$ref": "#/$defs/entity_ref"
+    },
+    "record_kind": {
+      "const": "signing_key_public_metadata"
+    },
+    "algorithm": {
+      "const": "Ed25519"
+    },
+    "public_key": {
+      "$ref": "#/$defs/public_key"
+    },
+    "private_material": {
+      "$ref": "#/$defs/private_material"
+    },
+    "authorization_ref": {
+      "$ref": "#/$defs/auth_ref"
+    },
+    "generation_evidence_selector": {
+      "$ref": "#/$defs/generation_evidence_selector"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "formal_authority": {
+      "const": "none"
+    },
+    "positive_assurance_allowed": {
+      "const": false
+    },
+    "metadata_digest": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "entity_ref": {
+      "type": "string",
+      "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "auth_ref": {
+      "type": "object",
+      "required": [
+        "authorization_id",
+        "authorization_digest"
+      ],
+      "properties": {
+        "authorization_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authorization_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "public_key": {
+      "type": "object",
+      "required": [
+        "encoding",
+        "value"
+      ],
+      "properties": {
+        "encoding": {
+          "const": "raw_base64"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/]{43}=$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "private_material": {
+      "type": "object",
+      "required": [
+        "locator",
+        "storage_state"
+      ],
+      "properties": {
+        "locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/private\\.ed25519$"
+        },
+        "storage_state": {
+          "const": "root_only_0600_not_exported"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "generation_evidence_selector": {
+      "type": "object",
+      "required": [
+        "ledger_root",
+        "authorization_record",
+        "consumption_record",
+        "receipt_record",
+        "resolution_policy"
+      ],
+      "properties": {
+        "ledger_root": {
+          "const": "/Library/Application Support/semantic-guard/u10/activations/key-transitions"
+        },
+        "authorization_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"
+        },
+        "consumption_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"
+        },
+        "receipt_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"
+        },
+        "resolution_policy": {
+          "const": "resolve_exact_generation_authorization_consumption_receipt/v1"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

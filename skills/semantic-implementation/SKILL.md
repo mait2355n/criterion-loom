@@ -1,13 +1,24 @@
 ---
 name: semantic-implementation
-description: Route non-trivial development work through the semantic-guard 1.1.0 requirement-relation and independent direction-binding audits while preserving intent, engineering basis, uncertainty, provenance, authority ceilings, compatibility boundaries, and final human judgment. Use when Codex clarifies or audits a structured functional requirement, checks whether a bounded direction-open expression has a directly attached direction, compares canonical v1 with the publication-repaired 0.1.0 archive behavior, retrieves semantic-guard schemas, or works on design, implementation, migration, documentation, public contracts, durable evidence, and completion claims whose meaning could drift. Do not claim that v1 directly audits plans, diffs, finish evidence, every lifecycle phase, or unrestricted natural language.
+description: Route non-trivial development work through the canonical requirement-relation and direction-binding audits or the explicitly selected workflow and governed-candidate interfaces. Preserve intent, engineering basis, uncertainty, provenance, authority ceilings, result-contract boundaries, and final human judgment. Use for design, implementation, migration, documentation, public contracts, and completion claims whose meaning could drift. Do not label workflow results as canonical v1, adopt candidate governance, or claim unrestricted natural-language coverage.
 ---
 
 # Semantic Implementation
 
-Keep the original purpose visible: expose whether development requirements, plans, actions, realization methods, and evidence are justified by explicit engineering knowledge. Use the current 1.1.0 runtime only for the requirement-relation slice and independent direction-binding slice it actually implements.
+Keep the original purpose visible: expose whether development requirements, plans, actions, realization methods, and evidence are justified by explicit engineering knowledge. Use the canonical runtime for the requirement-relation and independent direction-binding slices. The 1.2.0.dev0 development installation additionally exposes explicit workflow and governed-candidate interfaces; their outputs are not canonical v1 results.
 
 Do not approve, reject, certify, accept risk, adopt policy, or make the final human decision.
+
+## Explicit integration interfaces
+
+For plan, diff, completion, convention, or artifact-membership audits, select
+`semantic-guard workflow COMMAND` or connect `semantic-guard-workflow-mcp`.
+Keep the workflow result contract distinct from canonical v1. Select
+`semantic-guard candidate COMMAND` or `semantic-guard-vnext-mcp` only to inspect
+the unadopted governed candidate; its unresolved block and absent formal authority
+are expected. Do not invoke external LLM jobs merely because a server is connected.
+See [the integration guide](../../docs/local-integration.md). Existing deployed
+clients are not changed automatically.
 
 ## Public v1 surface
 
@@ -85,14 +96,14 @@ Keep these axes separate:
 
 Treat `pass` only as “the selected versioned audit policy does not stop this workflow.” It is not correctness probability, field validation, security approval, human acceptance, policy adoption, or proof that an external AI action occurred.
 
-## Handle unsupported lifecycle work
+## Select workflow audits for other lifecycle work
 
 For plans, diffs, completion evidence, conventions, reviewer material, and other lifecycle phases:
 
-1. Perform ordinary engineering analysis and identify the requirement relations that can be audited by v1.
-2. Mark the rest as not integrated into the canonical v1 workflow.
-3. Use the archived 0.1.0 runtime only when its historical heuristic is explicitly requested or materially useful.
-4. Label every old result with the legacy version and never present it as v1 output or current truth.
+1. Select the matching command under `semantic-guard workflow` or its separate MCP server.
+2. Keep its workflow result and rule provenance distinct from canonical v1 results.
+3. Use the archived 0.1.0 runtime only for an explicitly chosen historical comparison; it is not the current workflow implementation.
+4. Mark any unsupported analysis as unverified and never present an old heuristic result as current truth or formal acceptance.
 
 The publication-repaired archive lives at `legacy/semantic-guard-v0.1.0/` in the repository. Its runtime, schemas, and tests are unchanged by the publication repair, while its public prose is not the original byte snapshot; original 0.1.0 content is anchored by annotated tag `v0.1.0` and commit `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3`. Running the archived runtime is an explicit compatibility action, not a transparent fallback. Repository preservation alone does not satisfy the trust-root requirements of v1 `shadow-compare`.
 

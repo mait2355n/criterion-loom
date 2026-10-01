@@ -1,0 +1,1132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/lifecycle-governance-v1.schema.json",
+  "title": "semantic-guard candidate lifecycle governance v1 contracts",
+  "oneOf": [
+    {"$ref": "#/$defs/stageRegistry"},
+    {"$ref": "#/$defs/stageProfile"},
+    {"$ref": "#/$defs/tailoring"},
+    {"$ref": "#/$defs/runtimeRuleBinding"},
+    {"$ref": "#/$defs/runtimeResolution"},
+    {"$ref": "#/$defs/subjectEntity"},
+    {"$ref": "#/$defs/subjectSnapshot"},
+    {"$ref": "#/$defs/artifactManifest"},
+    {"$ref": "#/$defs/handoff"},
+    {"$ref": "#/$defs/stageOccurrence"},
+    {"$ref": "#/$defs/occurrenceEvidence"},
+    {"$ref": "#/$defs/completionClaim"},
+    {"$ref": "#/$defs/occurrenceRelation"},
+    {"$ref": "#/$defs/impactClosure"}
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stableId"},
+        "entity_version": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "recordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "decisionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "decision_kind",
+        "status",
+        "target_id",
+        "target_version",
+        "target_basis_digest",
+        "decision_maker_ref",
+        "trusted_entry_ref",
+        "entry_resolution_state",
+        "decided_at"
+      ],
+      "properties": {
+        "decision_id": {"$ref": "#/$defs/stableId"},
+        "decision_kind": {
+          "enum": [
+            "adopt_stage_registry",
+            "adopt_stage_profile",
+            "adopt_lifecycle_tailoring",
+            "adopt_engineering_rule",
+            "stage_not_applicable",
+            "waive_stage",
+            "human_stage_decision",
+            "final_acceptance"
+          ]
+        },
+        "status": {
+          "enum": ["accept", "request_revision", "defer", "reject", "waive"]
+        },
+        "target_id": {"$ref": "#/$defs/stableId"},
+        "target_version": {"$ref": "#/$defs/stableId"},
+        "target_basis_digest": {"$ref": "#/$defs/digest"},
+        "decision_maker_ref": {"$ref": "#/$defs/identityRef"},
+        "trusted_entry_ref": {"$ref": "#/$defs/recordRef"},
+        "entry_resolution_state": {"enum": ["unresolved", "resolved"]},
+        "decided_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "nullableDecisionRef": {
+      "oneOf": [{"$ref": "#/$defs/decisionRef"}, {"type": "null"}]
+    },
+    "nullableRecordRef": {
+      "oneOf": [{"$ref": "#/$defs/recordRef"}, {"type": "null"}]
+    },
+    "profileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "profile_version",
+        "stage_id",
+        "content_digest",
+        "basis_digest",
+        "artifact_digest",
+        "implementation_digest"
+      ],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/stableId"},
+        "profile_version": {"$ref": "#/$defs/stableId"},
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "implementation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "coreStage": {
+      "enum": [
+        "request",
+        "exploration",
+        "requirement",
+        "decision",
+        "plan",
+        "action",
+        "realization",
+        "diff",
+        "verification",
+        "completion"
+      ]
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_authority",
+        "routing_authority",
+        "nonconformance_authority",
+        "satisfaction_authority",
+        "final_verdict_authority",
+        "direct_command_authority"
+      ],
+      "properties": {
+        "finding_authority": {"const": "candidate_only"},
+        "routing_authority": {"const": "may_escalate_unresolved"},
+        "nonconformance_authority": {"const": "prohibited"},
+        "satisfaction_authority": {"const": "prohibited"},
+        "final_verdict_authority": {"const": "prohibited"},
+        "direct_command_authority": {"const": "prohibited"}
+      }
+    },
+    "engineeringRuleRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "rule_version",
+        "content_digest",
+        "basis_digest",
+        "reported_adoption_status",
+        "human_adoption_ref",
+        "applicability",
+        "required_authorities"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stableId"},
+        "rule_version": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "reported_adoption_status": {
+          "enum": ["candidate", "adopted", "conditional", "deferred", "rejected", "expired"]
+        },
+        "human_adoption_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "applicability": {"$ref": "#/$defs/nonEmptyString"},
+        "required_authorities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "candidate_finding",
+              "unresolved_escalation",
+              "nonconformance",
+              "satisfaction",
+              "final_verdict"
+            ]
+          }
+        }
+      }
+    },
+    "stageProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile_id",
+        "profile_version",
+        "stage_id",
+        "purpose",
+        "entry_conditions",
+        "exit_conditions",
+        "applicability_policy",
+        "input_manifest_contract",
+        "output_manifest_contract",
+        "obligations",
+        "engineering_basis_refs",
+        "authority_boundary",
+        "validation_obligations",
+        "requalification_triggers",
+        "reported_adoption_status",
+        "human_adoption_ref",
+        "implementation_digest",
+        "content_digest",
+        "basis_digest",
+        "artifact_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-stage-profile/v1"},
+        "profile_id": {"$ref": "#/$defs/stableId"},
+        "profile_version": {"$ref": "#/$defs/stableId"},
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "purpose": {"$ref": "#/$defs/nonEmptyString"},
+        "entry_conditions": {"$ref": "#/$defs/nonEmptyStrings"},
+        "exit_conditions": {"$ref": "#/$defs/nonEmptyStrings"},
+        "applicability_policy": {"$ref": "#/$defs/nonEmptyString"},
+        "input_manifest_contract": {"$ref": "#/$defs/recordRef"},
+        "output_manifest_contract": {"$ref": "#/$defs/recordRef"},
+        "obligations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "engineering_basis_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/engineeringRuleRequirement"}
+        },
+        "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+        "validation_obligations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "requalification_triggers": {"$ref": "#/$defs/nonEmptyStrings"},
+        "reported_adoption_status": {
+          "enum": ["candidate", "adopted", "conditional", "deferred", "rejected", "expired"]
+        },
+        "human_adoption_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "implementation_digest": {"$ref": "#/$defs/digest"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "stageProfileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_id", "profile_ref"],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "profile_ref": {"$ref": "#/$defs/profileRef"}
+      }
+    },
+    "stageRegistry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "registry_id",
+        "registry_version",
+        "core_stage_order",
+        "core_profile_refs",
+        "extension_profile_refs",
+        "reported_adoption_status",
+        "human_adoption_ref",
+        "authority_boundary",
+        "basis_digest",
+        "artifact_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-stage-registry/v1"},
+        "registry_id": {"$ref": "#/$defs/stableId"},
+        "registry_version": {"$ref": "#/$defs/stableId"},
+        "core_stage_order": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "prefixItems": [
+            {"const": "request"},
+            {"const": "exploration"},
+            {"const": "requirement"},
+            {"const": "decision"},
+            {"const": "plan"},
+            {"const": "action"},
+            {"const": "realization"},
+            {"const": "diff"},
+            {"const": "verification"},
+            {"const": "completion"}
+          ],
+          "items": false
+        },
+        "core_profile_refs": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/stageProfileRef"}
+        },
+        "extension_profile_refs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/stageProfileRef"}
+        },
+        "reported_adoption_status": {
+          "enum": ["candidate", "adopted", "deferred", "rejected", "expired"]
+        },
+        "human_adoption_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "applicabilityRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "reported_applicability_state",
+        "activation_conditions",
+        "non_activation_conditions",
+        "decision_evidence_refs",
+        "denominator_ref",
+        "rationale",
+        "decision_owner_ref",
+        "authority_ref",
+        "decision_record_ref",
+        "reactivation_triggers",
+        "review_at",
+        "reported_human_disposition",
+        "human_disposition_ref",
+        "unresolved_ref"
+      ],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "reported_applicability_state": {
+          "enum": ["required", "conditional", "not_applicable", "unresolved"]
+        },
+        "activation_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "non_activation_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "decision_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "denominator_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "rationale": {"type": ["string", "null"], "minLength": 1},
+        "decision_owner_ref": {
+          "oneOf": [{"$ref": "#/$defs/identityRef"}, {"type": "null"}]
+        },
+        "authority_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "decision_record_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "reactivation_triggers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "review_at": {"type": ["string", "null"], "format": "date-time"},
+        "reported_human_disposition": {"enum": ["none", "waived"]},
+        "human_disposition_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "unresolved_ref": {"$ref": "#/$defs/nullableRecordRef"}
+      }
+    },
+    "extensionApplicabilityRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_id", "profile_ref", "applicability"],
+      "properties": {
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "profile_ref": {"$ref": "#/$defs/profileRef"},
+        "applicability": {"$ref": "#/$defs/applicabilityRecord"}
+      }
+    },
+    "tailoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "tailoring_id",
+        "tailoring_version",
+        "subject_scope_ref",
+        "risk_class",
+        "core_stage_applicability",
+        "extension_stage_applicability",
+        "basis_refs",
+        "decision_owner_ref",
+        "reactivation_triggers",
+        "reported_adoption_status",
+        "human_adoption_ref",
+        "basis_digest",
+        "artifact_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-tailoring/v1"},
+        "tailoring_id": {"$ref": "#/$defs/stableId"},
+        "tailoring_version": {"$ref": "#/$defs/stableId"},
+        "subject_scope_ref": {"$ref": "#/$defs/recordRef"},
+        "risk_class": {"$ref": "#/$defs/stableId"},
+        "core_stage_applicability": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/applicabilityRecord"}
+        },
+        "extension_stage_applicability": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/extensionApplicabilityRecord"}
+        },
+        "basis_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "decision_owner_ref": {"$ref": "#/$defs/identityRef"},
+        "reactivation_triggers": {"$ref": "#/$defs/nonEmptyStrings"},
+        "reported_adoption_status": {
+          "enum": ["candidate", "adopted", "deferred", "rejected", "expired"]
+        },
+        "human_adoption_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "ruleAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_finding",
+        "unresolved_escalation",
+        "nonconformance",
+        "satisfaction",
+        "final_verdict"
+      ],
+      "properties": {
+        "candidate_finding": {"type": "boolean"},
+        "unresolved_escalation": {"type": "boolean"},
+        "nonconformance": {"type": "boolean"},
+        "satisfaction": {"type": "boolean"},
+        "final_verdict": {"type": "boolean"}
+      }
+    },
+    "runtimeRuleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "rule_id",
+        "rule_version",
+        "content_digest",
+        "basis_digest",
+        "implementation_digest",
+        "reported_adoption_status",
+        "human_adoption_ref",
+        "authority",
+        "binding_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-runtime-rule-binding/v1"},
+        "rule_id": {"$ref": "#/$defs/stableId"},
+        "rule_version": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "basis_digest": {"$ref": "#/$defs/digest"},
+        "implementation_digest": {"$ref": "#/$defs/digest"},
+        "reported_adoption_status": {
+          "enum": ["candidate", "adopted", "conditional", "deferred", "rejected", "expired"]
+        },
+        "human_adoption_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "authority": {"$ref": "#/$defs/ruleAuthority"},
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "runtimeResolutionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_kind", "item_id", "state", "reasons"],
+      "properties": {
+        "item_kind": {"enum": ["registry", "tailoring", "subject", "profile", "rule", "implementation", "applicability", "trust_root"]},
+        "item_id": {"$ref": "#/$defs/stableId"},
+        "state": {"enum": ["resolved", "unresolved", "not_applicable"]},
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        }
+      }
+    },
+    "runtimeRequiredRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "rule_version"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stableId"},
+        "rule_version": {"$ref": "#/$defs/stableId"}
+      }
+    },
+    "runtimeSuppliedRuleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_id", "rule_version", "binding_digest"],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stableId"},
+        "rule_version": {"$ref": "#/$defs/stableId"},
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "runtimeResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "resolution_id",
+        "registry_ref",
+        "tailoring_ref",
+        "subject_scope_ref",
+        "decision_verifier_claim",
+        "trusted_decision_verifier_ref",
+        "trust_root_resolution_state",
+        "trust_root_ref",
+        "required_stage_denominator",
+        "required_rule_denominator",
+        "supplied_rule_bindings",
+        "resolution_items",
+        "resolution_state",
+        "blocking_unresolved_count",
+        "allowed_use",
+        "formal_authority",
+        "limitations",
+        "resolution_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-runtime-resolution/v1"},
+        "resolution_id": {"$ref": "#/$defs/stableId"},
+        "registry_ref": {"$ref": "#/$defs/recordRef"},
+        "tailoring_ref": {"$ref": "#/$defs/recordRef"},
+        "subject_scope_ref": {"$ref": "#/$defs/recordRef"},
+        "decision_verifier_claim": {
+          "enum": [
+            "not_supplied",
+            "verifier_ref_invalid",
+            "callback_supplied_not_trust_root"
+          ]
+        },
+        "trusted_decision_verifier_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "trust_root_resolution_state": {"const": "not_integrated"},
+        "trust_root_ref": {"type": "null"},
+        "required_stage_denominator": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "required_rule_denominator": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/runtimeRequiredRule"}
+        },
+        "supplied_rule_bindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/runtimeSuppliedRuleBinding"}
+        },
+        "resolution_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/runtimeResolutionItem"}
+        },
+        "resolution_state": {"const": "unresolved"},
+        "blocking_unresolved_count": {"type": "integer", "minimum": 1},
+        "allowed_use": {"const": "candidate_and_unresolved_only"},
+        "formal_authority": {"const": "none"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "resolution_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "entityRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "entity_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stableId"},
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "snapshotRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_id", "subject_entity_id", "content_digest", "snapshot_digest"],
+      "properties": {
+        "snapshot_id": {"$ref": "#/$defs/stableId"},
+        "subject_entity_id": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "subjectEntity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "entity_id", "entity_kind", "label", "created_at", "derived_from_ref", "entity_digest"],
+      "properties": {
+        "schema_version": {"const": "lifecycle-subject-entity/v1"},
+        "entity_id": {"$ref": "#/$defs/stableId"},
+        "entity_kind": {"$ref": "#/$defs/stableId"},
+        "label": {"$ref": "#/$defs/nonEmptyString"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "derived_from_ref": {
+          "oneOf": [{"$ref": "#/$defs/entityRecordRef"}, {"type": "null"}]
+        },
+        "entity_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "subjectSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "snapshot_id",
+        "subject_entity_id",
+        "snapshot_version",
+        "content_digest",
+        "captured_at",
+        "artifact_manifest_ref",
+        "previous_snapshot_ref",
+        "snapshot_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-subject-snapshot/v1"},
+        "snapshot_id": {"$ref": "#/$defs/stableId"},
+        "subject_entity_id": {"$ref": "#/$defs/stableId"},
+        "snapshot_version": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "artifact_manifest_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "previous_snapshot_ref": {
+          "oneOf": [{"$ref": "#/$defs/snapshotRecordRef"}, {"type": "null"}]
+        },
+        "snapshot_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "manifestItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_id", "artifact_ref", "role", "state", "authority_ref", "obligation_refs"],
+      "properties": {
+        "item_id": {"$ref": "#/$defs/stableId"},
+        "artifact_ref": {"$ref": "#/$defs/recordRef"},
+        "role": {"$ref": "#/$defs/stableId"},
+        "state": {"$ref": "#/$defs/stableId"},
+        "authority_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "obligation_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        }
+      }
+    },
+    "artifactManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "manifest_id",
+        "manifest_version",
+        "subject_entity_ref",
+        "subject_snapshot_ref",
+        "scope_ref",
+        "closure_state",
+        "items",
+        "manifest_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-artifact-manifest/v1"},
+        "manifest_id": {"$ref": "#/$defs/stableId"},
+        "manifest_version": {"$ref": "#/$defs/stableId"},
+        "subject_entity_ref": {"$ref": "#/$defs/entityRecordRef"},
+        "subject_snapshot_ref": {"$ref": "#/$defs/snapshotRecordRef"},
+        "scope_ref": {"$ref": "#/$defs/recordRef"},
+        "closure_state": {"const": "closed"},
+        "items": {"type": "array", "items": {"$ref": "#/$defs/manifestItem"}},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "manifestRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifest_id", "manifest_version", "manifest_digest"],
+      "properties": {
+        "manifest_id": {"$ref": "#/$defs/stableId"},
+        "manifest_version": {"$ref": "#/$defs/stableId"},
+        "manifest_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "handoffException": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_item_id",
+        "disposition",
+        "output_item_id",
+        "basis_refs",
+        "actor_ref",
+        "authority_ref",
+        "obligation_effects"
+      ],
+      "properties": {
+        "source_item_id": {"$ref": "#/$defs/stableId"},
+        "disposition": {"enum": ["transformed", "resolved", "refuted", "scoped_out"]},
+        "output_item_id": {"type": ["string", "null"], "minLength": 1},
+        "basis_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "authority_ref": {"$ref": "#/$defs/recordRef"},
+        "obligation_effects": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "introducedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_item_id", "origin_ref", "reason", "basis_refs", "actor_ref", "authority_ref"],
+      "properties": {
+        "output_item_id": {"$ref": "#/$defs/stableId"},
+        "origin_ref": {"$ref": "#/$defs/recordRef"},
+        "reason": {"$ref": "#/$defs/nonEmptyString"},
+        "basis_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "authority_ref": {"$ref": "#/$defs/recordRef"}
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "handoff_id",
+        "source_manifest_ref",
+        "target_manifest_ref",
+        "target_stage_occurrence_ref",
+        "default_disposition",
+        "exceptions",
+        "introduced_items",
+        "formal_authority",
+        "handoff_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-handoff/v1"},
+        "handoff_id": {"$ref": "#/$defs/stableId"},
+        "source_manifest_ref": {"$ref": "#/$defs/manifestRef"},
+        "target_manifest_ref": {"$ref": "#/$defs/manifestRef"},
+        "target_stage_occurrence_ref": {
+          "$ref": "#/$defs/recordRef",
+          "description": "Must exactly match the concrete target stage occurrence under validate_handoff_closed; the handoff target manifest must be that occurrence's concrete input manifest."
+        },
+        "default_disposition": {"const": "preserved"},
+        "exceptions": {"type": "array", "items": {"$ref": "#/$defs/handoffException"}},
+        "introduced_items": {"type": "array", "items": {"$ref": "#/$defs/introducedItem"}},
+        "formal_authority": {"const": "none"},
+        "handoff_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "stageAxes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicability_state",
+        "execution_state",
+        "evidence_state",
+        "currency_state",
+        "decision_requirement",
+        "human_decision",
+        "human_decision_ref",
+        "human_disposition",
+        "human_disposition_ref"
+      ],
+      "properties": {
+        "applicability_state": {"enum": ["required", "conditional", "not_applicable", "unresolved"]},
+        "execution_state": {"enum": ["not_started", "running", "completed", "skipped", "deferred"]},
+        "evidence_state": {"enum": ["not_observed", "observed", "assessed", "insufficient", "refuted"]},
+        "currency_state": {"enum": ["current", "stale", "unbound"]},
+        "decision_requirement": {"enum": ["none", "human"]},
+        "human_decision": {"enum": ["none", "pending", "accept", "request_revision", "defer", "reject"]},
+        "human_decision_ref": {"$ref": "#/$defs/nullableDecisionRef"},
+        "human_disposition": {"enum": ["none", "waived"]},
+        "human_disposition_ref": {"$ref": "#/$defs/nullableDecisionRef"}
+      }
+    },
+    "stageOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "stage_occurrence_id",
+        "stage_id",
+        "profile_ref",
+        "configuration_snapshot_ref",
+        "subject_entity_ref",
+        "subject_snapshot_ref",
+        "applicability_ref",
+        "observed_at",
+        "actor_ref",
+        "role",
+        "authority_ref",
+        "input_manifest_ref",
+        "output_manifest_ref",
+        "started_at",
+        "finished_at",
+        "state_axes",
+        "state_axes_semantics",
+        "occurrence_resolution_state",
+        "claim_authority",
+        "formal_authority",
+        "limitations",
+        "occurrence_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-stage-occurrence/v1"},
+        "stage_occurrence_id": {"$ref": "#/$defs/stableId"},
+        "stage_id": {"$ref": "#/$defs/stableId"},
+        "profile_ref": {"$ref": "#/$defs/profileRef"},
+        "configuration_snapshot_ref": {"$ref": "#/$defs/recordRef"},
+        "subject_entity_ref": {"$ref": "#/$defs/entityRecordRef"},
+        "subject_snapshot_ref": {"$ref": "#/$defs/snapshotRecordRef"},
+        "applicability_ref": {"$ref": "#/$defs/recordRef"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "role": {"$ref": "#/$defs/stableId"},
+        "authority_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "input_manifest_ref": {
+          "$ref": "#/$defs/manifestRef",
+          "description": "Must be checked against the concrete input manifest and occurrence subject by validate_stage_occurrence_closed."
+        },
+        "output_manifest_ref": {
+          "$ref": "#/$defs/manifestRef",
+          "description": "Must be checked against the concrete output manifest and occurrence subject by validate_stage_occurrence_closed."
+        },
+        "started_at": {"type": ["string", "null"], "format": "date-time"},
+        "finished_at": {"type": ["string", "null"], "format": "date-time"},
+        "state_axes": {"$ref": "#/$defs/stageAxes"},
+        "state_axes_semantics": {"const": "reported_claim"},
+        "occurrence_resolution_state": {"const": "unresolved"},
+        "claim_authority": {"const": "candidate_only"},
+        "formal_authority": {"const": "none"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "occurrence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "occurrenceEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "occurrence_evidence_id",
+        "occurrence_kind",
+        "stage_occurrence_ref",
+        "actor_ref",
+        "authority_ref",
+        "target_snapshot_ref",
+        "environment_ref",
+        "tool_refs",
+        "started_at",
+        "finished_at",
+        "input_refs",
+        "raw_result_refs",
+        "output_refs",
+        "observer_ref",
+        "observer_role_binding_ref",
+        "observer_authority_ref",
+        "reported_observation_method",
+        "reported_outcome",
+        "external_harness_state",
+        "harness_verifier_claim",
+        "harness_verifier_ref",
+        "harness_verification_input_digest",
+        "external_harness_unresolved_reasons",
+        "trust_root_resolution_state",
+        "trust_root_ref",
+        "verification_method_ref",
+        "self_report_ref",
+        "claim_authority",
+        "formal_authority",
+        "limitations",
+        "evidence_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "occurrence-evidence/v1"},
+        "occurrence_evidence_id": {"$ref": "#/$defs/stableId"},
+        "occurrence_kind": {"enum": ["action", "verification"]},
+        "stage_occurrence_ref": {"$ref": "#/$defs/recordRef"},
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "authority_ref": {"$ref": "#/$defs/recordRef"},
+        "target_snapshot_ref": {"$ref": "#/$defs/snapshotRecordRef"},
+        "environment_ref": {"$ref": "#/$defs/identityRef"},
+        "tool_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/identityRef"}},
+        "started_at": {"type": "string", "format": "date-time"},
+        "finished_at": {"type": "string", "format": "date-time"},
+        "input_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "raw_result_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}},
+        "output_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "observer_ref": {"$ref": "#/$defs/identityRef"},
+        "observer_role_binding_ref": {"$ref": "#/$defs/recordRef"},
+        "observer_authority_ref": {"$ref": "#/$defs/recordRef"},
+        "reported_observation_method": {"const": "claimed_execution_harness"},
+        "reported_outcome": {"enum": ["succeeded", "failed", "aborted", "unknown"]},
+        "external_harness_state": {"const": "unresolved"},
+        "harness_verifier_claim": {
+          "enum": [
+            "not_supplied",
+            "verifier_ref_invalid",
+            "verifier_unavailable",
+            "verifier_claim_rejected",
+            "verifier_claim_accepted"
+          ]
+        },
+        "harness_verifier_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "harness_verification_input_digest": {"$ref": "#/$defs/digest"},
+        "external_harness_unresolved_reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "trust_root_resolution_state": {"const": "not_integrated"},
+        "trust_root_ref": {"type": "null"},
+        "verification_method_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "self_report_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "claim_authority": {"const": "candidate_only"},
+        "formal_authority": {"const": "none"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "evidence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "completionClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "completion_claim_id",
+        "subject_snapshot_ref",
+        "reported_technical_completion_state",
+        "completion_resolution_state",
+        "completion_verifier_claim",
+        "completion_verifier_ref",
+        "completion_verification_input_digest",
+        "completion_unresolved_reasons",
+        "trust_root_resolution_state",
+        "trust_root_ref",
+        "obligation_result_refs",
+        "verification_evidence_refs",
+        "unresolved_refs",
+        "residual_risk_refs",
+        "human_decision",
+        "human_decision_ref",
+        "claim_authority",
+        "formal_authority",
+        "limitations",
+        "claim_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-completion-claim/v1"},
+        "completion_claim_id": {"$ref": "#/$defs/stableId"},
+        "subject_snapshot_ref": {"$ref": "#/$defs/snapshotRecordRef"},
+        "reported_technical_completion_state": {"enum": ["not_assessed", "incomplete", "completed", "blocked"]},
+        "completion_resolution_state": {"const": "unresolved"},
+        "completion_verifier_claim": {
+          "enum": [
+            "not_supplied",
+            "verifier_ref_invalid",
+            "verifier_unavailable",
+            "verifier_claim_rejected",
+            "verifier_claim_accepted"
+          ]
+        },
+        "completion_verifier_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "completion_verification_input_digest": {"$ref": "#/$defs/digest"},
+        "completion_unresolved_reasons": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        },
+        "trust_root_resolution_state": {"const": "not_integrated"},
+        "trust_root_ref": {"type": "null"},
+        "obligation_result_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "verification_evidence_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "unresolved_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "residual_risk_refs": {"type": "array", "items": {"$ref": "#/$defs/recordRef"}},
+        "human_decision": {"const": "pending"},
+        "human_decision_ref": {"type": "null"},
+        "claim_authority": {"const": "candidate_only"},
+        "formal_authority": {"const": "none"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "claim_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "occurrenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage_occurrence_id", "occurrence_digest"],
+      "properties": {
+        "stage_occurrence_id": {"$ref": "#/$defs/stableId"},
+        "occurrence_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "occurrenceRelation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "relation_id",
+        "relation_kind",
+        "source_occurrence_ref",
+        "target_occurrence_ref",
+        "basis_refs",
+        "actor_ref",
+        "authority_ref",
+        "recorded_at",
+        "formal_authority",
+        "relation_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-occurrence-relation/v1"},
+        "relation_id": {"$ref": "#/$defs/stableId"},
+        "relation_kind": {"enum": ["supersedes", "reopens", "repair_of", "derived_from", "invalidates"]},
+        "source_occurrence_ref": {"$ref": "#/$defs/occurrenceRef"},
+        "target_occurrence_ref": {"$ref": "#/$defs/occurrenceRef"},
+        "basis_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}},
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "authority_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "formal_authority": {"const": "none"},
+        "relation_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "dependencyEdge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_ref", "dependent_ref", "dependency_kind", "basis_refs"],
+      "properties": {
+        "source_ref": {"$ref": "#/$defs/recordRef"},
+        "dependent_ref": {"$ref": "#/$defs/recordRef"},
+        "dependency_kind": {"$ref": "#/$defs/stableId"},
+        "basis_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}}
+      }
+    },
+    "impactClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "impact_id",
+        "changed_refs",
+        "known_denominator_refs",
+        "dependency_edges",
+        "reported_graph_completeness",
+        "graph_manifest_ref",
+        "graph_trust_state",
+        "graph_verifier_claim",
+        "graph_verifier_ref",
+        "graph_verification_input_digest",
+        "trust_root_resolution_state",
+        "trust_root_ref",
+        "impacted_refs",
+        "scope_status",
+        "requalification_required",
+        "reasons",
+        "formal_authority",
+        "limitations",
+        "impact_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-impact-closure/v1"},
+        "impact_id": {"$ref": "#/$defs/stableId"},
+        "changed_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}},
+        "known_denominator_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}},
+        "dependency_edges": {"type": "array", "items": {"$ref": "#/$defs/dependencyEdge"}},
+        "reported_graph_completeness": {"enum": ["complete", "unknown"]},
+        "graph_manifest_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "graph_trust_state": {"const": "unresolved"},
+        "graph_verifier_claim": {
+          "enum": [
+            "not_evaluated",
+            "not_supplied",
+            "verifier_ref_invalid",
+            "verifier_unavailable",
+            "verifier_claim_rejected",
+            "verifier_claim_accepted"
+          ]
+        },
+        "graph_verifier_ref": {"$ref": "#/$defs/nullableRecordRef"},
+        "graph_verification_input_digest": {"$ref": "#/$defs/digest"},
+        "trust_root_resolution_state": {"const": "not_integrated"},
+        "trust_root_ref": {"type": "null"},
+        "impacted_refs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/recordRef"}},
+        "scope_status": {"const": "safe_expanded_to_known_denominator"},
+        "requalification_required": {"const": true},
+        "reasons": {"$ref": "#/$defs/nonEmptyStrings"},
+        "formal_authority": {"const": "none"},
+        "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+        "impact_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

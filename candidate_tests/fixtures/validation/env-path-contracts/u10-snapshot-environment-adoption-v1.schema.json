@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-environment-adoption-v1.schema.json",
+  "title": "U-10 external exact snapshot-environment adoption v1",
+  "description": "A root-held human decision adopting exact candidate source/profile/environment bytes already sealed in one inactive snapshot. The decision is never copied into the subject payload and grants no engineering verdict authority.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "adoption_id",
+    "adoption_version",
+    "record_kind",
+    "human_decision",
+    "decision_owner",
+    "projection_receipt_ref",
+    "snapshot_ref",
+    "eligibility_source_ref",
+    "verification_profile_ref",
+    "environment_profile_ref",
+    "host_identity_evidence_ref",
+    "decision_owner_ref",
+    "decision_owner_authority_evidence_ref",
+    "decision_evidence_ref",
+    "trusted_entrypoint_ref",
+    "authorized_operation",
+    "decision_effect_scope",
+    "recorded_at",
+    "u4_principal_authenticity",
+    "authority_scope",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "adoption_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-environment-adoption/v1"},
+    "adoption_id": {"$ref": "#/$defs/id"},
+    "adoption_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "snapshot_environment_adoption_decision"},
+    "human_decision": {"const": "accept"},
+    "decision_owner": {"const": "human"},
+    "projection_receipt_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "snapshot_ref": {
+      "type": "object",
+      "required": ["snapshot_id", "snapshot_version", "snapshot_path", "tree_digest", "snapshot_basis_digest"],
+      "properties": {
+        "snapshot_id": {"$ref": "#/$defs/id"},
+        "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "snapshot_path": {"$ref": "#/$defs/snapshot_path"},
+        "tree_digest": {"$ref": "#/$defs/digest"},
+        "snapshot_basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "eligibility_source_ref": {"$ref": "#/$defs/source_ref"},
+    "verification_profile_ref": {"$ref": "#/$defs/profile_ref"},
+    "environment_profile_ref": {"$ref": "#/$defs/environment_ref"},
+    "host_identity_evidence_ref": {"$ref": "#/$defs/host_ref"},
+    "decision_owner_ref": {"$ref": "#/$defs/repository_ref"},
+    "decision_owner_authority_evidence_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "decision_evidence_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "trusted_entrypoint_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "authorized_operation": {"const": "adopt_exact_projected_snapshot_environment"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_exact_snapshot_environment_use_only"},
+    "decision_effect_scope": {"const": "u10_exact_projected_snapshot_environment_use_gate_only"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 1024}
+    },
+    "adoption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "snapshot_path": {
+      "type": "string",
+      "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/snapshots/[^\\u0000]+$",
+      "maxLength": 4096
+    },
+    "snapshot_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/id"},
+        "locator": {"$ref": "#/$defs/snapshot_path"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/id"},
+        "locator": {
+          "type": "string",
+          "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/Library/Application Support/semantic-guard/u10/[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/id"},
+        "locator": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$",
+          "maxLength": 4096
+        },
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "source_ref": {
+      "type": "object",
+      "required": ["source_id", "source_version", "lifecycle_state", "snapshot_artifact_ref", "source_digest"],
+      "properties": {
+        "source_id": {"$ref": "#/$defs/id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "candidate"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "source_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "profile_ref": {
+      "type": "object",
+      "required": ["profile_id", "profile_version", "snapshot_artifact_ref", "content_digest"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/id"},
+        "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_ref": {
+      "type": "object",
+      "required": ["environment_profile_id", "environment_profile_version", "lifecycle_state", "snapshot_artifact_ref", "basis_digest"],
+      "properties": {
+        "environment_profile_id": {"$ref": "#/$defs/id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "lifecycle_state": {"const": "candidate"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "host_ref": {
+      "type": "object",
+      "required": ["evidence_id", "snapshot_artifact_ref", "identity_digest", "evidence_digest"],
+      "properties": {
+        "evidence_id": {"$ref": "#/$defs/id"},
+        "snapshot_artifact_ref": {"$ref": "#/$defs/snapshot_artifact_ref"},
+        "identity_digest": {"$ref": "#/$defs/digest"},
+        "evidence_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

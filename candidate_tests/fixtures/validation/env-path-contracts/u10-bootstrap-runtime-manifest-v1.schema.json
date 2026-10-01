@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-runtime-manifest-v1.schema.json",
+  "title": "semantic-guard U-10 closed bootstrap Python runtime manifest v1",
+  "description": "Closed denominator for the root-owned Python process image, framework loader, standard library and extension modules used before the U-10 outer verifier can inspect the active store. The runtime root is derived from an effective-uid-0 execution probe; a caller path cannot narrow it. Only dyld images under the fixed /System/Library and /usr/lib roots are excluded as OS assets, and those exclusions remain bound by the exact Darwin build artifact.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "runtime_id",
+    "runtime_version",
+    "runtime_root",
+    "runtime_root_mode",
+    "runtime_root_uid",
+    "runtime_root_gid",
+    "effective_interpreter_locator",
+    "effective_interpreter_artifact_digest",
+    "runtime_closure",
+    "platform_binding",
+    "tree_denominator",
+    "trust_boundary",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "manifest_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-runtime-manifest/v1"},
+    "runtime_id": {"$ref": "#/$defs/stable_id"},
+    "runtime_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "runtime_root": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "runtime_root_mode": {"type": "integer", "minimum": 0, "maximum": 4095},
+    "runtime_root_uid": {"const": 0},
+    "runtime_root_gid": {"type": "integer", "minimum": 0},
+    "effective_interpreter_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "effective_interpreter_artifact_digest": {"$ref": "#/$defs/digest"},
+    "runtime_closure": {
+      "type": "object",
+      "required": [
+        "probe_profile",
+        "runtime_version",
+        "probe_execution_identity",
+        "process_image",
+        "python_prefixes",
+        "sys_path",
+        "stdlib_roots",
+        "site_roots",
+        "site_policy",
+        "imported_module_origins",
+        "dyld_images",
+        "os_asset_exclusion"
+      ],
+      "properties": {
+        "probe_profile": {"const": "darwin-executed-image-common-root-closure/v1"},
+        "runtime_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "probe_execution_identity": {
+          "type": "object",
+          "required": ["effective_uid", "effective_gid"],
+          "properties": {
+            "effective_uid": {"const": 0},
+            "effective_gid": {"const": 0}
+          },
+          "unevaluatedProperties": false
+        },
+        "process_image": {
+          "type": "object",
+          "required": ["sys_executable", "ns_get_executable_path"],
+          "properties": {
+            "sys_executable": {"$ref": "#/$defs/path_observation"},
+            "ns_get_executable_path": {"$ref": "#/$defs/path_observation"}
+          },
+          "unevaluatedProperties": false
+        },
+        "python_prefixes": {
+          "type": "object",
+          "required": ["prefix", "base_prefix"],
+          "properties": {
+            "prefix": {"$ref": "#/$defs/path_observation"},
+            "base_prefix": {"$ref": "#/$defs/path_observation"}
+          },
+          "unevaluatedProperties": false
+        },
+        "sys_path": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {"$ref": "#/$defs/path_observation"}
+        },
+        "stdlib_roots": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/stdlib_observation"}
+        },
+        "site_roots": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {"$ref": "#/$defs/site_observation"}
+        },
+        "site_policy": {"const": "isolated_no_site_only_active_paths_enter_runtime_closure/v1"},
+        "imported_module_origins": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {"$ref": "#/$defs/module_observation"}
+        },
+        "dyld_images": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": {"$ref": "#/$defs/dyld_observation"}
+        },
+        "os_asset_exclusion": {
+          "type": "object",
+          "required": ["profile", "allowed_roots", "scope", "binding"],
+          "properties": {
+            "profile": {"const": "darwin-dyld-system-library-roots-os-build-bound/v1"},
+            "allowed_roots": {
+              "type": "array",
+              "prefixItems": [
+                {"const": "/System/Library"},
+                {"const": "/usr/lib"}
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "scope": {"const": "dyld_images_only"},
+            "binding": {"const": "exact_platform_binding_and_os_build_artifact"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "platform_binding": {
+      "type": "object",
+      "required": ["system", "release", "kernel_version", "machine", "os_build_artifact", "binding_profile"],
+      "properties": {
+        "system": {"const": "Darwin"},
+        "release": {"type": "string", "minLength": 1, "maxLength": 128},
+        "kernel_version": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128},
+        "os_build_artifact": {
+          "type": "object",
+          "required": ["locator", "product_build_version", "artifact_digest"],
+          "properties": {
+            "locator": {"const": "/System/Library/CoreServices/SystemVersion.plist"},
+            "product_build_version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "artifact_digest": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        },
+        "binding_profile": {"const": "uname_kernel_and_system_version_artifact_exact/v2"}
+      },
+      "unevaluatedProperties": false
+    },
+    "tree_denominator": {
+      "type": "object",
+      "required": ["status", "entry_count", "entries", "tree_digest"],
+      "properties": {
+        "status": {"const": "closed"},
+        "entry_count": {"type": "integer", "minimum": 1, "maximum": 20000},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20000,
+          "items": {"$ref": "#/$defs/tree_entry"}
+        },
+        "tree_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "trust_boundary": {
+      "type": "object",
+      "required": ["covered", "not_claimed"],
+      "properties": {
+        "covered": {"const": "root_owned_runtime_tree_resistant_to_non_root_tampering"},
+        "not_claimed": {"const": "root_or_os_compromise_resistance"}
+      },
+      "unevaluatedProperties": false
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "manifest_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "path_observation": {
+      "type": "object",
+      "required": ["locator", "resolved_locator", "state"],
+      "properties": {
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "state": {"enum": ["present", "absent"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "stdlib_observation": {
+      "type": "object",
+      "required": ["locator", "resolved_locator", "state", "kind"],
+      "properties": {
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "state": {"enum": ["present", "absent"]},
+        "kind": {"enum": ["stdlib", "platstdlib"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "site_observation": {
+      "type": "object",
+      "required": ["locator", "resolved_locator", "state", "source", "active", "disposition"],
+      "properties": {
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "state": {"enum": ["present", "absent"]},
+        "source": {"type": "string", "minLength": 1, "maxLength": 128},
+        "active": {"type": "boolean"},
+        "disposition": {"enum": ["runtime_tree", "suppressed_by_isolated_no_site"]}
+      },
+      "unevaluatedProperties": false
+    },
+    "module_observation": {
+      "type": "object",
+      "required": ["locator", "resolved_locator", "state", "module"],
+      "properties": {
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "state": {"const": "present"},
+        "module": {"type": "string", "minLength": 1, "maxLength": 512}
+      },
+      "unevaluatedProperties": false
+    },
+    "dyld_observation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["locator", "resolved_locator", "state", "classification", "os_asset_root"],
+          "properties": {
+            "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+            "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+            "state": {"enum": ["present", "absent"]},
+            "classification": {"const": "runtime_tree"},
+            "os_asset_root": {"type": "null"}
+          },
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["locator", "resolved_locator", "state", "classification", "os_asset_root"],
+          "properties": {
+            "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+            "resolved_locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+            "state": {"enum": ["present", "absent"]},
+            "classification": {"const": "excluded_os_asset"},
+            "os_asset_root": {"enum": ["/System/Library", "/usr/lib"]}
+          },
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "tree_entry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["path", "kind", "mode", "uid", "gid"],
+          "properties": {
+            "path": {"$ref": "#/$defs/relative_path"},
+            "kind": {"const": "directory"},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 4095},
+            "uid": {"const": 0},
+            "gid": {"type": "integer", "minimum": 0}
+          },
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["path", "kind", "mode", "uid", "gid", "size", "artifact_digest"],
+          "properties": {
+            "path": {"$ref": "#/$defs/relative_path"},
+            "kind": {"const": "file"},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 4095},
+            "uid": {"const": 0},
+            "gid": {"type": "integer", "minimum": 0},
+            "size": {"type": "integer", "minimum": 0},
+            "artifact_digest": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["path", "kind", "mode", "uid", "gid", "target"],
+          "properties": {
+            "path": {"$ref": "#/$defs/relative_path"},
+            "kind": {"const": "symlink"},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 4095},
+            "uid": {"const": 0},
+            "gid": {"type": "integer", "minimum": 0},
+            "target": {"type": "string", "minLength": 1, "maxLength": 4096}
+          },
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$"
+    }
+  },
+  "unevaluatedProperties": false
+}

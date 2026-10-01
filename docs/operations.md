@@ -1,4 +1,7 @@
-# semantic-guard 1.1.0 運用手引
+# semantic-guard v1 基幹の運用手引
+
+開発版 `1.2.0.dev0` の工程別監査と統治付き候補は、[結合版の利用手引](local-integration.md)を参照する。
+本書の基幹監査の結果契約は保持する。日付付き `1.1.0` 証拠は当時の対象に限られる。
 
 初めて使う場合は、[要求関係入力](#要求関係入力契約)又は[方向拘束入力](#方向拘束入力契約)から始め、
 [解析の流れ](#解析の流れ)と[終了コード](#終了コードと監査状態)で結果を解釈する。
@@ -88,14 +91,14 @@ uv run --locked semantic-guard schema direction-binding-audit
 正式な基準となるリポジトリのルートを作業ディレクトリとし、信頼済みのローカル
 作業木から `wheel` を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。
 検証器は隣接する偽の `schemas/` と `validation/` を置いた上で、配布物内の24スキーマ、
-CLIコマンド四件、MCPツール四件、ライフサイクル候補10件、工学規則候補11件とそのスキーマ、
+基幹MCPツール四件、追加のworkflow/candidate入口、ライフサイクル候補10件、工学規則候補11件とそのスキーマ、
 空オブジェクトを拒む運用成果スキーマを再現する。
 
 ```sh
 uv build --out-dir dist .
 uv run --locked python scripts/verify_packaged_contracts.py \
-  --wheel dist/semantic_guard-1.1.0-*.whl \
-  --sdist dist/semantic_guard-1.1.0.tar.gz \
+  --wheel dist/semantic_guard-1.2.0.dev0-*.whl \
+  --sdist dist/semantic_guard-1.2.0.dev0.tar.gz \
   --timeout-seconds 180
 ```
 

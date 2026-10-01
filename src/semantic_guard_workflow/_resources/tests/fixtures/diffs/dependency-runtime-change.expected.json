@@ -1,0 +1,35 @@
+{
+  "id": "DIFF-DEPENDENCY-RUNTIME-CHANGE-001",
+  "title": "Dependency manifest change is flagged for runtime evidence",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/pyproject.toml b/pyproject.toml\n--- a/pyproject.toml\n+++ b/pyproject.toml\n@@\n dependencies = [\n   \"mcp>=1.12.0\",\n+  \"pydantic>=2.10.0\",\n ]\n",
+  "intent": "依存を追加して schema validation を使う。",
+  "strict": true,
+  "rationale": "Dependency changes need compatibility, lockfile, security, and runtime impact evidence.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.dependency_runtime_change"
+    ],
+    "expected_findings": [
+      {
+        "category": "dependency",
+        "rule_id": "diff.implementation.dependency_runtime_change"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "dependency"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "dependency_runtime_evidence"
+      ]
+    }
+  }
+}

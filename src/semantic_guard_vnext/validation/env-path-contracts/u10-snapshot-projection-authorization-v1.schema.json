@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-projection-authorization-v1.schema.json",
+  "title": "U-10 exact candidate to snapshot projection authorization v1",
+  "type": "object",
+  "required": ["schema_version", "authorization_id", "authorization_version", "record_kind", "bundle_ref", "target_snapshot", "environment_projection", "broker_entrypoint_ref", "broker_outer_launcher_ref", "broker_launch_platform", "authorized_operation", "human_decision", "decision_owner", "recorded_at", "projection_ledger", "u4_principal_authenticity", "authority_scope", "formal_authority", "positive_assurance_allowed", "authorization_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-projection-authorization/v1"},
+    "authorization_id": {"$ref": "#/$defs/id"},
+    "authorization_version": {"const": "1.0.0"},
+    "record_kind": {"const": "snapshot_projection_authorization"},
+    "bundle_ref": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_version", "candidate_path", "manifest_artifact_digest", "bundle_digest", "install_projection_ref"],
+      "properties": {
+        "bundle_id": {"type": "string", "pattern": "^candidate\\.u10\\.[0-9a-f]{64}$"},
+        "bundle_version": {"const": "2.0.0-candidate"},
+        "candidate_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "manifest_artifact_digest": {"$ref": "#/$defs/digest"},
+        "bundle_digest": {"$ref": "#/$defs/digest"},
+        "install_projection_ref": {"$ref": "#/$defs/artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "target_snapshot": {
+      "type": "object",
+      "required": ["snapshot_id", "snapshot_version", "snapshot_path", "entry_id"],
+      "properties": {
+        "snapshot_id": {"$ref": "#/$defs/id"},
+        "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "snapshot_path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "entry_id": {"$ref": "#/$defs/id"}
+      },
+      "unevaluatedProperties": false
+    },
+    "environment_projection": {
+      "type": "object",
+      "required": [
+        "profile_locator",
+        "environment_profile_id",
+        "environment_profile_version",
+        "adoption_id",
+        "adoption_version",
+        "source_id",
+        "source_version",
+        "decision_owner_ref",
+        "output_locators",
+        "projection_profile"
+      ],
+      "properties": {
+        "profile_locator": {"const": "vnext/validation/env-path-contracts/local-verification-profile-v4.candidate.json"},
+        "environment_profile_id": {"$ref": "#/$defs/id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "adoption_id": {"$ref": "#/$defs/id"},
+        "adoption_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_id": {"$ref": "#/$defs/id"},
+        "source_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "decision_owner_ref": {"$ref": "#/$defs/repository_ref"},
+        "output_locators": {
+          "type": "object",
+          "required": ["host_identity_evidence", "containment_probe_evidence", "containment_trace", "resolved_environment_profile", "environment_adoption_request", "eligibility_source"],
+          "properties": {
+            "host_identity_evidence": {"const": "vnext/validation/env-path-contracts/u10-host-identity.snapshot.candidate.json"},
+            "containment_probe_evidence": {"const": "vnext/validation/env-path-contracts/u10-containment-probe.snapshot.candidate.json"},
+            "containment_trace": {"const": "vnext/validation/env-path-contracts/u10-containment-probe-trace.snapshot.candidate.jsonl"},
+            "resolved_environment_profile": {"const": "vnext/validation/env-path-contracts/u10-resolved-environment-profile.snapshot.candidate.json"},
+            "environment_adoption_request": {"const": "vnext/validation/env-path-contracts/u10-environment-adoption-request.snapshot.candidate.json"},
+            "eligibility_source": {"const": "vnext/validation/env-path-contracts/u10-eligibility-source.snapshot.candidate.json"}
+          },
+          "unevaluatedProperties": false
+        },
+        "projection_profile": {"const": "non_root_final_snapshot_path_fresh_environment_candidate/v1"}
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_entrypoint_ref": {"$ref": "#/$defs/artifact_ref"},
+    "broker_outer_launcher_ref": {"$ref": "#/$defs/artifact_ref"},
+    "broker_launch_platform": {"type": "object", "minProperties": 1},
+    "authorized_operation": {"const": "project_exact_candidate_to_inactive_snapshot"},
+    "human_decision": {"const": "accept"},
+    "decision_owner": {"const": "human"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "projection_ledger": {"$ref": "#/$defs/ledger"},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_snapshot_projection_only"},
+    "formal_authority": {"const": "human_snapshot_projection_decision_only"},
+    "positive_assurance_allowed": {"const": false},
+    "authorization_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "artifact_ref": {"type": "object", "required": ["record_id", "locator", "artifact_digest", "semantic_digest"], "properties": {"record_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/", "maxLength": 4096}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "repository_ref": {"type": "object", "required": ["record_id", "locator", "content_digest"], "properties": {"record_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+$", "maxLength": 4096}, "content_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "ledger": {"type": "object", "required": ["root", "policy", "policy_digest"], "properties": {"root": {"type": "string", "pattern": "^/", "maxLength": 4096}, "policy": {"const": "authorization_consumption_projection_receipt_append_only/v1"}, "policy_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

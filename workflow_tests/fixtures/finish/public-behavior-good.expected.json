@@ -1,0 +1,34 @@
+{
+  "id": "FINISH-PUBLIC-BEHAVIOR-GOOD-001",
+  "title": "Public CLI behavior completion with representative evidence passes",
+  "phase": "finish_check",
+  "text": "完了要約: evaluate-fixtures CLI を追加した。完了条件: CLI が JSON summary を返す。公開挙動: semantic-guard evaluate-fixtures が total と pass_rate を返す。残リスク: なし。",
+  "evidence": "受入証拠: uv run semantic-guard evaluate-fixtures を実行し total 6 passed 6 failed 0 pass_rate 1.0 を確認。代表 CLI 実行済み。",
+  "strict": true,
+  "rationale": "Completion with acceptance mapping, representative CLI execution, and residual-risk statement should pass.",
+  "labels": {
+    "forbidden_rules": [
+      "finish.evidence.tests_missing",
+      "finish.implementation.behavior_evidence_missing",
+      "finish.validation.acceptance_evidence_missing"
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "evidence",
+        "behavior",
+        "validation"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "tests_ran_or_reason",
+        "behavior_evidence",
+        "acceptance_evidence"
+      ]
+    }
+  }
+}

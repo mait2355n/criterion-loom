@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-worker-principal-resolution-v1.schema.json",
+  "title": "semantic-guard U-10 worker principal resolution v1",
+  "description": "A machine-derived resolution joining an exact human decision to an exact worker-account observation. It distinguishes account group membership from the broker-enforced effective supplementary-group set and grants no authority.",
+  "type": "object",
+  "required": [
+    "schema_version", "resolution_id", "resolution_version", "record_kind",
+    "notation_profile", "resolution_entity_ref", "subject_entity_ref",
+    "decision_record_ref", "account_observation_ref", "derived_from",
+    "worker_identity_selection", "resolution_state", "principal_entity_ref",
+    "account_name", "uid", "gid", "account_supplementary_gids",
+    "effective_supplementary_gids", "umask", "login_shell", "non_login",
+    "platform_binding", "resolved_at", "formal_authority",
+    "positive_assurance_allowed", "resolution_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-worker-principal-resolution/v1"},
+    "resolution_id": {"$ref": "#/$defs/stable_id"},
+    "resolution_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "u10_worker_principal_resolution"},
+    "notation_profile": {"const": "entity-reference-notation/v0"},
+    "resolution_entity_ref": {"$ref": "#/$defs/entity_ref"},
+    "subject_entity_ref": {"$ref": "#/$defs/u10_subject_entity_ref"},
+    "decision_record_ref": {"$ref": "#/$defs/artifact_ref"},
+    "account_observation_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/artifact_ref"}]},
+    "derived_from": {"$ref": "#/$defs/entity_ref"},
+    "worker_identity_selection": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+    "resolution_state": {"enum": ["pending_principal_provisioning", "resolved"]},
+    "principal_entity_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/entity_ref"}]},
+    "account_name": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 256}]},
+    "uid": {"oneOf": [{"type": "null"}, {"type": "integer", "minimum": 1}]},
+    "gid": {"oneOf": [{"type": "null"}, {"type": "integer", "minimum": 1}]},
+    "account_supplementary_gids": {"oneOf": [{"type": "null"}, {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}}]},
+    "effective_supplementary_gids": {"oneOf": [{"type": "null"}, {"type": "array", "maxItems": 0}]},
+    "umask": {"oneOf": [{"type": "null"}, {"const": 63}]},
+    "login_shell": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1, "maxLength": 4096}]},
+    "non_login": {"oneOf": [{"type": "null"}, {"type": "boolean"}]},
+    "platform_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/platform_binding"}]},
+    "resolved_at": {"oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "resolution_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"resolution_state": {"const": "pending_principal_provisioning"}}, "required": ["resolution_state"]},
+      "then": {"properties": {
+        "account_observation_ref": {"type": "null"},
+        "principal_entity_ref": {"type": "null"},
+        "account_name": {"type": "null"}, "uid": {"type": "null"},
+        "gid": {"type": "null"}, "account_supplementary_gids": {"type": "null"},
+        "effective_supplementary_gids": {"type": "null"}, "umask": {"type": "null"},
+        "login_shell": {"type": "null"}, "non_login": {"type": "null"},
+        "platform_binding": {"type": "null"}, "resolved_at": {"type": "null"}
+      }}
+    },
+    {
+      "if": {"properties": {"resolution_state": {"const": "resolved"}}, "required": ["resolution_state"]},
+      "then": {"properties": {
+        "account_observation_ref": {"$ref": "#/$defs/artifact_ref"},
+        "principal_entity_ref": {"$ref": "#/$defs/entity_ref"},
+        "account_name": {"type": "string", "minLength": 1, "maxLength": 256},
+        "uid": {"type": "integer", "minimum": 1},
+        "gid": {"type": "integer", "minimum": 1},
+        "account_supplementary_gids": {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"type": "integer", "minimum": 1}},
+        "effective_supplementary_gids": {"type": "array", "maxItems": 0},
+        "umask": {"const": 63},
+        "login_shell": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "non_login": {"type": "boolean"},
+        "platform_binding": {"$ref": "#/$defs/platform_binding"},
+        "resolved_at": {"type": "string", "format": "date-time"}
+      }}
+    },
+    {
+      "if": {"properties": {"worker_identity_selection": {"const": "current_user_501_20_empty_supplementary_groups"}, "resolution_state": {"const": "resolved"}}, "required": ["worker_identity_selection", "resolution_state"]},
+      "then": {"properties": {"uid": {"const": 501}, "gid": {"const": 20}, "effective_supplementary_gids": {"const": []}}}
+    },
+    {
+      "if": {"properties": {"worker_identity_selection": {"const": "dedicated_non_login_service_principal"}, "resolution_state": {"const": "resolved"}}, "required": ["worker_identity_selection", "resolution_state"]},
+      "then": {"properties": {"non_login": {"const": true}, "effective_supplementary_gids": {"const": []}}}
+    }
+  ],
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "maxLength": 240},
+    "u10_subject_entity_ref": {"type": "string", "pattern": "^.{1,200}・acfb8b85-2f75-5e82-a641-b3b3b6e023d6$", "maxLength": 240},
+    "artifact_ref": {"type": "object", "required": ["record_id", "locator", "artifact_digest", "semantic_digest"], "properties": {"record_id": {"$ref": "#/$defs/stable_id"}, "locator": {"type": "string", "minLength": 1, "maxLength": 4096}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "platform_binding": {
+      "type": "object",
+      "required": ["os", "architecture", "os_release", "platform_version", "hostname", "host_identity_digest"],
+      "properties": {
+        "os": {"type": "string", "minLength": 1, "maxLength": 128},
+        "architecture": {"type": "string", "minLength": 1, "maxLength": 128},
+        "os_release": {"type": "string", "minLength": 1, "maxLength": 256},
+        "platform_version": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "hostname": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "host_identity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

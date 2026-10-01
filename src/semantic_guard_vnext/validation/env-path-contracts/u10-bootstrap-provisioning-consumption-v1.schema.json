@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-provisioning-consumption-v1.schema.json",
+  "title": "U-10 bootstrap authorization consumption v1",
+  "type": "object",
+  "required": ["schema_version", "consumption_id", "record_kind", "authorization_ref", "plan_ref", "capsule_digest", "target_root", "occurrence_id", "reserved_at", "publication_occurred", "formal_authority", "positive_assurance_allowed", "consumption_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-provisioning-consumption/v1"},
+    "consumption_id": {"$ref": "#/$defs/id"}, "record_kind": {"const": "bootstrap_provisioning_authorization_consumption"},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "authorization_digest", "artifact_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/id"}, "authorization_digest": {"$ref": "#/$defs/digest"}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "plan_ref": {"type": "object", "required": ["plan_id", "plan_digest"], "properties": {"plan_id": {"$ref": "#/$defs/id"}, "plan_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "capsule_digest": {"$ref": "#/$defs/digest"}, "target_root": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "occurrence_id": {"$ref": "#/$defs/id"}, "reserved_at": {"type": "string", "format": "date-time"},
+    "publication_occurred": {"const": false}, "formal_authority": {"const": "none"}, "positive_assurance_allowed": {"const": false}, "consumption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}
