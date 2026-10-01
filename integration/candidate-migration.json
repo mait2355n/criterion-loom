@@ -2689,11 +2689,12 @@
       "source_path": "vnext/tests/test_u10_root_candidate_preparer.py",
       "source_sha256": "52d8ca2e8abcf4b92048f23b482274bad087b7bfe9d9ce8a418aa4ba813599bc",
       "destination": "candidate_tests/test_u10_root_candidate_preparer.py",
-      "destination_sha256": "02bd2da94eb5c456d95daefe442bf64675c511f2d1a8565aa04902d09e3f10d4",
+      "destination_sha256": "647962e554c3b801b72e25832f4554cc33651f00c2ed39fa4e352e2f63f15b2a",
       "change_classification": "test_import_or_fixture_path_relocation",
       "purpose": "candidate_u10_regression_test",
       "post_migration_changes": [
-        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups."
+        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups.",
+        "Resolve trusted host executable fixture paths before use so Linux /bin symlinks do not invalidate the fixture; keep production ownership, symlink, and permission checks unchanged and add a negative control."
       ]
     },
     {
@@ -3034,6 +3035,22 @@
       ],
       "runtime_changed": false,
       "linux_status_at_observation": "Not yet run; GitHub CI supplies separate evidence."
+    },
+    "publication_host_path_adjustment": {
+      "date": "2026-10-01",
+      "initial_linux_ci": "https://github.com/mait2355n/criterion-loom/actions/runs/36809944212",
+      "observed_failure": "Ubuntu /bin symlink rejected as candidate_install_root_untrusted in 24 root-preparer cases.",
+      "changed_scope": "One test module; no runtime or fixture-script changes.",
+      "normal_module_tests": 33,
+      "symlink_parent_injection_tests": 33,
+      "status": "pass",
+      "negative_controls": [
+        "Symlinked directory rejected",
+        "Wrong directory owner rejected",
+        "Group/world writable directory rejected"
+      ],
+      "python": "3.13",
+      "linux_status_at_observation": "Awaiting new CI execution."
     }
   },
   "not_verified": [

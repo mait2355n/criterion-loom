@@ -42,6 +42,18 @@ class U10RootCandidatePreparerTests(unittest.TestCase):
         self.enterContext(
             mock.patch.object(PREPARER.os, "getgrouplist", self._getgrouplist)
         )
+        # Linux may provide /bin through /usr/bin. These host binaries are
+        # fixture inputs; keep the root-owned, non-symlink checks themselves.
+        for name in (
+            "ROOT_BOOTSTRAP_SHELL",
+            "ROOT_ENVIRONMENT_CLEANER",
+            "ROOT_BOOTSTRAP_DISCOVERY_LAUNCHER",
+        ):
+            self.enterContext(
+                mock.patch.object(
+                    PREPARER, name, getattr(PREPARER, name).resolve(strict=True)
+                )
+            )
 
     def _getpwnam(self, name: str) -> pwd.struct_passwd:
         if name != self.worker_account.pw_name:
@@ -412,6 +424,37 @@ class U10RootCandidatePreparerTests(unittest.TestCase):
             second, second_manifest = self._prepare(temporary, name="bundle-two")
             PREPARER.validate_bundle_files_v1(second, second_manifest)
             self.assertEqual(first_manifest, second_manifest)
+
+    def test_owned_directory_checks_still_reject_symlink_owner_and_write_access(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            directory = root / "trusted-bin"
+            directory.mkdir(mode=0o700)
+            alias = root / "bin"
+            alias.symlink_to(directory, target_is_directory=True)
+            PREPARER._validate_owned_directory(directory, required_uid=os.getuid())
+
+            for path, required_uid in (
+                (alias, os.getuid()),
+                (directory, os.getuid() + 1),
+            ):
+                with self.subTest(path=path, required_uid=required_uid):
+                    with self.assertRaises(
+                        PREPARER.CandidateBoundaryError
+                    ) as observed:
+                        PREPARER._validate_owned_directory(
+                            path, required_uid=required_uid
+                        )
+                    self.assertEqual(
+                        observed.exception.code, "candidate_install_root_untrusted"
+                    )
+
+            directory.chmod(0o722)
+            with self.assertRaises(PREPARER.CandidateBoundaryError) as observed:
+                PREPARER._validate_owned_directory(directory, required_uid=os.getuid())
+            self.assertEqual(observed.exception.code, "candidate_install_root_untrusted")
 
     def test_hostile_deferred_and_pending_scope_records_cannot_prepare_local_candidate(
         self,
