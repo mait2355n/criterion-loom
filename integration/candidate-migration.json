@@ -2689,9 +2689,12 @@
       "source_path": "vnext/tests/test_u10_root_candidate_preparer.py",
       "source_sha256": "52d8ca2e8abcf4b92048f23b482274bad087b7bfe9d9ce8a418aa4ba813599bc",
       "destination": "candidate_tests/test_u10_root_candidate_preparer.py",
-      "destination_sha256": "44932e288030bafdaf05ec60d6dc3b77e40ebc7007c130a0c5a09e49083cc2de",
+      "destination_sha256": "02bd2da94eb5c456d95daefe442bf64675c511f2d1a8565aa04902d09e3f10d4",
       "change_classification": "test_import_or_fixture_path_relocation",
-      "purpose": "candidate_u10_regression_test"
+      "purpose": "candidate_u10_regression_test",
+      "post_migration_changes": [
+        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups."
+      ]
     },
     {
       "source_path": "vnext/tests/test_u10_store_basis_reservation.py",
@@ -2809,9 +2812,12 @@
       "source_path": "vnext/tests/test_u10_preactivation_records.py",
       "source_sha256": "a93be93074dd915c71fd76b951ccf1803f1918ce4dbeb9a822d6af1b00ea623b",
       "destination": "candidate_tests/test_u10_preactivation_records.py",
-      "destination_sha256": "98ad07cf63fab7fbbd942f2fb6e10fb730ff6017dab7ccfff37a74440bac42a4",
+      "destination_sha256": "6eeee1c39ca15f1e67c7f554e68e213a3331e3ecc9483b91cf2da1fedcb11014",
       "change_classification": "test_import_or_fixture_path_relocation",
-      "purpose": "candidate_u10_regression_test"
+      "purpose": "candidate_u10_regression_test",
+      "post_migration_changes": [
+        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups."
+      ]
     },
     {
       "source_path": "vnext/tests/test_u10_bootstrap_runtime_closure.py",
@@ -3014,6 +3020,20 @@
       },
       "source_hash_drift": false,
       "destination_hash_drift": false
+    },
+    "publication_portability_adjustment": {
+      "date": "2026-10-01",
+      "python": "3.13",
+      "normal_module_tests": 36,
+      "host_account_lookup_unavailable_tests": 36,
+      "status": "pass",
+      "negative_controls": [
+        "UID 501 / GID 21 rejected as candidate_worker_account_policy_mismatch",
+        "UID 502 / GID 20 rejected as candidate_worker_account_policy_mismatch",
+        "No observation created on mismatch"
+      ],
+      "runtime_changed": false,
+      "linux_status_at_observation": "Not yet run; GitHub CI supplies separate evidence."
     }
   },
   "not_verified": [

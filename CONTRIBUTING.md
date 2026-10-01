@@ -23,6 +23,9 @@ Do not treat a detector warning, parser candidate, LLM output, test pass, or pri
 ## Canonical and legacy boundaries
 
 - Canonical v1 code lives at the repository root.
+- Workflow and governed-candidate code use separate `semantic_guard_workflow`
+  and `semantic_guard_vnext` namespaces. Preserve their result contracts and
+  packaged resource boundaries when changing the shared distribution.
 - `legacy/semantic-guard-v0.1.0/` is a publication-repaired predecessor archive, not a second implementation tree for ordinary development. Its manifest identifies the historical Git anchor and repair boundary.
 - Fixes intended for v1 belong in the canonical root.
 - A necessary legacy publication, compatibility, or security correction requires a separate, explicit decision and must update the archive manifest. Do not silently rewrite historical records.
@@ -35,13 +38,15 @@ Run the smallest relevant set while iterating, then the full release set before 
 ```sh
 uv lock --check
 uv run --locked python -m unittest discover -s tests -v
+uv run --locked python -m unittest discover -s workflow_tests -t . -v
+uv run --locked python -m unittest discover -s candidate_tests -t . -v
 uv run --locked python scripts/validate_verification_source.py
 uv run --locked python scripts/render_verification_projection.py --check
 uv run --locked python scripts/validate_engineering_rule_pack.py
 uv build
 uv run --locked python scripts/verify_packaged_contracts.py \
   --wheel dist/semantic_guard-*.whl \
-  --sdist dist/semantic_guard-1.1.0.tar.gz
+  --sdist dist/semantic_guard-1.2.0.dev0.tar.gz
 ```
 
 For documentation changes, verify paths, examples, command names, contract versions, claim/evidence/limitation triples, and the distinction between canonicalization and adoption.

@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 import uuid
 from unittest import mock
@@ -27,6 +28,32 @@ SPEC.loader.exec_module(PREPARER)
 
 
 class U10RootCandidatePreparerTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # The policy selects 501:20; the host running these contract tests need
+        # not contain that account. Keep the OS lookup boundary deterministic.
+        self.worker_account = pwd.struct_passwd(
+            ("u10-fixture-worker", "x", 501, 20, "", "/fixture/u10-worker", "/bin/sh")
+        )
+        self.enterContext(
+            mock.patch.object(
+                PREPARER, "pwd", SimpleNamespace(getpwnam=self._getpwnam)
+            )
+        )
+        self.enterContext(
+            mock.patch.object(PREPARER.os, "getgrouplist", self._getgrouplist)
+        )
+
+    def _getpwnam(self, name: str) -> pwd.struct_passwd:
+        if name != self.worker_account.pw_name:
+            raise KeyError(name)
+        return self.worker_account
+
+    def _getgrouplist(self, name: str, gid: int) -> list[int]:
+        account = self._getpwnam(name)
+        if gid != account.pw_gid:
+            raise KeyError((name, gid))
+        return [account.pw_gid, 80]
+
     def _mapping(
         self,
         source: Path,
@@ -223,7 +250,7 @@ class U10RootCandidatePreparerTests(unittest.TestCase):
             decision=decision,
             decision_raw=decision_raw,
             decision_locator=decision_path,
-            account_name=pwd.getpwuid(501).pw_name,
+            account_name=self.worker_account.pw_name,
             observed_at="2026-01-01T00:00:01Z",
             observation_entity_id=uuid.UUID("fa5ee53e-e613-4ea6-8348-9f47c0bbf180"),
         )

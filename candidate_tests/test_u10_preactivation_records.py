@@ -3,9 +3,12 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import pwd
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 from jsonschema import Draft202012Validator
 
@@ -32,6 +35,37 @@ TOOL_SPEC.loader.exec_module(TOOL)
 
 
 class U10PreactivationRecordToolTests(unittest.TestCase):
+    def setUp(self) -> None:
+        # Exercise the fixed 501:20 policy without requiring that account on
+        # the CI host. Unknown account lookups still fail as the OS would.
+        self.worker_account = pwd.struct_passwd(
+            ("u10-fixture-worker", "x", 501, 20, "", "/fixture/u10-worker", "/bin/sh")
+        )
+        account_database = SimpleNamespace(
+            getpwnam=self._getpwnam, getpwuid=self._getpwuid
+        )
+        self.enterContext(mock.patch.object(CANDIDATE, "pwd", account_database))
+        self.enterContext(mock.patch.object(TOOL, "pwd", account_database))
+        self.enterContext(
+            mock.patch.object(CANDIDATE.os, "getgrouplist", self._getgrouplist)
+        )
+
+    def _getpwnam(self, name: str) -> pwd.struct_passwd:
+        if name != self.worker_account.pw_name:
+            raise KeyError(name)
+        return self.worker_account
+
+    def _getpwuid(self, uid: int) -> pwd.struct_passwd:
+        if uid != self.worker_account.pw_uid:
+            raise KeyError(uid)
+        return self.worker_account
+
+    def _getgrouplist(self, name: str, gid: int) -> list[int]:
+        account = self._getpwnam(name)
+        if gid != account.pw_gid:
+            raise KeyError((name, gid))
+        return [account.pw_gid, 80]
+
     def _decision(
         self,
         root: Path,
@@ -91,7 +125,7 @@ class U10PreactivationRecordToolTests(unittest.TestCase):
     def _schema(self, name: str) -> dict:
         return json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
 
-    def test_observe_then_resolve_records_real_account_and_no_human_decision(self) -> None:
+    def test_observe_then_resolve_records_selected_account_and_no_human_decision(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
             decision = self._decision(root)
@@ -123,6 +157,7 @@ class U10PreactivationRecordToolTests(unittest.TestCase):
             ).validate(resolution)
             self.assertEqual(observation["uid"], 501)
             self.assertEqual(observation["gid"], 20)
+            self.assertEqual(observation["account_supplementary_gids"], [80])
             self.assertIsInstance(observation["account_supplementary_gids"], list)
             self.assertEqual(resolution["effective_supplementary_gids"], [])
             self.assertEqual(

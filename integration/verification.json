@@ -139,7 +139,10 @@
       "file": "semantic_guard-1.2.0.dev0.tar.gz",
       "sha256": "6747ff0e31cac0212c4d0bd9506c3a8d69167e2b5edad0e606c34a08957b5fbe"
     },
-    "evidence_directory": "/Users/aster00/criterion-loom-unification-evidence-20261001"
+    "evidence_archive": {
+      "availability": "Local evidence archive retained by the maintainer; raw logs are not distributed in this repository.",
+      "recorded_filenames": "See the log fields above. Public CI provides separate commit-bound execution evidence."
+    }
   },
   "review": {
     "fixed_findings": [
@@ -162,5 +165,6 @@
     "../docs/local-integration.md",
     "workflow-migration.json",
     "candidate-migration.json"
-  ]
+  ],
+  "observation_stage": "Pre-publication local integration snapshot observed on 2026-10-01; later CI and merge results are separate observations."
 }

@@ -56,7 +56,7 @@ respectively. Their result contracts and schema stores are independent. See the
 - Repository companion Skill under `skills/semantic-implementation/`; it is excluded from wheel and sdist and is not installed automatically
 - Publication-repaired 0.1.0 archive under `legacy/semantic-guard-v0.1.0/`; its manifest identifies the original Git anchor and disclosed repairs
 - Publication, migration, operation, security, support, and contribution documents
-- GitHub Actions checks for canonical and legacy compatibility surfaces
+- GitHub Actions checks for canonical, workflow, candidate, and archived legacy compatibility surfaces
 
 ## Evidence boundary
 
