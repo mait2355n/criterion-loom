@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/local-verification-profile-v4.schema.json",
+  "title": "semantic-guard qualified local verification profile v4",
+  "description": "Portable logical-tool and no-child verification-runner contract. The profile is candidate material and grants no authority by itself.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_version",
+    "repository_root",
+    "environment_contract",
+    "commands",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-verification-profile/v4"},
+    "profile_id": {"$ref": "#/$defs/stable_id"},
+    "profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "repository_root": {"const": "."},
+    "environment_contract": {
+      "type": "object",
+      "required": [
+        "tool_requirements",
+        "inherited_environment_allowlist",
+        "fixed_environment",
+        "path_policy",
+        "adoption_required",
+        "process_creation_policy",
+        "containment_protocol",
+        "containment_provider",
+        "dependency_lock_verifier"
+      ],
+      "properties": {
+        "tool_requirements": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {"$ref": "#/$defs/tool_requirement"},
+          "allOf": [
+            {
+              "contains": {"properties": {"tool_id": {"const": "python.vnext"}}, "required": ["tool_id"]},
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {"properties": {"tool_id": {"const": "test_runner.vnext"}}, "required": ["tool_id"]},
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {"properties": {"tool_id": {"const": "containment_launcher.vnext"}}, "required": ["tool_id"]},
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        },
+        "inherited_environment_allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(?!PATH$)(?!PYTHONPATH$)(?!PYTHONHOME$)(?!DYLD_[A-Z0-9_]*$)[A-Z_][A-Z0-9_]*$",
+            "maxLength": 128
+          }
+        },
+        "fixed_environment": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^(?!PATH$)(?!PYTHONPATH$)(?!PYTHONHOME$)(?!DYLD_[A-Z0-9_]*$)[A-Z_][A-Z0-9_]*$",
+            "maxLength": 128
+          },
+          "additionalProperties": {"type": "string", "maxLength": 4096}
+        },
+        "path_policy": {"const": "managed_minimal_from_adopted_invocation_paths"},
+        "adoption_required": {"const": true},
+        "process_creation_policy": {"const": "prohibited_after_runner_start"},
+        "containment_protocol": {"const": "macos-sandbox-no-process-creation/v1"},
+        "containment_provider": {
+          "type": "object",
+          "required": ["provider_id", "install_name", "launcher_tool_id", "bootstrap_tool_id", "qualification_scope"],
+          "properties": {
+            "provider_id": {"const": "macos.sandbox-exec"},
+            "install_name": {"const": "macos.sandbox-exec"},
+            "launcher_tool_id": {"const": "containment_launcher.vnext"},
+            "bootstrap_tool_id": {"const": "test_runner.vnext"},
+            "qualification_scope": {"const": "exact_darwin_release_and_machine"}
+          },
+          "unevaluatedProperties": false
+        },
+        "dependency_lock_verifier": {
+          "type": "object",
+          "required": ["tool_id", "install_name", "candidate_source", "candidate_locator", "version_constraint", "digest_constraint", "verification_mode", "selected_extras"],
+          "properties": {
+            "tool_id": {"const": "uv.vnext"},
+            "install_name": {"enum": ["homebrew.uv", "snapshot.uv"]},
+            "candidate_source": {"enum": ["platform_install_name", "repository_relative"]},
+            "candidate_locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+            "version_constraint": {"$ref": "#/$defs/version_constraint"},
+            "digest_constraint": {"$ref": "#/$defs/digest_constraint"},
+            "verification_mode": {"const": "uv_sync_check_frozen_exact/v1"},
+            "selected_extras": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "maxLength": 128}
+            }
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"candidate_source": {"const": "platform_install_name"}}, "required": ["candidate_source"]},
+              "then": {
+                "properties": {
+                  "install_name": {"const": "homebrew.uv"},
+                  "candidate_locator": {"const": "homebrew.uv"}
+                }
+              }
+            },
+            {
+              "if": {"properties": {"candidate_source": {"const": "repository_relative"}}, "required": ["candidate_source"]},
+              "then": {
+                "properties": {
+                  "install_name": {"const": "snapshot.uv"},
+                  "candidate_locator": {"$ref": "#/$defs/repository_path"}
+                }
+              }
+            }
+          ],
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/command"}
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    }
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "repository_path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:\\.|(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\u0000]+)$"
+    },
+    "version_constraint": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "exact": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128},
+        "minimum_inclusive": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128},
+        "maximum_exclusive": {"type": "string", "pattern": "^[0-9][0-9A-Za-z.+_-]*$", "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_constraint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["policy"],
+          "properties": {"policy": {"const": "adopted_exact"}},
+          "unevaluatedProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["policy", "digest"],
+          "properties": {
+            "policy": {"const": "exact"},
+            "digest": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        }
+      ]
+    },
+    "supported_platform": {
+      "type": "object",
+      "required": ["system", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 128},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128},
+        "release_pattern": {"type": "string", "minLength": 1, "maxLength": 256}
+      },
+      "unevaluatedProperties": false
+    },
+    "capability_contract": {
+      "type": "object",
+      "required": ["kind", "dependency_probe", "lock_paths", "required_modules"],
+      "properties": {
+        "kind": {"enum": ["python_environment", "python_bootstrap", "containment_launcher"]},
+        "dependency_probe": {"enum": ["installed_distributions_name_version/v1", "not_applicable"]},
+        "lock_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/repository_path"}
+        },
+        "required_modules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$",
+            "maxLength": 256
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "python_environment"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "dependency_probe": {"const": "installed_distributions_name_version/v1"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "python_bootstrap"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "dependency_probe": {"const": "not_applicable"},
+              "lock_paths": {"maxItems": 0},
+              "required_modules": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "containment_launcher"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "dependency_probe": {"const": "not_applicable"},
+              "lock_paths": {"maxItems": 0},
+              "required_modules": {"maxItems": 0}
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "tool_requirement": {
+      "type": "object",
+      "required": [
+        "tool_id",
+        "logical_role",
+        "candidate_source",
+        "candidate_locator",
+        "version_probe",
+        "version_constraint",
+        "digest_constraint",
+        "supported_platforms",
+        "capability_contract"
+      ],
+      "properties": {
+        "tool_id": {"$ref": "#/$defs/stable_id"},
+        "logical_role": {"enum": ["python_interpreter", "python_test_runner", "containment_launcher"]},
+        "candidate_source": {"enum": ["repository_relative", "platform_install_name"]},
+        "candidate_locator": {"$ref": "#/$defs/repository_path"},
+        "version_probe": {"enum": ["python", "python_script_header", "platform_release"]},
+        "version_constraint": {"$ref": "#/$defs/version_constraint"},
+        "digest_constraint": {"$ref": "#/$defs/digest_constraint"},
+        "supported_platforms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/supported_platform"}
+        },
+        "capability_contract": {"$ref": "#/$defs/capability_contract"}
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "tool_id": {"const": "python.vnext"},
+            "logical_role": {"const": "python_interpreter"},
+            "version_probe": {"const": "python"},
+            "capability_contract": {"properties": {"kind": {"const": "python_environment"}}}
+          }
+        },
+        {
+          "properties": {
+            "tool_id": {"const": "test_runner.vnext"},
+            "logical_role": {"const": "python_test_runner"},
+            "version_probe": {"const": "python_script_header"},
+            "capability_contract": {"properties": {"kind": {"const": "python_bootstrap"}}}
+          }
+        },
+        {
+          "properties": {
+            "tool_id": {"const": "containment_launcher.vnext"},
+            "logical_role": {"const": "containment_launcher"},
+            "candidate_source": {"const": "platform_install_name"},
+            "candidate_locator": {"const": "macos.sandbox-exec"},
+            "version_probe": {"const": "platform_release"},
+            "capability_contract": {"properties": {"kind": {"const": "containment_launcher"}}}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "command": {
+      "type": "object",
+      "required": [
+        "command_id",
+        "containment_launcher_tool_id",
+        "interpreter_tool_id",
+        "tool_id",
+        "cwd",
+        "execution_protocol",
+        "closed_test_manifest_ref",
+        "timeout_seconds",
+        "artifact_effect",
+        "process_creation_policy"
+      ],
+      "properties": {
+        "command_id": {"$ref": "#/$defs/stable_id"},
+        "containment_launcher_tool_id": {"const": "containment_launcher.vnext"},
+        "interpreter_tool_id": {"const": "python.vnext"},
+        "tool_id": {"const": "test_runner.vnext"},
+        "cwd": {"$ref": "#/$defs/repository_path"},
+        "execution_protocol": {"const": "semantic-guard-isolated-python-unittest/v1"},
+        "closed_test_manifest_ref": {"$ref": "#/$defs/digest_bound_ref"},
+        "timeout_seconds": {"type": "number", "minimum": 1, "maximum": 1800},
+        "artifact_effect": {"const": "none"},
+        "process_creation_policy": {"const": "prohibited_after_runner_start"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"$ref": "#/$defs/repository_path"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

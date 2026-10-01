@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/candidate-governance-adapters.schema.json",
+  "title": "Candidate artifact to governed H1/H2 adapter results",
+  "oneOf": [
+    {"$ref": "#/$defs/h1AdapterResult"},
+    {"$ref": "#/$defs/h2AdapterResult"}
+  ],
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "nonEmptyString": {"type": "string", "minLength": 1},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "stringSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "stringList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "recordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "sourceTransport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "supplied_ref",
+        "canonical_document_ref",
+        "authenticity_state",
+        "trust_effect"
+      ],
+      "properties": {
+        "kind": {"enum": ["canonical_document", "bytes", "path_bytes"]},
+        "supplied_ref": {"$ref": "#/$defs/recordRef"},
+        "canonical_document_ref": {"$ref": "#/$defs/recordRef"},
+        "authenticity_state": {"const": "unresolved"},
+        "trust_effect": {"const": "none"}
+      }
+    },
+    "h1RuleMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_rule_ref",
+        "basis_ref",
+        "review_ref",
+        "implementation_ref",
+        "pending_decision_ref",
+        "unresolved_codes",
+        "conversion_digest"
+      ],
+      "properties": {
+        "input_rule_ref": {"$ref": "#/$defs/recordRef"},
+        "basis_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rule_id", "rule_version", "basis_digest", "record_digest"],
+          "properties": {
+            "rule_id": {"$ref": "#/$defs/stableId"},
+            "rule_version": {"$ref": "#/$defs/nonEmptyString"},
+            "basis_digest": {"$ref": "#/$defs/digest"},
+            "record_digest": {"$ref": "#/$defs/digest"}
+          }
+        },
+        "review_ref": {"$ref": "#/$defs/recordRef"},
+        "implementation_ref": {"$ref": "#/$defs/recordRef"},
+        "pending_decision_ref": {"$ref": "#/$defs/recordRef"},
+        "unresolved_codes": {"$ref": "#/$defs/stringSet"},
+        "conversion_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "h2ProfileMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_profile_ref",
+        "output_profile_ref",
+        "input_contract_ref",
+        "output_contract_ref",
+        "unresolved_basis_ref",
+        "runtime_rule_binding_ref",
+        "implementation_state",
+        "unresolved_codes",
+        "conversion_digest"
+      ],
+      "properties": {
+        "input_profile_ref": {"$ref": "#/$defs/recordRef"},
+        "output_profile_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile_id",
+            "profile_version",
+            "stage_id",
+            "content_digest",
+            "basis_digest",
+            "artifact_digest",
+            "implementation_digest"
+          ],
+          "properties": {
+            "profile_id": {"$ref": "#/$defs/stableId"},
+            "profile_version": {"$ref": "#/$defs/stableId"},
+            "stage_id": {"$ref": "#/$defs/stableId"},
+            "content_digest": {"$ref": "#/$defs/digest"},
+            "basis_digest": {"$ref": "#/$defs/digest"},
+            "artifact_digest": {"$ref": "#/$defs/digest"},
+            "implementation_digest": {"$ref": "#/$defs/digest"}
+          }
+        },
+        "input_contract_ref": {"$ref": "#/$defs/recordRef"},
+        "output_contract_ref": {"$ref": "#/$defs/recordRef"},
+        "unresolved_basis_ref": {"$ref": "#/$defs/recordRef"},
+        "runtime_rule_binding_ref": {"$ref": "#/$defs/recordRef"},
+        "implementation_state": {"const": "unresolved_no_implementation_binding"},
+        "unresolved_codes": {"$ref": "#/$defs/stringSet"},
+        "conversion_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "resolverRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "h1AdapterResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "adapter_id",
+        "source_transport",
+        "input_schema_ref",
+        "obligation_assessment_digest",
+        "authority_source_ids",
+        "source_entry_refs",
+        "rule_mappings",
+        "governance_bundle",
+        "resolver_ref",
+        "adapter_state",
+        "formal_authority",
+        "unresolved_codes",
+        "adapter_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "engineering-rule-pack-candidate-adapter/v1"},
+        "adapter_id": {"$ref": "#/$defs/stableId"},
+        "source_transport": {"$ref": "#/$defs/sourceTransport"},
+        "input_schema_ref": {"$ref": "#/$defs/recordRef"},
+        "obligation_assessment_digest": {"$ref": "#/$defs/digest"},
+        "authority_source_ids": {"$ref": "#/$defs/stringList"},
+        "source_entry_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "rule_mappings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/h1RuleMapping"}
+        },
+        "governance_bundle": {"type": "object"},
+        "resolver_ref": {"$ref": "#/$defs/resolverRef"},
+        "adapter_state": {"const": "candidate_with_unresolved_prerequisites"},
+        "formal_authority": {"const": "none"},
+        "unresolved_codes": {"$ref": "#/$defs/stringSet"},
+        "adapter_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "h2AdapterResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "adapter_id",
+        "source_transport",
+        "input_schema_ref",
+        "subject_scope_ref",
+        "profile_mappings",
+        "governed_profiles",
+        "stage_registry",
+        "tailoring",
+        "runtime_rule_bindings",
+        "runtime_resolution",
+        "resolver_ref",
+        "adapter_state",
+        "formal_authority",
+        "unresolved_codes",
+        "adapter_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "lifecycle-profile-registry-candidate-adapter/v1"},
+        "adapter_id": {"$ref": "#/$defs/stableId"},
+        "source_transport": {"$ref": "#/$defs/sourceTransport"},
+        "input_schema_ref": {"$ref": "#/$defs/recordRef"},
+        "subject_scope_ref": {"$ref": "#/$defs/recordRef"},
+        "profile_mappings": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/h2ProfileMapping"}
+        },
+        "governed_profiles": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"type": "object"}
+        },
+        "stage_registry": {"type": "object"},
+        "tailoring": {"type": "object"},
+        "runtime_rule_bindings": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"type": "object"}
+        },
+        "runtime_resolution": {"type": "object"},
+        "resolver_ref": {"$ref": "#/$defs/resolverRef"},
+        "adapter_state": {"const": "candidate_with_unresolved_prerequisites"},
+        "formal_authority": {"const": "none"},
+        "unresolved_codes": {"$ref": "#/$defs/stringSet"},
+        "adapter_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

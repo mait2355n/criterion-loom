@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-key-operation-receipt-v2.schema.json",
+  "title": "U-10 key operation occurrence receipt v2",
+  "type": "object",
+  "required": ["schema_version", "receipt_id", "record_kind", "occurrence_id", "authorization_ref", "consumption_ref", "prior_selector_ref", "published_selector_ref", "key_operation", "transition_mode", "key_id", "public_metadata_ref", "revocation_ref", "publisher_contract_binding", "private_material_evidence", "publication_not_before", "publication_observed_at", "receipt_recorded_at", "publication_occurred", "key_state", "human_adoption_status", "u4_principal_authenticity", "formal_authority", "positive_assurance_allowed", "receipt_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-key-operation-receipt/v2"},
+    "receipt_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "signing_key_operation_occurrence"},
+    "occurrence_id": {"$ref": "#/$defs/id"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"},
+    "consumption_ref": {"$ref": "#/$defs/consumption_ref"},
+    "prior_selector_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/selector_ref"}]},
+    "published_selector_ref": {"$ref": "#/$defs/selector_ref"},
+    "key_operation": {"enum": ["generate", "rotate", "revoke"]},
+    "transition_mode": {"enum": ["initialize_empty_store", "generate_from_no_active_key", "rotate_active_key", "revoke_active_key"]},
+    "key_id": {"$ref": "#/$defs/uuid"},
+    "public_metadata_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/public_metadata_ref"}]},
+    "revocation_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/revocation_ref"}]},
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "private_material_evidence": {"enum": ["root_owned_0600_present_not_disclosed", "unchanged_not_disclosed"]},
+    "publication_not_before": {"type": "string", "format": "date-time"},
+    "publication_observed_at": {"type": "string", "format": "date-time"},
+    "receipt_recorded_at": {"type": "string", "format": "date-time"},
+    "publication_occurred": {"const": true},
+    "key_state": {"enum": ["active", "revoked_no_active_key"]},
+    "human_adoption_status": {"const": "pending"},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"key_operation": {"enum": ["generate", "rotate"]}}, "required": ["key_operation"]},
+      "then": {"properties": {"public_metadata_ref": {"$ref": "#/$defs/public_metadata_ref"}, "revocation_ref": {"type": "null"}, "private_material_evidence": {"const": "root_owned_0600_present_not_disclosed"}, "key_state": {"const": "active"}}},
+      "else": {"properties": {"transition_mode": {"const": "revoke_active_key"}, "public_metadata_ref": {"type": "null"}, "revocation_ref": {"$ref": "#/$defs/revocation_ref"}, "private_material_evidence": {"const": "unchanged_not_disclosed"}, "key_state": {"const": "revoked_no_active_key"}}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"},
+    "uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "locator", "artifact_digest", "authorization_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/activations/key-transitions/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "authorization_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "locator", "artifact_digest", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/activations/key-transitions/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "selector_ref": {"type": "object", "required": ["selector_id", "locator", "artifact_digest", "selector_digest"], "properties": {"selector_id": {"$ref": "#/$defs/id"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/selector-history/sha256/[0-9a-f]{64}\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "selector_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "public_metadata_ref": {"type": "object", "required": ["key_id", "key_entity_ref", "locator", "artifact_digest", "metadata_digest", "generation_authorization_ref", "generation_consumption_ref"], "properties": {"key_id": {"$ref": "#/$defs/uuid"}, "key_entity_ref": {"$ref": "#/$defs/entity_ref"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/public-metadata\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "metadata_digest": {"$ref": "#/$defs/digest"}, "generation_authorization_ref": {"$ref": "#/$defs/authorization_ref"}, "generation_consumption_ref": {"$ref": "#/$defs/consumption_ref"}}, "unevaluatedProperties": false},
+    "revocation_ref": {"type": "object", "required": ["revocation_id", "key_id", "locator", "artifact_digest", "revocation_digest"], "properties": {"revocation_id": {"$ref": "#/$defs/id"}, "key_id": {"$ref": "#/$defs/uuid"}, "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/keys/revocations/[0-9a-f-]{36}/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "revocation_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

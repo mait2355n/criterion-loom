@@ -1,0 +1,41 @@
+{
+  "id": "REQ-PROBLEM-MECHANISM-FIT-MISSING-001",
+  "title": "Solution that suppresses an observed symptom without mechanism evidence is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。問題: import 処理が失敗する。解決策: エラーを握り潰す。目的: import を止めずに通す。シナリオ: 保守者が import 処理を実行する場合、処理が続行される。期待結果: import 結果が記録される。受入基準: エラーが出ない。検証方法: pytest。証拠: 試験結果。対象外: UI。未確定: なし。優先度: 必須。",
+  "strict": true,
+  "rationale": "The request states an observed problem, a solution, and symptom-disappearance success criteria, but does not explain cause, mechanism, constraint, or why the solution fits the problem.",
+  "labels": {
+    "expected_rules": [
+      "req.solution.problem_mechanism_fit_missing",
+      "req.acceptance.symptom_only_success_criteria"
+    ],
+    "expected_findings": [
+      {
+        "category": "solution_fit",
+        "rule_id": "req.solution.problem_mechanism_fit_missing"
+      },
+      {
+        "category": "acceptance",
+        "rule_id": "req.acceptance.symptom_only_success_criteria"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "solution_fit",
+        "acceptance"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "problem_mechanism_fit",
+        "symptom_only_success_criteria"
+      ]
+    }
+  }
+}

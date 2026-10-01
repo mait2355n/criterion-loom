@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-store-revocation-publication-receipt-v1.schema.json",
+  "title": "semantic-guard U-10 append-only store revocation publication receipt v1",
+  "description": "A post-publication occurrence receipt for one exact store revocation. It proves the governed local publication transaction, not human identity or positive assurance.",
+  "type": "object",
+  "required": [
+    "schema_version", "receipt_id", "record_kind", "publisher_operation_id",
+    "publisher_euid", "revocation_id", "revocation_digest", "consumption_digest",
+    "target_store_ref", "target_activation_receipt_ref", "history_ref",
+    "selector_path", "published_at", "formal_authority",
+    "positive_assurance_allowed", "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-store-revocation-publication-receipt/v1"},
+    "receipt_id": {"$ref": "#/$defs/stable_id"},
+    "record_kind": {"const": "revocation_publication_occurrence"},
+    "publisher_operation_id": {"const": "semantic-guard.u10.publish-store-revocation.v1"},
+    "publisher_euid": {"const": 0},
+    "revocation_id": {"$ref": "#/$defs/stable_id"},
+    "revocation_digest": {"$ref": "#/$defs/digest"},
+    "consumption_digest": {"$ref": "#/$defs/digest"},
+    "target_store_ref": {"$ref": "#/$defs/store_ref"},
+    "target_activation_receipt_ref": {"$ref": "#/$defs/activation_receipt_ref"},
+    "history_ref": {"$ref": "#/$defs/history_ref"},
+    "selector_path": {"const": "/Library/Application Support/semantic-guard/u10/trust-store-current-revocation.json"},
+    "published_at": {"type": "string", "format": "date-time"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object", "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "store_ref": {
+      "type": "object",
+      "required": ["store_id", "store_revision_id", "store_version", "store_activation_basis_digest", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "activation_receipt_ref": {
+      "type": "object", "required": ["receipt_id", "receipt_digest", "published_at"],
+      "properties": {
+        "receipt_id": {"$ref": "#/$defs/stable_id"},
+        "receipt_digest": {"$ref": "#/$defs/digest"},
+        "published_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    },
+    "history_ref": {
+      "type": "object", "required": ["locator", "artifact_digest"],
+      "properties": {
+        "locator": {"type": "string", "pattern": "^/Library/Application Support/semantic-guard/u10/revocations/sha256/[0-9a-f]{64}\\.json$"},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

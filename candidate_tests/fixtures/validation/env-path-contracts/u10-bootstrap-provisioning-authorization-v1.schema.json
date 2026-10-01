@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-provisioning-authorization-v1.schema.json",
+  "title": "U-10 exact initial bootstrap publication authorization v1",
+  "type": "object",
+  "required": ["schema_version", "authorization_id", "authorization_version", "record_kind", "plan_ref", "target_root", "authorized_operation", "human_decision", "decision_owner", "recorded_at", "not_before", "expires_at", "authority_scope", "u4_principal_authenticity", "formal_authority", "positive_assurance_allowed", "authorization_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-provisioning-authorization/v1"},
+    "authorization_id": {"$ref": "#/$defs/id"}, "authorization_version": {"const": "1.0.0"},
+    "record_kind": {"const": "bootstrap_provisioning_authorization"},
+    "plan_ref": {"type": "object", "required": ["plan_id", "plan_version", "record_member", "artifact_digest", "semantic_digest"], "properties": {"plan_id": {"$ref": "#/$defs/id"}, "plan_version": {"const": "1.0.0"}, "record_member": {"type": "string", "pattern": "^records/bootstrap-plans/[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.json$"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "target_root": {"const": "/Library/Application Support/semantic-guard/u10"},
+    "authorized_operation": {"const": "publish_exact_initial_u10_root"},
+    "human_decision": {"const": "accept"}, "decision_owner": {"const": "human"},
+    "recorded_at": {"type": "string", "format": "date-time"}, "not_before": {"type": "string", "format": "date-time"}, "expires_at": {"type": "string", "format": "date-time"},
+    "authority_scope": {"const": "initial_u10_root_publication_only"}, "u4_principal_authenticity": {"const": "unresolved"},
+    "formal_authority": {"const": "human_bootstrap_publication_decision_only"}, "positive_assurance_allowed": {"const": false},
+    "authorization_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}

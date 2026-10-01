@@ -1,0 +1,38 @@
+{
+  "id": "DIFF-PUBLIC-CONTRACT-CHANGE-001",
+  "title": "CLI option change is treated as public contract evidence gap",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/cli.py b/src/semantic_guard/cli.py\n--- a/src/semantic_guard/cli.py\n+++ b/src/semantic_guard/cli.py\n@@\n+parser.add_argument(\"--output-mode\", choices=[\"json\", \"text\"], default=\"json\")\n+print(json.dumps(result, ensure_ascii=False))\n",
+  "intent": "CLI の出力 mode option を追加する。",
+  "strict": true,
+  "rationale": "CLI flags and output shape are public contracts and need compatibility and representative execution evidence.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.public_contract_change"
+    ],
+    "expected_findings": [
+      {
+        "category": "compatibility",
+        "rule_id": "diff.implementation.public_contract_change"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "compatibility"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "public_contract_evidence"
+      ]
+    },
+    "details": {
+      "changed_file_count": 1
+    }
+  }
+}

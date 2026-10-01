@@ -1,0 +1,157 @@
+{
+  "commands": [
+    {
+      "artifact_effect": "none",
+      "command_id": "verify.u10.containment-smoke",
+      "containment_launcher_tool_id": "containment_launcher.vnext",
+      "cwd": "vnext",
+      "execution_protocol": "semantic-guard-isolated-python-unittest/v1",
+      "interpreter_tool_id": "python.vnext",
+      "process_creation_policy": "prohibited_after_runner_start",
+      "closed_test_manifest_ref": {
+        "record_id": "manifest.verification.u10.containment-smoke",
+        "locator": "vnext/validation/env-path-contracts/u10-smoke-closed-test-manifest-v1.candidate.json",
+        "content_digest": {
+          "algorithm": "sha256",
+          "value": "74157320bdcc80b70425c16d725bfcbfb6346128aa917027502544dc97d51b1c"
+        }
+      },
+      "timeout_seconds": 60,
+      "tool_id": "test_runner.vnext"
+    }
+  ],
+  "environment_contract": {
+    "adoption_required": true,
+    "containment_protocol": "macos-sandbox-no-process-creation/v1",
+    "containment_provider": {
+        "bootstrap_tool_id": "test_runner.vnext",
+        "install_name": "macos.sandbox-exec",
+        "launcher_tool_id": "containment_launcher.vnext",
+        "provider_id": "macos.sandbox-exec",
+      "qualification_scope": "exact_darwin_release_and_machine"
+    },
+    "dependency_lock_verifier": {
+      "tool_id": "uv.vnext",
+      "install_name": "homebrew.uv",
+      "candidate_source": "platform_install_name",
+      "candidate_locator": "homebrew.uv",
+      "version_constraint": {
+        "exact": "0.10.10"
+      },
+      "digest_constraint": {
+        "policy": "adopted_exact"
+      },
+      "verification_mode": "uv_sync_check_frozen_exact/v1",
+      "selected_extras": [
+        "nlp-ja",
+        "nlp-ja-dependency"
+      ]
+    },
+    "fixed_environment": {
+      "LC_ALL": "C",
+      "NO_COLOR": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inherited_environment_allowlist": [],
+    "path_policy": "managed_minimal_from_adopted_invocation_paths",
+    "process_creation_policy": "prohibited_after_runner_start",
+    "tool_requirements": [
+      {
+        "candidate_locator": "macos.sandbox-exec",
+        "candidate_source": "platform_install_name",
+        "capability_contract": {
+          "dependency_probe": "not_applicable",
+          "kind": "containment_launcher",
+          "lock_paths": [],
+          "required_modules": []
+        },
+        "digest_constraint": {
+          "policy": "adopted_exact"
+        },
+        "logical_role": "containment_launcher",
+        "supported_platforms": [
+          {
+            "machine": "arm64",
+            "release_pattern": "^25\\.5\\.0$",
+            "system": "Darwin"
+          }
+        ],
+        "tool_id": "containment_launcher.vnext",
+        "version_constraint": {
+          "exact": "25.5.0"
+        },
+        "version_probe": "platform_release"
+      },
+      {
+        "candidate_locator": "vnext/.venv/bin/python",
+        "candidate_source": "repository_relative",
+        "capability_contract": {
+          "dependency_probe": "installed_distributions_name_version/v1",
+          "kind": "python_environment",
+          "lock_paths": [
+            "vnext/pyproject.toml",
+            "vnext/uv.lock"
+          ],
+          "required_modules": [
+            "jsonschema",
+            "mcp"
+          ]
+        },
+        "digest_constraint": {
+          "policy": "adopted_exact"
+        },
+        "logical_role": "python_interpreter",
+        "supported_platforms": [
+          {
+            "machine": "arm64",
+            "release_pattern": "^25\\.5\\.0$",
+            "system": "Darwin"
+          }
+        ],
+        "tool_id": "python.vnext",
+        "version_constraint": {
+          "exact": "3.13.12"
+        },
+        "version_probe": "python"
+      },
+      {
+        "candidate_locator": "vnext/scripts/governed_test_runner_bootstrap.py",
+        "candidate_source": "repository_relative",
+        "capability_contract": {
+          "dependency_probe": "not_applicable",
+          "kind": "python_bootstrap",
+          "lock_paths": [],
+          "required_modules": []
+        },
+        "digest_constraint": {
+          "policy": "adopted_exact"
+        },
+        "logical_role": "python_test_runner",
+        "supported_platforms": [
+          {
+            "machine": "arm64",
+            "release_pattern": "^25\\.5\\.0$",
+            "system": "Darwin"
+          }
+        ],
+        "tool_id": "test_runner.vnext",
+        "version_constraint": {
+          "exact": "1.4.0"
+        },
+        "version_probe": "python_script_header"
+      }
+    ]
+  },
+  "formal_authority": "none",
+  "limitations": [
+    "This candidate profile has no runtime authority until an exact environment candidate and full execution scope are adopted by a human.",
+    "The no-process-creation containment profile uses a deprecated macOS sandbox API and is qualified only for Darwin 25.5.0 on arm64.",
+    "WP-1 commands are deliberately excluded and require a later versioned execution profile with a closed test manifest after implementation.",
+    "U-4 principal authenticity, delegated authority, revocation, and external trust-root questions remain separate."
+  ],
+  "positive_assurance_allowed": false,
+  "profile_id": "profile.public-operation.u10.local-darwin-arm64",
+  "profile_version": "1.4.0-candidate",
+  "repository_root": ".",
+  "schema_version": "semantic-guard-local-verification-profile/v4"
+}

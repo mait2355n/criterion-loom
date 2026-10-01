@@ -1,0 +1,31 @@
+{
+  "id": "PLAN-GOOD-001",
+  "title": "Structured plan with risk, validation, rollback, and evidence",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "input": "good.md",
+  "strict": true,
+  "rationale": "A plan that states objective, non-goals, deliverables, work breakdown, dependencies, risk, verification, validation, recovery, and evidence should pass.",
+  "expect": {
+    "phase": "audit_plan",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "planning",
+        "traceability"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "objective",
+        "non_goals",
+        "verification_plan",
+        "validation_plan",
+        "completion_evidence"
+      ]
+    },
+    "details": {
+      "input_kind": "plan"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "DIFF-OPERATIONAL-OBSERVABILITY-MISSING-001",
+  "title": "Background notification path without observable status is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/semantic_guard/notifier.py b/src/semantic_guard/notifier.py\n--- a/src/semantic_guard/notifier.py\n+++ b/src/semantic_guard/notifier.py\n@@\n+import subprocess\n+\n+def run_background_notification(payload: str) -> None:\n+    subprocess.Popen([\"notify-send\", payload])\n",
+  "intent": "background notification を追加する。",
+  "strict": true,
+  "rationale": "Background notification behavior needs logging, status, returncode, or an explicit reason why observability is unnecessary.",
+  "labels": {
+    "expected_rules": [
+      "diff.implementation.operational_observability_gap"
+    ],
+    "expected_findings": [
+      {
+        "category": "operations",
+        "rule_id": "diff.implementation.operational_observability_gap"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "operations"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "observability_evidence"
+      ]
+    }
+  }
+}

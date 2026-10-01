@@ -22,6 +22,8 @@ the repository is not authority. Links to Japanese-language detail are marked
 
 ## Current reference
 
+- [Integrated workflow and candidate interfaces](local-integration.md) (Japanese): development-version entry points, independent contracts, and migration limits.
+
 These documents describe the current source line or its current reading rules.
 They do not, by themselves, establish field validity or human acceptance.
 
@@ -93,7 +95,7 @@ absorb every later observation or make dated 1.1.0 evidence current.
   authority. That status does not promote every prototype beside it.
 - [Canonical promotion decision, 2026-07-17](canonical-promotion-decision.md)
   records why 1.0.0 became canonical and what that historical decision did not
-  prove. It is not the current 1.1.0 command inventory.
+  prove. It is not the current command inventory.
 - [Requirement-relation audit charter, 2026-07-12](prototypes/requirement-relation-audit-charter-2026-07-12.md)
   records the candidate-stage design that preceded the canonical v1 slice.
 - [Proof-obligation assurance graph charter, 2026-07-16](prototypes/proof-obligation-assurance-graph-charter-2026-07-16.md)

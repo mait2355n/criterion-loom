@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json",
+  "title": "U-10 fixed ID-only control publisher contract binding v1",
+  "description": "A static content-bound description of the only production control route allowed to publish U-10 state. It is neither an invocation occurrence nor human authority.",
+  "type": "object",
+  "required": [
+    "schema_version", "contract_id", "launch_profile",
+    "public_argument_denominator", "allowed_operations",
+    "caller_supplied_paths_allowed", "caller_supplied_raw_payloads_allowed",
+    "caller_supplied_inline_authority_allowed", "caller_environment_injection_allowed",
+    "artifacts", "broker_runtime_ref", "control_runtime_ref",
+    "bootstrap_provenance_ref", "formal_authority",
+    "positive_assurance_allowed", "binding_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-control-publisher-contract-binding/v1"},
+    "contract_id": {"const": "semantic-guard.u10.fixed-root-control-publisher.v1"},
+    "launch_profile": {"const": "fixed-root-wrapper-broker-outer-control-runtime-dispatcher/v1"},
+    "public_argument_denominator": {"const": ["operation", "identifier"]},
+    "allowed_operations": {"const": ["activate-snapshot", "activate-store", "key", "project-snapshot", "revoke-store"]},
+    "caller_supplied_paths_allowed": {"const": false},
+    "caller_supplied_raw_payloads_allowed": {"const": false},
+    "caller_supplied_inline_authority_allowed": {"const": false},
+    "caller_environment_injection_allowed": {"const": false},
+    "artifacts": {
+      "type": "object",
+      "required": ["broker_outer_launcher", "initial_trust_provisioner", "root_control_dispatcher", "root_control_entrypoint", "root_control_outer_launcher", "snapshot_store_producer"],
+      "properties": {
+        "broker_outer_launcher": {"$ref": "#/$defs/artifact_ref"},
+        "initial_trust_provisioner": {"$ref": "#/$defs/artifact_ref"},
+        "root_control_dispatcher": {"$ref": "#/$defs/artifact_ref"},
+        "root_control_entrypoint": {"$ref": "#/$defs/artifact_ref"},
+        "root_control_outer_launcher": {"$ref": "#/$defs/artifact_ref"},
+        "snapshot_store_producer": {"$ref": "#/$defs/artifact_ref"}
+      },
+      "unevaluatedProperties": false
+    },
+    "broker_runtime_ref": {"$ref": "#/$defs/runtime_ref"},
+    "control_runtime_ref": {
+      "allOf": [
+        {"$ref": "#/$defs/runtime_ref"},
+        {
+          "type": "object",
+          "required": ["broker_package_binding"],
+          "properties": {"broker_package_binding": {"$ref": "#/$defs/package_binding"}}
+        }
+      ]
+    },
+    "bootstrap_provenance_ref": {
+      "type": "object",
+      "required": ["locator", "binding_id", "binding_artifact_digest", "binding_digest", "authorization_id", "plan_id", "chain_artifact_digests"],
+      "properties": {
+        "locator": {"const": "/Library/Application Support/semantic-guard/u10/bootstrap/initial-bootstrap-provenance-binding.json"},
+        "binding_id": {"$ref": "#/$defs/id"},
+        "binding_artifact_digest": {"$ref": "#/$defs/digest"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "authorization_id": {"$ref": "#/$defs/id"},
+        "plan_id": {"$ref": "#/$defs/id"},
+        "chain_artifact_digests": {
+          "type": "object",
+          "required": ["authorization", "plan", "consumption", "receipt"],
+          "properties": {
+            "authorization": {"$ref": "#/$defs/digest"},
+            "plan": {"$ref": "#/$defs/digest"},
+            "consumption": {"$ref": "#/$defs/digest"},
+            "receipt": {"$ref": "#/$defs/digest"}
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "binding_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+      "unevaluatedProperties": false
+    },
+    "artifact_ref": {
+      "type": "object",
+      "required": ["locator", "artifact_digest"],
+      "properties": {"locator": {"$ref": "#/$defs/path"}, "artifact_digest": {"$ref": "#/$defs/digest"}},
+      "unevaluatedProperties": false
+    },
+    "runtime_ref": {
+      "type": "object",
+      "required": ["effective_python_path", "effective_python_path_artifact_digest", "runtime_manifest_locator", "runtime_manifest_artifact_digest", "runtime_manifest_digest", "runtime_tree_digest"],
+      "properties": {
+        "effective_python_path": {"$ref": "#/$defs/path"},
+        "effective_python_path_artifact_digest": {"$ref": "#/$defs/digest"},
+        "runtime_manifest_locator": {"$ref": "#/$defs/path"},
+        "runtime_manifest_artifact_digest": {"$ref": "#/$defs/digest"},
+        "runtime_manifest_digest": {"$ref": "#/$defs/digest"},
+        "runtime_tree_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "package_binding": {
+      "type": "object",
+      "required": ["package_root", "entry_count", "tree_digest"],
+      "properties": {
+        "package_root": {"$ref": "#/$defs/path"},
+        "entry_count": {"type": "integer", "minimum": 1},
+        "tree_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

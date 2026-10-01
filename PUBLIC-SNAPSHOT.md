@@ -1,6 +1,6 @@
-# Public Surface: Criterion Loom / semantic-guard 1.1.0
+# Development Surface: Criterion Loom / semantic-guard 1.2.0.dev0
 
-Documentation date: 2026-08-24
+Documentation date: 2026-10-01
 
 This file describes the current public source contract. It is not release-artifact evidence, a deployment record, or a claim that every repository document describes the current implementation.
 
@@ -8,7 +8,7 @@ This file describes the current public source contract. It is not release-artifa
 
 - Public project and repository name: Criterion Loom / `criterion-loom`
 - Distribution: `semantic-guard`
-- Version: `1.1.0`
+- Version: `1.2.0.dev0` (integration development version)
 - CLI: `semantic-guard`
 - MCP server: `semantic-guard-mcp`
 - Python package: `semantic_guard`
@@ -25,8 +25,10 @@ CLI commands:
 - `audit-direction-binding`
 - `shadow-compare`
 - `schema`
+- `workflow COMMAND` (separate workflow contract)
+- `candidate COMMAND` (unadopted governed vNext contract)
 
-MCP tools:
+Canonical MCP tools (unchanged):
 
 - `audit_requirement_relations_tool`
 - `audit_direction_binding_tool`
@@ -35,9 +37,17 @@ MCP tools:
 
 The schema tool exposes 24 closed contract schemas. Schema availability does not assert that every sidecar has a public end-to-end workflow.
 
+The same installation additionally provides `semantic-guard-workflow` and
+`semantic-guard-vnext`, and their separate `-mcp` servers with 27 and three tools
+respectively. Their result contracts and schema stores are independent. See the
+[integration guide](docs/local-integration.md) for selection and limits.
+
 ## Public source contents
 
 - Canonical audit kernel under `src/semantic_guard/`
+- Workflow implementation and resources under `src/semantic_guard_workflow/`
+- Governed candidate under `src/semantic_guard_vnext/`; U10 code under `src/semantic_guard_u10_broker/` is not activated by installation
+- Imported regression suites under `workflow_tests/` and `candidate_tests/`, with source mappings under `integration/`
 - Closed schemas under `schemas/`
 - Constitution under `constitution/`
 - Unit and conformance tests under `tests/`
@@ -46,7 +56,7 @@ The schema tool exposes 24 closed contract schemas. Schema availability does not
 - Repository companion Skill under `skills/semantic-implementation/`; it is excluded from wheel and sdist and is not installed automatically
 - Publication-repaired 0.1.0 archive under `legacy/semantic-guard-v0.1.0/`; its manifest identifies the original Git anchor and disclosed repairs
 - Publication, migration, operation, security, support, and contribution documents
-- GitHub Actions checks for canonical and legacy compatibility surfaces
+- GitHub Actions checks for canonical, workflow, candidate, and archived legacy compatibility surfaces
 
 ## Evidence boundary
 

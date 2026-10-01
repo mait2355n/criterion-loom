@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/schemas/candidate-gap-review.schema.json",
+  "title": "CandidateGapReview",
+  "description": "Structured output for an LLM reviewer that identifies missing aspects and supplement proposals for a candidate. It must not approve, reject, or decide final acceptance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "review_status",
+    "missing_aspects",
+    "questionable_assumptions",
+    "possible_counter_conditions",
+    "supplement_proposals",
+    "rule_item_reviews",
+    "human_decision_needed"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "candidate-gap-review/v2"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "no_supplement_needed",
+        "needs_supplement",
+        "blocked_by_missing_context"
+      ]
+    },
+    "missing_aspects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "severity",
+          "why_it_matters",
+          "supplement"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "blocker",
+              "major",
+              "minor",
+              "info"
+            ]
+          },
+          "why_it_matters": {
+            "type": "string",
+            "minLength": 1
+          },
+          "supplement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "questionable_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption",
+          "risk",
+          "supplement"
+        ],
+        "properties": {
+          "assumption": {
+            "type": "string",
+            "minLength": 1
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1
+          },
+          "supplement": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "possible_counter_conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "does_not_apply_when",
+          "confidence",
+          "reason"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "does_not_apply_when": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "supplement_proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target",
+          "proposal",
+          "reason"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposal": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "rule_item_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule_id",
+          "inspected_items",
+          "missing_items",
+          "counter_condition_candidates",
+          "notes",
+          "supplement"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "inspected_items": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "missing_items": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "counter_condition_candidates": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "supplement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "human_decision_needed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

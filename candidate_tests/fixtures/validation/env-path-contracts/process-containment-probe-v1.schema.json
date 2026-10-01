@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/process-containment-probe-v1.schema.json",
+  "title": "semantic-guard macOS no-process-creation probe v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "evidence_id",
+    "protocol",
+    "platform",
+    "launcher_invocation_path",
+    "launcher_resolved_path",
+    "launcher_file_digest",
+    "outer_policy",
+    "runner_invocation_path",
+    "runner_resolved_path",
+    "runner_file_digest",
+    "probe_command_digest",
+    "activation_status",
+    "trace_status",
+    "process_creation_attempt_count",
+    "executed_child_count",
+    "trace_ref",
+    "trace_digest",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "evidence_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-process-containment-probe/v1"},
+    "evidence_id": {"$ref": "#/$defs/stable_id"},
+    "protocol": {"const": "macos-sandbox-no-process-creation/v1"},
+    "platform": {"$ref": "#/$defs/platform"},
+    "launcher_invocation_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "launcher_resolved_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "launcher_file_digest": {"$ref": "#/$defs/digest"},
+    "outer_policy": {"const": "deny_file_write_fork_and_non_python_exec_before_runner"},
+    "runner_invocation_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "runner_resolved_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "runner_file_digest": {"$ref": "#/$defs/digest"},
+    "probe_command_digest": {"$ref": "#/$defs/digest"},
+    "activation_status": {"const": "effective"},
+    "trace_status": {"const": "complete_no_children"},
+    "process_creation_attempt_count": {"type": "integer", "minimum": 2},
+    "executed_child_count": {"const": 0},
+    "trace_ref": {"$ref": "#/$defs/digest_bound_ref"},
+    "trace_digest": {"$ref": "#/$defs/digest"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "evidence_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "platform": {
+      "type": "object",
+      "required": ["system", "release", "machine"],
+      "properties": {
+        "system": {"type": "string", "minLength": 1, "maxLength": 128},
+        "release": {"type": "string", "minLength": 1, "maxLength": 256},
+        "machine": {"type": "string", "minLength": 1, "maxLength": 128}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

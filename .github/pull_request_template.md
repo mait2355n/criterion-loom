@@ -27,13 +27,15 @@
 ```sh
 uv lock --check
 uv run --locked python -m unittest discover -s tests -v
+uv run --locked python -m unittest discover -s workflow_tests -t . -v
+uv run --locked python -m unittest discover -s candidate_tests -t . -v
 uv run --locked python scripts/validate_verification_source.py
 uv run --locked python scripts/render_verification_projection.py --check
 uv run --locked python scripts/validate_engineering_rule_pack.py
 uv build
 uv run --locked python scripts/verify_packaged_contracts.py \
-  --wheel dist/semantic_guard-1.1.0-py3-none-any.whl \
-  --sdist dist/semantic_guard-1.1.0.tar.gz
+  --wheel dist/semantic_guard-1.2.0.dev0-py3-none-any.whl \
+  --sdist dist/semantic_guard-1.2.0.dev0.tar.gz
 ```
 
 - Commands run and outcomes:

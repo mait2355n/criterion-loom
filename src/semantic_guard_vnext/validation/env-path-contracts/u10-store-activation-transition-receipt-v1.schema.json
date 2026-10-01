@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-store-activation-transition-receipt-v1.schema.json",
+  "title": "semantic-guard U-10 append-only store activation transition receipt v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "record_kind",
+    "authorization_id",
+    "authorization_digest",
+    "consumption_digest",
+    "transition_kind",
+    "prior_store_ref",
+    "prior_revocation_ref",
+    "activated_store_ref",
+    "publisher_contract_binding",
+    "published_at",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-store-activation-transition-receipt/v1"},
+    "receipt_id": {"$ref": "#/$defs/stable_id"},
+    "record_kind": {"const": "activation_transition_occurrence"},
+    "authorization_id": {"$ref": "#/$defs/stable_id"},
+    "authorization_digest": {"$ref": "#/$defs/digest"},
+    "consumption_digest": {"$ref": "#/$defs/digest"},
+    "transition_kind": {"enum": ["initial_activation", "replace_current_revision"]},
+    "prior_store_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/store_ref"}]},
+    "prior_revocation_ref": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/revocation_ref"}]},
+    "activated_store_ref": {"$ref": "#/$defs/store_ref"},
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "published_at": {"type": "string", "format": "date-time"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+      "unevaluatedProperties": false
+    },
+    "store_ref": {
+      "type": "object",
+      "required": ["store_id", "store_revision_id", "store_version", "store_activation_basis_digest", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "store_id": {"$ref": "#/$defs/stable_id"},
+        "store_revision_id": {"$ref": "#/$defs/stable_id"},
+        "store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "revocation_ref": {
+      "type": "object",
+      "required": ["revocation_id", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "revocation_id": {"$ref": "#/$defs/stable_id"},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transition_kind": {"const": "initial_activation"}}, "required": ["transition_kind"]},
+      "then": {"properties": {"prior_store_ref": {"type": "null"}, "prior_revocation_ref": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"transition_kind": {"const": "replace_current_revision"}}, "required": ["transition_kind"]},
+      "then": {"properties": {"prior_store_ref": {"$ref": "#/$defs/store_ref"}}}
+    }
+  ],
+  "unevaluatedProperties": false
+}

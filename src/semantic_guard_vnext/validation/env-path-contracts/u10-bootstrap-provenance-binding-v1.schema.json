@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-provenance-binding-v1.schema.json",
+  "title": "U-10 initial bootstrap external chain selector v1",
+  "type": "object",
+  "required": ["schema_version", "binding_id", "record_kind", "authorization_id", "plan_id", "root_observation_request_id", "root_observation_receipt_id", "preboot_ledger_root", "authorization_record", "plan_record", "consumption_record", "receipt_record", "resolution_policy", "human_adoption_status", "formal_authority", "positive_assurance_allowed", "binding_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-provenance-binding/v1"}, "binding_id": {"$ref": "#/$defs/id"}, "record_kind": {"const": "initial_bootstrap_external_chain_selector"},
+    "authorization_id": {"$ref": "#/$defs/id"}, "plan_id": {"$ref": "#/$defs/id"}, "root_observation_request_id": {"$ref": "#/$defs/id"}, "root_observation_receipt_id": {"$ref": "#/$defs/id"},
+    "preboot_ledger_root": {"const": "/Library/Application Support/semantic-guard/u10-bootstrap-ledger"},
+    "authorization_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.authorization\\.json$"}, "plan_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.plan\\.json$"}, "consumption_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.consumption\\.json$"}, "receipt_record": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"},
+    "resolution_policy": {"const": "resolve_exact_external_chain_then_reverse_validate_target_denominator/v1"}, "human_adoption_status": {"const": "pending"}, "formal_authority": {"const": "none"}, "positive_assurance_allowed": {"const": false}, "binding_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {"id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false}},
+  "unevaluatedProperties": false
+}

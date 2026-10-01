@@ -1,0 +1,34 @@
+{
+  "id": "REQ-STAKEHOLDER-SOURCE-MISSING-001",
+  "title": "Requirement-like statement without stakeholder or source is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "目的: CSV export を追加する。シナリオ: 一覧画面で export を実行する場合。期待結果: CSV ファイルが出力される。受入基準: 代表データで CSV の列を確認。検証方法: e2e smoke。証拠: 実行結果。対象外: 権限変更。未確定: なし。優先度: 必須。",
+  "strict": true,
+  "rationale": "Requirements should name who needs, uses, owns, or accepts them.",
+  "labels": {
+    "expected_rules": [
+      "req.stakeholder.source_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "stakeholder",
+        "rule_id": "req.stakeholder.source_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "stakeholder"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "stakeholder_source"
+      ]
+    }
+  }
+}

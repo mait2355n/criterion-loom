@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/assurance-role-binding.schema.json",
+  "title": "semantic-guard assurance role and review bindings",
+  "oneOf": [
+    {"$ref": "#/$defs/roleBinding"},
+    {"$ref": "#/$defs/reviewRecord"}
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "identityRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "entity_version", "content_digest"],
+      "properties": {
+        "entity_id": {"$ref": "#/$defs/stableId"},
+        "entity_version": {"$ref": "#/$defs/stableId"},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "recordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "capability": {
+      "enum": [
+        "set_objective",
+        "adopt",
+        "waive",
+        "accept_risk",
+        "final_acceptance",
+        "grant_authority",
+        "record_external_decision",
+        "apply_adopted_policy",
+        "manage_hold",
+        "manage_unresolved",
+        "route_next_action",
+        "plan",
+        "technical_decision",
+        "execute_authorized",
+        "request_audit",
+        "observe_occurrence",
+        "collect_raw_evidence",
+        "evaluate_under_adopted_rules",
+        "emit_finding",
+        "escalate_unresolved",
+        "emit_non_binding_recommendation",
+        "emit_candidate_review"
+      ]
+    },
+    "roleSurface": {
+      "enum": [
+        "human_decision",
+        "control_plane",
+        "ai_agent",
+        "execution_harness",
+        "audit_system",
+        "llm_reviewer"
+      ]
+    },
+    "roleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "binding_id",
+        "actor_ref",
+        "role_surface",
+        "authority_ref",
+        "granted_capabilities",
+        "capability_ceiling",
+        "prohibited_capabilities",
+        "formal_authority",
+        "limitations",
+        "binding_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "assurance-role-binding/v1"},
+        "binding_id": {"$ref": "#/$defs/stableId"},
+        "actor_ref": {"$ref": "#/$defs/identityRef"},
+        "role_surface": {"$ref": "#/$defs/roleSurface"},
+        "authority_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordRef"},
+            {"type": "null"}
+          ]
+        },
+        "granted_capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/capability"}
+        },
+        "capability_ceiling": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/capability"}
+        },
+        "prohibited_capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/capability"}
+        },
+        "formal_authority": {"const": "none"},
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "binding_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "reviewRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "review_id",
+        "reviewer_ref",
+        "reviewer_kind",
+        "subject_executor_ref",
+        "reviewer_implementation_ref",
+        "subject_implementation_ref",
+        "reviewer_runtime_ref",
+        "subject_runtime_ref",
+        "target_ref",
+        "identity_resolution_state",
+        "identity_resolver_ref",
+        "identity_trust_state",
+        "identity_verifier_claim",
+        "identity_verifier_ref",
+        "identity_verification_input_digest",
+        "trust_root_resolution_state",
+        "trust_root_ref",
+        "independence_evidence_refs",
+        "review_independence",
+        "finding_authority",
+        "formal_adoption_authority",
+        "limitations",
+        "review_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "assurance-review/v1"},
+        "review_id": {"$ref": "#/$defs/stableId"},
+        "reviewer_ref": {"$ref": "#/$defs/identityRef"},
+        "reviewer_kind": {"enum": ["human", "ai_agent", "automation"]},
+        "subject_executor_ref": {"$ref": "#/$defs/identityRef"},
+        "reviewer_implementation_ref": {"$ref": "#/$defs/identityRef"},
+        "subject_implementation_ref": {"$ref": "#/$defs/identityRef"},
+        "reviewer_runtime_ref": {"$ref": "#/$defs/identityRef"},
+        "subject_runtime_ref": {"$ref": "#/$defs/identityRef"},
+        "target_ref": {"$ref": "#/$defs/recordRef"},
+        "identity_resolution_state": {"enum": ["unresolved", "resolved"]},
+        "identity_resolver_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordRef"},
+            {"type": "null"}
+          ]
+        },
+        "identity_trust_state": {"const": "unresolved"},
+        "identity_verifier_claim": {
+          "enum": [
+            "not_eligible",
+            "not_supplied",
+            "verifier_ref_invalid",
+            "verifier_unavailable",
+            "verifier_claim_rejected",
+            "verifier_claim_accepted"
+          ]
+        },
+        "identity_verifier_ref": {
+          "oneOf": [
+            {"$ref": "#/$defs/recordRef"},
+            {"type": "null"}
+          ]
+        },
+        "identity_verification_input_digest": {"$ref": "#/$defs/digest"},
+        "trust_root_resolution_state": {"const": "not_integrated"},
+        "trust_root_ref": {"type": "null"},
+        "independence_evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/recordRef"}
+        },
+        "review_independence": {
+          "enum": [
+            "self_review",
+            "isolated_context_review",
+            "separate_runtime_review"
+          ]
+        },
+        "finding_authority": {"const": "candidate_only"},
+        "formal_adoption_authority": {"const": "none"},
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "review_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

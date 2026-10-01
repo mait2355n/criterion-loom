@@ -1,6 +1,6 @@
 # Migration from semantic-guard 0.1.0 to 1.0.0
 
-> This guide describes the 0.1.0-to-1.0.0 contract replacement. The current 1.1.0 line additionally exposes the independent direction-binding command and MCP tool documented in the root README.
+> This guide describes the historical 0.1.0-to-1.0.0 contract replacement. The 1.1.0 line added direction binding. The 1.2.0.dev0 integration candidate adds an explicitly selected workflow implementation; see [the integration guide](local-integration.md). The table below describes the historical replacement, not the added workflow route.
 
 ## Summary
 

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/validation/local-environment-snapshot.schema.json",
+  "title": "semantic-guard local verification environment snapshot",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "platform",
+    "executables",
+    "installed_distributions",
+    "interpreter_distributions",
+    "lock_files",
+    "inherited_environment",
+    "fixed_environment",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-environment-snapshot/v0"},
+    "platform": {
+      "type": "object",
+      "required": ["system", "release", "machine", "python_implementation", "python_version"],
+      "properties": {
+        "system": {"$ref": "#/$defs/non_empty_string"},
+        "release": {"$ref": "#/$defs/non_empty_string"},
+        "machine": {"$ref": "#/$defs/non_empty_string"},
+        "python_implementation": {"$ref": "#/$defs/non_empty_string"},
+        "python_version": {"$ref": "#/$defs/non_empty_string"}
+      },
+      "unevaluatedProperties": false
+    },
+    "executables": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["executable_id", "invocation_path", "resolved_path", "file_digest"],
+        "properties": {
+          "executable_id": {"enum": ["python.legacy", "python.vnext", "tool.uv"]},
+          "invocation_path": {"$ref": "#/$defs/non_empty_path"},
+          "resolved_path": {"$ref": "#/$defs/non_empty_path"},
+          "file_digest": {"$ref": "#/$defs/digest"}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "installed_distributions": {"$ref": "#/$defs/distributions"},
+    "interpreter_distributions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["executable_id", "distributions"],
+        "properties": {
+          "executable_id": {"enum": ["python.legacy", "python.vnext"]},
+          "distributions": {"$ref": "#/$defs/distributions"}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "lock_files": {
+      "type": "array",
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["path", "file_digest"],
+        "properties": {
+          "path": {"enum": ["uv.lock", "vnext/uv.lock"]},
+          "file_digest": {"$ref": "#/$defs/digest"}
+        },
+        "unevaluatedProperties": false
+      }
+    },
+    "inherited_environment": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["name", "present", "value_digest"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[A-Z_][A-Z0-9_]*$", "maxLength": 128},
+          "present": {"type": "boolean"},
+          "value_digest": {
+            "oneOf": [
+              {"type": "null"},
+              {"$ref": "#/$defs/digest"}
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"present": {"const": true}}, "required": ["present"]},
+            "then": {"properties": {"value_digest": {"$ref": "#/$defs/digest"}}}
+          },
+          {
+            "if": {"properties": {"present": {"const": false}}, "required": ["present"]},
+            "then": {"properties": {"value_digest": {"type": "null"}}}
+          }
+        ],
+        "unevaluatedProperties": false
+      }
+    },
+    "fixed_environment": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Z_][A-Z0-9_]*$", "maxLength": 128},
+      "additionalProperties": {"type": "string", "maxLength": 4096}
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/non_empty_string"},
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "non_empty_string": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "non_empty_path": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "distribution": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$", "maxLength": 256},
+        "version": {"$ref": "#/$defs/non_empty_string"}
+      },
+      "unevaluatedProperties": false
+    },
+    "distributions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/distribution"}
+    }
+  },
+  "unevaluatedProperties": false
+}

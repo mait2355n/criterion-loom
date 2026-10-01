@@ -1397,9 +1397,10 @@ wheels = [
 
 [[package]]
 name = "semantic-guard"
-version = "1.1.0"
+version = "1.2.0.dev0"
 source = { editable = "." }
 dependencies = [
+    { name = "cryptography" },
     { name = "jsonschema", extra = ["format"] },
     { name = "mcp" },
 ]
@@ -1416,9 +1417,10 @@ nlp-ja-dependency = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cryptography", specifier = ">=49,<50" },
     { name = "ginza", marker = "extra == 'nlp-ja-dependency'", specifier = ">=5.2,<6" },
     { name = "ja-ginza", marker = "extra == 'nlp-ja-dependency'", specifier = ">=5.2,<6" },
-    { name = "jsonschema", extras = ["format"], specifier = ">=4.25,<5" },
+    { name = "jsonschema", extras = ["format"], specifier = ">=4.26,<5" },
     { name = "mcp", specifier = ">=1.14,<2" },
     { name = "sudachidict-core", marker = "extra == 'nlp-ja'", specifier = "==20260428" },
     { name = "sudachipy", marker = "extra == 'nlp-ja'", specifier = ">=0.6.11,<0.7" },

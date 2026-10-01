@@ -1,0 +1,409 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/governed-audit-result.schema.json",
+  "title": "semantic-guard governed requirement audit",
+  "description": "An unresolved-only public envelope that keeps legacy observations and candidate findings below formal verdict authority until engineering-rule, lifecycle-profile, execution-environment, and field-performance proof closures are carried by a later contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "audit_id",
+    "recorded_at",
+    "subject",
+    "profile_observation",
+    "legacy_analysis_observation",
+    "legacy_analysis_material",
+    "candidate_findings",
+    "governance_material_assessment",
+    "governance_resolution",
+    "assurance_assessment",
+    "unresolved_records",
+    "authority_boundary",
+    "limitations",
+    "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "governed-requirement-audit/v1"},
+    "audit_id": {"type": "string", "pattern": "^governed-audit\\.[0-9a-f]{64}$", "maxLength": 96},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "subject": {"$ref": "#/$defs/subject"},
+    "profile_observation": {"$ref": "#/$defs/profileObservation"},
+    "legacy_analysis_observation": {"$ref": "#/$defs/legacyObservation"},
+    "legacy_analysis_material": {"$ref": "#/$defs/legacyAnalysisMaterial"},
+    "candidate_findings": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/candidateFinding"}
+    },
+    "governance_material_assessment": {"$ref": "#/$defs/governanceMaterialAssessment"},
+    "governance_resolution": {"$ref": "#/$defs/governanceResolution"},
+    "assurance_assessment": {"$ref": "#/$defs/assuranceAssessment"},
+    "unresolved_records": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": {"$ref": "#/$defs/unresolvedRecord"}
+    },
+    "authority_boundary": {"$ref": "#/$defs/authorityBoundary"},
+    "limitations": {"$ref": "#/$defs/nonEmptyStrings"},
+    "record_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 8192},
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "idStrings": {
+      "type": "array",
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "analysisRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref_id", "schema_version", "digest"],
+      "properties": {
+        "ref_id": {"$ref": "#/$defs/nonEmptyString"},
+        "schema_version": {"const": "semantic-guard-vnext-audit-result/v0"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "source_text", "content_digest"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "maxLength": 71},
+        "source_text": {"type": "string", "maxLength": 1048576},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "profileObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "profile_version", "adoption_resolution", "formal_authority"],
+      "properties": {
+        "profile_id": {"const": "functional-requirement-record"},
+        "profile_version": {"const": "v1"},
+        "adoption_resolution": {"const": "unresolved"},
+        "formal_authority": {"const": "none"}
+      }
+    },
+    "legacyObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["analysis_ref", "analysis_mode", "observed_workflow_disposition", "observed_outcome", "analysis_reasons", "required_provider_failure_ids", "authority_status", "formal_authority"],
+      "properties": {
+        "analysis_ref": {"$ref": "#/$defs/analysisRef"},
+        "analysis_mode": {"enum": ["assurance", "conditional", "shadow_all"]},
+        "observed_workflow_disposition": {"enum": ["pass", "warn", "block"]},
+        "observed_outcome": {"enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]},
+        "analysis_reasons": {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "required_provider_failure_ids": {"type": "array", "maxItems": 64, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "authority_status": {"const": "legacy_ungoverned_observation_only"},
+        "formal_authority": {"const": "none"}
+      }
+    },
+    "jsonValue": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string", "maxLength": 1048576},
+        {"type": "array", "maxItems": 65536, "items": {"$ref": "#/$defs/jsonValue"}},
+        {"type": "object", "maxProperties": 65536, "additionalProperties": {"$ref": "#/$defs/jsonValue"}}
+      ]
+    },
+    "analysisAttemptObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "source_kind", "observed_material", "allowed_use", "formal_authority"],
+      "properties": {
+        "stage": {"$ref": "#/$defs/nonEmptyString"},
+        "source_kind": {"enum": ["structured_record_observation", "direct_rule_observations", "provider_analysis_attempt"]},
+        "observed_material": {"$ref": "#/$defs/jsonValue"},
+        "allowed_use": {"const": "candidate_finding"},
+        "formal_authority": {"const": "none"}
+      }
+    },
+    "traceInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structured_attempt_count", "direct_attempt_count", "provider_attempt_count", "reassessment_count", "provider_receipt_count", "initial_unresolved_count", "remaining_unresolved_count", "provenance_count"],
+      "properties": {
+        "structured_attempt_count": {"const": 1},
+        "direct_attempt_count": {"const": 1},
+        "provider_attempt_count": {"type": "integer", "minimum": 0, "maximum": 64},
+        "reassessment_count": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "provider_receipt_count": {"type": "integer", "minimum": 0, "maximum": 64},
+        "initial_unresolved_count": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "remaining_unresolved_count": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "provenance_count": {"type": "integer", "minimum": 0, "maximum": 65536}
+      }
+    },
+    "unresolvedObservations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial", "remaining", "effective", "public_required_obligation_ids"],
+      "properties": {
+        "initial": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "remaining": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "effective": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "public_required_obligation_ids": {"$ref": "#/$defs/idStrings"}
+      }
+    },
+    "limitationsBySource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["report", "public_audit_conclusion", "residual_signals", "shadow_signals"],
+      "properties": {
+        "report": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}},
+        "public_audit_conclusion": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}},
+        "residual_signals": {"type": "array", "maxItems": 4096, "items": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}}},
+        "shadow_signals": {"type": "array", "maxItems": 4096, "items": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}}}
+      }
+    },
+    "legacyInternalObligation": {
+      "type": "object",
+      "required": ["obligation_id", "outcome", "finality", "challenge", "coverage", "active", "required", "holds", "unknown_reasons"],
+      "properties": {
+        "obligation_id": {"$ref": "#/$defs/nonEmptyString"},
+        "outcome": {"enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]},
+        "finality": {"enum": ["provisional", "terminal", "invalid"]},
+        "challenge": {"enum": ["none", "open", "conflict"]},
+        "coverage": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {"status": {"enum": ["complete", "partial", "not_evaluated", "failed"]}}
+        },
+        "active": {"type": "boolean"},
+        "required": {"type": "boolean"},
+        "holds": {"type": "array", "maxItems": 4096, "items": {"type": "object"}},
+        "unknown_reasons": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}}
+      }
+    },
+    "legacyInternalResult": {
+      "type": "object",
+      "required": ["execution", "obligations", "outcome", "finality", "challenge", "coverage", "workflow", "decision_requests", "residual_risks", "reasons"],
+      "properties": {
+        "execution": {
+          "type": "object",
+          "required": ["provider_failures"],
+          "properties": {"provider_failures": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/nonEmptyString"}}}
+        },
+        "obligations": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "#/$defs/legacyInternalObligation"}},
+        "outcome": {"enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]},
+        "finality": {"enum": ["provisional", "terminal", "invalid"]},
+        "challenge": {"enum": ["none", "open", "conflict"]},
+        "coverage": {"enum": ["complete", "partial", "not_evaluated", "failed"]},
+        "workflow": {"enum": ["pass", "warn", "block"]},
+        "decision_requests": {"type": "array", "maxItems": 4096},
+        "residual_risks": {"type": "array", "maxItems": 4096},
+        "reasons": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/nonEmptyString"}}
+      }
+    },
+    "legacyInternalTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "profile_id", "profile_version", "applicability", "record", "direct_assessments", "residual_signals", "shadow_signals", "analysis_attempts", "provider_execution_receipts", "dependency_projections", "obligation_reassessments", "analyzer_qualifications", "lifting_resolutions", "initial_unresolved_obligations", "remaining_unresolved_obligations", "unresolved_obligations", "stage_plans", "result", "analysis_mode", "limitations", "schema_version", "summary"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "maxLength": 71},
+        "profile_id": {"$ref": "#/$defs/nonEmptyString"},
+        "profile_version": {"$ref": "#/$defs/nonEmptyString"},
+        "applicability": {"enum": ["applicable", "not_applicable", "unknown"]},
+        "record": {"type": "object"},
+        "direct_assessments": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"type": "object", "required": ["obligation_id", "rule_id", "outcome"]}},
+        "residual_signals": {"type": "array", "maxItems": 4096},
+        "shadow_signals": {"type": "array", "maxItems": 4096},
+        "analysis_attempts": {"type": "array", "maxItems": 64},
+        "provider_execution_receipts": {"type": "array", "maxItems": 64},
+        "dependency_projections": {"type": "array", "maxItems": 4096},
+        "obligation_reassessments": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"type": "object", "required": ["obligation_id", "original_rule_id", "original_outcome", "effective_outcome"]}},
+        "analyzer_qualifications": {"type": "array", "maxItems": 4096},
+        "lifting_resolutions": {"type": "array", "maxItems": 4096},
+        "initial_unresolved_obligations": {"type": "array", "maxItems": 4096},
+        "remaining_unresolved_obligations": {"type": "array", "maxItems": 4096},
+        "unresolved_obligations": {"type": "array", "maxItems": 4096},
+        "stage_plans": {"type": "array", "maxItems": 64},
+        "result": {"$ref": "#/$defs/legacyInternalResult"},
+        "analysis_mode": {"enum": ["assurance", "conditional", "shadow_all"]},
+        "limitations": {"type": "array", "maxItems": 4096, "items": {"type": "string", "maxLength": 8192}},
+        "schema_version": {"const": "semantic-guard-vnext-requirement-audit/v0"},
+        "summary": {"type": "object"}
+      }
+    },
+    "legacyAnalysisMaterial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority_status", "allowed_use", "formal_authority", "trace_inventory", "analysis_attempts", "provider_execution_receipts", "obligation_reassessments", "dependency_projections", "analyzer_qualifications", "lifting_resolutions", "unresolved_observations", "limitations_by_source", "provenance", "legacy_public_payload", "legacy_internal_trace", "material_digest"],
+      "properties": {
+        "authority_status": {"const": "legacy_ungoverned_observation_only"},
+        "allowed_use": {"const": ["candidate_finding", "unresolved_escalation"]},
+        "formal_authority": {"const": "none"},
+        "trace_inventory": {"$ref": "#/$defs/traceInventory"},
+        "analysis_attempts": {"type": "array", "minItems": 2, "maxItems": 66, "items": {"$ref": "#/$defs/analysisAttemptObservation"}},
+        "provider_execution_receipts": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/jsonValue"}},
+        "obligation_reassessments": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "dependency_projections": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "analyzer_qualifications": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "lifting_resolutions": {"type": "array", "maxItems": 4096, "items": {"$ref": "#/$defs/jsonValue"}},
+        "unresolved_observations": {"$ref": "#/$defs/unresolvedObservations"},
+        "limitations_by_source": {"$ref": "#/$defs/limitationsBySource"},
+        "provenance": {"type": "array", "maxItems": 65536, "items": {"$ref": "#/$defs/jsonValue"}},
+        "legacy_public_payload": {"type": "object", "required": ["schema_version", "audit_id", "subject_ref", "profile_refs", "analysis_mode", "audit_conclusion", "workflow_disposition", "obligation_results", "unresolved_required_obligation_ids"]},
+        "legacy_internal_trace": {"$ref": "#/$defs/legacyInternalTrace"},
+        "material_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end_exclusive"],
+      "properties": {
+        "start": {"type": "integer", "minimum": 0},
+        "end_exclusive": {"type": "integer", "minimum": 1}
+      }
+    },
+    "candidateFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["finding_id", "finding_kind", "stage", "obligation_ids", "origin_refs", "observed_outcome", "evidence_spans", "reason_codes", "observed_material_digest", "allowed_use", "formal_authority"],
+      "properties": {
+        "finding_id": {"$ref": "#/$defs/nonEmptyString"},
+        "finding_kind": {"enum": ["structured_record_observation", "direct_rule_assessment", "provider_analysis_attempt", "obligation_reassessment"]},
+        "stage": {"$ref": "#/$defs/nonEmptyString"},
+        "obligation_ids": {"$ref": "#/$defs/idStrings"},
+        "origin_refs": {"$ref": "#/$defs/idStrings"},
+        "observed_outcome": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_spans": {
+          "type": "array",
+          "maxItems": 1024,
+          "items": {"$ref": "#/$defs/span"}
+        },
+        "reason_codes": {"type": "array", "maxItems": 4096, "uniqueItems": true, "items": {"type": "string", "maxLength": 8192}},
+        "observed_material_digest": {"$ref": "#/$defs/digest"},
+        "allowed_use": {"const": "candidate_finding"},
+        "formal_authority": {"const": "none"}
+      }
+    },
+    "governanceMaterialAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "observation_digest", "authority_source_ids", "subject_scope_ref", "engineering_rule_governance", "lifecycle_profile_governance", "execution_environment_evidence", "field_performance_evidence", "formal_authority", "positive_assurance", "limitations", "assessment_digest"],
+      "properties": {
+        "schema_version": {"const": "governance-material-assessment/v1"},
+        "observation_digest": {"$ref": "#/$defs/digest"},
+        "authority_source_ids": {"$ref": "#/$defs/idStrings"},
+        "subject_scope_ref": {"$ref": "#/$defs/governanceRecordRef"},
+        "engineering_rule_governance": {"$ref": "#/$defs/governanceMaterialAxis"},
+        "lifecycle_profile_governance": {"$ref": "#/$defs/governanceMaterialAxis"},
+        "execution_environment_evidence": {"$ref": "#/$defs/governanceMaterialAxis"},
+        "field_performance_evidence": {"$ref": "#/$defs/governanceMaterialAxis"},
+        "formal_authority": {"const": "none"},
+        "positive_assurance": {"const": false},
+        "limitations": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmptyString"}},
+        "assessment_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "governanceRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"type": "string", "minLength": 1, "maxLength": 512},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "governanceMaterialAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_status", "binding_status", "input_material", "input_material_digest", "validated_record", "validated_record_digest", "reason_codes", "formal_authority", "positive_assurance"],
+      "properties": {
+        "input_status": {"enum": ["missing", "candidate_assessed", "rejected"]},
+        "binding_status": {"enum": ["not_bound", "matched_candidate", "invalid"]},
+        "input_material": {"$ref": "#/$defs/jsonValue"},
+        "input_material_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "validated_record": {"$ref": "#/$defs/jsonValue"},
+        "validated_record_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/digest"}]},
+        "reason_codes": {"$ref": "#/$defs/idStrings"},
+        "formal_authority": {"const": "none"},
+        "positive_assurance": {"const": false}
+      }
+    },
+    "governanceResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["h1_human_decision", "h1_verdict_authority", "runtime_resolution_status", "observation_binding_status", "required_authority_source_ids", "resolved_authority_source_ids", "reason_codes"],
+      "properties": {
+        "h1_human_decision": {"const": "pending"},
+        "h1_verdict_authority": {"const": "none"},
+        "runtime_resolution_status": {"const": "unresolved"},
+        "observation_binding_status": {"enum": ["not_bound", "invalid_governance_bundle", "unsupported_proof_context", "mismatched", "matched"]},
+        "required_authority_source_ids": {"$ref": "#/$defs/idStrings"},
+        "resolved_authority_source_ids": {"type": "array", "maxItems": 0},
+        "reason_codes": {"type": "array", "minItems": 1, "maxItems": 4096, "uniqueItems": true, "items": {"$ref": "#/$defs/nonEmptyString"}}
+      }
+    },
+    "assuranceAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "workflow_disposition", "formal_verdict_authority", "blocking_unresolved_count", "allowed_use", "forbidden_use"],
+      "properties": {
+        "status": {"const": "unresolved"},
+        "workflow_disposition": {"const": "block"},
+        "formal_verdict_authority": {"const": "none"},
+        "blocking_unresolved_count": {"type": "integer", "minimum": 1},
+        "allowed_use": {"const": ["candidate_finding", "unresolved_escalation"]},
+        "forbidden_use": {"const": ["direct_ai_command", "human_decision_inference", "action_occurrence_inference", "final_human_acceptance"]}
+      }
+    },
+    "unresolvedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unresolved_id", "uncertainty_kind", "owner", "needed_for", "blocking_status", "next_action", "resolution_condition", "review_at", "fallback", "retirement_condition", "evidence_refs"],
+      "properties": {
+        "unresolved_id": {"$ref": "#/$defs/nonEmptyString"},
+        "uncertainty_kind": {"$ref": "#/$defs/nonEmptyString"},
+        "owner": {"$ref": "#/$defs/nonEmptyString"},
+        "needed_for": {"$ref": "#/$defs/nonEmptyString"},
+        "blocking_status": {"enum": ["blocking_positive_assurance", "non_blocking"]},
+        "next_action": {"$ref": "#/$defs/nonEmptyString"},
+        "resolution_condition": {"$ref": "#/$defs/nonEmptyString"},
+        "review_at": {"$ref": "#/$defs/nonEmptyString"},
+        "fallback": {"$ref": "#/$defs/nonEmptyString"},
+        "retirement_condition": {"$ref": "#/$defs/nonEmptyString"},
+        "evidence_refs": {"$ref": "#/$defs/nonEmptyStrings"}
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legacy_analysis_authority", "candidate_finding_authority", "unresolved_escalation", "direct_command_authority", "human_decision_authority", "formal_verdict_requires_exact_h1_resolution", "formal_verdict_requires_complete_governance_resolution", "final_acceptance_owner"],
+      "properties": {
+        "legacy_analysis_authority": {"const": "observation_only"},
+        "candidate_finding_authority": {"const": "candidate_only"},
+        "unresolved_escalation": {"const": true},
+        "direct_command_authority": {"const": false},
+        "human_decision_authority": {"const": false},
+        "formal_verdict_requires_exact_h1_resolution": {"const": true},
+        "formal_verdict_requires_complete_governance_resolution": {"const": true},
+        "final_acceptance_owner": {"const": "human"}
+      }
+    }
+  }
+}

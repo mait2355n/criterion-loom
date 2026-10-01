@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/local-environment-adoption.schema.json",
+  "title": "semantic-guard local environment adoption material",
+  "description": "Digest-bound human-decision material. Structure alone never authenticates the decision.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "adoption_id",
+    "adoption_version",
+    "human_decision",
+    "environment_profile_ref",
+    "decision_owner_ref",
+    "decision_evidence_ref",
+    "trusted_entrypoint_ref",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "limitations",
+    "adoption_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-local-environment-adoption/v0"},
+    "record_kind": {"enum": ["adoption_request", "adoption_decision"]},
+    "adoption_id": {"$ref": "#/$defs/stable_id"},
+    "adoption_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "human_decision": {"enum": ["pending", "accept"]},
+    "environment_profile_ref": {
+      "type": "object",
+      "required": ["environment_profile_id", "environment_profile_version", "basis_digest"],
+      "properties": {
+        "environment_profile_id": {"$ref": "#/$defs/stable_id"},
+        "environment_profile_version": {"type": "string", "minLength": 1, "maxLength": 128},
+        "basis_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "decision_owner_ref": {"$ref": "#/$defs/digest_bound_ref"},
+    "decision_evidence_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/decision_evidence_ref"}
+      ]
+    },
+    "trusted_entrypoint_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/digest_bound_ref"}
+      ]
+    },
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 4096}
+    },
+    "adoption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"record_kind": {"const": "adoption_request"}},
+        "required": ["record_kind"]
+      },
+      "then": {
+        "properties": {
+          "human_decision": {"const": "pending"},
+          "decision_evidence_ref": {"type": "null"},
+          "trusted_entrypoint_ref": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"record_kind": {"const": "adoption_decision"}},
+        "required": ["record_kind"]
+      },
+      "then": {
+        "properties": {
+          "human_decision": {"const": "accept"},
+          "decision_evidence_ref": {"$ref": "#/$defs/decision_evidence_ref"},
+          "trusted_entrypoint_ref": {"$ref": "#/$defs/digest_bound_ref"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "digest_bound_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "decision_evidence_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "content_digest", "trust_domain"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "minLength": 1, "maxLength": 4096},
+        "content_digest": {"$ref": "#/$defs/digest"},
+        "trust_domain": {"$ref": "#/$defs/stable_id"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

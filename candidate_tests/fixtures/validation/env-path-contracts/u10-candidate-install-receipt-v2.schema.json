@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-candidate-install-receipt-v2.schema.json",
+  "title": "semantic-guard U-10 candidate installation occurrence receipt v2",
+  "description": "A post-publication receipt binding an exact frozen projection to an honestly observed publication interval. It grants no activation, adoption, or positive-assurance authority.",
+  "type": "object",
+  "required": [
+    "schema_version", "receipt_id", "record_kind", "occurrence_id",
+    "authorization_ref", "consumption_ref", "bundle_ref",
+    "installed_candidate_path", "projection_ref",
+    "publication_not_before", "publication_observed_at", "receipt_recorded_at",
+    "publication_occurred", "installation_state",
+    "snapshot_lock_validation_status", "snapshot_adoption_status",
+    "active_snapshot_written", "active_trust_store_written",
+    "u4_principal_authenticity", "formal_authority",
+    "positive_assurance_allowed", "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-candidate-install-receipt/v2"},
+    "receipt_id": {"$ref": "#/$defs/path_component_id"},
+    "record_kind": {"const": "candidate_installation_occurrence"},
+    "occurrence_id": {"$ref": "#/$defs/path_component_id"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"},
+    "consumption_ref": {"$ref": "#/$defs/consumption_ref"},
+    "bundle_ref": {"$ref": "#/$defs/bundle_ref"},
+    "installed_candidate_path": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+    "projection_ref": {"$ref": "#/$defs/projection_ref"},
+    "publication_not_before": {"type": "string", "format": "date-time"},
+    "publication_observed_at": {"type": "string", "format": "date-time"},
+    "receipt_recorded_at": {"type": "string", "format": "date-time"},
+    "publication_occurred": {"const": true},
+    "installation_state": {"const": "candidate_installed_not_activated"},
+    "snapshot_lock_validation_status": {"const": "pending_non_root_final_path_check"},
+    "snapshot_adoption_status": {"const": "pending"},
+    "active_snapshot_written": {"const": false},
+    "active_trust_store_written": {"const": false},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "path_component_id": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "authorization_ref": {"type": "object", "required": ["authorization_id", "authorization_digest", "authorized_operation", "record_locator", "artifact_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/path_component_id"}, "authorization_digest": {"$ref": "#/$defs/digest"}, "authorized_operation": {"const": "install_candidate_only"}, "record_locator": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.authorization\\.json$", "maxLength": 220}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "consumption_ref": {"type": "object", "required": ["consumption_id", "consumption_digest"], "properties": {"consumption_id": {"$ref": "#/$defs/path_component_id"}, "consumption_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "bundle_ref": {"type": "object", "required": ["bundle_id", "bundle_digest"], "properties": {"bundle_id": {"$ref": "#/$defs/path_component_id"}, "bundle_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "projection_ref": {"type": "object", "required": ["projection_id", "locator", "artifact_digest", "projection_digest"], "properties": {"projection_id": {"$ref": "#/$defs/path_component_id"}, "locator": {"type": "string", "pattern": "^/.+/candidate-install-projection\\.json$", "minLength": 2, "maxLength": 4096}, "artifact_digest": {"$ref": "#/$defs/digest"}, "projection_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

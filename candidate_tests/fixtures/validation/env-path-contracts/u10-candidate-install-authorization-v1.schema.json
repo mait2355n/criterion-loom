@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-candidate-install-authorization-v1.schema.json",
+  "title": "semantic-guard U-10 exact candidate installation authorization v1",
+  "description": "A human decision authorizing installation of one exact inactive candidate bundle. It grants no snapshot activation, trust-store activation, adoption, engineering correctness, or positive assurance.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "authorization_id",
+    "authorization_version",
+    "record_kind",
+    "bundle_id",
+    "bundle_digest",
+    "source_bundle_path",
+    "source_manifest_artifact_digest",
+    "target_candidate_path",
+    "authorized_operation",
+    "human_decision",
+    "decision_owner",
+    "recorded_at",
+    "u4_principal_authenticity",
+    "authority_scope",
+    "candidate_install_ledger",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "authorization_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-candidate-install-authorization/v1"},
+    "authorization_id": {"$ref": "#/$defs/path_component_id"},
+    "authorization_version": {"const": "1.0.0"},
+    "record_kind": {"const": "candidate_install_authorization"},
+    "bundle_id": {"$ref": "#/$defs/path_component_id"},
+    "bundle_digest": {"$ref": "#/$defs/digest"},
+    "source_bundle_path": {
+      "type": "string",
+      "pattern": "^(?!.*(?:^|/)\\.\\.(?:/|$))/[^\\u0000]+$",
+      "minLength": 2,
+      "maxLength": 4096
+    },
+    "source_manifest_artifact_digest": {"$ref": "#/$defs/digest"},
+    "target_candidate_path": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+    "authorized_operation": {"const": "install_candidate_only"},
+    "human_decision": {"const": "accept"},
+    "decision_owner": {"const": "human"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_candidate_install_only"},
+    "candidate_install_ledger": {"$ref": "#/$defs/ledger_binding"},
+    "formal_authority": {"const": "human_candidate_install_decision_only"},
+    "positive_assurance_allowed": {"const": false},
+    "authorization_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "path_component_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "ledger_binding": {
+      "type": "object",
+      "required": ["root", "policy", "policy_digest"],
+      "properties": {
+        "root": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+        "policy": {"$ref": "#/$defs/ledger_policy"},
+        "policy_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "ledger_policy": {
+      "type": "object",
+      "required": ["profile", "record_set", "publication", "coordination", "retention", "temporary_artifacts"],
+      "properties": {
+        "profile": {"const": "append-only-candidate-install-transaction-ledger/v1"},
+        "record_set": {
+          "const": ["immutable_authorization_copy", "prepublication_authorization_consumption", "postpublication_occurrence_receipt"]
+        },
+        "publication": {"const": "complete_file_fsync_atomic_link_no_replace_directory_fsync"},
+        "coordination": {"const": "target_bundle_flock_with_per_authorization_stale_stage_cleanup"},
+        "retention": {"const": "retain_authorization_consumption_and_receipt_while_candidate_or_downstream_evidence_is_referenced"},
+        "temporary_artifacts": {"const": "non_occurrence_cleanup_under_target_bundle_transaction_lock"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

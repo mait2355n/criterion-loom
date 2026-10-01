@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/schema/u10-snapshot-activation-record-v1.schema.json",
+  "title": "semantic-guard U-10 snapshot activation record v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "activation_id",
+    "snapshot_id",
+    "snapshot_version",
+    "snapshot_basis_digest",
+    "entry_id",
+    "adoption_id",
+    "adoption_version",
+    "adoption_digest",
+    "environment_adoption_ref",
+    "projection_receipt_ref",
+    "snapshot_adoption_authorization_ref",
+    "immutability_verified_at",
+    "activated_at",
+    "activation_status",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "activation_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-activation-record/v1"},
+    "activation_id": {"$ref": "#/$defs/stable_id"},
+    "snapshot_id": {"$ref": "#/$defs/stable_id"},
+    "snapshot_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "snapshot_basis_digest": {"$ref": "#/$defs/digest"},
+    "entry_id": {"$ref": "#/$defs/stable_id"},
+    "adoption_id": {"$ref": "#/$defs/stable_id"},
+    "adoption_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "adoption_digest": {"$ref": "#/$defs/digest"},
+    "environment_adoption_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "projection_receipt_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "snapshot_adoption_authorization_ref": {"$ref": "#/$defs/root_artifact_ref"},
+    "immutability_verified_at": {"type": "string", "format": "date-time"},
+    "activated_at": {"type": "string", "format": "date-time"},
+    "activation_status": {"const": "active"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "activation_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "root_artifact_ref": {
+      "type": "object",
+      "required": ["record_id", "locator", "artifact_digest", "semantic_digest"],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/stable_id"},
+        "locator": {"type": "string", "pattern": "^/", "maxLength": 4096},
+        "artifact_digest": {"$ref": "#/$defs/digest"},
+        "semantic_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/legacy-shadow-observation-envelope.schema.json",
+  "title": "semantic-guard legacy shadow observation envelope",
+  "description": "A self-describing observation-only envelope for one historical vNext-to-legacy shadow comparison. Nested pass values and comparison agreement have no formal authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "envelope_id",
+    "governance_status",
+    "authority_scope",
+    "formal_authority",
+    "positive_assurance",
+    "allowed_use",
+    "forbidden_use",
+    "limitations",
+    "vnext",
+    "legacy",
+    "comparison",
+    "semantic_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "legacy-shadow-observation-envelope/v1"},
+    "envelope_id": {"type": "string", "pattern": "^legacy-shadow-observation\\.[0-9a-f]{64}$", "maxLength": 96},
+    "governance_status": {"const": "legacy_shadow_observation_only"},
+    "authority_scope": {"const": "observation_only"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance": {"const": false},
+    "allowed_use": {"const": ["migration_analysis", "compatibility_observation"]},
+    "forbidden_use": {"const": ["formal_satisfaction", "formal_nonconformance", "hold_release", "control_plane_disposition", "human_acceptance"]},
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1, "maxLength": 8192}
+    },
+    "vnext": {"type": "object"},
+    "legacy": {"$ref": "#/$defs/legacyObservation"},
+    "comparison": {"$ref": "#/$defs/shadowComparison"},
+    "semantic_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "maxLength": 16384},
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "SHA-256 of the UTF-8 JSON serialization of every envelope member except envelope_id and semantic_digest. Mapping keys are lexicographically sorted, ASCII escaping is disabled, insignificant whitespace is omitted, and non-finite numbers are forbidden.",
+      "required": ["algorithm", "canonicalization", "scope", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "canonicalization": {"const": "semantic-guard-canonical-json/v1"},
+        "scope": {"const": "all_members_except_envelope_id_and_semantic_digest"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$", "maxLength": 64}
+      }
+    },
+    "jsonValue": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "number"},
+        {"type": "string", "maxLength": 1048576},
+        {"type": "array", "maxItems": 65536, "items": {"$ref": "#/$defs/jsonValue"}},
+        {"type": "object", "maxProperties": 65536, "additionalProperties": {"$ref": "#/$defs/jsonValue"}}
+      ]
+    },
+    "baselineMismatch": {
+      "type": "object",
+      "maxProperties": 8,
+      "additionalProperties": {"type": "string", "maxLength": 8192}
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checked_files", "mismatches", "manifest_sha256", "pin_profile", "runtime_interpreter_path", "runtime_python_version"],
+      "properties": {
+        "status": {"enum": ["matched", "drifted", "invalid_manifest"]},
+        "checked_files": {"type": "integer", "minimum": 0},
+        "mismatches": {"type": "array", "maxItems": 65536, "items": {"$ref": "#/$defs/baselineMismatch"}},
+        "manifest_sha256": {"type": "string", "maxLength": 64},
+        "pin_profile": {"type": "string", "maxLength": 512},
+        "runtime_interpreter_path": {"type": "string", "maxLength": 4096},
+        "runtime_python_version": {"type": "string", "maxLength": 512}
+      }
+    },
+    "legacyExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "command", "exit_code", "stdout_valid_json", "stderr", "baseline", "result_schema_valid", "adapter_pin_status", "invocation_fingerprint", "stdout_sha256", "stdout_bytes"],
+      "properties": {
+        "status": {"enum": ["baseline_invalid", "baseline_drift", "adapter_unpinned", "unavailable", "execution_error", "baseline_drift_during_execution", "completed", "invalid_result"]},
+        "command": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "maxLength": 4096}},
+        "exit_code": {"type": ["integer", "null"]},
+        "stdout_valid_json": {"type": "boolean"},
+        "stderr": {"type": "string", "maxLength": 16384},
+        "baseline": {"$ref": "#/$defs/baseline"},
+        "result_schema_valid": {"type": "boolean"},
+        "adapter_pin_status": {"enum": ["unchecked", "untrusted", "manifest_pinned"]},
+        "invocation_fingerprint": {"type": "object", "maxProperties": 16, "additionalProperties": {"$ref": "#/$defs/jsonValue"}},
+        "stdout_sha256": {"type": "string", "maxLength": 64},
+        "stdout_bytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "legacyObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "execution", "raw_legacy_result", "normalized_legacy_observation"],
+      "properties": {
+        "schema_version": {"const": "semantic-guard-legacy-observation/v0"},
+        "execution": {"$ref": "#/$defs/legacyExecution"},
+        "raw_legacy_result": {"anyOf": [{"type": "null"}, {"type": "object", "maxProperties": 65536, "additionalProperties": {"$ref": "#/$defs/jsonValue"}}]},
+        "normalized_legacy_observation": {"anyOf": [{"type": "null"}, {"type": "object", "maxProperties": 65536, "additionalProperties": {"$ref": "#/$defs/jsonValue"}}]}
+      }
+    },
+    "difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "observation_delta", "direction", "assessment", "basis_kind", "legacy_value", "vnext_value", "rationale"],
+      "properties": {
+        "subject": {"$ref": "#/$defs/nonEmptyString"},
+        "observation_delta": {"enum": ["execution_availability_change", "disposition_change", "obligation_state_change", "coverage_change", "equivalent"]},
+        "direction": {"enum": ["vnext_only", "conflicting", "equivalent_after_normalization"]},
+        "assessment": {"enum": ["provider_environment_drift", "unresolved_requires_review", "legacy_known_defect", "intentional_constitutional_change", "coverage_expansion"]},
+        "basis_kind": {"enum": ["operational_evidence", "constitution_invariant", "none"]},
+        "legacy_value": {"$ref": "#/$defs/jsonValue"},
+        "vnext_value": {"$ref": "#/$defs/jsonValue"},
+        "rationale": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "shadowComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "legacy_execution_status", "legacy_baseline_status", "vnext_workflow", "vnext_outcome", "differences", "unresolved_requires_review_count", "schema_version"],
+      "properties": {
+        "source_id": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "maxLength": 71},
+        "legacy_execution_status": {"enum": ["baseline_invalid", "baseline_drift", "adapter_unpinned", "unavailable", "execution_error", "baseline_drift_during_execution", "completed", "invalid_result"]},
+        "legacy_baseline_status": {"enum": ["matched", "drifted", "invalid_manifest"]},
+        "vnext_workflow": {"enum": ["pass", "warn", "block"]},
+        "vnext_outcome": {"enum": ["satisfied", "refuted", "undetermined", "not_applicable", "invalid"]},
+        "differences": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"$ref": "#/$defs/difference"}},
+        "unresolved_requires_review_count": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "schema_version": {"const": "semantic-guard-shadow-comparison/v0"}
+      }
+    }
+  }
+}

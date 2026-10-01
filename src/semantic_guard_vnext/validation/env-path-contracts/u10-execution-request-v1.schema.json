@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-execution-request-v1.schema.json",
+  "title": "semantic-guard U-10 root broker execution request v1",
+  "description": "The complete caller-controlled input. All paths, digests, profiles, sources, worker identities, output locations, receipt identifiers, and services are resolved by the fixed root-owned broker composition.",
+  "type": "object",
+  "required": ["entry_id", "command_id", "request_nonce"],
+  "properties": {
+    "entry_id": {"$ref": "#/$defs/stable_id"},
+    "command_id": {"$ref": "#/$defs/stable_id"},
+    "request_nonce": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    }
+  },
+  "unevaluatedProperties": false
+}

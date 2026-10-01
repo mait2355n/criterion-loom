@@ -1,0 +1,23 @@
+{
+  "id": "REQ-DECISION-FRAME-MORPHOLOGY-DISABLED-001",
+  "title": "Decision-frame rule stays disabled without an explicit morphology provider",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "A：50kg\nB：60kg\nC：70kg\nD：80kg\nE：90kg\nこの5人の中で、Cの次に体重が重い人は誰か？",
+  "strict": true,
+  "rationale": "The bounded rule is opt-in; default fixture evaluation must not imply that morphology ran.",
+  "labels": {
+    "forbidden_rules": [
+      "req.precondition.order_direction_unspecified"
+    ],
+    "forbidden_findings": [
+      {
+        "rule_id": "req.precondition.order_direction_unspecified"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block"
+  }
+}

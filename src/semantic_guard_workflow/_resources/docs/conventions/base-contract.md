@@ -1,0 +1,307 @@
+# Base Contract
+
+Status: draft
+
+This contract defines the baseline shape for coding conventions and I/O
+contracts across the workspaces that `semantic-guard` audits.
+
+The purpose is not uniformity for its own sake. The purpose is to make public
+behavior inspectable: what succeeded, what failed, what evidence exists, which
+facts are inferred, and where a human decision remains pending.
+
+## Structure First
+
+Prefer structure over prose wherever later tools, skills, tests, or humans must
+act on the result.
+
+Use prose for explanation, rationale, and human notes. Do not make prose carry
+control semantics that a caller must parse. Public contracts should expose named
+fields, stable versions, typed values, and explicit exception points.
+
+Structure-first conventions:
+
+- machine-readable public outputs declare a `schema_version`, `$schema`,
+  documented version, or established equivalent.
+- public records use named fields for facts, inferences, pending decisions,
+  evidence, and residual risks.
+- free-form text lives in `notes`, `message`, `summary`, `rationale`, or another
+  clearly named human field.
+- booleans, enums, identifiers, timestamps, status values, and error codes are
+  fields, not sentences.
+- repository profiles follow fixed sections so differences between repositories
+  are visible without re-reading prose.
+
+## Applies To
+
+Use this contract for public or cross-tool surfaces:
+
+- CLI commands.
+- MCP tools.
+- API or webhook responses.
+- JSON, YAML, JSONL, or CSV outputs.
+- audit records and completion evidence.
+- durable project notes that will be read by later agents.
+- repository-level convention profiles.
+
+Do not use it to force one internal architecture onto every repository. Internal
+module layout, domain model, persistence engine, visualizer structure, and
+creative-document structure remain repository-specific.
+
+Non-goals and exceptions must be written down rather than guessed. A repository
+profile may override the base contract for a named surface, but it should state
+the exception, the reason, and the verification command that proves the local
+shape still composes with the surrounding tools.
+
+## Output Envelope
+
+Machine-readable results should expose the outcome before the payload.
+
+Success shape:
+
+```json
+{
+  "schema_version": "tool-result/v1",
+  "ok": true,
+  "data": {},
+  "meta": {}
+}
+```
+
+Failure shape:
+
+```json
+{
+  "schema_version": "tool-result/v1",
+  "ok": false,
+  "error": {
+    "code": "stable_error_code",
+    "message": "short human-readable message",
+    "detail": {},
+    "hint": ""
+  },
+  "meta": {}
+}
+```
+
+For existing `semantic-guard` audit results, the established `status`,
+`findings`, `missing`, `next_actions`, and `details` shape remains valid. Do not
+break it just to wrap it. New public outputs should still state success or
+failure plainly, keep error shape stable, and declare their structural version
+or documented schema source.
+
+## CLI Contract
+
+CLI commands should keep these roles separate:
+
+- `stdout`: machine-readable result when the command is meant to be composed.
+- `stderr`: human diagnostics, progress, and non-result messages.
+- exit `0`: successful command.
+- exit `1`: expected domain failure or invalid audited artifact.
+- exit `2`: usage, argument, configuration, or input-shape error.
+- exit `3`: external dependency, environment, or subprocess failure.
+
+Commands may return a non-zero exit code for a valid audit result when the
+audited material fails the gate. That is distinct from the command itself being
+broken.
+
+## Error Contract
+
+Public failures should include:
+
+- stable `code`.
+- short `message`.
+- structured `detail` when available.
+- `hint` when the next action is known.
+
+Do not make callers parse prose to understand a failure class.
+
+## Record Contract
+
+Durable records should make time, source, and uncertainty explicit:
+
+- timestamps use ISO 8601 with timezone.
+- identifiers are stable across reruns when they represent the same entity.
+- facts, inferences, pending decisions, and unresolved observations are marked
+  separately.
+- evidence is linked or described concretely enough to rerun or inspect.
+
+Durable records should also keep their recovery surface shallow. A later reader
+or tool should not need to traverse deep prose before it can resume work.
+
+Expose a short `record_surface` or equivalent named fields:
+
+- `context`: what this record is about and why it exists.
+- `current_state`: the state now, not the full history.
+- `action`: the next action, stop condition, or explicit no-action state.
+- `detail_refs`: links or identifiers for deeper evidence, rationale, logs, or
+  prior discussion.
+
+Keep long rationale, raw logs, transcripts, and historical explanation behind
+`detail_refs`. The top-level record should recover context and action; it should
+not become the archive itself.
+
+## Expression Precision
+
+Document wording that carries work, judgment, verification, publication, or
+handoff semantics should expose enough operational shape for a later reader.
+
+The first deterministic rule group is `doc.expression.*`. It checks whether a
+sentence names the target, operation, output form, decision actor, and revision
+target when it uses broad expressions such as vague places, material, utility,
+visibility, improvement wording, or demonstrative references.
+
+This is not a style lint. It does not judge literary quality, grammar, tone,
+legal sufficiency, security review, publication approval, or final acceptance.
+It only warns when prose leaves the reader unable to recover what is being
+acted on, what operation occurs, what artifact is returned, who judges it, or
+what changes next.
+
+The operation wording slice intentionally favors recall while it is being
+calibrated. It warns on role or viewpoint wording such as `〜として見る`,
+`〜として扱う`, or `〜として見せる` when the sentence names a view but not the
+actual operation. It also warns on inspection wording such as `検査する`,
+`確認する`, `レビューする`, `評価する`, `判断する`, or `判定する` when nearby text
+does not expose enough of the criterion, method, output, or decision actor. The
+repair payload should offer alternatives such as confirmation, inspection
+against criteria, monitoring, classification, or presentation as human decision
+material rather than rewriting automatically.
+
+The first contract-family expansion also favors recall. It warns on broad
+capability wording such as `すべて`, `全体`, `網羅`, `完全`, or `every/all` when
+the local sentence does not expose enough scope, input boundary, limit, or
+evidence/output shape. It also warns on mapping and control-plane wording such
+as `写像する`, `補う`, `昇格させる`, `戻す`, `接続する`, or `閉じる` when nearby
+text does not expose enough source field, destination field, rule or condition,
+or evidence-preservation contract.
+The detector should not treat ordinary compounds or negated non-capabilities,
+such as `全体図`, `網羅的な要求検証は担当しない`, or bare English `every
+repository`, as capability claims by themselves.
+
+For demonstratives such as `これ`, `それ`, `この内容`, or `その一覧`, the check
+does not ban the demonstrative. It asks whether the referent is recoverable from
+nearby text. The default detector uses only standard-library string and regular
+expression processing:
+
+- same-line text before the demonstrative;
+- up to two previous non-empty lines;
+- the nearest heading or list parent within local context;
+- an immediate definition clause such as `これは X である`;
+- code spans, ASCII field names, schema fields, and Japanese noun phrases
+  around particles such as `を`, `は`, `が`, `に`, `として`.
+
+Morphological analysis is intentionally not a required dependency. It may
+improve noun phrase boundaries later, but it does not solve referent identity by
+itself. It should remain an optional tuning path until corpus evidence shows the
+standard-library detector causes too much false positive or false negative
+noise.
+
+Representative examples:
+
+```text
+怪しい場所を試験できる内容として外に出す。
+```
+
+This should warn because target, operation, output form, and decision actor are
+blurred.
+
+```text
+それを外部へ出す。
+```
+
+This should warn because the referent of `それ` is not recoverable.
+
+```text
+不明点を抽出し、外部での判断に使える一覧として返す。
+```
+
+This should pass the expression-precision check because target, operation,
+output form, and use are recoverable.
+
+```text
+未決定事項を抽出し、その一覧を JSON の findings として返す。
+```
+
+This should pass expression-precision because `その一覧` points back to the
+named target `未決定事項`.
+
+```text
+曖昧な箇所を判断材料として見る。
+```
+
+This should warn because `として見る` names a viewpoint but not the operation.
+
+```text
+対象を検査する。
+```
+
+This should warn because the inspection criterion, output, and decision use are
+not recoverable.
+
+```text
+差分を基準に照らして検査し、違反箇所を findings として返す。
+```
+
+This should pass expression-precision because the criterion, operation, output
+form, and returned artifact are recoverable.
+
+```text
+資源全体を見渡し、次に何を扱うべきかを決める。
+```
+
+This should warn because the resource scope, observation source, priority rule,
+and decision actor are not recoverable.
+
+```text
+監査結果を資源状態、危険、次行動へ写像する。
+```
+
+This should warn because the source fields, destination fields, mapping rule,
+and evidence preservation are not recoverable.
+
+This should pass because the criterion and output are recoverable.
+
+## Repository Profile
+
+Each repository may have a profile that specializes this base contract.
+
+The profile should use fixed sections:
+
+- `schema_version`: profile schema version.
+- `repository`: stable repository or workspace identifier.
+- `public_surfaces`: CLI, MCP, API, files, records, or UI surfaces.
+- `commands`: formatter, linter, test, fixture, smoke, and release checks.
+- `output_shapes`: accepted structured outputs and schema references.
+- `records`: durable logs, audit records, diary records, or evidence records.
+- `exceptions`: local exceptions with reason and verification command.
+- `non_goals`: repository-specific things the base contract must not force.
+
+The base contract wins only where a repository profile is absent or silent.
+
+## Verification
+
+Representative checks for this convention layer:
+
+```sh
+uv run --python 3.13 --project . semantic-guard conventions-catalog
+uv run --python 3.13 --project . semantic-guard audit-conventions --file docs/conventions/base-contract.md
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "それを外部へ出す。"
+uv run --python 3.13 --project . semantic-guard audit-conventions --kind document --text "未決定事項を抽出し、その一覧を JSON の findings として返す。"
+uv run --python 3.13 --project . python -m unittest tests.test_conventions tests.test_cli tests.test_mcp_tools
+```
+
+Use these tests and example outputs when changing the convention catalog, CLI
+surface, MCP surface, or output schema.
+
+## Confirmation Points
+
+These points require user confirmation before promotion from `draft`:
+
+- whether every new machine-readable output must use an explicit `ok` envelope,
+  or whether established audit-result shapes remain first-class without
+  wrapping.
+- whether exit code `1` should always mean audited-material failure, or whether
+  some tools may use it for generic command failure.
+- whether top-level `schema_version` is required on all new structured outputs,
+  or whether documented schema source plus `details.schema_version` is enough
+  for some support outputs.
+- which convention violations should become blockers in release profile.

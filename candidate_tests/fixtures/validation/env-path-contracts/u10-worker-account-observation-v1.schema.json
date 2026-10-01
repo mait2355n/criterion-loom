@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-worker-account-observation-v1.schema.json",
+  "title": "semantic-guard U-10 worker account observation v1",
+  "description": "A content-addressable local observation of the OS account and host selected by a separate human U-10 scope decision. Account group membership is distinct from the broker-enforced empty effective supplementary-group set.",
+  "type": "object",
+  "required": [
+    "schema_version", "observation_id", "observation_version", "record_kind",
+    "notation_profile", "observation_entity_ref", "subject_entity_ref",
+    "derived_from", "decision_record_ref", "worker_identity_selection",
+    "principal_entity_ref", "account_name", "uid", "gid",
+    "account_supplementary_gids", "login_shell", "home_directory",
+    "non_login", "platform_binding", "observation_method", "observed_at",
+    "formal_authority", "positive_assurance_allowed", "observation_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-worker-account-observation/v1"},
+    "observation_id": {"$ref": "#/$defs/stable_id"},
+    "observation_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "u10_worker_account_observation"},
+    "notation_profile": {"const": "entity-reference-notation/v0"},
+    "observation_entity_ref": {"$ref": "#/$defs/entity_ref"},
+    "subject_entity_ref": {"$ref": "#/$defs/u10_subject_entity_ref"},
+    "derived_from": {"$ref": "#/$defs/entity_ref"},
+    "decision_record_ref": {"$ref": "#/$defs/artifact_ref"},
+    "worker_identity_selection": {"enum": ["dedicated_non_login_service_principal", "current_user_501_20_empty_supplementary_groups"]},
+    "principal_entity_ref": {"$ref": "#/$defs/entity_ref"},
+    "account_name": {"type": "string", "minLength": 1, "maxLength": 256},
+    "uid": {"type": "integer", "minimum": 1},
+    "gid": {"type": "integer", "minimum": 1},
+    "account_supplementary_gids": {
+      "type": "array",
+      "maxItems": 4096,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "login_shell": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "home_directory": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "non_login": {"type": "boolean"},
+    "platform_binding": {"$ref": "#/$defs/platform_binding"},
+    "observation_method": {"const": "python_pwd_getgrouplist_platform_local/v1"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "observation_digest": {"$ref": "#/$defs/digest"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"worker_identity_selection": {"const": "current_user_501_20_empty_supplementary_groups"}},
+        "required": ["worker_identity_selection"]
+      },
+      "then": {
+        "properties": {"uid": {"const": 501}, "gid": {"const": 20}}
+      }
+    },
+    {
+      "if": {
+        "properties": {"worker_identity_selection": {"const": "dedicated_non_login_service_principal"}},
+        "required": ["worker_identity_selection"]
+      },
+      "then": {"properties": {"non_login": {"const": true}}}
+    }
+  ],
+  "$defs": {
+    "stable_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "entity_ref": {"type": "string", "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "maxLength": 240},
+    "u10_subject_entity_ref": {"type": "string", "pattern": "^.{1,200}・acfb8b85-2f75-5e82-a641-b3b3b6e023d6$", "maxLength": 240},
+    "artifact_ref": {"type": "object", "required": ["record_id", "locator", "artifact_digest", "semantic_digest"], "properties": {"record_id": {"$ref": "#/$defs/stable_id"}, "locator": {"type": "string", "minLength": 1, "maxLength": 4096}, "artifact_digest": {"$ref": "#/$defs/digest"}, "semantic_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "platform_binding": {
+      "type": "object",
+      "required": ["os", "architecture", "os_release", "platform_version", "hostname", "host_identity_digest"],
+      "properties": {
+        "os": {"type": "string", "minLength": 1, "maxLength": 128},
+        "architecture": {"type": "string", "minLength": 1, "maxLength": 128},
+        "os_release": {"type": "string", "minLength": 1, "maxLength": 256},
+        "platform_version": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "hostname": {"type": "string", "minLength": 1, "maxLength": 1024},
+        "host_identity_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

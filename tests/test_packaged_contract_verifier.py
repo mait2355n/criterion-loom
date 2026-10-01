@@ -33,15 +33,20 @@ class PackagedContractVerifierTests(unittest.TestCase):
         self.assertIn("direction_binding_provider_free_fail_closed", verifier._AUDIT_PROGRAM)
         self.assertIn("direction_binding_mcp_dispatch", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_cli_surface", verifier._AUDIT_PROGRAM)
+        for check in ("shared_wheel_namespace_isolation", "workflow_owned_resources",
+                      "workflow_plan_finish_membership_cli", "candidate_owned_resources",
+                      "candidate_governance_remains_unadopted"):
+            self.assertIn(check, verifier._AUDIT_PROGRAM)
         self.assertIn('"cli_commands": len(subparsers_action.choices)', verifier._AUDIT_PROGRAM)
 
     def test_wheel_manifest_includes_all_non_module_contract_resources(self) -> None:
         configuration = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         self.assertEqual(configuration["project"]["name"], "semantic-guard")
-        self.assertEqual(configuration["project"]["version"], "1.1.0")
+        self.assertEqual(configuration["project"]["version"], "1.2.0.dev0")
         self.assertEqual(
             set(configuration["project"]["scripts"]),
-            {"semantic-guard", "semantic-guard-mcp"},
+            {"semantic-guard", "semantic-guard-mcp", "semantic-guard-workflow",
+             "semantic-guard-workflow-mcp", "semantic-guard-vnext", "semantic-guard-vnext-mcp"},
         )
         force_include = configuration["tool"]["hatch"]["build"]["targets"]["wheel"]["force-include"]
         self.assertEqual(force_include["schemas"], "semantic_guard/schemas")
@@ -51,7 +56,8 @@ class PackagedContractVerifierTests(unittest.TestCase):
         sdist_include = set(
             configuration["tool"]["hatch"]["build"]["targets"]["sdist"]["include"]
         )
-        self.assertIn("/src/semantic_guard", sdist_include)
+        for namespace in verifier._RUNTIME_NAMESPACES:
+            self.assertIn("/src/" + namespace, sdist_include)
         self.assertIn("/schemas", sdist_include)
         self.assertNotIn("/legacy", sdist_include)
         self.assertNotIn("/docs", sdist_include)
@@ -112,11 +118,116 @@ class PackagedContractVerifierTests(unittest.TestCase):
                 verifier._validate_wheel(wheel)
         self.assertEqual(caught.exception.code, "wheel_distribution_boundary_violation")
 
+    def test_added_namespaces_accept_only_owned_runtime_resources(self) -> None:
+        allowed_members = (
+            "semantic_guard_workflow/cli.py",
+            "semantic_guard_workflow/runtime/review.py",
+            "semantic_guard_workflow/_resources/schemas/audit-result.schema.json",
+            "semantic_guard_workflow/_resources/docs/conventions/base-contract.json",
+            "semantic_guard_workflow/_resources/tests/fixtures/plans/good.expected.json",
+            "semantic_guard_vnext/schemas/governed-audit-result.schema.json",
+            "semantic_guard_vnext/validation/local-verification-profile.schema.json",
+            "semantic_guard_vnext/validation/env-path-contracts/local-environment-adoption.schema.json",
+            "semantic_guard_u10_broker/core.py",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            wheel = root / "candidate.whl"
+            sdist = root / "candidate.tar.gz"
+            with zipfile.ZipFile(wheel, "w") as archive:
+                for member in set(allowed_members) | verifier._ALLOWED_ADDITIONAL_RESOURCES:
+                    archive.writestr(member, "runtime")
+            verifier._validate_wheel(wheel)
+            with tarfile.open(sdist, "w:gz") as archive:
+                for member in set(allowed_members) | verifier._ALLOWED_ADDITIONAL_RESOURCES:
+                    data = b"runtime"
+                    info = tarfile.TarInfo(verifier._CANONICAL_SDIST_ROOT + "/src/" + member)
+                    info.size = len(data)
+                    archive.addfile(info, io.BytesIO(data))
+            verifier._validate_sdist(sdist)
+
+    def test_missing_runtime_resource_is_rejected_even_outside_smoke_path(self) -> None:
+        omitted_members = (
+            "semantic_guard_workflow/_resources/schemas/acceptance-review-bundle.schema.json",
+            "semantic_guard_workflow/_resources/tests/fixtures/plans/good.expected.json",
+            "semantic_guard_vnext/validation/env-path-contracts/local-environment-adoption.schema.json",
+        )
+        for missing in omitted_members:
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                members = verifier._ALLOWED_ADDITIONAL_RESOURCES - {missing}
+                wheel = root / "candidate.whl"
+                with zipfile.ZipFile(wheel, "w") as archive:
+                    for member in members:
+                        archive.writestr(member, "runtime")
+                with self.assertRaises(verifier.VerificationFailure) as caught:
+                    verifier._validate_wheel(wheel)
+                self.assertEqual(caught.exception.code, "wheel_required_resource_missing")
+                self.assertEqual(caught.exception.details["missing_resources"], [missing])
+                sdist = root / "candidate.tar.gz"
+                with tarfile.open(sdist, "w:gz") as archive:
+                    for member in members:
+                        data = b"runtime"
+                        info = tarfile.TarInfo(verifier._CANONICAL_SDIST_ROOT + "/src/" + member)
+                        info.size = len(data)
+                        archive.addfile(info, io.BytesIO(data))
+                with self.assertRaises(verifier.VerificationFailure) as caught:
+                    verifier._validate_sdist(sdist)
+                self.assertEqual(caught.exception.code, "sdist_required_resource_missing")
+                self.assertEqual(caught.exception.details["missing_resources"], [missing])
+
+    def test_added_namespace_resource_allowlist_rejects_plausible_leaks(self) -> None:
+        forbidden_members = (
+            "semantic_guard_workflow/_resources/docs/audits/internal.md",
+            "semantic_guard_workflow/_resources/docs/conventions/internal.md",
+            "semantic_guard_workflow/_resources/tests/test_local.py",
+            "semantic_guard_workflow/_resources/tests/fixtures/private-history.json",
+            "semantic_guard_workflow/_resources/schemas/unknown.schema.json",
+            "semantic_guard_workflow/docs/internal.md",
+            "semantic_guard_vnext/validation/local-contract-verification.json",
+            "semantic_guard_vnext/validation/env-path-contracts/private-receipt.json",
+            "semantic_guard_vnext/migration/baseline.json",
+            "semantic_guard_vnext/__pycache__/core.pyc",
+            "semantic_guard_u10_broker/validation/private-key.json",
+        )
+        for member in forbidden_members:
+            with self.subTest(member=member), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                wheel = root / "candidate.whl"
+                with zipfile.ZipFile(wheel, "w") as archive:
+                    archive.writestr(member, "repository-only")
+                with self.assertRaises(verifier.VerificationFailure) as caught:
+                    verifier._validate_wheel(wheel)
+                self.assertEqual(caught.exception.code, "wheel_distribution_boundary_violation")
+                sdist = root / "candidate.tar.gz"
+                with tarfile.open(sdist, "w:gz") as archive:
+                    data = b"repository-only"
+                    info = tarfile.TarInfo(verifier._CANONICAL_SDIST_ROOT + "/src/" + member)
+                    info.size = len(data)
+                    archive.addfile(info, io.BytesIO(data))
+                with self.assertRaises(verifier.VerificationFailure) as caught:
+                    verifier._validate_sdist(sdist)
+                self.assertEqual(caught.exception.code, "sdist_distribution_boundary_violation")
+
+    def test_fixed_resource_allowlist_matches_owned_source_resources(self) -> None:
+        observed = set()
+        for namespace, directories in (
+            ("semantic_guard_workflow", ("_resources",)),
+            ("semantic_guard_vnext", ("schemas", "constitution", "validation")),
+        ):
+            for directory in directories:
+                observed.update(
+                    path.relative_to(ROOT / "src").as_posix()
+                    for path in (ROOT / "src" / namespace / directory).rglob("*")
+                    if path.is_file() and "__pycache__" not in path.parts
+                )
+        self.assertEqual(observed, verifier._ALLOWED_ADDITIONAL_RESOURCES)
+
     def test_sdist_rejects_repository_only_archive_and_validation_history(self) -> None:
         forbidden_members = (
-            "semantic_guard-1.1.0/legacy/semantic-guard-v0.1.0/README.md",
-            "semantic_guard-1.1.0/docs/audits/internal.md",
-            "semantic_guard-1.1.0/validation/local-contract-verification.json",
+            "semantic_guard-1.2.0.dev0/legacy/semantic-guard-v0.1.0/README.md",
+            "semantic_guard-1.2.0.dev0/docs/audits/internal.md",
+            "semantic_guard-1.2.0.dev0/validation/local-contract-verification.json",
         )
         for member in forbidden_members:
             with self.subTest(member=member), tempfile.TemporaryDirectory() as directory:

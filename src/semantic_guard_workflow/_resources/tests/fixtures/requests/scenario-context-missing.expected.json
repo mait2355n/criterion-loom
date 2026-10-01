@@ -1,0 +1,57 @@
+{
+  "id": "REQ-SCENARIO-CONTEXT-MISSING-001",
+  "title": "User-facing search requirement without scenario context is logically derived",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: オペレータ。目的: 画面で検索できる。受入基準: 検索できることを確認。検証方法: pytest。証拠: 試験結果。対象外: UI刷新。未確定: なし。",
+  "strict": true,
+  "rationale": "User-facing or input/output scope requires scenario context under the executable logical-audit rule.",
+  "labels": {
+    "expected_rules": [
+      "req.context.scenario_missing",
+      "req.context.precondition_trigger_missing",
+      "req.result.expected_result_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "scenario",
+        "rule_id": "req.context.scenario_missing"
+      },
+      {
+        "category": "scenario",
+        "rule_id": "req.context.precondition_trigger_missing"
+      },
+      {
+        "category": "acceptance",
+        "rule_id": "req.result.expected_result_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "scenario"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "scenario_context",
+        "precondition_or_trigger",
+        "expected_result"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.context.scenario_missing",
+    "derivation_missing_obligation": "obl.req.context.scenario",
+    "derivation_countercondition": "ctr.req.context.scenario_not_in_scope",
+    "derivation_fact": "text.has_scenario_context",
+    "logical_trace_summary_rule": {
+      "rule_id": "req.context.scenario_missing",
+      "status": "derived",
+      "finding_count": 1,
+      "missing_obligation_count": 1
+    }
+  }
+}

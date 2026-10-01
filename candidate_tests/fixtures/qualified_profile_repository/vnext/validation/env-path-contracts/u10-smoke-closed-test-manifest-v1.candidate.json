@@ -1,0 +1,56 @@
+{
+  "schema_version": "semantic-guard-closed-verification-test-manifest/v1",
+  "manifest_id": "manifest.verification.u10.containment-smoke",
+  "manifest_version": "1.2.0-candidate",
+  "command_id": "verify.u10.containment-smoke",
+  "subject_denominator": {
+    "status": "closed",
+    "inclusion_rule": "The U-10 smoke subject is the exact site-free bootstrap that activates and reports the no-process-creation containment boundary.",
+    "entry_count": 1,
+    "entries": [
+      {
+        "role": "primary_subject",
+        "artifact_ref": {
+          "record_id": "subject.u10.governed-test-runner-bootstrap",
+          "locator": "vnext/scripts/governed_test_runner_bootstrap.py",
+          "content_digest": {
+            "algorithm": "sha256",
+            "value": "060ae8cd101306cbd2a4fbe8de5c7c83f9c496deeefd4cc748b98e46212b7f31"
+          }
+        }
+      }
+    ]
+  },
+  "test_denominator": {
+    "status": "closed",
+    "module_count": 1,
+    "test_count": 2,
+    "modules": [
+      "semantic_guard_u10_isolated_smoke"
+    ],
+    "expected_test_ids": [
+      "semantic_guard_u10_isolated_smoke.U10ContainmentSmokeTests.test_direct_fork_is_denied_by_kernel_policy",
+      "semantic_guard_u10_isolated_smoke.U10ContainmentSmokeTests.test_subprocess_creation_is_denied_by_kernel_policy"
+    ],
+    "test_source_refs": [
+      {
+        "record_id": "test-source.u10.containment-smoke",
+        "locator": "vnext/src/semantic_guard_vnext/u10_containment_smoke.py",
+        "content_digest": {
+          "algorithm": "sha256",
+          "value": "746a7d890178b86cab61f208c08020d59ee11a93eca57ec98de5149481cca931"
+        }
+      }
+    ]
+  },
+  "formal_authority": "none",
+  "positive_assurance_allowed": false,
+  "limitations": [
+    "This closed manifest authorizes only the exact U-10 containment smoke command and test identifiers.",
+    "It does not authorize future WP-1 tests, an engineering verdict, or human acceptance."
+  ],
+  "manifest_digest": {
+    "algorithm": "sha256",
+    "value": "992dbed6113ff5b1a2e3827c012c7d45da4f37c91a958ecab225c2734a9fb27c"
+  }
+}

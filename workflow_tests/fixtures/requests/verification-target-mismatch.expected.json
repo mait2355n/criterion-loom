@@ -1,0 +1,40 @@
+{
+  "id": "REQ-VERIFICATION-TARGET-MISMATCH-001",
+  "title": "Verification method targets a different concern from the acceptance criterion",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 運用者。目的: 検索応答性能を保証する。シナリオ: 運用者が検索語を入力した場合、検索結果一覧が返る。受入基準: 検索応答時間の p95 が 500ms 以下。検証方法: pytest でログイン認証の成功と失敗を試験する。証拠: ログイン認証の pytest 結果を保存する。不合格条件: p95 が 500ms を超えた場合は差し戻し。対象外: UI刷新。未確定: なし。利害関係者: 運用者。優先度: 必須。",
+  "strict": true,
+  "rationale": "Field presence alone must not hide that the verification method tests authentication while the acceptance criterion measures search latency.",
+  "labels": {
+    "expected_rules": [
+      "req.relation.verification_target_mismatch"
+    ],
+    "expected_findings": [
+      {
+        "category": "verification",
+        "rule_id": "req.relation.verification_target_mismatch",
+        "finding_contains": "同じ対象または測定特性"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "score": {
+      "max": 0.82
+    },
+    "categories": {
+      "includes": [
+        "verification"
+      ]
+    },
+    "missing": {
+      "excludes": [
+        "achievement_criteria",
+        "verification_method_detail",
+        "evidence_artifact"
+      ]
+    }
+  }
+}

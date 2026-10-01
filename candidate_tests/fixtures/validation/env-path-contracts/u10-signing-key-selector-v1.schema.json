@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-signing-key-selector-v1.schema.json",
+  "title": "U-10 current signing key selector v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "selector_id",
+    "record_kind",
+    "state",
+    "key_id",
+    "key_entity_ref",
+    "public_metadata_ref",
+    "transition_authorization_ref",
+    "selected_at",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "selector_digest"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "semantic-guard-u10-signing-key-selector/v1"
+    },
+    "selector_id": {
+      "$ref": "#/$defs/id"
+    },
+    "record_kind": {
+      "const": "current_signing_key_selector"
+    },
+    "state": {
+      "enum": [
+        "active",
+        "no_active_key"
+      ]
+    },
+    "key_id": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/uuid"
+        }
+      ]
+    },
+    "key_entity_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/entity_ref"
+        }
+      ]
+    },
+    "public_metadata_ref": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/public_metadata_ref"
+        }
+      ]
+    },
+    "transition_authorization_ref": {
+      "$ref": "#/$defs/auth_ref"
+    },
+    "selected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "formal_authority": {
+      "const": "none"
+    },
+    "positive_assurance_allowed": {
+      "const": false
+    },
+    "selector_digest": {
+      "$ref": "#/$defs/digest"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "active"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "key_id": {
+            "$ref": "#/$defs/uuid"
+          },
+          "key_entity_ref": {
+            "$ref": "#/$defs/entity_ref"
+          },
+          "public_metadata_ref": {
+            "$ref": "#/$defs/public_metadata_ref"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "key_id": {
+            "type": "null"
+          },
+          "key_entity_ref": {
+            "type": "null"
+          },
+          "public_metadata_ref": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"
+    },
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "entity_ref": {
+      "type": "string",
+      "pattern": "^.{1,200}・[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "auth_ref": {
+      "type": "object",
+      "required": [
+        "authorization_id",
+        "authorization_digest"
+      ],
+      "properties": {
+        "authorization_id": {
+          "$ref": "#/$defs/id"
+        },
+        "authorization_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "generation_receipt_selector": {
+      "type": "object",
+      "required": [
+        "ledger_root",
+        "receipt_record",
+        "resolution_policy"
+      ],
+      "properties": {
+        "ledger_root": {
+          "const": "/Library/Application Support/semantic-guard/u10/activations/key-transitions"
+        },
+        "receipt_record": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}\\.receipt\\.json$"
+        },
+        "resolution_policy": {
+          "const": "resolve_exact_generation_receipt/v1"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "public_metadata_ref": {
+      "type": "object",
+      "required": [
+        "key_id",
+        "key_entity_ref",
+        "metadata_locator",
+        "metadata_artifact_digest",
+        "metadata_digest",
+        "generation_authorization_ref",
+        "generation_receipt_selector"
+      ],
+      "properties": {
+        "key_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "key_entity_ref": {
+          "$ref": "#/$defs/entity_ref"
+        },
+        "metadata_locator": {
+          "type": "string",
+          "pattern": "^/Library/Application Support/semantic-guard/u10/keys/generations/[0-9a-f-]{36}/public-metadata\\.json$"
+        },
+        "metadata_artifact_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "metadata_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "generation_authorization_ref": {
+          "$ref": "#/$defs/auth_ref"
+        },
+        "generation_receipt_selector": {
+          "$ref": "#/$defs/generation_receipt_selector"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

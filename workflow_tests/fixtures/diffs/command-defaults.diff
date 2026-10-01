@@ -1,0 +1,2 @@
+*** Update File: tests/test_core.py
+Added command defaults regression case for --kind routing.

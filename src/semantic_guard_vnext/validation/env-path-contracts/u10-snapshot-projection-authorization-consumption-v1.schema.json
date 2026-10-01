@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-snapshot-projection-authorization-consumption-v1.schema.json",
+  "title": "U-10 snapshot projection authorization consumption v1",
+  "type": "object",
+  "required": ["schema_version", "consumption_id", "record_kind", "public_operation", "public_identifier", "authorization_ref", "bundle_ref", "target_snapshot", "occurrence_id", "reserved_at", "publisher_contract_binding", "projection_occurred", "formal_authority", "positive_assurance_allowed", "consumption_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-snapshot-projection-authorization-consumption/v1"},
+    "consumption_id": {"$ref": "#/$defs/id"},
+    "record_kind": {"const": "snapshot_projection_authorization_consumption"},
+    "public_operation": {"const": "project-snapshot"},
+    "public_identifier": {"$ref": "#/$defs/id"},
+    "authorization_ref": {"$ref": "#/$defs/ref"},
+    "bundle_ref": {"type": "object"},
+    "target_snapshot": {"type": "object"},
+    "occurrence_id": {"$ref": "#/$defs/id"},
+    "reserved_at": {"type": "string", "format": "date-time"},
+    "publisher_contract_binding": {"$ref": "https://semantic-guard.local/vnext/schemas/u10-control-publisher-contract-binding-v1.schema.json"},
+    "projection_occurred": {"const": false},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "consumption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,255}$"},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "ref": {"type": "object", "required": ["authorization_id", "artifact_digest", "authorization_digest"], "properties": {"authorization_id": {"$ref": "#/$defs/id"}, "artifact_digest": {"$ref": "#/$defs/digest"}, "authorization_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}
+  },
+  "unevaluatedProperties": false
+}

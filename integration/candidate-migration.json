@@ -1,0 +1,3078 @@
+{
+  "authority_boundary": {
+    "candidate_only": true,
+    "human_adoption": "not_performed_by_this_migration",
+    "privileged_installation": "not_performed",
+    "canonical_default_change": false,
+    "legacy_shadow_target": "historical_legacy_root_not_public_v1"
+  },
+  "files": [
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/__init__.py",
+      "source_sha256": "cf833d387e560a8d768c406419f9d73cb022af898f2d1fd241f6aef7fe905ec9",
+      "destination": "src/semantic_guard_vnext/__init__.py",
+      "destination_sha256": "cf833d387e560a8d768c406419f9d73cb022af898f2d1fd241f6aef7fe905ec9",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/action_evidence.py",
+      "source_sha256": "e7d7c866ff1eb63bc8f3cf354cc037225ea8b7ee08ead99ca2d534a656776ee9",
+      "destination": "src/semantic_guard_vnext/action_evidence.py",
+      "destination_sha256": "e7d7c866ff1eb63bc8f3cf354cc037225ea8b7ee08ead99ca2d534a656776ee9",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/aggregation.py",
+      "source_sha256": "e6c35ed499a106ee88a7b2e3addb2f4afd45a59a563bef42152a613f032c21f5",
+      "destination": "src/semantic_guard_vnext/aggregation.py",
+      "destination_sha256": "e6c35ed499a106ee88a7b2e3addb2f4afd45a59a563bef42152a613f032c21f5",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/assurance_graph.py",
+      "source_sha256": "f91f9929ba2e58ee663b40d60275d0cb22b231c50a8fd46506fd10a656e35f1e",
+      "destination": "src/semantic_guard_vnext/assurance_graph.py",
+      "destination_sha256": "f91f9929ba2e58ee663b40d60275d0cb22b231c50a8fd46506fd10a656e35f1e",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/assurance_roles.py",
+      "source_sha256": "5cdcba8c0542b0ab3fd4f6045a4b7dba37ba8d44d15d30e5f6a702598d3b6089",
+      "destination": "src/semantic_guard_vnext/assurance_roles.py",
+      "destination_sha256": "5cdcba8c0542b0ab3fd4f6045a4b7dba37ba8d44d15d30e5f6a702598d3b6089",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/audit/__init__.py",
+      "source_sha256": "3c170dd21788eeaead584c1afe92b75f56e9965f87706967d3c0f29e5a811bd4",
+      "destination": "src/semantic_guard_vnext/audit/__init__.py",
+      "destination_sha256": "3c170dd21788eeaead584c1afe92b75f56e9965f87706967d3c0f29e5a811bd4",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/audit/aggregation.py",
+      "source_sha256": "32368b0afab0f2fe70a0e8a00c7d5ba19f6c624430a53eda9cd849d94c78c505",
+      "destination": "src/semantic_guard_vnext/audit/aggregation.py",
+      "destination_sha256": "32368b0afab0f2fe70a0e8a00c7d5ba19f6c624430a53eda9cd849d94c78c505",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/audit/engine.py",
+      "source_sha256": "54788df8e6aa352868918de999701791156fcf42cd1599088479d6946bad9245",
+      "destination": "src/semantic_guard_vnext/audit/engine.py",
+      "destination_sha256": "54788df8e6aa352868918de999701791156fcf42cd1599088479d6946bad9245",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/audit/report.py",
+      "source_sha256": "6c567751b1592c7d4e2c83c4417ffd12f97ab916d7712753ab3d6e98621ba8e6",
+      "destination": "src/semantic_guard_vnext/audit/report.py",
+      "destination_sha256": "6c567751b1592c7d4e2c83c4417ffd12f97ab916d7712753ab3d6e98621ba8e6",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/audit/stages.py",
+      "source_sha256": "837bddcde62625b2035fb4ddd27df872896c34b94c5ee4ea17743f8a8f3d821f",
+      "destination": "src/semantic_guard_vnext/audit/stages.py",
+      "destination_sha256": "837bddcde62625b2035fb4ddd27df872896c34b94c5ee4ea17743f8a8f3d821f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/candidate_governance_adapters.py",
+      "source_sha256": "4a55cdc23626da7de52a9b18f4e749deb7a1c77e64dc7e389d36c6be1668fc46",
+      "destination": "src/semantic_guard_vnext/candidate_governance_adapters.py",
+      "destination_sha256": "31813631d710354d0c1663a6f3545a01ec7e8b83f5eaf18b29601a3b3ec58f69",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/cli.py",
+      "source_sha256": "03302259fb860c72a300f29bfc1892d89ed891d362dc9cf98bb139061c8b350b",
+      "destination": "src/semantic_guard_vnext/cli.py",
+      "destination_sha256": "03302259fb860c72a300f29bfc1892d89ed891d362dc9cf98bb139061c8b350b",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/compat.py",
+      "source_sha256": "abafd5147767df2dad93be0332f0f74eae8659fb48ef0a7b0e64a6f1b6aa104d",
+      "destination": "src/semantic_guard_vnext/compat.py",
+      "destination_sha256": "abafd5147767df2dad93be0332f0f74eae8659fb48ef0a7b0e64a6f1b6aa104d",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/dependency_projection.py",
+      "source_sha256": "f7c5e483070db3bc7f67ece90775f6c0a7ce7b4c134709e8f26ae539cdfae886",
+      "destination": "src/semantic_guard_vnext/dependency_projection.py",
+      "destination_sha256": "f7c5e483070db3bc7f67ece90775f6c0a7ce7b4c134709e8f26ae539cdfae886",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/direct_rules.py",
+      "source_sha256": "23fb9e923061aadad36f418aba3d154a3d3e91b72d71a52c58f4b7d1e2186c36",
+      "destination": "src/semantic_guard_vnext/direct_rules.py",
+      "destination_sha256": "23fb9e923061aadad36f418aba3d154a3d3e91b72d71a52c58f4b7d1e2186c36",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/engine.py",
+      "source_sha256": "cde586a52fdf642328f19483dbed7e0fe519507f47f181bd91ffe2e0bef91ea5",
+      "destination": "src/semantic_guard_vnext/engine.py",
+      "destination_sha256": "cde586a52fdf642328f19483dbed7e0fe519507f47f181bd91ffe2e0bef91ea5",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/engine_stages.py",
+      "source_sha256": "c4f34f926737b2b75a65f17cbb779ff6a9e96b5af113176dd1b2f12f3ff544a8",
+      "destination": "src/semantic_guard_vnext/engine_stages.py",
+      "destination_sha256": "c4f34f926737b2b75a65f17cbb779ff6a9e96b5af113176dd1b2f12f3ff544a8",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/engineering_rule_governance.py",
+      "source_sha256": "12d46193fb44aef3db99f9b065667984ed2758929de91006137cf7fb571d7089",
+      "destination": "src/semantic_guard_vnext/engineering_rule_governance.py",
+      "destination_sha256": "12d46193fb44aef3db99f9b065667984ed2758929de91006137cf7fb571d7089",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/environment_governance.py",
+      "source_sha256": "3b9b6419f2dce2280a73c763061add353899a89ed3b0ea09981014a252f0a599",
+      "destination": "src/semantic_guard_vnext/environment_governance.py",
+      "destination_sha256": "3b9b6419f2dce2280a73c763061add353899a89ed3b0ea09981014a252f0a599",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/environment_resolution.py",
+      "source_sha256": "12873037064999d3c2bd138cfc0a2dc8fc528740916b06cb571978a1c40cc3e8",
+      "destination": "src/semantic_guard_vnext/environment_resolution.py",
+      "destination_sha256": "add53967afc04660fbe23627883f338c244bb903f3c9876e7f85524b004d939d",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/execution_environment.py",
+      "source_sha256": "c3501b5fbef7d2ff8732bdc917989d1c26f325470f7f959d1eec4f439c5c355f",
+      "destination": "src/semantic_guard_vnext/execution_environment.py",
+      "destination_sha256": "c3501b5fbef7d2ff8732bdc917989d1c26f325470f7f959d1eec4f439c5c355f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/field_evaluation.py",
+      "source_sha256": "ff51b98624d165e31654e0e1188bd42975ec156e439285397e1839a263795ff8",
+      "destination": "src/semantic_guard_vnext/field_evaluation.py",
+      "destination_sha256": "ff51b98624d165e31654e0e1188bd42975ec156e439285397e1839a263795ff8",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/field_performance_governance.py",
+      "source_sha256": "dd7e0afdfcbad0eba18e88599cc1911a2043329f263dbbb5528be4a15b909aba",
+      "destination": "src/semantic_guard_vnext/field_performance_governance.py",
+      "destination_sha256": "dd7e0afdfcbad0eba18e88599cc1911a2043329f263dbbb5528be4a15b909aba",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/governance_materials.py",
+      "source_sha256": "b3e702f0c2c388b846d81b2104a649d6c6fb1b803a9a93aba489cdb5833c729f",
+      "destination": "src/semantic_guard_vnext/governance_materials.py",
+      "destination_sha256": "b3e702f0c2c388b846d81b2104a649d6c6fb1b803a9a93aba489cdb5833c729f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/governed_audit.py",
+      "source_sha256": "5693c22ae2b41191bae292f1fcd41692309abd6cb0011f279c71dbb54ccf503b",
+      "destination": "src/semantic_guard_vnext/governed_audit.py",
+      "destination_sha256": "5693c22ae2b41191bae292f1fcd41692309abd6cb0011f279c71dbb54ccf503b",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/governed_environment_execution.py",
+      "source_sha256": "0a38b826079b0a632fe0fbed0dae9d6ccf9f247ef6e4713c54461bb497c3a73b",
+      "destination": "src/semantic_guard_vnext/governed_environment_execution.py",
+      "destination_sha256": "0a38b826079b0a632fe0fbed0dae9d6ccf9f247ef6e4713c54461bb497c3a73b",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/japanese_dependency.py",
+      "source_sha256": "ed7a42fe53ff0a164b84566e91aaa43e4524099cb094092f22cb343f3096c4c3",
+      "destination": "src/semantic_guard_vnext/japanese_dependency.py",
+      "destination_sha256": "ed7a42fe53ff0a164b84566e91aaa43e4524099cb094092f22cb343f3096c4c3",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/japanese_morphology.py",
+      "source_sha256": "0849d496791767d6da2caaaa721f7fafc27fe71c0c6984fe3c8ac2b5cd2d73d7",
+      "destination": "src/semantic_guard_vnext/japanese_morphology.py",
+      "destination_sha256": "0849d496791767d6da2caaaa721f7fafc27fe71c0c6984fe3c8ac2b5cd2d73d7",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/legacy_runner.py",
+      "source_sha256": "5fd30faff213c6fdbe09fa836d118eb2765fec23328873411d9ef8695dcfe5e3",
+      "destination": "src/semantic_guard_vnext/legacy_runner.py",
+      "destination_sha256": "5fd30faff213c6fdbe09fa836d118eb2765fec23328873411d9ef8695dcfe5e3",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/legacy_shadow_observation.py",
+      "source_sha256": "b89102980112e4f0c2888c376c1d4e6b38d8c9ec6ddfef42c9e010e430f45feb",
+      "destination": "src/semantic_guard_vnext/legacy_shadow_observation.py",
+      "destination_sha256": "b89102980112e4f0c2888c376c1d4e6b38d8c9ec6ddfef42c9e010e430f45feb",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifecycle_governance.py",
+      "source_sha256": "2dc2ad9bc48dd3fbc14687b01382b8cbe1ff6ca64f6e07fe8f6a7d2714e951d8",
+      "destination": "src/semantic_guard_vnext/lifecycle_governance.py",
+      "destination_sha256": "2dc2ad9bc48dd3fbc14687b01382b8cbe1ff6ca64f6e07fe8f6a7d2714e951d8",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifecycle_occurrences.py",
+      "source_sha256": "c1c4f7ae528d4c88c0f8186f9e3509d8ccb6f9084b49637a5e73bdfd921da289",
+      "destination": "src/semantic_guard_vnext/lifecycle_occurrences.py",
+      "destination_sha256": "c1c4f7ae528d4c88c0f8186f9e3509d8ccb6f9084b49637a5e73bdfd921da289",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifecycle_profiles.py",
+      "source_sha256": "82af857f2b0061220b722bf9025ad40acb6c26b7908dd60e3331cfce48bb5f41",
+      "destination": "src/semantic_guard_vnext/lifecycle_profiles.py",
+      "destination_sha256": "c84e10ed0653ef9a690bf3e23ce2b3b8958857e9a7b5d03c99ffeeba66b98f80",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifecycle_requalification.py",
+      "source_sha256": "c683d76172317a0db107a6f9be9c685114c5a477e726fe4823e9a5d0e81660d5",
+      "destination": "src/semantic_guard_vnext/lifecycle_requalification.py",
+      "destination_sha256": "c683d76172317a0db107a6f9be9c685114c5a477e726fe4823e9a5d0e81660d5",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifecycle_trace.py",
+      "source_sha256": "cb1b9a7377344fc057e71213f947722f6d2b86944e85d1457bcaf30d4e2eda83",
+      "destination": "src/semantic_guard_vnext/lifecycle_trace.py",
+      "destination_sha256": "cb1b9a7377344fc057e71213f947722f6d2b86944e85d1457bcaf30d4e2eda83",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/lifting.py",
+      "source_sha256": "f696971beebcba30399d5e3f38c3b1eb72cfd3de96808ed5a0e2c098a17deee6",
+      "destination": "src/semantic_guard_vnext/lifting.py",
+      "destination_sha256": "f696971beebcba30399d5e3f38c3b1eb72cfd3de96808ed5a0e2c098a17deee6",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/llm_candidates.py",
+      "source_sha256": "adb5fbc84f48b4bc8fe9d43d38dad8e209db20fe953dc0ce1af2a991b61e11d4",
+      "destination": "src/semantic_guard_vnext/llm_candidates.py",
+      "destination_sha256": "adb5fbc84f48b4bc8fe9d43d38dad8e209db20fe953dc0ce1af2a991b61e11d4",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/local_verification.py",
+      "source_sha256": "23b43af6448d15a09ce236df829498dd8789587a51b8fc0ff379a060aedb9f3c",
+      "destination": "src/semantic_guard_vnext/local_verification.py",
+      "destination_sha256": "38ae6b1a1bb576a915093c5bed32259f74f8ac5d81a43c51057270623360a9d7",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/mcp_server.py",
+      "source_sha256": "31a2cd61db6134c5c95a14f9ec1e5b952fe74023cb179efaa15089d65359932f",
+      "destination": "src/semantic_guard_vnext/mcp_server.py",
+      "destination_sha256": "3988f7ebf345e4a43689d916364ced17e30902137e0e6a4df5684f9f762b575b",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/models.py",
+      "source_sha256": "ea00cdc7acd87ee549d5b375997e8f3868b1ba57f7eb38cee1617b501011be09",
+      "destination": "src/semantic_guard_vnext/models.py",
+      "destination_sha256": "ea00cdc7acd87ee549d5b375997e8f3868b1ba57f7eb38cee1617b501011be09",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/operational_outcomes.py",
+      "source_sha256": "673d3c36c9653e44a238bd6edebee0265cb0fd6ec3921f2bf6f056b62c913139",
+      "destination": "src/semantic_guard_vnext/operational_outcomes.py",
+      "destination_sha256": "673d3c36c9653e44a238bd6edebee0265cb0fd6ec3921f2bf6f056b62c913139",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/operational_qualification.py",
+      "source_sha256": "9fd4ef54ed6f36ae62b6b15fbae57c9d38299f49d085235940424d56cc275907",
+      "destination": "src/semantic_guard_vnext/operational_qualification.py",
+      "destination_sha256": "9fd4ef54ed6f36ae62b6b15fbae57c9d38299f49d085235940424d56cc275907",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/profiles.py",
+      "source_sha256": "9c91e0400e99e0ad0c2b1e711bed00375024bf585d774bc89413aab158883774",
+      "destination": "src/semantic_guard_vnext/profiles.py",
+      "destination_sha256": "9c91e0400e99e0ad0c2b1e711bed00375024bf585d774bc89413aab158883774",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/provider_receipts.py",
+      "source_sha256": "e0c7488edbb9de153a304c5d75e761a2e8a7d08e3803d7674cd9cf4a26b4fd6e",
+      "destination": "src/semantic_guard_vnext/provider_receipts.py",
+      "destination_sha256": "e0c7488edbb9de153a304c5d75e761a2e8a7d08e3803d7674cd9cf4a26b4fd6e",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/providers.py",
+      "source_sha256": "0142179573bee8192e1479f8f44dced04d5d6e0a2c664ee4b4f7599a234e6126",
+      "destination": "src/semantic_guard_vnext/providers.py",
+      "destination_sha256": "0142179573bee8192e1479f8f44dced04d5d6e0a2c664ee4b4f7599a234e6126",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/public_contract.py",
+      "source_sha256": "c8333ca92694d2c39d897bf9f4381a70a830720a6f585f572187cbabdc7400b9",
+      "destination": "src/semantic_guard_vnext/public_contract.py",
+      "destination_sha256": "c8333ca92694d2c39d897bf9f4381a70a830720a6f585f572187cbabdc7400b9",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/qualified_environment.py",
+      "source_sha256": "3835f9fb25b4b57758ea73d63eb62e5aca3f9ffe022efb8bd88ef81bb32c968a",
+      "destination": "src/semantic_guard_vnext/qualified_environment.py",
+      "destination_sha256": "3835f9fb25b4b57758ea73d63eb62e5aca3f9ffe022efb8bd88ef81bb32c968a",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/reassessment.py",
+      "source_sha256": "03536aa393d330d210aef83688de7b8448c07831da40a8173593d1ff082a6b38",
+      "destination": "src/semantic_guard_vnext/reassessment.py",
+      "destination_sha256": "03536aa393d330d210aef83688de7b8448c07831da40a8173593d1ff082a6b38",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/records.py",
+      "source_sha256": "12a2675bc27bef098d96d0f79c74782cc374bb486c7e2ee9738247d73833ee2a",
+      "destination": "src/semantic_guard_vnext/records.py",
+      "destination_sha256": "12a2675bc27bef098d96d0f79c74782cc374bb486c7e2ee9738247d73833ee2a",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/repair_loop.py",
+      "source_sha256": "771464eb0e15efbff13b39f13278f6bbb93a039bfe4fc8c9fc81858418155143",
+      "destination": "src/semantic_guard_vnext/repair_loop.py",
+      "destination_sha256": "771464eb0e15efbff13b39f13278f6bbb93a039bfe4fc8c9fc81858418155143",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/residual_risk.py",
+      "source_sha256": "dd2d2fc28f08153518ed6333e6d31fae056a2314a6a607351395ccc6ec1a2a44",
+      "destination": "src/semantic_guard_vnext/residual_risk.py",
+      "destination_sha256": "dd2d2fc28f08153518ed6333e6d31fae056a2314a6a607351395ccc6ec1a2a44",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/routing.py",
+      "source_sha256": "08c1f2b9509ca3f6bded35763e2253512d8534e919394e0bb5927a98d20f48ea",
+      "destination": "src/semantic_guard_vnext/routing.py",
+      "destination_sha256": "08c1f2b9509ca3f6bded35763e2253512d8534e919394e0bb5927a98d20f48ea",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/schema_access.py",
+      "source_sha256": "3e3e9ba458e72ff334492eaba0a4dd9710b71268606a50122f3b2d72679a9654",
+      "destination": "src/semantic_guard_vnext/schema_access.py",
+      "destination_sha256": "7dad164ab7e61c64074d13e09d74a86c53540a7977dab0efed929c3ce06a4d9b",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/secure_operation.py",
+      "source_sha256": "912d45211385517f5775c1d95764d9b82fef8991245429a13ce13fdea7aa1e0f",
+      "destination": "src/semantic_guard_vnext/secure_operation.py",
+      "destination_sha256": "912d45211385517f5775c1d95764d9b82fef8991245429a13ce13fdea7aa1e0f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/shadow.py",
+      "source_sha256": "aec4bb9792b79a74abe67362ab72503db37e6d14d89417f653c9d455c489f0e7",
+      "destination": "src/semantic_guard_vnext/shadow.py",
+      "destination_sha256": "aec4bb9792b79a74abe67362ab72503db37e6d14d89417f653c9d455c489f0e7",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/state_assessment.py",
+      "source_sha256": "a31f15b14626f6a8dd5062339cdb9cbc33fea4f5d0b2e5605e5d596bf3abefb2",
+      "destination": "src/semantic_guard_vnext/state_assessment.py",
+      "destination_sha256": "a31f15b14626f6a8dd5062339cdb9cbc33fea4f5d0b2e5605e5d596bf3abefb2",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/transition_control.py",
+      "source_sha256": "c96ad770ce17e61e27e038df83fc54396e19e83c55c7bb954ac2ef283e9b7564",
+      "destination": "src/semantic_guard_vnext/transition_control.py",
+      "destination_sha256": "c96ad770ce17e61e27e038df83fc54396e19e83c55c7bb954ac2ef283e9b7564",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/u10_containment_smoke.py",
+      "source_sha256": "746a7d890178b86cab61f208c08020d59ee11a93eca57ec98de5149481cca931",
+      "destination": "src/semantic_guard_vnext/u10_containment_smoke.py",
+      "destination_sha256": "746a7d890178b86cab61f208c08020d59ee11a93eca57ec98de5149481cca931",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/verification_projection.py",
+      "source_sha256": "3dddc6cf6cbad99aca7099767b3b6f8c641b6aa3e0f16a2aea37d3c8ee951e06",
+      "destination": "src/semantic_guard_vnext/verification_projection.py",
+      "destination_sha256": "3dddc6cf6cbad99aca7099767b3b6f8c641b6aa3e0f16a2aea37d3c8ee951e06",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/__init__.py",
+      "source_sha256": "078035ef4ca803b79d745ca70730789390e5d621a99692f7e29bd968e1e6e44e",
+      "destination": "src/semantic_guard_u10_broker/__init__.py",
+      "destination_sha256": "078035ef4ca803b79d745ca70730789390e5d621a99692f7e29bd968e1e6e44e",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/core.py",
+      "source_sha256": "cbba8a6415ff439e5618b1794572e11a19a686dcc93ddedc5c8e19b6e791eb70",
+      "destination": "src/semantic_guard_u10_broker/core.py",
+      "destination_sha256": "4082cdb8b1c4c9f875497086f69fa0907e0f53debf2c51a09d10c7150774e368",
+      "change_classification": "candidate_package_resource_isolation",
+      "purpose": "candidate_source",
+      "meaning_change": "Resource lookup fails closed inside the candidate package; no canonical-root fallback."
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/darwin_acl.py",
+      "source_sha256": "22a96419563e6b03a334e173d50d8e50df8f936a768bca1a2218a8ab2391033a",
+      "destination": "src/semantic_guard_u10_broker/darwin_acl.py",
+      "destination_sha256": "22a96419563e6b03a334e173d50d8e50df8f936a768bca1a2218a8ab2391033a",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/internal_contracts.py",
+      "source_sha256": "f01f72c75a622967d12c32d0210793da2a1e4532d7438296a0d2f51d376756e3",
+      "destination": "src/semantic_guard_u10_broker/internal_contracts.py",
+      "destination_sha256": "f01f72c75a622967d12c32d0210793da2a1e4532d7438296a0d2f51d376756e3",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/internal_operations.py",
+      "source_sha256": "6c549bd9aa0efa9ec70cc3eb150f00eeaabf3d592105cec363f1b1e1eafbfb05",
+      "destination": "src/semantic_guard_u10_broker/internal_operations.py",
+      "destination_sha256": "6c549bd9aa0efa9ec70cc3eb150f00eeaabf3d592105cec363f1b1e1eafbfb05",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/protected_io.py",
+      "source_sha256": "760de51368f4bc981290ce743883438d5f3d19e63f98869f2010cc43cf457401",
+      "destination": "src/semantic_guard_u10_broker/protected_io.py",
+      "destination_sha256": "760de51368f4bc981290ce743883438d5f3d19e63f98869f2010cc43cf457401",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/runtime_closure.py",
+      "source_sha256": "5ca15d6eedd7cefb609d0a6ff0d58e92bc11698172ba5d72172513e3960d21fe",
+      "destination": "src/semantic_guard_u10_broker/runtime_closure.py",
+      "destination_sha256": "5ca15d6eedd7cefb609d0a6ff0d58e92bc11698172ba5d72172513e3960d21fe",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_u10_broker/supervisor.py",
+      "source_sha256": "0b7fcc302e680ea1cd201f18319e881c4dac65b69f8723415e92c5a96bd98b52",
+      "destination": "src/semantic_guard_u10_broker/supervisor.py",
+      "destination_sha256": "0b7fcc302e680ea1cd201f18319e881c4dac65b69f8723415e92c5a96bd98b52",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_source"
+    },
+    {
+      "source_path": "vnext/constitution/semantic-guard-vnext-constitution.yaml",
+      "source_sha256": "116622d4ff88e53d417f09e5a3533313723d057f6b06b5e608e87f9955c8c1e6",
+      "destination": "src/semantic_guard_vnext/constitution/semantic-guard-vnext-constitution.yaml",
+      "destination_sha256": "116622d4ff88e53d417f09e5a3533313723d057f6b06b5e608e87f9955c8c1e6",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/action-assurance-profile.schema.json",
+      "source_sha256": "44b7fdbfe84e6656701c85ace34e82133e2b6067e3a004c73ffaaf370b5ba7c3",
+      "destination": "src/semantic_guard_vnext/schemas/action-assurance-profile.schema.json",
+      "destination_sha256": "44b7fdbfe84e6656701c85ace34e82133e2b6067e3a004c73ffaaf370b5ba7c3",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/action-evidence.schema.json",
+      "source_sha256": "9b3dcc38bd1797fba16533673bb59e79c2b2e396dfc99d8271018f5469b3a8ab",
+      "destination": "src/semantic_guard_vnext/schemas/action-evidence.schema.json",
+      "destination_sha256": "9b3dcc38bd1797fba16533673bb59e79c2b2e396dfc99d8271018f5469b3a8ab",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/analysis-provider.schema.json",
+      "source_sha256": "8846d67470f5ed213c47130f53ea446e474f1b81907de3b29481df8579e3fa35",
+      "destination": "src/semantic_guard_vnext/schemas/analysis-provider.schema.json",
+      "destination_sha256": "8846d67470f5ed213c47130f53ea446e474f1b81907de3b29481df8579e3fa35",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/assurance-claim-v1.schema.json",
+      "source_sha256": "5fd90114d22cf3473f54662f308bba469a98868c5a52db1b5b8169f7ce06f13c",
+      "destination": "src/semantic_guard_vnext/schemas/assurance-claim-v1.schema.json",
+      "destination_sha256": "5fd90114d22cf3473f54662f308bba469a98868c5a52db1b5b8169f7ce06f13c",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/assurance-claim.schema.json",
+      "source_sha256": "a561ad3d5b343622d739eaaaeedad9da50da0d1f7ba5500e4e0f44ff8ff42b2f",
+      "destination": "src/semantic_guard_vnext/schemas/assurance-claim.schema.json",
+      "destination_sha256": "a561ad3d5b343622d739eaaaeedad9da50da0d1f7ba5500e4e0f44ff8ff42b2f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/assurance-role-binding.schema.json",
+      "source_sha256": "c78ca4ded36e2c3b400a0acce23f72b6ba08b81bf3b62bdf8f09a61fe988acc8",
+      "destination": "src/semantic_guard_vnext/schemas/assurance-role-binding.schema.json",
+      "destination_sha256": "c78ca4ded36e2c3b400a0acce23f72b6ba08b81bf3b62bdf8f09a61fe988acc8",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/audit-result.schema.json",
+      "source_sha256": "29df2306a345ec3dd3642071e6ad8d0a12eb2ddc957cc8d1498c1d8a05a67d4b",
+      "destination": "src/semantic_guard_vnext/schemas/audit-result.schema.json",
+      "destination_sha256": "29df2306a345ec3dd3642071e6ad8d0a12eb2ddc957cc8d1498c1d8a05a67d4b",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/candidate-governance-adapters.schema.json",
+      "source_sha256": "0baebc678688659f04e969fe6abd8ee170b3004d130cc2fcb9d568542c173cf7",
+      "destination": "src/semantic_guard_vnext/schemas/candidate-governance-adapters.schema.json",
+      "destination_sha256": "0baebc678688659f04e969fe6abd8ee170b3004d130cc2fcb9d568542c173cf7",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/common.schema.json",
+      "source_sha256": "df0c41f065010dbf71af53b9b19ed4d6e4d78e1f46226812678c02d588dc93b0",
+      "destination": "src/semantic_guard_vnext/schemas/common.schema.json",
+      "destination_sha256": "df0c41f065010dbf71af53b9b19ed4d6e4d78e1f46226812678c02d588dc93b0",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/decision-request.schema.json",
+      "source_sha256": "8f4785b73fbffbb6c2c48f4d8d5f682ac34d631068c14e57c30f81f4776a485e",
+      "destination": "src/semantic_guard_vnext/schemas/decision-request.schema.json",
+      "destination_sha256": "8f4785b73fbffbb6c2c48f4d8d5f682ac34d631068c14e57c30f81f4776a485e",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/engineering-rule-governance-v1.schema.json",
+      "source_sha256": "84fa6f76db28ec67b09687d2cde6815bef0bd871d5483a7e797ba85228caa3d2",
+      "destination": "src/semantic_guard_vnext/schemas/engineering-rule-governance-v1.schema.json",
+      "destination_sha256": "84fa6f76db28ec67b09687d2cde6815bef0bd871d5483a7e797ba85228caa3d2",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/evidence-validity-policy.schema.json",
+      "source_sha256": "8c14009c6ab8498a3254a37ed7aa20c69363ed5c7304f14671815867a683d582",
+      "destination": "src/semantic_guard_vnext/schemas/evidence-validity-policy.schema.json",
+      "destination_sha256": "8c14009c6ab8498a3254a37ed7aa20c69363ed5c7304f14671815867a683d582",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/field-evaluation.schema.json",
+      "source_sha256": "f9765f096cbeff8092706614ea5a050340f470727a7911734119bcb8acab64bc",
+      "destination": "src/semantic_guard_vnext/schemas/field-evaluation.schema.json",
+      "destination_sha256": "f9765f096cbeff8092706614ea5a050340f470727a7911734119bcb8acab64bc",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/field-performance-governance.schema.json",
+      "source_sha256": "422de5073b955c2796436fbb0605ca1d9e64380eaf29672e1e8d9f807d6414bb",
+      "destination": "src/semantic_guard_vnext/schemas/field-performance-governance.schema.json",
+      "destination_sha256": "422de5073b955c2796436fbb0605ca1d9e64380eaf29672e1e8d9f807d6414bb",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/governance-material-assessment.schema.json",
+      "source_sha256": "9c6903516911b3e9816924d76d96dba0c4d8fe08558b82e6791818fdc1ec1998",
+      "destination": "src/semantic_guard_vnext/schemas/governance-material-assessment.schema.json",
+      "destination_sha256": "9c6903516911b3e9816924d76d96dba0c4d8fe08558b82e6791818fdc1ec1998",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/governed-audit-result.schema.json",
+      "source_sha256": "cf5d1f5c254f6462f1efc7e94eac794447096a96644cf35133e52c5f5798aa42",
+      "destination": "src/semantic_guard_vnext/schemas/governed-audit-result.schema.json",
+      "destination_sha256": "cf5d1f5c254f6462f1efc7e94eac794447096a96644cf35133e52c5f5798aa42",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/legacy-output-envelope.schema.json",
+      "source_sha256": "bf238ebe02776dcf6e99a7d77adc69a4d9c7aa1733c6b52cba09bdbf7b80c34c",
+      "destination": "src/semantic_guard_vnext/schemas/legacy-output-envelope.schema.json",
+      "destination_sha256": "bf238ebe02776dcf6e99a7d77adc69a4d9c7aa1733c6b52cba09bdbf7b80c34c",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/legacy-shadow-observation-envelope.schema.json",
+      "source_sha256": "139ff263bf72be4e6feee1e36d91b237e168408c85a51220284bc57af1e44eb5",
+      "destination": "src/semantic_guard_vnext/schemas/legacy-shadow-observation-envelope.schema.json",
+      "destination_sha256": "139ff263bf72be4e6feee1e36d91b237e168408c85a51220284bc57af1e44eb5",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/lifecycle-governance-v1.schema.json",
+      "source_sha256": "94586d11e0528ea117bc653ee714f58810d059b2398fe4515915cbc4792dd54d",
+      "destination": "src/semantic_guard_vnext/schemas/lifecycle-governance-v1.schema.json",
+      "destination_sha256": "94586d11e0528ea117bc653ee714f58810d059b2398fe4515915cbc4792dd54d",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/lifecycle-profile-registry.schema.json",
+      "source_sha256": "650cd06ed341d1df043e4a427468bbbe9bc68e715cee4ab168ea9e2103ff88d5",
+      "destination": "src/semantic_guard_vnext/schemas/lifecycle-profile-registry.schema.json",
+      "destination_sha256": "650cd06ed341d1df043e4a427468bbbe9bc68e715cee4ab168ea9e2103ff88d5",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/lifecycle-trace.schema.json",
+      "source_sha256": "060ab0dfd3002c65ddfa18d41e490de533efadb42620adbf2503b9bb095b93c9",
+      "destination": "src/semantic_guard_vnext/schemas/lifecycle-trace.schema.json",
+      "destination_sha256": "060ab0dfd3002c65ddfa18d41e490de533efadb42620adbf2503b9bb095b93c9",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/llm-candidate-input.schema.json",
+      "source_sha256": "83ba1306189338fd4cd75bdd9cb2dae0b9f02b123f019645a8d34a6ab14734b4",
+      "destination": "src/semantic_guard_vnext/schemas/llm-candidate-input.schema.json",
+      "destination_sha256": "83ba1306189338fd4cd75bdd9cb2dae0b9f02b123f019645a8d34a6ab14734b4",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/obligation-result.schema.json",
+      "source_sha256": "6c37c902014030eac7264672553545aa0b5a958c5bc83088a1f746487a03ebfe",
+      "destination": "src/semantic_guard_vnext/schemas/obligation-result.schema.json",
+      "destination_sha256": "6c37c902014030eac7264672553545aa0b5a958c5bc83088a1f746487a03ebfe",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/operational-outcome-evaluation.schema.json",
+      "source_sha256": "ea034c8d3850b3e398f81457114c1372d49d46b7f8292a464bf008093f26d620",
+      "destination": "src/semantic_guard_vnext/schemas/operational-outcome-evaluation.schema.json",
+      "destination_sha256": "ea034c8d3850b3e398f81457114c1372d49d46b7f8292a464bf008093f26d620",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/operational-qualification.schema.json",
+      "source_sha256": "42717a5327911bf677fcf985e018076d99a67ea0a8a1698eb967954c55b1a528",
+      "destination": "src/semantic_guard_vnext/schemas/operational-qualification.schema.json",
+      "destination_sha256": "42717a5327911bf677fcf985e018076d99a67ea0a8a1698eb967954c55b1a528",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/repair-cycle.schema.json",
+      "source_sha256": "bf42d99a4ec0f45073b5579a82401c304d56c3d9d58d30a207a407cbc8734ca9",
+      "destination": "src/semantic_guard_vnext/schemas/repair-cycle.schema.json",
+      "destination_sha256": "bf42d99a4ec0f45073b5579a82401c304d56c3d9d58d30a207a407cbc8734ca9",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/responsibility-material.schema.json",
+      "source_sha256": "608e562587d608406fb8ab1311b2760b2fb6c9c0ea1572744df7248ac0eb54da",
+      "destination": "src/semantic_guard_vnext/schemas/responsibility-material.schema.json",
+      "destination_sha256": "608e562587d608406fb8ab1311b2760b2fb6c9c0ea1572744df7248ac0eb54da",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/responsibility-policy.schema.json",
+      "source_sha256": "489c6e3f065136ceff19fd861c57299a0ce0ad491d34aa60f9d500bc8149bde2",
+      "destination": "src/semantic_guard_vnext/schemas/responsibility-policy.schema.json",
+      "destination_sha256": "489c6e3f065136ceff19fd861c57299a0ce0ad491d34aa60f9d500bc8149bde2",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/secure-operation.schema.json",
+      "source_sha256": "697a59e97bbfb0fda5a693dbdc7151f136a0a8c4c837699c862f2b26a1b0817f",
+      "destination": "src/semantic_guard_vnext/schemas/secure-operation.schema.json",
+      "destination_sha256": "697a59e97bbfb0fda5a693dbdc7151f136a0a8c4c837699c862f2b26a1b0817f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/state-assessment.schema.json",
+      "source_sha256": "7bcf18a6d90f0328a46d86aa30e1cf25edbc458767bb6bd1ca340d60c6f58c75",
+      "destination": "src/semantic_guard_vnext/schemas/state-assessment.schema.json",
+      "destination_sha256": "7bcf18a6d90f0328a46d86aa30e1cf25edbc458767bb6bd1ca340d60c6f58c75",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/subject-manifest.schema.json",
+      "source_sha256": "481977ba96efa0c8180c3e7f54d9fabd81dde670a4662afc01cfa9a4bbdaf5f5",
+      "destination": "src/semantic_guard_vnext/schemas/subject-manifest.schema.json",
+      "destination_sha256": "481977ba96efa0c8180c3e7f54d9fabd81dde670a4662afc01cfa9a4bbdaf5f5",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/schemas/transition-plan.schema.json",
+      "source_sha256": "2085e132e7f5e89de50002ff0c221e9b94c19430111feddb5dd6aef8a45cc1b5",
+      "destination": "src/semantic_guard_vnext/schemas/transition-plan.schema.json",
+      "destination_sha256": "2085e132e7f5e89de50002ff0c221e9b94c19430111feddb5dd6aef8a45cc1b5",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/lifecycle-profile-registry.candidate.json",
+      "source_sha256": "380559e15e5bfbf113b0f2b45ce260f2e3ee1a9e674b51f232c0db875290eb59",
+      "destination": "src/semantic_guard_vnext/validation/lifecycle-profile-registry.candidate.json",
+      "destination_sha256": "380559e15e5bfbf113b0f2b45ce260f2e3ee1a9e674b51f232c0db875290eb59",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/engineering-rule-pack.candidate.json",
+      "source_sha256": "ef19b8e287d2a80f529c462b0bbc4e3623118e2d8b44e5aba10f0fb7a255da57",
+      "destination": "src/semantic_guard_vnext/validation/engineering-rule-pack.candidate.json",
+      "destination_sha256": "ef19b8e287d2a80f529c462b0bbc4e3623118e2d8b44e5aba10f0fb7a255da57",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/engineering-rule-pack.schema.json",
+      "source_sha256": "9fb9b202848d4982309e9fd0ce49dd4ab287f5a2961933755fbe514da9f051fa",
+      "destination": "src/semantic_guard_vnext/validation/engineering-rule-pack.schema.json",
+      "destination_sha256": "9fb9b202848d4982309e9fd0ce49dd4ab287f5a2961933755fbe514da9f051fa",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/broker-attested-execution-envelope-v2.schema.json",
+      "source_sha256": "45b99b86e977743cad609403944c5bc21551c734f9da6f6bf40f600309733d15",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/broker-attested-execution-envelope-v2.schema.json",
+      "destination_sha256": "45b99b86e977743cad609403944c5bc21551c734f9da6f6bf40f600309733d15",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/broker-attested-execution-envelope-v3.schema.json",
+      "source_sha256": "f66ec44504f7cc1d85f0e52f2fb8d252f3c9aa2a93286da8ce7a65ef0f23e1fd",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/broker-attested-execution-envelope-v3.schema.json",
+      "destination_sha256": "f66ec44504f7cc1d85f0e52f2fb8d252f3c9aa2a93286da8ce7a65ef0f23e1fd",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "source_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "destination_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "source_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "destination_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/environment-eligibility-source-v1.schema.json",
+      "source_sha256": "792ae47331b08e1fb97fbe8b81ae2fd937a73f7f88afd4d3a19226981f27816a",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/environment-eligibility-source-v1.schema.json",
+      "destination_sha256": "792ae47331b08e1fb97fbe8b81ae2fd937a73f7f88afd4d3a19226981f27816a",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/governed-environment-execution-receipt-v1.schema.json",
+      "source_sha256": "282dbb606d2e78e79fec67fae4e38d7e5e2abd99cb227bfeb8dd58a955bca3b0",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/governed-environment-execution-receipt-v1.schema.json",
+      "destination_sha256": "282dbb606d2e78e79fec67fae4e38d7e5e2abd99cb227bfeb8dd58a955bca3b0",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-adoption-v1.schema.json",
+      "source_sha256": "962ca4edaf541e47e59cb828c02eec36c2eeac55e75b37230d1bb0cfcce2e0fc",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-environment-adoption-v1.schema.json",
+      "destination_sha256": "962ca4edaf541e47e59cb828c02eec36c2eeac55e75b37230d1bb0cfcce2e0fc",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-adoption.schema.json",
+      "source_sha256": "1fb52722dc8e6985adf710513235b7c76633d10b8ac65aa96627786b26b881eb",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-environment-adoption.schema.json",
+      "destination_sha256": "1fb52722dc8e6985adf710513235b7c76633d10b8ac65aa96627786b26b881eb",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-snapshot-v1.schema.json",
+      "source_sha256": "18c3cb83ec6d2300f6c04f4e28f4ab9a0b9b27da6cfa6c6725a513be6fa1d09f",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-environment-snapshot-v1.schema.json",
+      "destination_sha256": "18c3cb83ec6d2300f6c04f4e28f4ab9a0b9b27da6cfa6c6725a513be6fa1d09f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-host-identity-evidence-v1.schema.json",
+      "source_sha256": "0d3c5a4d2b8a4092bcd2cda9af68710632f8f8240b96122c94c7694070fa1f4b",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-host-identity-evidence-v1.schema.json",
+      "destination_sha256": "0d3c5a4d2b8a4092bcd2cda9af68710632f8f8240b96122c94c7694070fa1f4b",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-verification-profile-v3.schema.json",
+      "source_sha256": "44f519482a9c65d653419afbd7e1c72bc635d9a69365e57e699ce88764c57934",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-verification-profile-v3.schema.json",
+      "destination_sha256": "44f519482a9c65d653419afbd7e1c72bc635d9a69365e57e699ce88764c57934",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-verification-profile-v4.schema.json",
+      "source_sha256": "a5c96c11c74afdfcf66a7e00a18ed5b0e63e979cb36bed27dd7f9b1e31bfb51a",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/local-verification-profile-v4.schema.json",
+      "destination_sha256": "a5c96c11c74afdfcf66a7e00a18ed5b0e63e979cb36bed27dd7f9b1e31bfb51a",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/process-containment-probe-v1.schema.json",
+      "source_sha256": "17d1ad2b667894828eace583aacd1e3a09f9d8e149afd5127434185ad97574cc",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/process-containment-probe-v1.schema.json",
+      "destination_sha256": "17d1ad2b667894828eace583aacd1e3a09f9d8e149afd5127434185ad97574cc",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "source_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "destination_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/resolved-local-environment-profile.schema.json",
+      "source_sha256": "c71bcfae610937c9934a595c01efbc281444ce202f593a748c22576f74f9e9de",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/resolved-local-environment-profile.schema.json",
+      "destination_sha256": "c71bcfae610937c9934a595c01efbc281444ce202f593a748c22576f74f9e9de",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provenance-binding-v1.schema.json",
+      "source_sha256": "d314fe3876bf8c9c942c59c27a3dee018ba15bf6201339281a13a9327acc796b",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-provenance-binding-v1.schema.json",
+      "destination_sha256": "d314fe3876bf8c9c942c59c27a3dee018ba15bf6201339281a13a9327acc796b",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-authorization-v1.schema.json",
+      "source_sha256": "16daa738fb38dbc9fb98b9111295f2da17c43647e5fea2432c90ac66efe5cb05",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-provisioning-authorization-v1.schema.json",
+      "destination_sha256": "16daa738fb38dbc9fb98b9111295f2da17c43647e5fea2432c90ac66efe5cb05",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-consumption-v1.schema.json",
+      "source_sha256": "edf2c0d87077aeab5dcb92f209d77d76eda8330e30791266f98b5e3c34dbda26",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-provisioning-consumption-v1.schema.json",
+      "destination_sha256": "edf2c0d87077aeab5dcb92f209d77d76eda8330e30791266f98b5e3c34dbda26",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-plan-v1.schema.json",
+      "source_sha256": "5b1a80f4aa0553d2d551b106a922187e95e0da5062cb7059283807f4e8948757",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-provisioning-plan-v1.schema.json",
+      "destination_sha256": "5b1a80f4aa0553d2d551b106a922187e95e0da5062cb7059283807f4e8948757",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-receipt-v1.schema.json",
+      "source_sha256": "b8cb03c3c4d0c997cae608cd601b6b723ccb4b3bb81d14e4293afd3005baeb66",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-provisioning-receipt-v1.schema.json",
+      "destination_sha256": "b8cb03c3c4d0c997cae608cd601b6b723ccb4b3bb81d14e4293afd3005baeb66",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-manifest-v1.schema.json",
+      "source_sha256": "4262382344271861a73bb9e5bd70621961daf37f1bdf99f461dc970d1ff63bf6",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-runtime-manifest-v1.schema.json",
+      "destination_sha256": "4262382344271861a73bb9e5bd70621961daf37f1bdf99f461dc970d1ff63bf6",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-receipt-v1.schema.json",
+      "source_sha256": "06489e1071359f49b43c6509cce7e6f70bfef05850598367e80e205fb8548745",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-receipt-v1.schema.json",
+      "destination_sha256": "06489e1071359f49b43c6509cce7e6f70bfef05850598367e80e205fb8548745",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-request-v1.schema.json",
+      "source_sha256": "1ff2a4c32fe4fccfb55d5c66f3f203a10172af3396e27094673de323abdb9bfe",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-request-v1.schema.json",
+      "destination_sha256": "1ff2a4c32fe4fccfb55d5c66f3f203a10172af3396e27094673de323abdb9bfe",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-authorization-consumption-v1.schema.json",
+      "source_sha256": "66d0f8d5a0d5632f1ff8e21e7aaded578c4fed183914ce94343a9e42d4c2553f",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-candidate-install-authorization-consumption-v1.schema.json",
+      "destination_sha256": "66d0f8d5a0d5632f1ff8e21e7aaded578c4fed183914ce94343a9e42d4c2553f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-authorization-v1.schema.json",
+      "source_sha256": "e364007dca5e7cca2ec9ba8c0de46ede0628739bed6b75dfb3fe3c41422bf398",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-candidate-install-authorization-v1.schema.json",
+      "destination_sha256": "e364007dca5e7cca2ec9ba8c0de46ede0628739bed6b75dfb3fe3c41422bf398",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-projection-v1.schema.json",
+      "source_sha256": "74546697e2eb92082852dddc3895f4ec81e6494cd8127ded4698020ec7736403",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-candidate-install-projection-v1.schema.json",
+      "destination_sha256": "74546697e2eb92082852dddc3895f4ec81e6494cd8127ded4698020ec7736403",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-receipt-v1.schema.json",
+      "source_sha256": "b3e2e2ef0717c2eab1b71da077524066167677be27508dc278eff381a702be98",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-candidate-install-receipt-v1.schema.json",
+      "destination_sha256": "b3e2e2ef0717c2eab1b71da077524066167677be27508dc278eff381a702be98",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-receipt-v2.schema.json",
+      "source_sha256": "28d6be9bb70b4012fc4dde7193f079474fa0164e05443988c683b5a8ba5f87c1",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-candidate-install-receipt-v2.schema.json",
+      "destination_sha256": "28d6be9bb70b4012fc4dde7193f079474fa0164e05443988c683b5a8ba5f87c1",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-control-publisher-contract-binding-v1.schema.json",
+      "source_sha256": "e2361543a58662a0d2904d15f71cea0b5def80dd683ef51f70bb240ad9b5fb78",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-control-publisher-contract-binding-v1.schema.json",
+      "destination_sha256": "e2361543a58662a0d2904d15f71cea0b5def80dd683ef51f70bb240ad9b5fb78",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-control-runtime-manifest-v1.schema.json",
+      "source_sha256": "7a2c6e1c739bf9765980b0fdfa7ee8970c5d871a243cff151e842e2116466062",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-control-runtime-manifest-v1.schema.json",
+      "destination_sha256": "7a2c6e1c739bf9765980b0fdfa7ee8970c5d871a243cff151e842e2116466062",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-execution-request-v1.schema.json",
+      "source_sha256": "ccbafa7b15ed8cc40c71695e34e6d855d935591903277f9420176915624803f6",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-execution-request-v1.schema.json",
+      "destination_sha256": "ccbafa7b15ed8cc40c71695e34e6d855d935591903277f9420176915624803f6",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-execution-snapshot-manifest-v1.schema.json",
+      "source_sha256": "20b76aea80dffd6ce0d090794fd35d44be3a8a06d3cbaac54b09f564b2ae02b9",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-execution-snapshot-manifest-v1.schema.json",
+      "destination_sha256": "20b76aea80dffd6ce0d090794fd35d44be3a8a06d3cbaac54b09f564b2ae02b9",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-initial-bootstrap-capsule-v1.schema.json",
+      "source_sha256": "06aa83146d52f3ae95fba9d6e9dd5ea915ec1949bc2f4c916c67646f67d8fd7d",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-initial-bootstrap-capsule-v1.schema.json",
+      "destination_sha256": "06aa83146d52f3ae95fba9d6e9dd5ea915ec1949bc2f4c916c67646f67d8fd7d",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v1.schema.json",
+      "source_sha256": "24d93a1b4da10a32896415937318dbfea006c7e746ebd5e63f1bfb0ef6f4924e",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "24d93a1b4da10a32896415937318dbfea006c7e746ebd5e63f1bfb0ef6f4924e",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v2.schema.json",
+      "source_sha256": "96408d4f5ef81ed4933637e9d65f09421304c3fd5ec8501d0e825326d09cc65d",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v2.schema.json",
+      "destination_sha256": "96408d4f5ef81ed4933637e9d65f09421304c3fd5ec8501d0e825326d09cc65d",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-v1.schema.json",
+      "source_sha256": "c6a460662e3d33324e90d1de038880a8d9309cf0dd850102f45409e13c65c10e",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-authorization-v1.schema.json",
+      "destination_sha256": "c6a460662e3d33324e90d1de038880a8d9309cf0dd850102f45409e13c65c10e",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-v2.schema.json",
+      "source_sha256": "5b0da74abbfda4d38d42d426d9608b6f234e3e47c4818a4827dc51b3230de96a",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-authorization-v2.schema.json",
+      "destination_sha256": "5b0da74abbfda4d38d42d426d9608b6f234e3e47c4818a4827dc51b3230de96a",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-receipt-v1.schema.json",
+      "source_sha256": "3f4981989606740e79511d9d3a7a4dd64533553455a08e210df84fbb1102de33",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-receipt-v1.schema.json",
+      "destination_sha256": "3f4981989606740e79511d9d3a7a4dd64533553455a08e210df84fbb1102de33",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-receipt-v2.schema.json",
+      "source_sha256": "2375a6bac8c9daaef7fa652ffb46913eebacd4187538c57745f544d9f293e8f4",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-operation-receipt-v2.schema.json",
+      "destination_sha256": "2375a6bac8c9daaef7fa652ffb46913eebacd4187538c57745f544d9f293e8f4",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-transition-emergency-closure-v1.schema.json",
+      "source_sha256": "f5b784a4360fc05b235f801c62c317ba1319e549e9f6ed74271c3fb39f918c33",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-key-transition-emergency-closure-v1.schema.json",
+      "destination_sha256": "f5b784a4360fc05b235f801c62c317ba1319e549e9f6ed74271c3fb39f918c33",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-preactivation-decision-v1.schema.json",
+      "source_sha256": "58d4963fae4286bf1b70e0aea0f9181f933802ef368241c35f24c9fa6ee007db",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-preactivation-decision-v1.schema.json",
+      "destination_sha256": "58d4963fae4286bf1b70e0aea0f9181f933802ef368241c35f24c9fa6ee007db",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-root-candidate-bundle-v1.schema.json",
+      "source_sha256": "66268af767664406d8a01b78c1ff98fc136c47ba57b4e029c2b5e2794a1d3d6f",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-root-candidate-bundle-v1.schema.json",
+      "destination_sha256": "66268af767664406d8a01b78c1ff98fc136c47ba57b4e029c2b5e2794a1d3d6f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-root-trust-store-v2.schema.json",
+      "source_sha256": "8498c06c1e409d9c014f018114fe6f18967e15daf816e9e5c71cce6dab5d1866",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-root-trust-store-v2.schema.json",
+      "destination_sha256": "8498c06c1e409d9c014f018114fe6f18967e15daf816e9e5c71cce6dab5d1866",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-metadata-v1.schema.json",
+      "source_sha256": "7bb28dd6461c4ae5fac00ebb30e4a2e90612a349388c02702ebb903af0fc851d",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-metadata-v1.schema.json",
+      "destination_sha256": "7bb28dd6461c4ae5fac00ebb30e4a2e90612a349388c02702ebb903af0fc851d",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-metadata-v2.schema.json",
+      "source_sha256": "352920ac30bbc7c7618aefb593ba1ea940dd52999983f3afd00321a32ee50ce6",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-metadata-v2.schema.json",
+      "destination_sha256": "352920ac30bbc7c7618aefb593ba1ea940dd52999983f3afd00321a32ee50ce6",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-revocation-v1.schema.json",
+      "source_sha256": "3c3b8e51c5bdf6bd2e9eaaebb24f1511799e518b4ae86ea4916315cfec44a4b2",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-revocation-v1.schema.json",
+      "destination_sha256": "3c3b8e51c5bdf6bd2e9eaaebb24f1511799e518b4ae86ea4916315cfec44a4b2",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-revocation-v2.schema.json",
+      "source_sha256": "b382a7701db980798a65c22096220c4e43444c4f4edd2059a438050a0ee1455e",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-revocation-v2.schema.json",
+      "destination_sha256": "b382a7701db980798a65c22096220c4e43444c4f4edd2059a438050a0ee1455e",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-selector-v1.schema.json",
+      "source_sha256": "df247682a7a9fe976b0cdfbae43377ddc397714ed837f2423be67cf4454382d2",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-selector-v1.schema.json",
+      "destination_sha256": "df247682a7a9fe976b0cdfbae43377ddc397714ed837f2423be67cf4454382d2",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-selector-v2.schema.json",
+      "source_sha256": "427eede813829832f0b72597701eb0ff246d426999e44d6edd2e22f038e3f4ae",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-signing-key-selector-v2.schema.json",
+      "destination_sha256": "427eede813829832f0b72597701eb0ff246d426999e44d6edd2e22f038e3f4ae",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-authorization-consumption-v1.schema.json",
+      "source_sha256": "3a4d5033b518bd68c721d209a67cdcd2df75721017908922dede3907b0e21226",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-activation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "3a4d5033b518bd68c721d209a67cdcd2df75721017908922dede3907b0e21226",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-basis-v1.schema.json",
+      "source_sha256": "57b1a57c2cc4065bebe46062568f7974fd127b7c48f524661f55349a6e904270",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-activation-basis-v1.schema.json",
+      "destination_sha256": "57b1a57c2cc4065bebe46062568f7974fd127b7c48f524661f55349a6e904270",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-publication-receipt-v1.schema.json",
+      "source_sha256": "576a6d208eb587c457409ec503a165ab3e27205f0d9847e1d92a97035204db64",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-activation-publication-receipt-v1.schema.json",
+      "destination_sha256": "576a6d208eb587c457409ec503a165ab3e27205f0d9847e1d92a97035204db64",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-record-v1.schema.json",
+      "source_sha256": "3236bd8ac4f9d935456fb84a01e1f75cc1e61affc6bf01097e0db4f3a30e9a55",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-activation-record-v1.schema.json",
+      "destination_sha256": "3236bd8ac4f9d935456fb84a01e1f75cc1e61affc6bf01097e0db4f3a30e9a55",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-adoption-authorization-v1.schema.json",
+      "source_sha256": "6296bae6521ed7e27170f4a685fa7f89dd6d59b9b01a868a1f3d2e5924318eef",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-adoption-authorization-v1.schema.json",
+      "destination_sha256": "6296bae6521ed7e27170f4a685fa7f89dd6d59b9b01a868a1f3d2e5924318eef",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-environment-adoption-v1.schema.json",
+      "source_sha256": "11179fe6d2a01a548bb754a6f7e78b1e198f58731a15c2fd9eca2322e28808bf",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-environment-adoption-v1.schema.json",
+      "destination_sha256": "11179fe6d2a01a548bb754a6f7e78b1e198f58731a15c2fd9eca2322e28808bf",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-consumption-v1.schema.json",
+      "source_sha256": "8fffbf7eac0c33606debba417058f7eddc82fb1199a2714334c90a462f359cf9",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-consumption-v1.schema.json",
+      "destination_sha256": "8fffbf7eac0c33606debba417058f7eddc82fb1199a2714334c90a462f359cf9",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-v1.schema.json",
+      "source_sha256": "ea2fe72fb63fbb547052aecfbae661a70e440b683b7c2f95932f6586e5d74e12",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-v1.schema.json",
+      "destination_sha256": "ea2fe72fb63fbb547052aecfbae661a70e440b683b7c2f95932f6586e5d74e12",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-receipt-v1.schema.json",
+      "source_sha256": "567be3469565330dfb1211f06cb295bafb6ef806c59e8eae1f09022b9f90ebf4",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-snapshot-projection-receipt-v1.schema.json",
+      "destination_sha256": "567be3469565330dfb1211f06cb295bafb6ef806c59e8eae1f09022b9f90ebf4",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-authorization-consumption-v1.schema.json",
+      "source_sha256": "20a4ecaf87c9985a3280f36bd44a9dc34e8f310772d07158ed8b4f86528ff5d9",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "20a4ecaf87c9985a3280f36bd44a9dc34e8f310772d07158ed8b4f86528ff5d9",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-authorization-v1.schema.json",
+      "source_sha256": "8eb881fcb8f9daafbc6b093c66cd89e7d0444e56f90ccf36db105f30a57e992f",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-authorization-v1.schema.json",
+      "destination_sha256": "8eb881fcb8f9daafbc6b093c66cd89e7d0444e56f90ccf36db105f30a57e992f",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-basis-v1.schema.json",
+      "source_sha256": "479b5f723cdfb1d3aa01bb340db57afb70402f9b91edf578a5efe28070cc60f4",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-basis-v1.schema.json",
+      "destination_sha256": "479b5f723cdfb1d3aa01bb340db57afb70402f9b91edf578a5efe28070cc60f4",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-basis-v2.schema.json",
+      "source_sha256": "b791a9d90a36b04e24fb330ffe72eeceaef765e170d392f195cc92de35bc00fe",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-basis-v2.schema.json",
+      "destination_sha256": "b791a9d90a36b04e24fb330ffe72eeceaef765e170d392f195cc92de35bc00fe",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v1.schema.json",
+      "source_sha256": "29e228772bbfad0c386d6d9e366561a661a6f565f573adee65ccc506114dc182",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v1.schema.json",
+      "destination_sha256": "29e228772bbfad0c386d6d9e366561a661a6f565f573adee65ccc506114dc182",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v2.schema.json",
+      "source_sha256": "94a8efd2a34171d260eaafe6c5ea9aa007a9b40fb97ae7fa42352acfa8b6b846",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v2.schema.json",
+      "destination_sha256": "94a8efd2a34171d260eaafe6c5ea9aa007a9b40fb97ae7fa42352acfa8b6b846",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-authorization-consumption-v1.schema.json",
+      "source_sha256": "1e88e183c933d0016c513849dd5c8b63966bc638547b0cf2a6ac8f6a1f6ab702",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-revocation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "1e88e183c933d0016c513849dd5c8b63966bc638547b0cf2a6ac8f6a1f6ab702",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v1.schema.json",
+      "source_sha256": "37b613b10efc49ebbd7764e5f1a0dd8c31764572b2a67f6efa1e406f95a8f263",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v1.schema.json",
+      "destination_sha256": "37b613b10efc49ebbd7764e5f1a0dd8c31764572b2a67f6efa1e406f95a8f263",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v2.schema.json",
+      "source_sha256": "d2c567b1bc925a8fc22ac08a8c34bf248989f9f6eeda41cce6205a2a8a17a81a",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v2.schema.json",
+      "destination_sha256": "d2c567b1bc925a8fc22ac08a8c34bf248989f9f6eeda41cce6205a2a8a17a81a",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-record-v1.schema.json",
+      "source_sha256": "e8d27f0d45b8ae6180cd13f6faaa8443df929346b1ebc93d93bca03cf0a62d86",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-store-revocation-record-v1.schema.json",
+      "destination_sha256": "e8d27f0d45b8ae6180cd13f6faaa8443df929346b1ebc93d93bca03cf0a62d86",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-worker-account-observation-v1.schema.json",
+      "source_sha256": "b9cec34908a959cdced4a171adb378187d2cf613aa894330a3f4c910de8b8f58",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-worker-account-observation-v1.schema.json",
+      "destination_sha256": "b9cec34908a959cdced4a171adb378187d2cf613aa894330a3f4c910de8b8f58",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-worker-principal-resolution-v1.schema.json",
+      "source_sha256": "234120c14f3b0fd7b78c837c5e3e6a993460836b282fe85c4d191aa079d1ca9b",
+      "destination": "src/semantic_guard_vnext/validation/env-path-contracts/u10-worker-principal-resolution-v1.schema.json",
+      "destination_sha256": "234120c14f3b0fd7b78c837c5e3e6a993460836b282fe85c4d191aa079d1ca9b",
+      "change_classification": "preserved_bytes",
+      "purpose": "original_wheel_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-environment-snapshot.schema.json",
+      "source_sha256": "2d524ae7e0e99ec6e5870ef1d2442d15bee47234b9131ef17635514398f8e86a",
+      "destination": "src/semantic_guard_vnext/validation/local-environment-snapshot.schema.json",
+      "destination_sha256": "2d524ae7e0e99ec6e5870ef1d2442d15bee47234b9131ef17635514398f8e86a",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile-v1.schema.json",
+      "source_sha256": "2d56136a83e7bf7572a22abee1f6fb5bdd4f68064057ffa3096538dedc708b4a",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-profile-v1.schema.json",
+      "destination_sha256": "2d56136a83e7bf7572a22abee1f6fb5bdd4f68064057ffa3096538dedc708b4a",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile-v2.schema.json",
+      "source_sha256": "358061d50680d48716c96499ea2c306cb4fbc6d6cc7f76435d41f6c39a7a9715",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-profile-v2.schema.json",
+      "destination_sha256": "358061d50680d48716c96499ea2c306cb4fbc6d6cc7f76435d41f6c39a7a9715",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile.schema.json",
+      "source_sha256": "d69ef99ee6638a1195a2c76b294fff1e826e5c96254b1cca8445a9f686f0ac69",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-profile.schema.json",
+      "destination_sha256": "d69ef99ee6638a1195a2c76b294fff1e826e5c96254b1cca8445a9f686f0ac69",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run-v1.schema.json",
+      "source_sha256": "3aa315e318f40a4dd35c8caa75164787b42a84d4581dfb797d1fdd51a3f5f457",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-run-v1.schema.json",
+      "destination_sha256": "3aa315e318f40a4dd35c8caa75164787b42a84d4581dfb797d1fdd51a3f5f457",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run-v2.schema.json",
+      "source_sha256": "ba6f086902112863e87fc0ee18d47c3e98c962fa71a26a2423a245c9b6dbd9cd",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-run-v2.schema.json",
+      "destination_sha256": "ba6f086902112863e87fc0ee18d47c3e98c962fa71a26a2423a245c9b6dbd9cd",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run.schema.json",
+      "source_sha256": "c5574bbee53f1af1a82d0ad1025b92507499521544f7e4735ba9cfb306fdb291",
+      "destination": "src/semantic_guard_vnext/validation/local-verification-run.schema.json",
+      "destination_sha256": "c5574bbee53f1af1a82d0ad1025b92507499521544f7e4735ba9cfb306fdb291",
+      "change_classification": "preserved_bytes",
+      "purpose": "local_verification_contract_resource"
+    },
+    {
+      "source_path": "vnext/tests/test_action_evidence.py",
+      "source_sha256": "931eec0564fcbf8b27d5c9cd87bf69538dc75ea688ab7ca97bfb3af25917c59d",
+      "destination": "candidate_tests/test_action_evidence.py",
+      "destination_sha256": "931eec0564fcbf8b27d5c9cd87bf69538dc75ea688ab7ca97bfb3af25917c59d",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_assurance_graph.py",
+      "source_sha256": "7990987a94e622d33427ce0fce029e3656f1c0fad4ae5a23faa808da5eaad82d",
+      "destination": "candidate_tests/test_assurance_graph.py",
+      "destination_sha256": "ae1cd1553bb32ea194144ab2408c9534655215e3fe6b811433195ac62bcfba9c",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_audit_package_layout.py",
+      "source_sha256": "472ff971bd38388344a0e148165dff483babf0bc758fe37347855457dcd45016",
+      "destination": "candidate_tests/test_audit_package_layout.py",
+      "destination_sha256": "472ff971bd38388344a0e148165dff483babf0bc758fe37347855457dcd45016",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_candidate_governance_adapters.py",
+      "source_sha256": "add249e466eea8b7b713eb086817153f36ab7ca9912482ebe4e1cc8fe96bf6fe",
+      "destination": "candidate_tests/test_candidate_governance_adapters.py",
+      "destination_sha256": "381cae9c5145a6aee4a940fea77208d3700b6a14da7ffd03f1c25d70788fa553",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_cli.py",
+      "source_sha256": "9670145f9636061852aa1e686182481e375792a1236c545c6c856694fce21299",
+      "destination": "candidate_tests/test_cli.py",
+      "destination_sha256": "9670145f9636061852aa1e686182481e375792a1236c545c6c856694fce21299",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_conformance_corpus.py",
+      "source_sha256": "273eb07cc74f716a803aa22ee5ac33b518544cc6f76fc520296e6e5aca9a7798",
+      "destination": "candidate_tests/test_conformance_corpus.py",
+      "destination_sha256": "87eea8edc4c070d8f359743974c9877533ce502c32194d519fcfc5a6d330ea36",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_dependency_projection.py",
+      "source_sha256": "c1053d568c41aba3ce88142984469b01e33988b0cc2a36c48e875f5ed39580da",
+      "destination": "candidate_tests/test_dependency_projection.py",
+      "destination_sha256": "c1053d568c41aba3ce88142984469b01e33988b0cc2a36c48e875f5ed39580da",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_direct_rules.py",
+      "source_sha256": "627c420ee0414ead46c4fb521ca91fb603403456590e1431d15dbb78281bcac3",
+      "destination": "candidate_tests/test_direct_rules.py",
+      "destination_sha256": "627c420ee0414ead46c4fb521ca91fb603403456590e1431d15dbb78281bcac3",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_engine.py",
+      "source_sha256": "5bf8fd2903a7790bab3466a5d4041dddd6cf2cdac0e9be0d0716a450b87407ee",
+      "destination": "candidate_tests/test_engine.py",
+      "destination_sha256": "5bf8fd2903a7790bab3466a5d4041dddd6cf2cdac0e9be0d0716a450b87407ee",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_engineering_rule_governance_v1.py",
+      "source_sha256": "d16d60f8e45d072de0e58570f499557cb983da5b35f5bc381a455e8e783284d1",
+      "destination": "candidate_tests/test_engineering_rule_governance_v1.py",
+      "destination_sha256": "d16d60f8e45d072de0e58570f499557cb983da5b35f5bc381a455e8e783284d1",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_environment_governance.py",
+      "source_sha256": "3c7d0a586500e3be4c2d0447e2778fece4b9b1c7ede48b87d2166791b2f02ab6",
+      "destination": "candidate_tests/test_environment_governance.py",
+      "destination_sha256": "bf1bfd44f634503e4c9f4163af561256c1cf57deb2b65e0f9f2ceedabd0a82dc",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_field_evaluation.py",
+      "source_sha256": "e8899b6247f4cd0a680637942a074c9191f33c815aa8a03cc394f22a0d5f8553",
+      "destination": "candidate_tests/test_field_evaluation.py",
+      "destination_sha256": "e8899b6247f4cd0a680637942a074c9191f33c815aa8a03cc394f22a0d5f8553",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_field_performance_governance.py",
+      "source_sha256": "d90ab240ead399b7d12530ec4dc6cd13cdeef36b67647792962a99554e29d191",
+      "destination": "candidate_tests/test_field_performance_governance.py",
+      "destination_sha256": "d90ab240ead399b7d12530ec4dc6cd13cdeef36b67647792962a99554e29d191",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_governance_materials.py",
+      "source_sha256": "cfac40599d5804e2dfaacb5e521c557f3b8285a34f00a25438fee5aecb5e33b6",
+      "destination": "candidate_tests/test_governance_materials.py",
+      "destination_sha256": "cfac40599d5804e2dfaacb5e521c557f3b8285a34f00a25438fee5aecb5e33b6",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_governed_audit.py",
+      "source_sha256": "bf8aefce924796a629dfbe7404182de6cefa2f293180af89d384f3659933286d",
+      "destination": "candidate_tests/test_governed_audit.py",
+      "destination_sha256": "bf8aefce924796a629dfbe7404182de6cefa2f293180af89d384f3659933286d",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_japanese_dependency.py",
+      "source_sha256": "cd52e79f070bbeebe9a489484742a44ce0ca8a52e706462c0f292d8d6962c1db",
+      "destination": "candidate_tests/test_japanese_dependency.py",
+      "destination_sha256": "cd52e79f070bbeebe9a489484742a44ce0ca8a52e706462c0f292d8d6962c1db",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_legacy_shadow_observation.py",
+      "source_sha256": "ae6c151031e935588d9222d8f370f206a6e24af16a18e51d67e4373de0b14be4",
+      "destination": "candidate_tests/test_legacy_shadow_observation.py",
+      "destination_sha256": "ae6c151031e935588d9222d8f370f206a6e24af16a18e51d67e4373de0b14be4",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_lifecycle_governance_v1.py",
+      "source_sha256": "d5300e489042bf9494f58fc9d3a8911d046eabe70fc720c1b183addbf78eb5a1",
+      "destination": "candidate_tests/test_lifecycle_governance_v1.py",
+      "destination_sha256": "d5300e489042bf9494f58fc9d3a8911d046eabe70fc720c1b183addbf78eb5a1",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_lifecycle_profiles.py",
+      "source_sha256": "26ac120a525dfcf5146253c583157c8cee5576af3daa042d829331f78800d487",
+      "destination": "candidate_tests/test_lifecycle_profiles.py",
+      "destination_sha256": "26ac120a525dfcf5146253c583157c8cee5576af3daa042d829331f78800d487",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_lifecycle_trace.py",
+      "source_sha256": "bece9cc62c325f56668e4f6c4c53327f5ae7af03d353fa74d1630a6db1c2b96f",
+      "destination": "candidate_tests/test_lifecycle_trace.py",
+      "destination_sha256": "bece9cc62c325f56668e4f6c4c53327f5ae7af03d353fa74d1630a6db1c2b96f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_lifting.py",
+      "source_sha256": "adb49439348424bfec5e27a42ebd8291c325df501421d6eacecb3fff09b63908",
+      "destination": "candidate_tests/test_lifting.py",
+      "destination_sha256": "adb49439348424bfec5e27a42ebd8291c325df501421d6eacecb3fff09b63908",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_llm_candidates.py",
+      "source_sha256": "4c83cd7087a2555f782de44b1be3911bc2ff0c0d459ab1327b57a1bef22c2e6a",
+      "destination": "candidate_tests/test_llm_candidates.py",
+      "destination_sha256": "4c83cd7087a2555f782de44b1be3911bc2ff0c0d459ab1327b57a1bef22c2e6a",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_mcp_server.py",
+      "source_sha256": "0b72f62f1ae2470b904c2abfd77058628376f02b715a363cc16150b44f5facad",
+      "destination": "candidate_tests/test_mcp_server.py",
+      "destination_sha256": "40b4b45d5e7736723a3c124a83ed99373791f6c896a3f579fc5f44ac2c803964",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_models_and_aggregation.py",
+      "source_sha256": "d096300762b950fe41294ac1994f303813a247ade59e8ac0a02701cded023b99",
+      "destination": "candidate_tests/test_models_and_aggregation.py",
+      "destination_sha256": "d096300762b950fe41294ac1994f303813a247ade59e8ac0a02701cded023b99",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_operational_outcomes.py",
+      "source_sha256": "2404815a81c0520a2b3a8d215a966bd97465007aa9f6d32bb5878284744a53d0",
+      "destination": "candidate_tests/test_operational_outcomes.py",
+      "destination_sha256": "2404815a81c0520a2b3a8d215a966bd97465007aa9f6d32bb5878284744a53d0",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_operational_qualification.py",
+      "source_sha256": "e16c27d21503f832714a2b5be1fbf359d2bc38a6f9cfd1901274bde3c0b9dcb1",
+      "destination": "candidate_tests/test_operational_qualification.py",
+      "destination_sha256": "e16c27d21503f832714a2b5be1fbf359d2bc38a6f9cfd1901274bde3c0b9dcb1",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_provider_receipts.py",
+      "source_sha256": "4abf79afe7f759dbb0a8f8d4dd6efe3228fb925f962dfde1c607a20e5d37d76f",
+      "destination": "candidate_tests/test_provider_receipts.py",
+      "destination_sha256": "4abf79afe7f759dbb0a8f8d4dd6efe3228fb925f962dfde1c607a20e5d37d76f",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_providers.py",
+      "source_sha256": "f5840be4c1c2ea761efbf65882be6350bb5d9a55da171367c81cc4cc6d2134d3",
+      "destination": "candidate_tests/test_providers.py",
+      "destination_sha256": "f5840be4c1c2ea761efbf65882be6350bb5d9a55da171367c81cc4cc6d2134d3",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_public_contract.py",
+      "source_sha256": "40dd434e7a57a4b350085daf815d3dff95a6fc2f15c7f39cc6a6e2ad324d5bea",
+      "destination": "candidate_tests/test_public_contract.py",
+      "destination_sha256": "828b5cba7e5d01e7dc30b70f8a52003525eae3fadef6217a2a987aa574999ef2",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/tests/test_reassessment.py",
+      "source_sha256": "39bd74a2b5753fb54d234f6dda22fbc73a0e3b3c75f4f4397f731a5030c7fdfd",
+      "destination": "candidate_tests/test_reassessment.py",
+      "destination_sha256": "39bd74a2b5753fb54d234f6dda22fbc73a0e3b3c75f4f4397f731a5030c7fdfd",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_records.py",
+      "source_sha256": "54cabb0f71a4c86185f212941995f01d30241fd06e0702f25523300f3e75e5e8",
+      "destination": "candidate_tests/test_records.py",
+      "destination_sha256": "54cabb0f71a4c86185f212941995f01d30241fd06e0702f25523300f3e75e5e8",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_repair_loop.py",
+      "source_sha256": "a8370b0b557864f62944a6ab03d948c950c899a5d6f3315d19800c50b7c6e1cd",
+      "destination": "candidate_tests/test_repair_loop.py",
+      "destination_sha256": "a8370b0b557864f62944a6ab03d948c950c899a5d6f3315d19800c50b7c6e1cd",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_residual_risk.py",
+      "source_sha256": "8f04af7c924eb5a390127951393dc2a7e5feec6f1c04c04cb2fb99153910a0fc",
+      "destination": "candidate_tests/test_residual_risk.py",
+      "destination_sha256": "8f04af7c924eb5a390127951393dc2a7e5feec6f1c04c04cb2fb99153910a0fc",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_routing.py",
+      "source_sha256": "cdf07d68917aee2417bd7fbf12783b69c81ed88393a6e7da9432af7c13b4b959",
+      "destination": "candidate_tests/test_routing.py",
+      "destination_sha256": "cdf07d68917aee2417bd7fbf12783b69c81ed88393a6e7da9432af7c13b4b959",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_schema_access.py",
+      "source_sha256": "493fe87059460503fb7a9c91e1d33311bfc07f4877701a79a4659a3d28a1511d",
+      "destination": "candidate_tests/test_schema_access.py",
+      "destination_sha256": "493fe87059460503fb7a9c91e1d33311bfc07f4877701a79a4659a3d28a1511d",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_secure_operation.py",
+      "source_sha256": "da83da98e8ee6da457e6d12874a21f7a171cc7b2943c19c753ffd33bf2eb1b23",
+      "destination": "candidate_tests/test_secure_operation.py",
+      "destination_sha256": "da83da98e8ee6da457e6d12874a21f7a171cc7b2943c19c753ffd33bf2eb1b23",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_shadow.py",
+      "source_sha256": "172cef5bd2d50195ef325986df5a21fe2d7c377ad7b4aa73d31d33d5f2eee1a4",
+      "destination": "candidate_tests/test_shadow.py",
+      "destination_sha256": "172cef5bd2d50195ef325986df5a21fe2d7c377ad7b4aa73d31d33d5f2eee1a4",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_state_assessment.py",
+      "source_sha256": "ab1bfc33d5ba7fa63b8c7f9de360691d3eca77294af958fee3c0f9a6b8cd2514",
+      "destination": "candidate_tests/test_state_assessment.py",
+      "destination_sha256": "ab1bfc33d5ba7fa63b8c7f9de360691d3eca77294af958fee3c0f9a6b8cd2514",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_transition_control.py",
+      "source_sha256": "f80cf6cfb7fb3abc410b9d2be4370f907e06114b4bf7b6bbb51917162e449a42",
+      "destination": "candidate_tests/test_transition_control.py",
+      "destination_sha256": "27c9d548a4731efeb266345fdf244b5e43e97a422fe6f9ec4e5134aaa2ba674b",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_regression_test",
+      "meaning_change": "Candidate tests and fixtures remain isolated from canonical v1 tests."
+    },
+    {
+      "source_path": "vnext/fixtures/requirement-relations/conformance.jsonl",
+      "source_sha256": "e44bfcaa29e9e70a706fff638e23675f3f672b2a7dfb1c5e7d61aa17d0927094",
+      "destination": "candidate_tests/fixtures/requirement-relations/conformance.jsonl",
+      "destination_sha256": "e44bfcaa29e9e70a706fff638e23675f3f672b2a7dfb1c5e7d61aa17d0927094",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_conformance_fixture"
+    },
+    {
+      "source_path": "vnext/migration/legacy-baseline-2026-07-16.json",
+      "source_sha256": "3f06828e9f544285dc2c4084698a05e03aa56fabaee8563bb9c4217cde352d46",
+      "destination": "candidate_tests/fixtures/legacy-baseline-2026-07-16.json",
+      "destination_sha256": "3f06828e9f544285dc2c4084698a05e03aa56fabaee8563bb9c4217cde352d46",
+      "change_classification": "preserved_bytes",
+      "purpose": "historical_legacy_baseline_fixture_only"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_broker_core.py",
+      "source_sha256": "7f56332168467eecc83fb1f9323fc4219dce2000604c75f7e10008621955e1d0",
+      "destination": "candidate_tests/test_u10_broker_core.py",
+      "destination_sha256": "7f56332168467eecc83fb1f9323fc4219dce2000604c75f7e10008621955e1d0",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_activation_transaction_recovery.py",
+      "source_sha256": "f445305036f0d64a98cdaf79b57785d3d93d3d4100f010f485d891634b529a38",
+      "destination": "candidate_tests/test_u10_activation_transaction_recovery.py",
+      "destination_sha256": "32227deff2906d5132b3442ddceb387d147a3a599c834d227746e3d0b3c9a733",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_dependency_lock_path_contract.py",
+      "source_sha256": "e78ecac42b0344394ee58aaaa20dd4a1c07599e8a61bc49ce5765ffc306a4514",
+      "destination": "candidate_tests/test_u10_dependency_lock_path_contract.py",
+      "destination_sha256": "e78ecac42b0344394ee58aaaa20dd4a1c07599e8a61bc49ce5765ffc306a4514",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_phase_budget_binding.py",
+      "source_sha256": "852a609afddf05950a0cb92041485d43c6163080fce3d4061210f98c8809ccc6",
+      "destination": "candidate_tests/test_u10_phase_budget_binding.py",
+      "destination_sha256": "1982a3a11d0f2ccdf9dadf2932b4cc476b80a67ee0b6684fb7a84c1a9d0d33e2",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_protected_runtime.py",
+      "source_sha256": "e362cf261ca287573794541af43f800434298e43617d5683a91b772ef3f191f5",
+      "destination": "candidate_tests/test_u10_protected_runtime.py",
+      "destination_sha256": "e362cf261ca287573794541af43f800434298e43617d5683a91b772ef3f191f5",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_revocation_transaction.py",
+      "source_sha256": "9d0fd6f4b5c78bff6ff7ebd8f643e27c68039c6e64b2dc66f308aa5297544026",
+      "destination": "candidate_tests/test_u10_revocation_transaction.py",
+      "destination_sha256": "c7600a1940d7f062e9dcce2d9cef4fc0e02b0df427bfaa4322516125d23e91c5",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_runtime_closure_layout.py",
+      "source_sha256": "2daae2034caa4e455e3550a99ee2afce7f36c54a197f3e28c5624eb737f7961a",
+      "destination": "candidate_tests/test_u10_runtime_closure_layout.py",
+      "destination_sha256": "2daae2034caa4e455e3550a99ee2afce7f36c54a197f3e28c5624eb737f7961a",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_supervisor_process_binding.py",
+      "source_sha256": "a09b36b52211ba07092088024d1621cef1aa8669b296c15d83803d01b4e99644",
+      "destination": "candidate_tests/test_u10_supervisor_process_binding.py",
+      "destination_sha256": "a09b36b52211ba07092088024d1621cef1aa8669b296c15d83803d01b4e99644",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/u10_publisher_contract_fixture.py",
+      "source_sha256": "42827e2b15aad5d93df45ad346ded57d833595460083395f112e478d530f131b",
+      "destination": "candidate_tests/u10_publisher_contract_fixture.py",
+      "destination_sha256": "42827e2b15aad5d93df45ad346ded57d833595460083395f112e478d530f131b",
+      "change_classification": "preserved_bytes",
+      "purpose": "candidate_u10_test_fixture"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_control_outer_launcher.py",
+      "source_sha256": "d49587d357101063ffdb5c0fe2b64b2872c9e2d1ab29a8c79f4e73218b0fc97e",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_control_outer_launcher.py",
+      "destination_sha256": "d49587d357101063ffdb5c0fe2b64b2872c9e2d1ab29a8c79f4e73218b0fc97e",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/prepare_u10_root_candidate.py",
+      "source_sha256": "82831ab3255124f33faa7eb31df575ac965249c7e412abe1712359b760d4219a",
+      "destination": "candidate_tests/fixtures/scripts/prepare_u10_root_candidate.py",
+      "destination_sha256": "82831ab3255124f33faa7eb31df575ac965249c7e412abe1712359b760d4219a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_candidate_installer_entrypoint.sh",
+      "source_sha256": "f02a4672970c936f2dc1b4ec8d3a2bcf794b8f88489efd0540c5874cbf14fb88",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_candidate_installer_entrypoint.sh",
+      "destination_sha256": "f02a4672970c936f2dc1b4ec8d3a2bcf794b8f88489efd0540c5874cbf14fb88",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_control_dispatcher.py",
+      "source_sha256": "949ac27ddff50b97b22d7376afe5662a5af3295fec8849f2bb209dfedb0e099b",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_control_dispatcher.py",
+      "destination_sha256": "949ac27ddff50b97b22d7376afe5662a5af3295fec8849f2bb209dfedb0e099b",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/prepare_u10_initial_bootstrap_capsule.py",
+      "source_sha256": "cabf74a86b0880dc8ae855ef1d80eb30c0ab44586f7ed74186fd8fd8f7bb73f4",
+      "destination": "candidate_tests/fixtures/scripts/prepare_u10_initial_bootstrap_capsule.py",
+      "destination_sha256": "cabf74a86b0880dc8ae855ef1d80eb30c0ab44586f7ed74186fd8fd8f7bb73f4",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/prepare_u10_preactivation_records.py",
+      "source_sha256": "724364c34ec0d5299cdae4ce5f133d0769a8d8ba22fbe372d0c8947c9acbfc04",
+      "destination": "candidate_tests/fixtures/scripts/prepare_u10_preactivation_records.py",
+      "destination_sha256": "724364c34ec0d5299cdae4ce5f133d0769a8d8ba22fbe372d0c8947c9acbfc04",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_initial_trust_provisioner.py",
+      "source_sha256": "3e43db6239e8185384a7b32215e067028dc5f95d19648f21df1cd160c07be3ed",
+      "destination": "candidate_tests/fixtures/scripts/u10_initial_trust_provisioner.py",
+      "destination_sha256": "3e43db6239e8185384a7b32215e067028dc5f95d19648f21df1cd160c07be3ed",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_snapshot_worker.py",
+      "source_sha256": "e4d8e2114aa5db3d677555ad20f4f6074b4a61c0bf777a34111be8e2939dcf8f",
+      "destination": "candidate_tests/fixtures/scripts/u10_snapshot_worker.py",
+      "destination_sha256": "e4d8e2114aa5db3d677555ad20f4f6074b4a61c0bf777a34111be8e2939dcf8f",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_snapshot_store_production.py",
+      "source_sha256": "5322c036b0896f6473c88f22d65f9a5ec9b87aa15c379ecc28e11ac9063477d1",
+      "destination": "candidate_tests/fixtures/scripts/u10_snapshot_store_production.py",
+      "destination_sha256": "5322c036b0896f6473c88f22d65f9a5ec9b87aa15c379ecc28e11ac9063477d1",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/prepare_u10_control_runtime_manifest.py",
+      "source_sha256": "9fef95654caf7f0956e5ab916b22b1c0896a55d666f5783bf095be986130a6df",
+      "destination": "candidate_tests/fixtures/scripts/prepare_u10_control_runtime_manifest.py",
+      "destination_sha256": "9fef95654caf7f0956e5ab916b22b1c0896a55d666f5783bf095be986130a6df",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_snapshot_environment_projector.py",
+      "source_sha256": "b87eb71fd50c9fdabcd87d80a3151374666ec97c7e3ab9d1544d85d2256468d2",
+      "destination": "candidate_tests/fixtures/scripts/u10_snapshot_environment_projector.py",
+      "destination_sha256": "b87eb71fd50c9fdabcd87d80a3151374666ec97c7e3ab9d1544d85d2256468d2",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/governed_test_runner_bootstrap.py",
+      "source_sha256": "060ae8cd101306cbd2a4fbe8de5c7c83f9c496deeefd4cc748b98e46212b7f31",
+      "destination": "candidate_tests/fixtures/scripts/governed_test_runner_bootstrap.py",
+      "destination_sha256": "060ae8cd101306cbd2a4fbe8de5c7c83f9c496deeefd4cc748b98e46212b7f31",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/validate_verification_source.py",
+      "source_sha256": "f02e0e12a5c65e72ec06976fadd02df3b1c57b1e422a4a96932561fe691e1947",
+      "destination": "candidate_tests/fixtures/scripts/validate_verification_source.py",
+      "destination_sha256": "f02e0e12a5c65e72ec06976fadd02df3b1c57b1e422a4a96932561fe691e1947",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_control_entrypoint.sh",
+      "source_sha256": "47e6b7d08f9bc7b2c4e7535b2a191d319556b5cfc707473ef501f5f5c0b129da",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_control_entrypoint.sh",
+      "destination_sha256": "47e6b7d08f9bc7b2c4e7535b2a191d319556b5cfc707473ef501f5f5c0b129da",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/generate_u10_environment_candidate.py",
+      "source_sha256": "6af292a44de7d84148cafc01d7a3ce43e1fa9fb5a2b8d9aff8b3bb0b54a22a5b",
+      "destination": "candidate_tests/fixtures/scripts/generate_u10_environment_candidate.py",
+      "destination_sha256": "6af292a44de7d84148cafc01d7a3ce43e1fa9fb5a2b8d9aff8b3bb0b54a22a5b",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_broker_entrypoint.sh",
+      "source_sha256": "316e2cd95a20e075de1beafd86e4646786b9897076b47f8838f8cc9a78cee3b7",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_broker_entrypoint.sh",
+      "destination_sha256": "316e2cd95a20e075de1beafd86e4646786b9897076b47f8838f8cc9a78cee3b7",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/prepare_u10_bootstrap_runtime_manifest.py",
+      "source_sha256": "2c192a9424cf636ae73aab3f81aa367ee4bea257ca5793a9da2fdddf1b35e4d9",
+      "destination": "candidate_tests/fixtures/scripts/prepare_u10_bootstrap_runtime_manifest.py",
+      "destination_sha256": "2c192a9424cf636ae73aab3f81aa367ee4bea257ca5793a9da2fdddf1b35e4d9",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_initial_trust_entrypoint.sh",
+      "source_sha256": "d723484ebb99f000057eab4e40c65a364a7fd09dadbba9e8a63548b57279ccf5",
+      "destination": "candidate_tests/fixtures/scripts/u10_initial_trust_entrypoint.sh",
+      "destination_sha256": "d723484ebb99f000057eab4e40c65a364a7fd09dadbba9e8a63548b57279ccf5",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_broker_outer_launcher.py",
+      "source_sha256": "0ccbfb47d67f849d13367902af8866bbab71cdef1087c2a079fd657ae1ba6b18",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_broker_outer_launcher.py",
+      "destination_sha256": "0ccbfb47d67f849d13367902af8866bbab71cdef1087c2a079fd657ae1ba6b18",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/scripts/u10_root_broker_bootstrap.py",
+      "source_sha256": "49068d34b7a5761ddb38e0d61778aec49b56a3d79eede703cdeb47a2651ad8c2",
+      "destination": "candidate_tests/fixtures/scripts/u10_root_broker_bootstrap.py",
+      "destination_sha256": "49068d34b7a5761ddb38e0d61778aec49b56a3d79eede703cdeb47a2651ad8c2",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_original_operator_script"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-transition-emergency-closure-v1.schema.json",
+      "source_sha256": "f5b784a4360fc05b235f801c62c317ba1319e549e9f6ed74271c3fb39f918c33",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-transition-emergency-closure-v1.schema.json",
+      "destination_sha256": "f5b784a4360fc05b235f801c62c317ba1319e549e9f6ed74271c3fb39f918c33",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/broker-attested-execution-envelope-v3.schema.json",
+      "source_sha256": "f66ec44504f7cc1d85f0e52f2fb8d252f3c9aa2a93286da8ce7a65ef0f23e1fd",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/broker-attested-execution-envelope-v3.schema.json",
+      "destination_sha256": "f66ec44504f7cc1d85f0e52f2fb8d252f3c9aa2a93286da8ce7a65ef0f23e1fd",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-authorization-consumption-v1.schema.json",
+      "source_sha256": "3a4d5033b518bd68c721d209a67cdcd2df75721017908922dede3907b0e21226",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-activation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "3a4d5033b518bd68c721d209a67cdcd2df75721017908922dede3907b0e21226",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v1.schema.json",
+      "source_sha256": "29e228772bbfad0c386d6d9e366561a661a6f565f573adee65ccc506114dc182",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-transition-receipt-v1.schema.json",
+      "destination_sha256": "29e228772bbfad0c386d6d9e366561a661a6f565f573adee65ccc506114dc182",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-control-runtime-manifest-v1.schema.json",
+      "source_sha256": "7a2c6e1c739bf9765980b0fdfa7ee8970c5d871a243cff151e842e2116466062",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-control-runtime-manifest-v1.schema.json",
+      "destination_sha256": "7a2c6e1c739bf9765980b0fdfa7ee8970c5d871a243cff151e842e2116466062",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-projection-v1.schema.json",
+      "source_sha256": "74546697e2eb92082852dddc3895f4ec81e6494cd8127ded4698020ec7736403",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-candidate-install-projection-v1.schema.json",
+      "destination_sha256": "74546697e2eb92082852dddc3895f4ec81e6494cd8127ded4698020ec7736403",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-receipt-v1.schema.json",
+      "source_sha256": "3f4981989606740e79511d9d3a7a4dd64533553455a08e210df84fbb1102de33",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-receipt-v1.schema.json",
+      "destination_sha256": "3f4981989606740e79511d9d3a7a4dd64533553455a08e210df84fbb1102de33",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v1.schema.json",
+      "source_sha256": "37b613b10efc49ebbd7764e5f1a0dd8c31764572b2a67f6efa1e406f95a8f263",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-revocation-publication-receipt-v1.schema.json",
+      "destination_sha256": "37b613b10efc49ebbd7764e5f1a0dd8c31764572b2a67f6efa1e406f95a8f263",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-revocation-v1.schema.json",
+      "source_sha256": "3c3b8e51c5bdf6bd2e9eaaebb24f1511799e518b4ae86ea4916315cfec44a4b2",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-revocation-v1.schema.json",
+      "destination_sha256": "3c3b8e51c5bdf6bd2e9eaaebb24f1511799e518b4ae86ea4916315cfec44a4b2",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-record-v1.schema.json",
+      "source_sha256": "3236bd8ac4f9d935456fb84a01e1f75cc1e61affc6bf01097e0db4f3a30e9a55",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-activation-record-v1.schema.json",
+      "destination_sha256": "3236bd8ac4f9d935456fb84a01e1f75cc1e61affc6bf01097e0db4f3a30e9a55",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/environment-eligibility-source-v1.schema.json",
+      "source_sha256": "792ae47331b08e1fb97fbe8b81ae2fd937a73f7f88afd4d3a19226981f27816a",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/environment-eligibility-source-v1.schema.json",
+      "destination_sha256": "792ae47331b08e1fb97fbe8b81ae2fd937a73f7f88afd4d3a19226981f27816a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-control-publisher-contract-binding-v1.schema.json",
+      "source_sha256": "e2361543a58662a0d2904d15f71cea0b5def80dd683ef51f70bb240ad9b5fb78",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-control-publisher-contract-binding-v1.schema.json",
+      "destination_sha256": "e2361543a58662a0d2904d15f71cea0b5def80dd683ef51f70bb240ad9b5fb78",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-v1.schema.json",
+      "source_sha256": "c6a460662e3d33324e90d1de038880a8d9309cf0dd850102f45409e13c65c10e",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-authorization-v1.schema.json",
+      "destination_sha256": "c6a460662e3d33324e90d1de038880a8d9309cf0dd850102f45409e13c65c10e",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-receipt-v1.schema.json",
+      "source_sha256": "b8cb03c3c4d0c997cae608cd601b6b723ccb4b3bb81d14e4293afd3005baeb66",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-provisioning-receipt-v1.schema.json",
+      "destination_sha256": "b8cb03c3c4d0c997cae608cd601b6b723ccb4b3bb81d14e4293afd3005baeb66",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-selector-v1.schema.json",
+      "source_sha256": "df247682a7a9fe976b0cdfbae43377ddc397714ed837f2423be67cf4454382d2",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-selector-v1.schema.json",
+      "destination_sha256": "df247682a7a9fe976b0cdfbae43377ddc397714ed837f2423be67cf4454382d2",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-publication-receipt-v1.schema.json",
+      "source_sha256": "576a6d208eb587c457409ec503a165ab3e27205f0d9847e1d92a97035204db64",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-activation-publication-receipt-v1.schema.json",
+      "destination_sha256": "576a6d208eb587c457409ec503a165ab3e27205f0d9847e1d92a97035204db64",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-request-v1.schema.json",
+      "source_sha256": "1ff2a4c32fe4fccfb55d5c66f3f203a10172af3396e27094673de323abdb9bfe",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-runtime-observation-request-v1.schema.json",
+      "destination_sha256": "1ff2a4c32fe4fccfb55d5c66f3f203a10172af3396e27094673de323abdb9bfe",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-plan-v1.schema.json",
+      "source_sha256": "5b1a80f4aa0553d2d551b106a922187e95e0da5062cb7059283807f4e8948757",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-provisioning-plan-v1.schema.json",
+      "destination_sha256": "5b1a80f4aa0553d2d551b106a922187e95e0da5062cb7059283807f4e8948757",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-activation-basis-v1.schema.json",
+      "source_sha256": "57b1a57c2cc4065bebe46062568f7974fd127b7c48f524661f55349a6e904270",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-activation-basis-v1.schema.json",
+      "destination_sha256": "57b1a57c2cc4065bebe46062568f7974fd127b7c48f524661f55349a6e904270",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/process-containment-probe-v1.schema.json",
+      "source_sha256": "17d1ad2b667894828eace583aacd1e3a09f9d8e149afd5127434185ad97574cc",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/process-containment-probe-v1.schema.json",
+      "destination_sha256": "17d1ad2b667894828eace583aacd1e3a09f9d8e149afd5127434185ad97574cc",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-environment-adoption-v1.schema.json",
+      "source_sha256": "11179fe6d2a01a548bb754a6f7e78b1e198f58731a15c2fd9eca2322e28808bf",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-environment-adoption-v1.schema.json",
+      "destination_sha256": "11179fe6d2a01a548bb754a6f7e78b1e198f58731a15c2fd9eca2322e28808bf",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-receipt-v1.schema.json",
+      "source_sha256": "b3e2e2ef0717c2eab1b71da077524066167677be27508dc278eff381a702be98",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-candidate-install-receipt-v1.schema.json",
+      "destination_sha256": "b3e2e2ef0717c2eab1b71da077524066167677be27508dc278eff381a702be98",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-receipt-v2.schema.json",
+      "source_sha256": "28d6be9bb70b4012fc4dde7193f079474fa0164e05443988c683b5a8ba5f87c1",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-candidate-install-receipt-v2.schema.json",
+      "destination_sha256": "28d6be9bb70b4012fc4dde7193f079474fa0164e05443988c683b5a8ba5f87c1",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-authorization-v1.schema.json",
+      "source_sha256": "8eb881fcb8f9daafbc6b093c66cd89e7d0444e56f90ccf36db105f30a57e992f",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-authorization-v1.schema.json",
+      "destination_sha256": "8eb881fcb8f9daafbc6b093c66cd89e7d0444e56f90ccf36db105f30a57e992f",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/resolved-local-environment-profile.schema.json",
+      "source_sha256": "c71bcfae610937c9934a595c01efbc281444ce202f593a748c22576f74f9e9de",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/resolved-local-environment-profile.schema.json",
+      "destination_sha256": "c71bcfae610937c9934a595c01efbc281444ce202f593a748c22576f74f9e9de",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-initial-bootstrap-capsule-v1.schema.json",
+      "source_sha256": "06aa83146d52f3ae95fba9d6e9dd5ea915ec1949bc2f4c916c67646f67d8fd7d",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-initial-bootstrap-capsule-v1.schema.json",
+      "destination_sha256": "06aa83146d52f3ae95fba9d6e9dd5ea915ec1949bc2f4c916c67646f67d8fd7d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-selector-v2.schema.json",
+      "source_sha256": "427eede813829832f0b72597701eb0ff246d426999e44d6edd2e22f038e3f4ae",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-selector-v2.schema.json",
+      "destination_sha256": "427eede813829832f0b72597701eb0ff246d426999e44d6edd2e22f038e3f4ae",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-preactivation-decision-v1.schema.json",
+      "source_sha256": "58d4963fae4286bf1b70e0aea0f9181f933802ef368241c35f24c9fa6ee007db",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-preactivation-decision-v1.schema.json",
+      "destination_sha256": "58d4963fae4286bf1b70e0aea0f9181f933802ef368241c35f24c9fa6ee007db",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-v2.schema.json",
+      "source_sha256": "5b0da74abbfda4d38d42d426d9608b6f234e3e47c4818a4827dc51b3230de96a",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-authorization-v2.schema.json",
+      "destination_sha256": "5b0da74abbfda4d38d42d426d9608b6f234e3e47c4818a4827dc51b3230de96a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-verification-profile-v4.schema.json",
+      "source_sha256": "a5c96c11c74afdfcf66a7e00a18ed5b0e63e979cb36bed27dd7f9b1e31bfb51a",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-verification-profile-v4.schema.json",
+      "destination_sha256": "a5c96c11c74afdfcf66a7e00a18ed5b0e63e979cb36bed27dd7f9b1e31bfb51a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "source_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "destination_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-revocation-v2.schema.json",
+      "source_sha256": "b382a7701db980798a65c22096220c4e43444c4f4edd2059a438050a0ee1455e",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-revocation-v2.schema.json",
+      "destination_sha256": "b382a7701db980798a65c22096220c4e43444c4f4edd2059a438050a0ee1455e",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-publication-receipt-v2.schema.json",
+      "source_sha256": "d2c567b1bc925a8fc22ac08a8c34bf248989f9f6eeda41cce6205a2a8a17a81a",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-revocation-publication-receipt-v2.schema.json",
+      "destination_sha256": "d2c567b1bc925a8fc22ac08a8c34bf248989f9f6eeda41cce6205a2a8a17a81a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-receipt-v2.schema.json",
+      "source_sha256": "2375a6bac8c9daaef7fa652ffb46913eebacd4187538c57745f544d9f293e8f4",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-receipt-v2.schema.json",
+      "destination_sha256": "2375a6bac8c9daaef7fa652ffb46913eebacd4187538c57745f544d9f293e8f4",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-transition-receipt-v2.schema.json",
+      "source_sha256": "94a8efd2a34171d260eaafe6c5ea9aa007a9b40fb97ae7fa42352acfa8b6b846",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-transition-receipt-v2.schema.json",
+      "destination_sha256": "94a8efd2a34171d260eaafe6c5ea9aa007a9b40fb97ae7fa42352acfa8b6b846",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-manifest-v1.schema.json",
+      "source_sha256": "4262382344271861a73bb9e5bd70621961daf37f1bdf99f461dc970d1ff63bf6",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-runtime-manifest-v1.schema.json",
+      "destination_sha256": "4262382344271861a73bb9e5bd70621961daf37f1bdf99f461dc970d1ff63bf6",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-runtime-observation-receipt-v1.schema.json",
+      "source_sha256": "06489e1071359f49b43c6509cce7e6f70bfef05850598367e80e205fb8548745",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-runtime-observation-receipt-v1.schema.json",
+      "destination_sha256": "06489e1071359f49b43c6509cce7e6f70bfef05850598367e80e205fb8548745",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-worker-account-observation-v1.schema.json",
+      "source_sha256": "b9cec34908a959cdced4a171adb378187d2cf613aa894330a3f4c910de8b8f58",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-worker-account-observation-v1.schema.json",
+      "destination_sha256": "b9cec34908a959cdced4a171adb378187d2cf613aa894330a3f4c910de8b8f58",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-verification-profile-v3.schema.json",
+      "source_sha256": "44f519482a9c65d653419afbd7e1c72bc635d9a69365e57e699ce88764c57934",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-verification-profile-v3.schema.json",
+      "destination_sha256": "44f519482a9c65d653419afbd7e1c72bc635d9a69365e57e699ce88764c57934",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-consumption-v1.schema.json",
+      "source_sha256": "8fffbf7eac0c33606debba417058f7eddc82fb1199a2714334c90a462f359cf9",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-projection-authorization-consumption-v1.schema.json",
+      "destination_sha256": "8fffbf7eac0c33606debba417058f7eddc82fb1199a2714334c90a462f359cf9",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-basis-v1.schema.json",
+      "source_sha256": "479b5f723cdfb1d3aa01bb340db57afb70402f9b91edf578a5efe28070cc60f4",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-basis-v1.schema.json",
+      "destination_sha256": "479b5f723cdfb1d3aa01bb340db57afb70402f9b91edf578a5efe28070cc60f4",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "source_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "destination_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-adoption.schema.json",
+      "source_sha256": "1fb52722dc8e6985adf710513235b7c76633d10b8ac65aa96627786b26b881eb",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-environment-adoption.schema.json",
+      "destination_sha256": "1fb52722dc8e6985adf710513235b7c76633d10b8ac65aa96627786b26b881eb",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-adoption-authorization-v1.schema.json",
+      "source_sha256": "6296bae6521ed7e27170f4a685fa7f89dd6d59b9b01a868a1f3d2e5924318eef",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-adoption-authorization-v1.schema.json",
+      "destination_sha256": "6296bae6521ed7e27170f4a685fa7f89dd6d59b9b01a868a1f3d2e5924318eef",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-metadata-v1.schema.json",
+      "source_sha256": "7bb28dd6461c4ae5fac00ebb30e4a2e90612a349388c02702ebb903af0fc851d",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-metadata-v1.schema.json",
+      "destination_sha256": "7bb28dd6461c4ae5fac00ebb30e4a2e90612a349388c02702ebb903af0fc851d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-execution-request-v1.schema.json",
+      "source_sha256": "ccbafa7b15ed8cc40c71695e34e6d855d935591903277f9420176915624803f6",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-execution-request-v1.schema.json",
+      "destination_sha256": "ccbafa7b15ed8cc40c71695e34e6d855d935591903277f9420176915624803f6",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v2.schema.json",
+      "source_sha256": "96408d4f5ef81ed4933637e9d65f09421304c3fd5ec8501d0e825326d09cc65d",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-authorization-consumption-v2.schema.json",
+      "destination_sha256": "96408d4f5ef81ed4933637e9d65f09421304c3fd5ec8501d0e825326d09cc65d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/broker-attested-execution-envelope-v2.schema.json",
+      "source_sha256": "45b99b86e977743cad609403944c5bc21551c734f9da6f6bf40f600309733d15",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/broker-attested-execution-envelope-v2.schema.json",
+      "destination_sha256": "45b99b86e977743cad609403944c5bc21551c734f9da6f6bf40f600309733d15",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-authorization-v1.schema.json",
+      "source_sha256": "16daa738fb38dbc9fb98b9111295f2da17c43647e5fea2432c90ac66efe5cb05",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-provisioning-authorization-v1.schema.json",
+      "destination_sha256": "16daa738fb38dbc9fb98b9111295f2da17c43647e5fea2432c90ac66efe5cb05",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-authorization-consumption-v1.schema.json",
+      "source_sha256": "1e88e183c933d0016c513849dd5c8b63966bc638547b0cf2a6ac8f6a1f6ab702",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-revocation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "1e88e183c933d0016c513849dd5c8b63966bc638547b0cf2a6ac8f6a1f6ab702",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-worker-principal-resolution-v1.schema.json",
+      "source_sha256": "234120c14f3b0fd7b78c837c5e3e6a993460836b282fe85c4d191aa079d1ca9b",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-worker-principal-resolution-v1.schema.json",
+      "destination_sha256": "234120c14f3b0fd7b78c837c5e3e6a993460836b282fe85c4d191aa079d1ca9b",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-key-operation-authorization-consumption-v1.schema.json",
+      "source_sha256": "24d93a1b4da10a32896415937318dbfea006c7e746ebd5e63f1bfb0ef6f4924e",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-key-operation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "24d93a1b4da10a32896415937318dbfea006c7e746ebd5e63f1bfb0ef6f4924e",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provisioning-consumption-v1.schema.json",
+      "source_sha256": "edf2c0d87077aeab5dcb92f209d77d76eda8330e30791266f98b5e3c34dbda26",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-provisioning-consumption-v1.schema.json",
+      "destination_sha256": "edf2c0d87077aeab5dcb92f209d77d76eda8330e30791266f98b5e3c34dbda26",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-root-candidate-bundle-v1.schema.json",
+      "source_sha256": "66268af767664406d8a01b78c1ff98fc136c47ba57b4e029c2b5e2794a1d3d6f",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-root-candidate-bundle-v1.schema.json",
+      "destination_sha256": "66268af767664406d8a01b78c1ff98fc136c47ba57b4e029c2b5e2794a1d3d6f",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "source_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "destination_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/governed-environment-execution-receipt-v1.schema.json",
+      "source_sha256": "282dbb606d2e78e79fec67fae4e38d7e5e2abd99cb227bfeb8dd58a955bca3b0",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/governed-environment-execution-receipt-v1.schema.json",
+      "destination_sha256": "282dbb606d2e78e79fec67fae4e38d7e5e2abd99cb227bfeb8dd58a955bca3b0",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-adoption-v1.schema.json",
+      "source_sha256": "962ca4edaf541e47e59cb828c02eec36c2eeac55e75b37230d1bb0cfcce2e0fc",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-environment-adoption-v1.schema.json",
+      "destination_sha256": "962ca4edaf541e47e59cb828c02eec36c2eeac55e75b37230d1bb0cfcce2e0fc",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-host-identity-evidence-v1.schema.json",
+      "source_sha256": "0d3c5a4d2b8a4092bcd2cda9af68710632f8f8240b96122c94c7694070fa1f4b",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-host-identity-evidence-v1.schema.json",
+      "destination_sha256": "0d3c5a4d2b8a4092bcd2cda9af68710632f8f8240b96122c94c7694070fa1f4b",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-signing-key-metadata-v2.schema.json",
+      "source_sha256": "352920ac30bbc7c7618aefb593ba1ea940dd52999983f3afd00321a32ee50ce6",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-signing-key-metadata-v2.schema.json",
+      "destination_sha256": "352920ac30bbc7c7618aefb593ba1ea940dd52999983f3afd00321a32ee50ce6",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-root-trust-store-v2.schema.json",
+      "source_sha256": "8498c06c1e409d9c014f018114fe6f18967e15daf816e9e5c71cce6dab5d1866",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-root-trust-store-v2.schema.json",
+      "destination_sha256": "8498c06c1e409d9c014f018114fe6f18967e15daf816e9e5c71cce6dab5d1866",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-environment-snapshot-v1.schema.json",
+      "source_sha256": "18c3cb83ec6d2300f6c04f4e28f4ab9a0b9b27da6cfa6c6725a513be6fa1d09f",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/local-environment-snapshot-v1.schema.json",
+      "destination_sha256": "18c3cb83ec6d2300f6c04f4e28f4ab9a0b9b27da6cfa6c6725a513be6fa1d09f",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-authorization-v1.schema.json",
+      "source_sha256": "ea2fe72fb63fbb547052aecfbae661a70e440b683b7c2f95932f6586e5d74e12",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-projection-authorization-v1.schema.json",
+      "destination_sha256": "ea2fe72fb63fbb547052aecfbae661a70e440b683b7c2f95932f6586e5d74e12",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-execution-snapshot-manifest-v1.schema.json",
+      "source_sha256": "20b76aea80dffd6ce0d090794fd35d44be3a8a06d3cbaac54b09f564b2ae02b9",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-execution-snapshot-manifest-v1.schema.json",
+      "destination_sha256": "20b76aea80dffd6ce0d090794fd35d44be3a8a06d3cbaac54b09f564b2ae02b9",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-authorization-v1.schema.json",
+      "source_sha256": "e364007dca5e7cca2ec9ba8c0de46ede0628739bed6b75dfb3fe3c41422bf398",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-candidate-install-authorization-v1.schema.json",
+      "destination_sha256": "e364007dca5e7cca2ec9ba8c0de46ede0628739bed6b75dfb3fe3c41422bf398",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-snapshot-projection-receipt-v1.schema.json",
+      "source_sha256": "567be3469565330dfb1211f06cb295bafb6ef806c59e8eae1f09022b9f90ebf4",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-snapshot-projection-receipt-v1.schema.json",
+      "destination_sha256": "567be3469565330dfb1211f06cb295bafb6ef806c59e8eae1f09022b9f90ebf4",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-candidate-install-authorization-consumption-v1.schema.json",
+      "source_sha256": "66d0f8d5a0d5632f1ff8e21e7aaded578c4fed183914ce94343a9e42d4c2553f",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-candidate-install-authorization-consumption-v1.schema.json",
+      "destination_sha256": "66d0f8d5a0d5632f1ff8e21e7aaded578c4fed183914ce94343a9e42d4c2553f",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-basis-v2.schema.json",
+      "source_sha256": "b791a9d90a36b04e24fb330ffe72eeceaef765e170d392f195cc92de35bc00fe",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-basis-v2.schema.json",
+      "destination_sha256": "b791a9d90a36b04e24fb330ffe72eeceaef765e170d392f195cc92de35bc00fe",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-activation-authorization-consumption-v1.schema.json",
+      "source_sha256": "20a4ecaf87c9985a3280f36bd44a9dc34e8f310772d07158ed8b4f86528ff5d9",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-activation-authorization-consumption-v1.schema.json",
+      "destination_sha256": "20a4ecaf87c9985a3280f36bd44a9dc34e8f310772d07158ed8b4f86528ff5d9",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-bootstrap-provenance-binding-v1.schema.json",
+      "source_sha256": "d314fe3876bf8c9c942c59c27a3dee018ba15bf6201339281a13a9327acc796b",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-bootstrap-provenance-binding-v1.schema.json",
+      "destination_sha256": "d314fe3876bf8c9c942c59c27a3dee018ba15bf6201339281a13a9327acc796b",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-store-revocation-record-v1.schema.json",
+      "source_sha256": "e8d27f0d45b8ae6180cd13f6faaa8443df929346b1ebc93d93bca03cf0a62d86",
+      "destination": "candidate_tests/fixtures/validation/env-path-contracts/u10-store-revocation-record-v1.schema.json",
+      "destination_sha256": "e8d27f0d45b8ae6180cd13f6faaa8443df929346b1ebc93d93bca03cf0a62d86",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run.schema.json",
+      "source_sha256": "c5574bbee53f1af1a82d0ad1025b92507499521544f7e4735ba9cfb306fdb291",
+      "destination": "candidate_tests/fixtures/validation/local-verification-run.schema.json",
+      "destination_sha256": "c5574bbee53f1af1a82d0ad1025b92507499521544f7e4735ba9cfb306fdb291",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/verification-validation-result.schema.json",
+      "source_sha256": "562713704a94cdcbd6554da52eb1d270ea5aad43cc57274f5d0e526984820d3d",
+      "destination": "candidate_tests/fixtures/validation/verification-validation-result.schema.json",
+      "destination_sha256": "562713704a94cdcbd6554da52eb1d270ea5aad43cc57274f5d0e526984820d3d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile-v2.schema.json",
+      "source_sha256": "358061d50680d48716c96499ea2c306cb4fbc6d6cc7f76435d41f6c39a7a9715",
+      "destination": "candidate_tests/fixtures/validation/local-verification-profile-v2.schema.json",
+      "destination_sha256": "358061d50680d48716c96499ea2c306cb4fbc6d6cc7f76435d41f6c39a7a9715",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run-v2.schema.json",
+      "source_sha256": "ba6f086902112863e87fc0ee18d47c3e98c962fa71a26a2423a245c9b6dbd9cd",
+      "destination": "candidate_tests/fixtures/validation/local-verification-run-v2.schema.json",
+      "destination_sha256": "ba6f086902112863e87fc0ee18d47c3e98c962fa71a26a2423a245c9b6dbd9cd",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-run-v1.schema.json",
+      "source_sha256": "3aa315e318f40a4dd35c8caa75164787b42a84d4581dfb797d1fdd51a3f5f457",
+      "destination": "candidate_tests/fixtures/validation/local-verification-run-v1.schema.json",
+      "destination_sha256": "3aa315e318f40a4dd35c8caa75164787b42a84d4581dfb797d1fdd51a3f5f457",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile.schema.json",
+      "source_sha256": "d69ef99ee6638a1195a2c76b294fff1e826e5c96254b1cca8445a9f686f0ac69",
+      "destination": "candidate_tests/fixtures/validation/local-verification-profile.schema.json",
+      "destination_sha256": "d69ef99ee6638a1195a2c76b294fff1e826e5c96254b1cca8445a9f686f0ac69",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/verification-source.schema.json",
+      "source_sha256": "2ef414915adb5955b9430b26cadadb8654932efb10ae1f8a6253d080c0b3a953",
+      "destination": "candidate_tests/fixtures/validation/verification-source.schema.json",
+      "destination_sha256": "2ef414915adb5955b9430b26cadadb8654932efb10ae1f8a6253d080c0b3a953",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-verification-profile-v1.schema.json",
+      "source_sha256": "2d56136a83e7bf7572a22abee1f6fb5bdd4f68064057ffa3096538dedc708b4a",
+      "destination": "candidate_tests/fixtures/validation/local-verification-profile-v1.schema.json",
+      "destination_sha256": "2d56136a83e7bf7572a22abee1f6fb5bdd4f68064057ffa3096538dedc708b4a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/engineering-rule-pack.schema.json",
+      "source_sha256": "9fb9b202848d4982309e9fd0ce49dd4ab287f5a2961933755fbe514da9f051fa",
+      "destination": "candidate_tests/fixtures/validation/engineering-rule-pack.schema.json",
+      "destination_sha256": "9fb9b202848d4982309e9fd0ce49dd4ab287f5a2961933755fbe514da9f051fa",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/local-environment-snapshot.schema.json",
+      "source_sha256": "2d524ae7e0e99ec6e5870ef1d2442d15bee47234b9131ef17635514398f8e86a",
+      "destination": "candidate_tests/fixtures/validation/local-environment-snapshot.schema.json",
+      "destination_sha256": "2d524ae7e0e99ec6e5870ef1d2442d15bee47234b9131ef17635514398f8e86a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "vnext/validation/verification-gap-register.schema.json",
+      "source_sha256": "37320e49967d92f6170de740f10609124210fea11427236aa8f24cb169c2eda5",
+      "destination": "candidate_tests/fixtures/validation/verification-gap-register.schema.json",
+      "destination_sha256": "37320e49967d92f6170de740f10609124210fea11427236aa8f24cb169c2eda5",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_script_contract_schema"
+    },
+    {
+      "source_path": "schemas/audit-result.schema.json",
+      "source_sha256": "4ea40e7773d8767a8277e74d67b693e2c8655cdd761c6ff701e300c50516dda1",
+      "destination": "candidate_tests/fixtures/legacy/schemas/audit-result.schema.json",
+      "destination_sha256": "4ea40e7773d8767a8277e74d67b693e2c8655cdd761c6ff701e300c50516dda1",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_legacy_seven_field_schema"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_v3_key_chain_integration.py",
+      "source_sha256": "aca5ae4a53e6d17f0e4e696900b80defd9755f252a2c331e27d197f252dabffd",
+      "destination": "candidate_tests/test_u10_v3_key_chain_integration.py",
+      "destination_sha256": "1323d396ea67b6e5469ef97facd5629a08b241787e77bb3a94018797dd68334b",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_root_candidate_preparer.py",
+      "source_sha256": "52d8ca2e8abcf4b92048f23b482274bad087b7bfe9d9ce8a418aa4ba813599bc",
+      "destination": "candidate_tests/test_u10_root_candidate_preparer.py",
+      "destination_sha256": "647962e554c3b801b72e25832f4554cc33651f00c2ed39fa4e352e2f63f15b2a",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test",
+      "post_migration_changes": [
+        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups.",
+        "Resolve trusted host executable fixture paths before use so Linux /bin symlinks do not invalidate the fixture; keep production ownership, symlink, and permission checks unchanged and add a negative control."
+      ]
+    },
+    {
+      "source_path": "vnext/tests/test_u10_store_basis_reservation.py",
+      "source_sha256": "01de26aed1a4490bb6cebce660c481cb403763f7edd7a419b051857d917fd30d",
+      "destination": "candidate_tests/test_u10_store_basis_reservation.py",
+      "destination_sha256": "37fb29ead50025a252e8e55c1cc4942d5ad8c7939c37f672c1853066223ca6bd",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_internal_boundaries.py",
+      "source_sha256": "7ba9c6dd3cbd80bf3856b27d45663985b9de94b2d82ed0b92f108fe2309ff116",
+      "destination": "candidate_tests/test_u10_internal_boundaries.py",
+      "destination_sha256": "21620b717250cc152a479ab64a94b21007903a294cd51ac44245613b4084e0eb",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_key_transition_v2.py",
+      "source_sha256": "87fb22a58a9954549741504c93118d2e35ec0f19d94592cace13d55518535e03",
+      "destination": "candidate_tests/test_u10_key_transition_v2.py",
+      "destination_sha256": "615730a26fc7501b95957241a547eae1fa84e0431b53406c234dd2443986a023",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_outer_launcher_transition_receipt.py",
+      "source_sha256": "5859ee45fbb2e138969d6ac1f6a70bf99380970f4fa221b777763dab689d62b6",
+      "destination": "candidate_tests/test_u10_outer_launcher_transition_receipt.py",
+      "destination_sha256": "d9b0700c671115cf1a344c5f3df4450535b8c85eeb655779d7421812d79e7355",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_core_key_chain_v2.py",
+      "source_sha256": "8000739a82ebd59f92b187583e8355e6988a88ec71c42f12e7add23f1af47cfa",
+      "destination": "candidate_tests/test_u10_core_key_chain_v2.py",
+      "destination_sha256": "b69206804834d8c77d5c5ee82822d43a667a535b086b6220839e1e475e4242e1",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_fixed_control_entry.py",
+      "source_sha256": "67425b277a30a15a46e71ade914d2a17bc33e7c73ec5cc01cad25811c75d2dbe",
+      "destination": "candidate_tests/test_u10_fixed_control_entry.py",
+      "destination_sha256": "2e4f7413afdc29e80cbabac85e076071da57cb006618c733854be3df12b7cf12",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_history_and_launch_contracts.py",
+      "source_sha256": "cf0d7f14b06d6a7c2371a0d43b465e780a7d2a044876bd558fe2703d3b031e23",
+      "destination": "candidate_tests/test_u10_history_and_launch_contracts.py",
+      "destination_sha256": "4bc98ec2aeb04587e6853549953f8dd5abefbe28db6683e1c546334ddcb58bef",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_initial_trust_provisioning.py",
+      "source_sha256": "7c5fe66953d500a0f509d723c91ee2dcdfe28932c89532285d3ad511c87733e4",
+      "destination": "candidate_tests/test_u10_initial_trust_provisioning.py",
+      "destination_sha256": "48b23760e1c8c6d86638a10d050637784ec5817051ae50f91ed8f22f12f98335",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_isolated_smoke.py",
+      "source_sha256": "616d83c4d32d15c4691002726e7592139c67866c1935a7148654ace6e50f87ff",
+      "destination": "candidate_tests/test_u10_isolated_smoke.py",
+      "destination_sha256": "ab0a420718d2dc192d735ff90c8ad294ecb194b8d6b1bb2d7ab7542ba0aa3e82",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_strict_json_boundaries.py",
+      "source_sha256": "243ec1d2c21b900277c4652ad16062fac532fa0fc32cf0cca86f9a2654668ecf",
+      "destination": "candidate_tests/test_u10_strict_json_boundaries.py",
+      "destination_sha256": "a7bfc45afeba2f6b5f2ed9f81601775b00c46062501f739d4562e04f0f724f84",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_preactivation_boundary_propagation.py",
+      "source_sha256": "141fd4d58941dda0a8b1ac00c28cedfb264f773e2725f93a3e984a04dd3d96b5",
+      "destination": "candidate_tests/test_u10_preactivation_boundary_propagation.py",
+      "destination_sha256": "187f7d4bdef7dbcc9b332b1593ab7b314285d0dfe90c61e4fdbae17f773fe4cb",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_strict_json_candidate_tools.py",
+      "source_sha256": "cf36d86e4c0e4f69d97c8f877a181a9c0b2a0760bd3ad9bb023c2d6d2535b5cd",
+      "destination": "candidate_tests/test_u10_strict_json_candidate_tools.py",
+      "destination_sha256": "6c1e5c75a292561da37cc3193374f0daf54ff503346f529230c673d7b8c07896",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_store_activation_authorization.py",
+      "source_sha256": "66fa1f24469a29d8c8be788116ecba4578ebeb39eb4407bd311f39aa960c39bf",
+      "destination": "candidate_tests/test_u10_store_activation_authorization.py",
+      "destination_sha256": "6b176fec45ad50c60e3626007c76d373bc11a5948edde7082313ac9657846cf6",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_external_adoption_propagation.py",
+      "source_sha256": "0e106823cf61307ca09c7fdbb2937a07fe1d433946239776067cab219bd9c247",
+      "destination": "candidate_tests/test_u10_external_adoption_propagation.py",
+      "destination_sha256": "b82481c5fb9ec4d302bd13bb3f6b0e81df2bd34aa8dd993a87499b186620d04c",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_u10_preactivation_records.py",
+      "source_sha256": "a93be93074dd915c71fd76b951ccf1803f1918ce4dbeb9a822d6af1b00ea623b",
+      "destination": "candidate_tests/test_u10_preactivation_records.py",
+      "destination_sha256": "6eeee1c39ca15f1e67c7f554e68e213a3331e3ecc9483b91cf2da1fedcb11014",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test",
+      "post_migration_changes": [
+        "Replace host account lookup with a synthetic UID 501 / GID 20 contract fixture for portable CI; preserve rejection of mismatched policy and empty effective supplementary groups."
+      ]
+    },
+    {
+      "source_path": "vnext/tests/test_u10_bootstrap_runtime_closure.py",
+      "source_sha256": "77a680b2d6dd9e436914cde4d648abb8c064e9700c1ac93a9f4b6e7d58d5e172",
+      "destination": "candidate_tests/test_u10_bootstrap_runtime_closure.py",
+      "destination_sha256": "5de8b1849552178fca7dfe9a3bda8d63522c53fd6bbb3375b5f9dbcf54f233f5",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_local_verification.py",
+      "source_sha256": "22fca2b7c5855018a53cd78fc24ee6c6895a72db77f1e2cacbbd62b97c802c8c",
+      "destination": "candidate_tests/test_local_verification.py",
+      "destination_sha256": "5baa9a1372fc0c679c26527f2e22fc7ac654c4608e8ea2bea90cc6d75ac866e3",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_compat.py",
+      "source_sha256": "a581359767ce21cf33f33f93c4a0720124b7d84c3fc70a9c22fcb91d8fdbbd1e",
+      "destination": "candidate_tests/test_compat.py",
+      "destination_sha256": "9970ce12a6a70233082784621bf8c70d12a75e10c1a2002b565d2faa292ff01a",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/tests/test_legacy_runner.py",
+      "source_sha256": "ac99249ea501ab0d9a7794edc20819f9b9f9deeaf77b7ced5e005fd40b54b47b",
+      "destination": "candidate_tests/test_legacy_runner.py",
+      "destination_sha256": "01c5d15486ae71bd5a5943a882495f8e9f50a9abc85dd404eca3ca15c5f8d151",
+      "change_classification": "test_import_or_fixture_path_relocation",
+      "purpose": "candidate_u10_regression_test"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/local-verification-profile-v4.candidate.json",
+      "source_sha256": "3fa888ad3907efc293fe8c9f1607d0be1bb54788e5c6a8be576d8b224e9bd401",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/validation/env-path-contracts/local-verification-profile-v4.candidate.json",
+      "destination_sha256": "3fa888ad3907efc293fe8c9f1607d0be1bb54788e5c6a8be576d8b224e9bd401",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/u10-smoke-closed-test-manifest-v1.candidate.json",
+      "source_sha256": "74157320bdcc80b70425c16d725bfcbfb6346128aa917027502544dc97d51b1c",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/validation/env-path-contracts/u10-smoke-closed-test-manifest-v1.candidate.json",
+      "destination_sha256": "74157320bdcc80b70425c16d725bfcbfb6346128aa917027502544dc97d51b1c",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/scripts/governed_test_runner_bootstrap.py",
+      "source_sha256": "060ae8cd101306cbd2a4fbe8de5c7c83f9c496deeefd4cc748b98e46212b7f31",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/scripts/governed_test_runner_bootstrap.py",
+      "destination_sha256": "060ae8cd101306cbd2a4fbe8de5c7c83f9c496deeefd4cc748b98e46212b7f31",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/src/semantic_guard_vnext/u10_containment_smoke.py",
+      "source_sha256": "746a7d890178b86cab61f208c08020d59ee11a93eca57ec98de5149481cca931",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/src/semantic_guard_vnext/u10_containment_smoke.py",
+      "destination_sha256": "746a7d890178b86cab61f208c08020d59ee11a93eca57ec98de5149481cca931",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "source_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/validation/env-path-contracts/closed-verification-test-manifest-v1.schema.json",
+      "destination_sha256": "dd0b5ef26f474c75d0e29369d6061857c40859a1304f80bcd0515e42a02572bb",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "source_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/validation/env-path-contracts/resolved-local-environment-profile-v1.schema.json",
+      "destination_sha256": "381b01be026455778fc09a57937e1f25c026b9bcd521c49fd7386fec3a78e61a",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "source_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "destination": "candidate_tests/fixtures/qualified_profile_repository/vnext/validation/env-path-contracts/environment-eligibility-resolution-v1.schema.json",
+      "destination_sha256": "4e1929ae8cb849cc0e86e91b0116a49283b62b9734b33c6963595e7595f7da1d",
+      "change_classification": "preserved_bytes",
+      "purpose": "test_only_closed_qualified_profile_fixture"
+    },
+    {
+      "source_path": "vnext/tests/test_qualified_environment_u10.py",
+      "source_sha256": "975e5ee6838fb9c7492bad53f59cdf5aa57ac0cc1e95a73a20c965d8a5fb99e6",
+      "destination": "candidate_tests/test_qualified_environment_u10.py",
+      "destination_sha256": "642c638e865c1949ac6a8cb935d1b61f513368c806a0e8d2c854dc7e2c5e1dcc",
+      "change_classification": "bounded_test_selection_and_fixture_relocation",
+      "purpose": "candidate_u10_regression_test",
+      "selected_classes": [
+        "U10ProfileContractAdversarialTests"
+      ]
+    }
+  ],
+  "excluded_source_tests": {
+    "test_packaged_contract_verifier.py": "old project packaging script and build layout",
+    "test_qualified_environment_u10.py": {
+      "status": "partially_ported",
+      "ported_classes": [
+        "U10ProfileContractAdversarialTests"
+      ],
+      "excluded_classes": {
+        "U10LiveEnvironmentQualificationTests": "Runs a live frozen-lock eligibility check against the original vnext environment; not a pure unit fixture and not equivalent after repository restructuring.",
+        "U10DarwinCandidateAdversarialTests": "Requires the original complete vnext interpreter, dependency lock, Homebrew uv and host-qualified source snapshot. The fixture patches lock evidence and performs candidate/sandbox execution against that repository; importing it without rebuilding the declared qualification denominator would change the test meaning."
+      },
+      "excluded_test_methods": {
+        "U10LiveEnvironmentQualificationTests": [
+          "test_current_editable_environment_is_not_lock_exact"
+        ],
+        "U10DarwinCandidateAdversarialTests": [
+          "test_real_v4_candidate_builds_as_candidate_only",
+          "test_missing_repository_tool_fails_candidate_construction",
+          "test_same_cpython_bytes_in_different_venvs_have_different_capability_digest",
+          "test_single_lock_or_basis_digest_flip_is_rejected",
+          "test_pending_reject_and_candidate_sources_cannot_become_eligible",
+          "test_external_source_pin_substitution_is_rejected",
+          "test_explicit_temporary_accepted_fixture_is_scoped_not_assurance",
+          "test_governed_smoke_execution_produces_complete_bounded_receipt",
+          "test_zero_test_target_cannot_be_washed_into_success",
+          "test_subject_and_evidence_roots_are_independently_enforced",
+          "test_receipt_replays_full_sources_observations_and_trace_reasons",
+          "test_passed_nonzero_or_incomplete_containment_receipt_is_rejected"
+        ]
+      }
+    },
+    "test_validate_json_schemas.py": "old repository schema validation script",
+    "test_verification_projection.py": "historical verification record paths",
+    "test_verification_source_validator.py": "historical verification record paths",
+    "test_engineering_rule_pack.py": "old repository validation script"
+  },
+  "local_additions": [
+    {
+      "destination": "candidate_tests/__init__.py",
+      "purpose": "isolate_candidate_test_imports",
+      "destination_sha256": "25557fc75dce5d0a6dc695f7d9bb026c8bfab4df8a00fbb737d39c321a23d08e"
+    },
+    {
+      "destination": "candidate_tests/test_candidate_resource_boundary.py",
+      "purpose": "missing_candidate_resource_negative_controls",
+      "destination_sha256": "b369d212772bd79d0600bd3494f2605b54de49e043badc7432c51d35b570a23e"
+    }
+  ],
+  "verification": {
+    "status": "passed_with_explicit_scope",
+    "candidate_regression": {
+      "command": ".venv/bin/python -m unittest discover -s candidate_tests -t . -q",
+      "test_count": 680,
+      "elapsed_seconds": 111.083,
+      "exit_code": 0
+    },
+    "candidate_resource_negative_controls": {
+      "test_count": 7,
+      "status": "passed"
+    },
+    "outside_repository_smoke": {
+      "cli_schema_version": "governed-requirement-audit/v1",
+      "cli_exit_code": 3,
+      "cli_workflow_disposition": "block",
+      "formal_verdict_authority": "none",
+      "mcp_schema_version": "governed-requirement-audit/v1",
+      "mcp_workflow_disposition": "block",
+      "invalid_recorded_at_exit_code": 2,
+      "invalid_recorded_at_stdout_empty": true
+    },
+    "source_hash_drift": false,
+    "additional_nonprivileged_test_port": {
+      "status": "passed_with_explicit_scope",
+      "initial_broker_subset": {
+        "test_count": 43,
+        "elapsed_seconds": 75.959,
+        "exit_code": 0
+      },
+      "legacy_and_local_verification": {
+        "command": ".venv/bin/python -m unittest candidate_tests.test_local_verification candidate_tests.test_compat candidate_tests.test_legacy_runner -q",
+        "test_count": 31,
+        "elapsed_seconds": 6.43,
+        "exit_code": 0
+      },
+      "qualified_profile_contract": {
+        "command": ".venv/bin/python -m unittest candidate_tests.test_qualified_environment_u10 -q",
+        "test_count": 7,
+        "elapsed_seconds": 0.136,
+        "exit_code": 0
+      },
+      "u10_full_unit_suite": {
+        "command": ".venv/bin/python -m unittest discover -s candidate_tests -t . -p 'test_u10*.py' -q",
+        "test_modules": 26,
+        "executed_test_count": 248,
+        "declared_test_methods": 241,
+        "elapsed_seconds": 252.633,
+        "exit_code": 0,
+        "execution_boundary": "Existing tempfile/mock fixtures, throwaway signing keys and nonprivileged sandbox/protection probes; no production key, root installation, adoption, activation or external service."
+      },
+      "source_hash_drift": false,
+      "destination_hash_drift": false
+    },
+    "publication_portability_adjustment": {
+      "date": "2026-10-01",
+      "python": "3.13",
+      "normal_module_tests": 36,
+      "host_account_lookup_unavailable_tests": 36,
+      "status": "pass",
+      "negative_controls": [
+        "UID 501 / GID 21 rejected as candidate_worker_account_policy_mismatch",
+        "UID 502 / GID 20 rejected as candidate_worker_account_policy_mismatch",
+        "No observation created on mismatch"
+      ],
+      "runtime_changed": false,
+      "linux_status_at_observation": "Not yet run; GitHub CI supplies separate evidence."
+    },
+    "publication_host_path_adjustment": {
+      "date": "2026-10-01",
+      "initial_linux_ci": "https://github.com/mait2355n/criterion-loom/actions/runs/36809944212",
+      "observed_failure": "Ubuntu /bin symlink rejected as candidate_install_root_untrusted in 24 root-preparer cases.",
+      "changed_scope": "One test module; no runtime or fixture-script changes.",
+      "normal_module_tests": 33,
+      "symlink_parent_injection_tests": 33,
+      "status": "pass",
+      "negative_controls": [
+        "Symlinked directory rejected",
+        "Wrong directory owner rejected",
+        "Group/world writable directory rejected"
+      ],
+      "python": "3.13",
+      "linux_status_at_observation": "Awaiting new CI execution."
+    }
+  },
+  "not_verified": [
+    "U10 privileged runtime installation, production signing, activation, adoption, and production execution.",
+    "The 13 individually listed qualified_environment tests requiring the original complete interpreter, frozen dependency lock, Homebrew uv and host-qualified source snapshot.",
+    "Original repository verification-history/projection scripts and records excluded individually above.",
+    "Installed wheel verification is performed by the parent integration workflow, not this migration task.",
+    "Field effectiveness or human acceptance."
+  ],
+  "integration_notes": [
+    "Canonical semantic_guard source, schemas, CLI defaults and MCP tools were not changed by this task.",
+    "Runtime resources consist only of the original candidate wheel resource set plus seven local_verification contract schemas; no historical verification results, human decision records or operator scripts are packaged.",
+    "Legacy shadow comparison retains its existing historical-root adapter and pinned baseline semantics; the test baseline fixture is test-only.",
+    "Do not infer permission to install or activate U10 from inclusion of its source and closed schemas.",
+    "Operator scripts and historical candidate profile/closed-manifest bytes copied during the additional test port exist only under candidate_tests/fixtures and are excluded by the current wheel/sdist manifests; synthesized temporary human-decision and key fixtures do not record real adoption or production keys."
+  ],
+  "internal_format_label": "criterion-loom-candidate-migration/v1",
+  "source_repository": "semantic-guard",
+  "source_subtree": "vnext",
+  "source_baseline": "eb34d0f9c81342ad4f0ed6bac42c3614d9424fd2",
+  "inventory_scope": "internal integration evidence; not an added public schema or runtime contract",
+  "source_subtree_exceptions": [
+    "schemas/audit-result.schema.json"
+  ]
+}

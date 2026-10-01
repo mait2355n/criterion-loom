@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-candidate-install-authorization-consumption-v1.schema.json",
+  "title": "semantic-guard U-10 candidate install authorization consumption v1",
+  "description": "A durable pre-publication, single-use reservation of one exact human candidate-install authorization. It does not claim that candidate publication occurred.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "consumption_id",
+    "record_kind",
+    "authorization_ref",
+    "bundle_ref",
+    "target_candidate_path",
+    "occurrence_id",
+    "reserved_at",
+    "installation_occurred",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "consumption_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-candidate-install-authorization-consumption/v1"},
+    "consumption_id": {"$ref": "#/$defs/path_component_id"},
+    "record_kind": {"const": "candidate_install_authorization_consumption"},
+    "authorization_ref": {"$ref": "#/$defs/authorization_ref"},
+    "bundle_ref": {"$ref": "#/$defs/bundle_ref"},
+    "target_candidate_path": {"type": "string", "pattern": "^/", "minLength": 2, "maxLength": 4096},
+    "occurrence_id": {"$ref": "#/$defs/path_component_id"},
+    "reserved_at": {"type": "string", "format": "date-time"},
+    "installation_occurred": {"const": false},
+    "formal_authority": {"const": "none"},
+    "positive_assurance_allowed": {"const": false},
+    "consumption_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "path_component_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    },
+    "authorization_ref": {
+      "type": "object",
+      "required": ["authorization_id", "authorization_digest", "authorized_operation", "record_locator", "artifact_digest"],
+      "properties": {
+        "authorization_id": {"$ref": "#/$defs/path_component_id"},
+        "authorization_digest": {"$ref": "#/$defs/digest"},
+        "authorized_operation": {"const": "install_candidate_only"},
+        "record_locator": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*\\.authorization\\.json$", "maxLength": 220},
+        "artifact_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    },
+    "bundle_ref": {
+      "type": "object",
+      "required": ["bundle_id", "bundle_digest"],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/path_component_id"},
+        "bundle_digest": {"$ref": "#/$defs/digest"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

@@ -73,7 +73,7 @@ class CliTests(unittest.TestCase):
                 main(("--version",))
 
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue(), "semantic-guard 1.1.0\n")
+        self.assertEqual(output.getvalue(), "semantic-guard 1.2.0.dev0\n")
 
     def test_direction_input_help_names_the_direction_expression(self) -> None:
         parser = build_parser()

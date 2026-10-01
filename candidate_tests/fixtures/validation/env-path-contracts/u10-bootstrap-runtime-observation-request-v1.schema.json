@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-bootstrap-runtime-observation-request-v1.schema.json",
+  "title": "U-10 read-only root runtime observation request v1",
+  "type": "object",
+  "required": ["schema_version", "request_id", "request_version", "record_kind", "runtime_bindings", "bootstrap_kit_denominator", "authorized_operation", "human_decision", "decision_owner", "recorded_at", "not_before", "expires_at", "authority_scope", "formal_authority", "positive_assurance_allowed", "request_digest"],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-bootstrap-runtime-observation-request/v1"}, "request_id": {"$ref": "#/$defs/id"}, "request_version": {"const": "1.0.0"},
+    "record_kind": {"const": "bootstrap_runtime_root_observation_request"},
+    "runtime_bindings": {"type": "object", "required": ["broker", "control"], "properties": {"broker": {"$ref": "#/$defs/broker"}, "control": {"$ref": "#/$defs/control"}}, "unevaluatedProperties": false},
+    "bootstrap_kit_denominator": {"type": "object", "required": ["status", "entry_count", "entries", "denominator_digest"], "properties": {"status": {"const": "closed"}, "entry_count": {"type": "integer", "minimum": 3}, "entries": {"type": "array", "minItems": 3, "items": {"type": "object", "required": ["role", "member", "artifact_digest"], "properties": {"role": {"$ref": "#/$defs/id"}, "member": {"$ref": "#/$defs/member"}, "artifact_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false}}, "denominator_digest": {"$ref": "#/$defs/digest"}}, "unevaluatedProperties": false},
+    "authorized_operation": {"const": "observe_exact_root_runtimes_only"}, "human_decision": {"const": "accept"}, "decision_owner": {"const": "human"},
+    "recorded_at": {"type": "string", "format": "date-time"}, "not_before": {"type": "string", "format": "date-time"}, "expires_at": {"type": "string", "format": "date-time"},
+    "authority_scope": {"const": "root_runtime_observation_no_target_publication"}, "formal_authority": {"const": "human_root_observation_decision_only"}, "positive_assurance_allowed": {"const": false}, "request_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$"}, "member": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]{0,1023}$"}, "path": {"type": "string", "pattern": "^/", "maxLength": 4096},
+    "digest": {"type": "object", "required": ["algorithm", "value"], "properties": {"algorithm": {"const": "sha256"}, "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "unevaluatedProperties": false},
+    "runtime": {"type": "object", "required": ["effective_interpreter_locator", "effective_interpreter_artifact_digest", "python_flags", "manifest_generator_role"], "properties": {"effective_interpreter_locator": {"$ref": "#/$defs/path"}, "effective_interpreter_artifact_digest": {"$ref": "#/$defs/digest"}, "python_flags": {"type": "array"}, "manifest_generator_role": {"$ref": "#/$defs/id"}}, "unevaluatedProperties": false},
+    "broker": {"$ref": "#/$defs/runtime", "properties": {"python_flags": {"const": ["-I", "-S", "-B"]}, "manifest_generator_role": {"const": "broker_runtime_manifest_generator"}}},
+    "control": {"$ref": "#/$defs/runtime", "properties": {"python_flags": {"const": ["-I", "-B"]}, "manifest_generator_role": {"const": "control_runtime_manifest_generator"}}}
+  },
+  "unevaluatedProperties": false
+}

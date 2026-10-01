@@ -4,6 +4,13 @@ All notable repository and public-contract changes are recorded here. Package ve
 
 ## [Unreleased]
 
+### Integration development version: 1.2.0.dev0
+
+- Added explicit workflow and governed-candidate CLI routes and separate MCP servers in one distribution. Existing canonical result schemas and four MCP tools remain distinct.
+- Imported the local workflow implementation into `semantic_guard_workflow`, and preserved the candidate namespaces and package-local resources. Historical legacy archive bytes are retained.
+- Recorded source mappings, added coexistence regression tests, and extended installed-package checks. Candidate governance adoption, privileged U10 deployment, field validity, and runtime cutover are outside this change.
+
+
 ### Fixed
 
 - Prevented state-assessment freshness checks from overflowing for schema-valid large policy lifetimes or observations near the maximum representable year. Expiration still occurs at the earlier evidence or policy deadline, including exact microsecond boundaries and ties.

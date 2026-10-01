@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semantic-guard.local/vnext/schemas/u10-store-revocation-record-v1.schema.json",
+  "title": "semantic-guard U-10 exact store revocation record v1",
+  "description": "A human disposition revoking one exact U-10 store revision. It changes only the local currency of that revision; it does not erase historical occurrence authenticity, establish U-4 principal authenticity, or assert engineering correctness.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "revocation_id",
+    "revocation_version",
+    "record_kind",
+    "human_decision",
+    "decision_owner",
+    "target_store_id",
+    "target_store_revision_id",
+    "target_store_version",
+    "target_store_activation_basis_digest",
+    "target_store_artifact_digest",
+    "target_store_digest",
+    "target_activation_receipt_ref",
+    "revoked_operation",
+    "decision_entry_profile",
+    "recorded_at",
+    "reason",
+    "u4_principal_authenticity",
+    "authority_scope",
+    "formal_authority",
+    "positive_assurance_allowed",
+    "revocation_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "semantic-guard-u10-store-revocation-record/v1"},
+    "revocation_id": {"$ref": "#/$defs/stable_id"},
+    "revocation_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "record_kind": {"const": "store_revocation"},
+    "human_decision": {"const": "accept"},
+    "decision_owner": {"const": "human"},
+    "target_store_id": {"$ref": "#/$defs/stable_id"},
+    "target_store_revision_id": {"$ref": "#/$defs/stable_id"},
+    "target_store_version": {"type": "string", "minLength": 1, "maxLength": 128},
+    "target_store_activation_basis_digest": {"$ref": "#/$defs/digest"},
+    "target_store_artifact_digest": {"$ref": "#/$defs/digest"},
+    "target_store_digest": {"$ref": "#/$defs/digest"},
+    "target_activation_receipt_ref": {
+      "type": "object",
+      "required": ["receipt_id", "receipt_digest", "publication_observed_at", "receipt_recorded_at"],
+      "properties": {
+        "receipt_id": {"$ref": "#/$defs/stable_id"},
+        "receipt_digest": {"$ref": "#/$defs/digest"},
+        "publication_observed_at": {"type": "string", "format": "date-time"},
+        "receipt_recorded_at": {"type": "string", "format": "date-time"}
+      },
+      "unevaluatedProperties": false
+    },
+    "revoked_operation": {"const": "revoke_exact_store_revision"},
+    "decision_entry_profile": {"const": "fixed_root_authorization_record/v1"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "reason": {"type": "string", "minLength": 1, "maxLength": 4096},
+    "u4_principal_authenticity": {"const": "unresolved"},
+    "authority_scope": {"const": "u10_store_revocation_only"},
+    "formal_authority": {"const": "human_revocation_decision_only"},
+    "positive_assurance_allowed": {"const": false},
+    "revocation_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "stable_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "digest": {
+      "type": "object",
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "sha256"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "unevaluatedProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

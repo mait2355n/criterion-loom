@@ -1,0 +1,45 @@
+{
+  "id": "REQ-OBSERVABLE-BEHAVIOR-MISSING-001",
+  "title": "Vague improvement request without observable behavior is logically derived",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: レポート機能を改善する。受入基準: 改善されたことを確認。検証方法: レビュー。証拠: レビュー記録。対象外: UI刷新。未確定: なし。",
+  "strict": true,
+  "rationale": "A vague improvement request must be reduced to observable behavior before implementation.",
+  "labels": {
+    "expected_rules": [
+      "req.structure.observable_behavior_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "behavior",
+        "rule_id": "req.structure.observable_behavior_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "categories": {
+      "includes": [
+        "behavior"
+      ]
+    },
+    "missing": {
+      "includes": [
+        "observable_behavior"
+      ]
+    },
+    "derivation_status": "derived",
+    "derivation_rule_id": "req.structure.observable_behavior_missing",
+    "derivation_missing_obligation": "obl.req.structure.observable_behavior",
+    "derivation_countercondition": "ctr.req.structure.observable_behavior_not_in_scope",
+    "derivation_fact": "text.has_observable_behavior",
+    "logical_trace_summary_rule": {
+      "rule_id": "req.structure.observable_behavior_missing",
+      "status": "derived",
+      "finding_count": 1,
+      "missing_obligation_count": 1
+    }
+  }
+}

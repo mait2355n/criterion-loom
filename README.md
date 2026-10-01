@@ -14,13 +14,18 @@ to externalize those distinctions as versioned, inspectable audit artifacts—so
 the next correction or decision does not have to trust a fluent summary.
 
 `Criterion Loom` is the public project name. Its current distribution and CLI
-are named `semantic-guard` at version `1.1.0`; the import package is
+are named `semantic-guard` at development version `1.2.0.dev0`; the canonical import package is
 `semantic_guard`, and the MCP server entry point is `semantic-guard-mcp`.
 
 > The current v1 public workflow audits one structured functional requirement
 > at a time and, separately, bounded Japanese direction-binding expressions. It
-> does not yet expose plan, diff, completion, or full-lifecycle audits through
-> the canonical v1 CLI or MCP surface.
+> retains its own result contract. Plan, diff, completion, and other workflow
+> audits are available through the explicit `workflow` interface. The separate
+> `candidate` interface retains the unadopted governed vNext contract.
+
+This development version combines three implementations in one installation.
+Choose the contract and server explicitly using the [integration guide](docs/local-integration.md).
+It is not a release or a deployed-default change.
 
 ## Why this is different
 
@@ -86,6 +91,10 @@ the paired inputs and exact field states.
 The current source also contains candidate lifecycle and assurance contracts.
 They are useful design and test material, but they are not silently promoted to
 public end-to-end features.
+
+The additional CLI routes `workflow COMMAND` and `candidate COMMAND` select separate
+contracts. Their servers are `semantic-guard-workflow-mcp` (27 tools) and
+`semantic-guard-vnext-mcp` (three tools); the canonical server retains its four tools.
 
 ## Choose an interface
 

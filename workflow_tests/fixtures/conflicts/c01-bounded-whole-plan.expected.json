@@ -1,0 +1,26 @@
+{
+  "id": "CONFLICT-C01-BOUNDED-WHOLE-PLAN",
+  "title": "Bounded whole-plan wording does not trigger broad-scope warning",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 監査全体を確認する。対象外: 全面刷新はしない。成果物: core.py、tests、README。作業分解: core.py、tests、README を作業パッケージに分ける。手順: 調査、実装、検証。順序: 調査後に実装し、検証後に文書化する。依存: 既存 CLI。資源: Codex が一作業単位で実施する。リスク: 誤警告。対策: 代表 fixture で再検証する。検証: unittest。妥当性: 利用者が受入判断する。判断主体: 利用者。確認点: 実装後。基準線: 既存試験通過。変更統制: 追加要求は後続化する。決定点: 受入は利用者。戻し方: 差分を戻す。証拠: コマンド結果。未確定: なし。",
+  "strict": true,
+  "rationale": "A broad Japanese scope word can be safe when explicit work packages, non-goals, sequence, verification, and change control bound it.",
+  "labels": {
+    "forbidden_findings": [
+      {
+        "category": "scope",
+        "finding_contains": "範囲が広がりすぎ"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "pass",
+    "categories": {
+      "excludes": [
+        "scope"
+      ]
+    }
+  }
+}
