@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 import threading
 import uuid
 from collections.abc import Callable, Mapping
@@ -9,6 +8,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .codex_exec import Runner
+from .process import run_agent_process
 
 
 @dataclass(frozen=True)
@@ -36,7 +36,7 @@ class BackgroundJobStore:
         request: Any,
         *,
         metadata: Mapping[str, Any] | None = None,
-        runner: Runner = subprocess.run,
+        runner: Runner = run_agent_process,
         include_prompt: bool = False,
     ) -> dict[str, Any]:
         job = self._config.job_factory(

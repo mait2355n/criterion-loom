@@ -374,13 +374,17 @@ class McpBackendTests(unittest.TestCase):
         self.assertEqual(result["backend"], "codex")
 
     def test_command_backend_is_refused_without_starting_anything(self) -> None:
-        with patch("semantic_guard_workflow.runtime.codex_exec.subprocess.run") as run:
+        with (
+            patch("semantic_guard_workflow.runtime.codex_exec.subprocess.run") as run,
+            patch("semantic_guard_workflow.runtime.process.subprocess.Popen") as popen,
+        ):
             results = [
                 llm_review_command_tool(self.PAYLOAD, backend="command"),
                 llm_review_run_tool(self.PAYLOAD, execute=True, backend="command"),
                 llm_explore_request_tool("割り勘アプリを作りたい", execute=True, backend="command"),
             ]
         run.assert_not_called()
+        popen.assert_not_called()
         for result in results:
             self.assertEqual(result["execution_status"], "input_error")
             self.assertIn("not available over MCP", result["errors"][0])

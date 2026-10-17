@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
@@ -16,6 +15,7 @@ from .review import (
 )
 from semantic_guard_workflow.escalation import decide_escalation
 from .jobs import BackgroundJobStore, JobRuntimeConfig, utc_now
+from .process import run_agent_process
 
 _DONE_STATES = {"completed", "failed", "timed_out", "input_error", "not_needed", "not_found"}
 
@@ -61,7 +61,7 @@ def start_review_if_needed_job(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
-    runner: Runner = subprocess.run,
+    runner: Runner = run_agent_process,
     backend: str = "codex",
 ) -> dict[str, Any]:
     audit = _mapping(payload.get("deterministic_audit") or payload.get("audit_result"))

@@ -21,6 +21,7 @@ from .backends import (
     extract_agent_output,
     process_label,
 )
+from .process import MAX_OUTPUT_BYTES, cap_text, run_agent_process
 
 DEFAULT_TIMEOUT_SECONDS = 180
 
@@ -91,7 +92,7 @@ def run_codex_exec_runtime(
     invalid_execution_status: str,
     output_name: str,
     validator: Validator,
-    runner: Runner = subprocess.run,
+    runner: Runner = run_agent_process,
     backend: str = BACKEND_CODEX,
 ) -> CodexExecRuntimeResult:
     label = process_label(backend)
@@ -125,8 +126,8 @@ def run_codex_exec_runtime(
             executed=True,
             execution_status="timeout",
             returncode=None,
-            stdout=_string_or_empty(exc.stdout or exc.output),
-            stderr=_string_or_empty(exc.stderr),
+            stdout=cap_text(_string_or_empty(exc.stdout or exc.output))[0],
+            stderr=cap_text(_string_or_empty(exc.stderr))[0],
             timed_out=True,
             errors=[f"{label} timed out after {timeout_seconds} seconds"],
             failure_kind="timeout",
@@ -144,8 +145,13 @@ def run_codex_exec_runtime(
             **base,
         )
 
-    stdout = completed.stdout or ""
-    stderr = completed.stderr or ""
+    stdout, stdout_cut = _bounded_output(completed, "stdout")
+    stderr, stderr_cut = _bounded_output(completed, "stderr")
+    truncation = [
+        f"{label} {name} exceeded {MAX_OUTPUT_BYTES} bytes and was truncated"
+        for name, cut in (("stdout", stdout_cut), ("stderr", stderr_cut))
+        if cut
+    ]
     if completed.returncode != 0:
         return CodexExecRuntimeResult(
             executed=True,
@@ -153,8 +159,19 @@ def run_codex_exec_runtime(
             returncode=completed.returncode,
             stdout=stdout,
             stderr=stderr,
-            errors=[f"{label} exited with status {completed.returncode}"],
+            errors=[f"{label} exited with status {completed.returncode}", *truncation],
             failure_kind="non_zero_exit",
+            **base,
+        )
+    if stdout_cut:
+        return CodexExecRuntimeResult(
+            executed=True,
+            execution_status=invalid_execution_status,
+            returncode=completed.returncode,
+            stdout=stdout,
+            stderr=stderr,
+            errors=truncation,
+            failure_kind="output_truncated",
             **base,
         )
 
@@ -224,6 +241,13 @@ def parse_json_object(stdout: str, *, output_name: str) -> tuple[dict[str, Any],
 
 def command_display(command: Sequence[str]) -> str:
     return " ".join(_quote_arg(arg) for arg in command)
+
+
+def _bounded_output(completed: subprocess.CompletedProcess[str], stream: str) -> tuple[str, bool]:
+    text = getattr(completed, stream) or ""
+    if getattr(completed, f"{stream}_truncated", False):
+        return text, True  # already cut (and marked) by the runner
+    return cap_text(text)
 
 
 def _string_or_empty(value: object) -> str:

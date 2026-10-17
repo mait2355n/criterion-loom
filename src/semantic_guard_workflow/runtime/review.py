@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,6 +15,7 @@ from .codex_exec import (
     parse_json_object,
     run_codex_exec_runtime,
 )
+from .process import run_agent_process
 from semantic_guard_workflow.llm_review import (
     CandidateGapReviewInput,
     build_candidate_gap_review_prompt,
@@ -119,7 +119,7 @@ def run_codex_exec_review(
     request: CodexExecReviewRequest,
     *,
     execute: bool = False,
-    runner: Runner = subprocess.run,
+    runner: Runner = run_agent_process,
 ) -> CodexExecReviewResult:
     command = build_codex_exec_command(request)
     runtime_result = run_codex_exec_runtime(
