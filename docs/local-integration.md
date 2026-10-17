@@ -69,6 +69,120 @@ U10 brokerコードの同梱は特権導入、鍵生成、署名、環境採択�
 通常の要求監査はU10の特権処理を起動しない。既存 `shadow-compare` は、指定された旧版基線との
 比較を続ける。基幹 v1 と候補を比較する工具へ暗黙に変わることはない。
 
+## エージェント別の接続
+
+MCP サーバーも付属スキルも、特定のエージェントに依存しない。標準入出力で話せる
+クライアントなら同じサーバーを使え、`SKILL.md` の先頭の `name` と `description` を
+読むエージェントなら同じスキルを使える。`skills/semantic-implementation/agents/openai.yaml`
+は Codex の表示用メタデータであり、他のエージェントは読まない。
+
+| エージェント | MCP サーバーの登録 | スキルの置き場所 |
+| --- | --- | --- |
+| Claude Code | `claude mcp add semantic-guard -- uv --directory /absolute/path/to/criterion-loom run --locked semantic-guard-mcp` | `skills/semantic-implementation/` を `~/.claude/skills/` 又は作業ディレクトリの `.claude/skills/` へ複写又は連結する |
+| Codex | `~/.codex/config.toml` の `[mcp_servers.semantic-guard]` に `command = "uv"`、`args = ["--directory", "/absolute/path/to/criterion-loom", "run", "--locked", "semantic-guard-mcp"]` を書く（Codex の設定書式であり、本リポジトリの試験では実行していない） | `skills/semantic-implementation/` を Codex のスキル置き場へ複写する |
+| その他 | `command`、`args`、`cwd` を受ける設定へ、README の JSON 例を写す | `SKILL.md` を読み込める置き場所へ複写する |
+
+workflow の工程別監査を使うときは、登録名と最後の実行名を `semantic-guard-workflow` と
+`semantic-guard-workflow-mcp` に替える。接続しただけでは、審査ジョブも外部コマンドも
+始まらない。
+
+## 外部LLM査読の実行エージェント
+
+workflow の `llm-review-run`、`llm-explore-request`、`review-if-needed` は、決定的な監査の
+後に、隔離した別の査読者へ不足の指摘と補填案を求められる。査読者として動かすエージェントは
+`--backend` で選ぶ。どれを選んでも、プロンプトは標準入力へ渡され、返答は同じ JSON
+スキーマで検証される。検証に通らない返答は `invalid_review` 又は `invalid_exploration` と
+して残り、成功へは変換されない。結果には、どのエージェントが返したかを示す `backend`
+が付く。
+
+| `--backend` | 実行されるもの | 返答の読み方 | MCP |
+| --- | --- | --- | --- |
+| `codex`（既定） | `codex exec --output-schema`（読み取り専用、設定と規則を読まない） | 標準出力の JSON | 可 |
+| `claude` | `claude -p --output-format json --json-schema`（道具なし、会話を保存しない、設定・MCP・スキルを読まない） | 封筒の `structured_output`。無ければ `result` の JSON | 可 |
+| `command` | `--agent-command` で渡した引数の雛形 | 標準出力の JSON。Markdown のコードフェンスは外す | 不可（CLI 専用） |
+
+```sh
+# 既定は codex。外部へ送らず、実行されるコマンドとプロンプトだけを見る。
+uv run --locked semantic-guard workflow llm-review-run --file review-input.json
+
+# Claude Code を査読者にする。--execute を付けたときだけ実行する。
+uv run --locked semantic-guard workflow llm-review-run --file review-input.json \
+  --backend claude --model sonnet --execute
+
+# 任意のエージェント。{model} {schema_path} {schema_json} {working_directory} を置換する。
+uv run --locked semantic-guard workflow llm-review-run --file review-input.json \
+  --backend command --agent-command "my-agent --model {model} --schema {schema_path}" --execute
+```
+
+`--model` を省くと各エージェント既定のモデルを使う（`codex` は `gpt-5.4-mini`、
+`claude` は `sonnet`）。`claude` の `--json-schema` は `$schema` と `$id` を解決できないため、
+インライン渡しの前にこの二つを除く。`--agent-binary` で実行ファイルの場所を替えられる。
+
+確認の範囲: 移植元の作成者は、Claude Code 2.1.302 とモデル `haiku` で
+`valid_review` を得たと報告している（2026-10-17）。統合先のMacでは2.1.284へ合成入力を
+一度渡したが、未ログインで終了した。統合先で実際の査読成功を再現した証拠はまだない。
+他の版・モデルでの動作や査読内容の質も未確認で、`codex` の引数は既存の試験で固定している。
+
+MCP の `llm_review_*`、`llm_explore_request_*`、`review_if_needed_*` 工具の `backend`
+引数は、`codex` と `claude` だけを受ける。`command` は呼出元が指定した引数の雛形で任意の
+プロセスを起動するため、操作者が直接指定する CLI に限り、MCP からは拒否して何も起動しない。
+
+実行は `--execute` 又は `execute=true` のときだけ起きる。対象の資料はそのエージェントの
+提供元へ送られるため、送ってよいかは呼出元が判断する。査読の結果は不足の候補であり、
+採択も却下も代行しない。
+
+`--agent-command` は全OSでPOSIXの引用規則により引数へ分割し、シェル自体は起動しない。
+Windowsのパスはテンプレート内でも `"C:\tools\agent.exe"` のように引用して、逆斜線を保つ。
+Python APIへ引数配列を渡す場合は、この文字列分割を経由しない。
+
+制限時間の監督は起動した直接の過程が対象で、ラッパーが起動する子孫過程全体の停止を
+保証しない。任意コマンドを使う操作者は、その過程群の終了も管理する。背景処理の取消APIや
+常駐MCP設定の自動変更は、この追加には含まれない。
+
+## 規則適用の機械検査
+
+工程別規則の判定は、語彙の一致を中心にした決定的な検出器である。同じ内容の別表記で
+判定が変わらないか、必須項目を欠いたとき対応する規則が反応するかは、人手の正解なしで
+機械的に確かめられる。
+
+```sh
+uv run --locked semantic-guard workflow evaluate-fixtures      # 固定の期待値との照合
+uv run --locked semantic-guard workflow evaluate-metamorphic   # 不変性と感度
+```
+
+`evaluate-metamorphic` は二つを確かめ、どちらかが崩れると終了値 `1` を返す。
+
+- **不変性**: 既存の各フィクスチャを、意味を変えない書き換え（全角英数字、濁点の分離、
+  半角カタカナ、全角空白、不可視文字、CRLF、行末空白、Markdown の強調・見出し・箇条書き・
+  引用の記号、行の入れ替え、文ごとの改行）で再実行し、判定と規則が動かないことを見る。
+  動いた組合せは、理由付きの既知の例外として登録されたものを除き失敗になる。例外の
+  登録は、動かなくなると「古い登録」として失敗するため、検出器が改善するたびに縮む。
+- **感度**: 良い計画と良い要求から項目を一つずつ削り、その項目を担当する規則が出るか見る。
+  何も出ない削除は、他の項目の語が同じ義務を満たしている旨の理由と共に表に残す。
+  その削除が指摘を生むようになったら表の更新を求められる。
+
+検出器は監査の入口で、全角・半角、Unicode の合成形、不可視文字、改行を正規化してから語彙を
+照合する。指摘が引用する本文は、この正規化後の形になる。ただし、要求関係と方向束縛の監査は
+結果に原文の文字位置と形態素解析の対象文字列を持つため、呼出元の原文のまま渡す。この経路は
+全角・半角、濁点の分離、半角カタカナの違いにまだ影響される（`verification-target-mismatch`
+で確認できる）。登録済みの既知の例外である。
+
+工程監査の論理導出も正規化した文字列で判定するが、公開する根拠範囲とその抜粋は、文字の
+合成・展開・除去を対応付けて原文へ戻す。差分のファイル名も原文を保ち、全角文字や不可視文字を
+別の識別子へ置き換えない。
+
+行回転と文改行は、符号囲みや順序付き手順などを壊さない範囲へ適用を絞り、除外理由を
+`invariance.skipped` に残す。既知の変動も状態と増減する規則の組を照合し、同じ資料での
+別の悪化を既知例外として通さない。
+
+規則カタログ自体も機械的に検査する。固定の期待値の全指摘が、カタログのどれかの規則に紐づくこと。
+各規則の重大度（厳格・緩和）が検出器の出力と一致すること。各規則に、出るべき例と、
+出てはならない例の両方のフィクスチャがあること。これらは `workflow_tests/test_rule_catalog_consistency.py`
+が固定する。
+
+これらはリポジトリ内のフィクスチャに対する較正であり、実務文書での精度、網羅性、
+人間による受理を示すものではない。
+
 ## 検証と残る結合
 
 基幹の既存試験に加え、`workflow_tests/`、`candidate_tests/` と
@@ -82,5 +196,7 @@ U10 brokerコードの同梱は特権導入、鍵生成、署名、環境採択�
 
 この開発版が結合するのは呼出経路と配布である。各監査結果を横断して一つの判定へまとめる
 意味変換、重複実装の共通化、実地妥当性、未採用規則の採択、稼働MCPの切替は
-別の課題として残る。他の開発枝にある配布強化・実地標本・引渡し投影も、この基線の
-結合範囲には含めない。過去の試験記録を結合版の試験証拠として流用しない。
+別の課題として残る。今回の統合候補には、配布物とソースの結び付け、および許諾・重複・
+評価対象を検査する実地標本の受入口を含む。受入口の方針は人間の判断待ちで、標本収集や
+運用開始はしていない。引渡し投影の追加統合は範囲外である。過去の試験記録を今回の
+統合候補の試験証拠として流用しない。

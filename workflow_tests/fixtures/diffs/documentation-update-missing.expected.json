@@ -1,0 +1,24 @@
+{
+  "id": "DIFF-DOCS-001",
+  "title": "A change that promises README updates but touches no document is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/a.py b/src/a.py\n--- a/src/a.py\n+++ b/src/a.py\n@@ -1 +1,2 @@\n-x = 1\n+x = 2\n+y = 3\n",
+  "intent": "設定の既定値を変更し README の説明も揃える",
+  "strict": true,
+  "rationale": "An intent that names README or settings needs a document change or a stated reason for none.",
+  "labels": {
+    "expected_rules": [
+      "diff.documentation.update_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "diff.documentation.update_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn"
+  }
+}

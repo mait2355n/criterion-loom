@@ -40,6 +40,8 @@ uv lock --check
 uv run --locked python -m unittest discover -s tests -v
 uv run --locked python -m unittest discover -s workflow_tests -t . -v
 uv run --locked python -m unittest discover -s candidate_tests -t . -v
+uv run --locked semantic-guard workflow evaluate-fixtures
+uv run --locked semantic-guard workflow evaluate-metamorphic
 uv run --locked python scripts/validate_verification_source.py
 uv run --locked python scripts/render_verification_projection.py --check
 uv run --locked python scripts/validate_engineering_rule_pack.py
@@ -48,6 +50,12 @@ uv run --locked python scripts/verify_packaged_contracts.py \
   --wheel dist/semantic_guard-*.whl \
   --sdist dist/semantic_guard-1.2.0.dev0.tar.gz
 ```
+
+A change to a workflow rule or detector also needs a positive and a negative fixture for the rule
+in both `workflow_tests/fixtures/` and `src/semantic_guard_workflow/_resources/tests/fixtures/`, a
+matching entry in the packaged-resource allowlist of `scripts/verify_packaged_contracts.py`, and a
+catalog `severity_policy` equal to what the detector emits. `evaluate-metamorphic` must keep passing:
+a verdict that moves under a spelling-only rewrite is a detector defect, not a fixture problem.
 
 For documentation changes, verify paths, examples, command names, contract versions, claim/evidence/limitation triples, and the distinction between canonicalization and adoption.
 

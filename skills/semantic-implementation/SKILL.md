@@ -17,6 +17,10 @@ Keep the workflow result contract distinct from canonical v1. Select
 `semantic-guard candidate COMMAND` or `semantic-guard-vnext-mcp` only to inspect
 the unadopted governed candidate; its unresolved block and absent formal authority
 are expected. Do not invoke external LLM jobs merely because a server is connected.
+When an isolated reviewer is wanted, choose its agent per call: `--backend codex` (default)
+or `--backend claude`, also available as `backend` on the MCP tools. `--backend command` runs
+an operator-supplied template and is CLI-only. Every backend is validated against the same
+schema, nothing runs without `--execute`, and the result records which `backend` answered.
 See [the integration guide](../../docs/local-integration.md). Existing deployed
 clients are not changed automatically.
 

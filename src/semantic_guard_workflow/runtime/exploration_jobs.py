@@ -75,4 +75,5 @@ def _exception_result(request: CodexExecExplorationRequest, exc: Exception) -> C
         valid=False,
         errors=[str(exc)],
         failure_kind="job_exception",
+        backend=request.backend,
     )

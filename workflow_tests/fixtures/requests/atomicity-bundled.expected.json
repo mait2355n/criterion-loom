@@ -1,0 +1,23 @@
+{
+  "id": "REQ-ATOMICITY-001",
+  "title": "Two independent outputs bundled in one expected result are flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: 帳票を出力する。期待結果: 画面へ表示し、かつ CSV にも出力する。",
+  "strict": true,
+  "rationale": "Independent outputs joined by a conjunction cannot be verified, prioritized, or changed separately.",
+  "labels": {
+    "expected_rules": [
+      "req.atomicity.multiple_requirements_bundled"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "req.atomicity.multiple_requirements_bundled"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block"
+  }
+}

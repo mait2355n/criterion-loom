@@ -1,0 +1,29 @@
+{
+  "id": "REQ-QUALITY-CONSTRAINT-MISSING-001",
+  "title": "A speed requirement without a measurable quality constraint is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: 検索を速くする。シナリオ: 検索語を入力した場合、結果一覧を返す。検証方法: 実行時間を確認する。証拠: 実行ログを保存する。対象外: 画面変更。未確定: 合格条件は保守者が別途決める。",
+  "strict": true,
+  "rationale": "A speed goal and a plan to observe runtime do not specify a measurable constraint or an acceptance decision.",
+  "labels": {
+    "expected_rules": [
+      "req.quality.measurable_constraint_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "req.quality.measurable_constraint_missing",
+        "severity": "major"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn",
+    "missing": {
+      "includes": [
+        "quality_constraint"
+      ]
+    }
+  }
+}

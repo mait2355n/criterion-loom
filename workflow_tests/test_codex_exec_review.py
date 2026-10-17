@@ -137,6 +137,7 @@ class CodexExecReviewTests(unittest.TestCase):
                 "errors",
                 "review",
                 "failure_kind",
+                "backend",
             ],
         )
         self.assertEqual(calls[0]["timeout"], 42)

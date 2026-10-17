@@ -24,6 +24,7 @@ from semantic_guard_workflow.problem_signals import (
 )
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import combine as _combine, first_match as _first_match
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 MINIMALITY_EXPANSION_TERMS = [
     "新規依存",
@@ -450,13 +451,33 @@ NEGATABLE_HUMAN_QUESTION_NECESSITY_TERMS = {
     "secret",
 }
 
+# Required-field gaps without a dedicated detector map to the catalog rule that
+# owns the field. Rollback and validation set their own rule below.
+_REQUIRED_FIELD_RULE_IDS = {
+    "objective": "plan.objective.purpose_missing",
+    "non_goals": "plan.scope.non_goals_missing",
+    "verification_plan": "plan.verification.plan_missing",
+    "completion_evidence": "plan.completion.evidence_missing",
+    "unknowns_or_decisions": "plan.uncertainty.unknowns_unstated",
+    "deliverables": "plan.structure.required_field_missing",
+    "work_breakdown": "plan.structure.required_field_missing",
+    "dependencies": "plan.structure.required_field_missing",
+    "risks": "plan.structure.required_field_missing",
+}
+
+
 def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = True, input_kind: str = "plan") -> dict[str, object]:
+    plan = normalize_audit_text(plan)
+    request = normalize_audit_text(request)
+    context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
     combined = _combine(plan, request, context)
     findings: list[Finding] = []
     missing: list[str] = []
     required = {
-        "objective": ["目的", "目標", "狙い", "意図", "objective", "goal", "成果", "何を達成"],
+        # "成果物" (deliverables) contains "成果" (outcome); only forms that cannot be the
+        # deliverables label count as an objective.
+        "objective": ["目的", "目標", "狙い", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
         "non_goals": ["対象外", "非対象", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
         "deliverables": ["成果物", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
         "work_breakdown": ["手順", "段取り", "作業分解", "作業項目", "実施手順", "step", "作業", "実装", "検証", "文書"],
@@ -481,7 +502,7 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
             severity = "blocker" if strict and field in critical else "minor" if field in advisory else "major"
             finding_text = f"計画に `{field}` が見えない。"
             category = "planning"
-            rule_id = ""
+            rule_id = _REQUIRED_FIELD_RULE_IDS.get(field, "")
             suggested_fix = f"`{field}` を計画へ足す。該当なしなら、該当なしと明示する。"
             if field == "rollback_or_recovery":
                 rule_id = "plan.risk.rollback_missing"
@@ -960,27 +981,54 @@ def _work_package_decomposition_signal(text: str) -> str:
 
 
 def _dependency_sequence_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "dependency sequence",
-            "predecessor",
-            "successor",
-            "critical path",
-            "after",
-            "before",
-            "parallel",
-            "blocked by",
-            "順序",
-            "先行",
-            "後続",
-            "前後関係",
-            "依存関係",
-            "並行",
-            "直列",
-            "ブロッカー",
-        ],
+    from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
+
+    terms = (
+        "dependency sequence",
+        "predecessor",
+        "successor",
+        "critical path",
+        "after",
+        "before",
+        "parallel",
+        "blocked by",
+        "順序",
+        "先に",
+        "後で",
+        "先行",
+        "後続",
+        "前後関係",
+        "依存関係",
+        "並行",
+        "直列",
+        "ブロッカー",
     )
+    relation = re.compile(
+        r"^\s*(?:その)?(?P<term>" + "|".join(re.escape(term) for term in terms)
+        + r")(?:については|は|が|を|[:：])\s*(?P<value>.+?)\s*$"
+    )
+    clauses = re.split(r"([。！？!?；;\n]|\.(?=\s|$))", text)
+    for index in range(0, len(clauses), 2):
+        # Use the same Markdown prefix forms as deliverable fields for the
+        # decision only; retained clauses keep their original evidence text.
+        decision_clause = re.sub(
+            r"^[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\d+[.)][ \t]+)*",
+            "",
+            clauses[index],
+        )
+        match = relation.fullmatch(decision_clause)
+        if match is not None:
+            term, value = match["term"], match["value"]
+        elif _first_match(decision_clause, terms):
+            term, value = "順序", decision_clause.strip()
+        else:
+            continue
+        # Reuse the placeholder classifier on the whole value. Additional
+        # concrete content prevents a placeholder match and stays intact.
+        assertion = find_field_assertion(f"{term}: {value}", (term,))
+        if assertion is not None and assertion.reason == "deferred_placeholder":
+            clauses[index] = ""
+    return asserted_excerpt("".join(clauses), terms)
 
 
 def _estimation_or_resource_signal(text: str) -> str:
@@ -1202,11 +1250,37 @@ def _work_decomposition_scope_signal(plan: str) -> str:
     return _first_match(plan, ["成果物", "納品物", "出力", "変更物", "実装", "文書", "検証", "複数", "全体"])
 
 
+_DELIVERABLE_TERMS = ("成果物", "納品物", "出力", "変更物", "deliverable", "artifact")
+
+
+def _deliverable_clause(plan: str) -> str:
+    """Return the sentence that introduces the deliverables, not the whole line.
+
+    A plan written on one line holds every field in that line; counting items
+    over the line made the count depend on layout rather than on the deliverables.
+    """
+    labels = "|".join(re.escape(term) for term in _DELIVERABLE_TERMS)
+    labelled = re.search(
+        rf"(?:^|[。\n;；]|(?<=\.)[ \t]+)[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{{1,6}}[ \t]+|\d+[.)][ \t]+)*"
+        rf"(?:{labels})[ \t]*[:：][ \t]*(?P<value>[^。\n]*)",
+        plan,
+        re.IGNORECASE,
+    )
+    if labelled is not None:
+        return labelled.group("value")
+    lowered = plan.lower()
+    hits = [(lowered.find(term), term) for term in _DELIVERABLE_TERMS if term in lowered]
+    if not hits:
+        return ""
+    index, term = min(hits)
+    return re.split(r"[。\n]", plan[index + len(term) :], maxsplit=1)[0]
+
+
 def _deliverable_item_count(plan: str) -> int:
-    deliverable_line = _first_match(plan, ["成果物", "納品物", "出力", "変更物", "deliverable", "artifact"])
-    if not deliverable_line:
+    clause = _deliverable_clause(plan)
+    if not clause.strip():
         return 0
-    return len([part for part in re.split(r"[、,，/／]+|\s+and\s+|\s+と\s+", deliverable_line) if part.strip()])
+    return len([part for part in re.split(r"[、,，/／]+|\s+and\s+|\s+と\s+", clause) if part.strip()])
 
 
 VALIDATION_OWNER_TERMS = [

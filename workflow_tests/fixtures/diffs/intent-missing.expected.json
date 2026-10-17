@@ -1,0 +1,23 @@
+{
+  "id": "DIFF-INTENT-001",
+  "title": "A change submitted without its intent is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/a.py b/src/a.py\n--- a/src/a.py\n+++ b/src/a.py\n@@ -1 +1,2 @@\n-x = 1\n+x = 2\n+y = 3\n",
+  "strict": true,
+  "rationale": "A change cannot be traced to a requirement or plan when no intent is given.",
+  "labels": {
+    "expected_rules": [
+      "diff.traceability.intent_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "diff.traceability.intent_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "warn"
+  }
+}

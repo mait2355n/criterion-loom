@@ -1,0 +1,23 @@
+{
+  "id": "PLAN-VERIFICATION-001",
+  "title": "A plan with no verification at all is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 設定を整理する。\n対象外: UI は変えない。\n成果物: 設定文書。\n手順: 調査、実装、文書化。\n依存: 既存設定。\nリスク: 互換が崩れる。対策: 旧設定を残す。\n妥当性: 利用者が受入判断する。\n判断主体: 利用者。\n戻し方: backup を戻す。\n証拠: 結果を残す。\n未確定: なし。",
+  "strict": true,
+  "rationale": "A plan that never says how the result will be checked has no verification.",
+  "labels": {
+    "expected_rules": [
+      "plan.verification.plan_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "plan.verification.plan_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "block"
+  }
+}

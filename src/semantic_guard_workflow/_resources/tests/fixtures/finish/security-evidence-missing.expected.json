@@ -1,0 +1,23 @@
+{
+  "id": "FINISH-SECURITY-001",
+  "title": "A security-relevant change completed with no security evidence is flagged",
+  "phase": "finish_check",
+  "text": "認証トークンの検証を追加した。",
+  "evidence": "unittest を実行して成功した。残リスクなし。",
+  "strict": true,
+  "rationale": "Authentication changes need a recorded check of secrets, inputs, and authorization.",
+  "labels": {
+    "expected_rules": [
+      "finish.security.evidence_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "finish.security.evidence_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "warn"
+  }
+}

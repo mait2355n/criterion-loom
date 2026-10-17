@@ -1,0 +1,23 @@
+{
+  "id": "REQ-SOLUTION-FIXED-001",
+  "title": "A storage product fixed without a stated reason is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。目的: 設定を保存する。期待結果: SQLite に保存する。",
+  "strict": true,
+  "rationale": "A requirement that names a product with no reason fixes the solution instead of the need.",
+  "labels": {
+    "expected_rules": [
+      "req.solution.implementation_fixed"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "req.solution.implementation_fixed"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "block"
+  }
+}

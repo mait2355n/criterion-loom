@@ -8,6 +8,7 @@ from semantic_guard_workflow.expression_precision import expression_precision_fi
 from semantic_guard_workflow.models import AuditResult, Finding
 from semantic_guard_workflow.resources import resource_path
 from semantic_guard_workflow.text_matching import has_any as _has_any
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 CONVENTIONS_DIR = resource_path("docs", "conventions")
 BASE_CONTRACT_FILE = CONVENTIONS_DIR / "base-contract.json"
@@ -31,6 +32,8 @@ def audit_conventions(
     strict: bool = True,
     input_kind: str = "document",
 ) -> dict[str, object]:
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     catalog = load_conventions_catalog()
     combined = "\n".join(part for part in [context, text] if part)
     surface_hits = _detect_surfaces(combined, catalog)

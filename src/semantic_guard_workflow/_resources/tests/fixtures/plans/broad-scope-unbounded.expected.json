@@ -1,0 +1,23 @@
+{
+  "id": "PLAN-BROAD-SCOPE-001",
+  "title": "Rewriting everything at once without packages is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "目的: 全体をまとめて書き換える。\n成果物: 全ファイル。",
+  "strict": true,
+  "rationale": "A whole-system rewrite with no packages, boundaries, or order is unbounded.",
+  "labels": {
+    "expected_rules": [
+      "plan.scope.broad_scope_unbounded"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "plan.scope.broad_scope_unbounded"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "block"
+  }
+}

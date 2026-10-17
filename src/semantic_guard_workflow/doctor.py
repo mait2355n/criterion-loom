@@ -18,6 +18,7 @@ from semantic_guard_workflow.evaluation import DEFAULT_FIXTURE_ROOT, evaluate_fi
 from semantic_guard_workflow.llm_review import candidate_gap_review_schema_path
 from semantic_guard_workflow.models import audit_result_schema_path
 from semantic_guard_workflow.rule_mapping import rule_detector_mappings, unmapped_rule_ids
+from semantic_guard_workflow.runtime.backends import PRESET_BACKENDS, default_binary
 
 Status = str
 
@@ -44,7 +45,7 @@ def run_doctor(project_root: str | Path = ".", *, run_fixtures: bool = True) -> 
         _check_schemas(),
         _check_conventions(root),
         _check_mcp_dependency(),
-        _check_codex_binary(),
+        _check_reviewer_agents(),
         _check_rule_detector_mapping(),
         _check_ci_workflow(root),
     ]
@@ -144,11 +145,21 @@ def _check_mcp_dependency() -> DoctorCheck:
     return DoctorCheck("mcp_dependency", "pass", "mcp.server.fastmcp imports successfully.")
 
 
-def _check_codex_binary(which: Callable[[str], str | None] = shutil.which) -> DoctorCheck:
-    path = which("codex")
-    if path:
-        return DoctorCheck("codex_binary", "pass", "codex binary is available.", {"path": path})
-    return DoctorCheck("codex_binary", "warn", "codex binary is not on PATH; LLM reviewer execution will not work here.")
+def _check_reviewer_agents(which: Callable[[str], str | None] = shutil.which) -> DoctorCheck:
+    found = {backend: path for backend in PRESET_BACKENDS if (path := which(default_binary(backend)))}
+    if found:
+        return DoctorCheck(
+            "reviewer_agents",
+            "pass",
+            f"Reviewer agent CLI available: {', '.join(found)}.",
+            {"available": found, "missing": [backend for backend in PRESET_BACKENDS if backend not in found]},
+        )
+    return DoctorCheck(
+        "reviewer_agents",
+        "warn",
+        "No preset reviewer agent CLI (codex, claude) is on PATH; LLM reviewer execution needs one or a command backend.",
+        {"available": {}, "missing": list(PRESET_BACKENDS)},
+    )
 
 
 def _check_rule_detector_mapping() -> DoctorCheck:

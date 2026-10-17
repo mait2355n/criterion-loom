@@ -13,8 +13,12 @@ from semantic_guard_workflow.text_utils import (
     has_any as _has_any,
     unique_nonempty as _unique_nonempty,
 )
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = True, input_kind: str = "diff-summary") -> dict[str, object]:
+    # The diff body is code and file names; only the prose around it is normalized.
+    intent = normalize_audit_text(intent)
+    context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
     combined = _combine(diff, intent, context)
     findings: list[Finding] = []

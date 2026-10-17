@@ -54,6 +54,7 @@ from semantic_guard_workflow.result_builder import score_from_findings as _score
 from semantic_guard_workflow.text_utils import combine as _combine
 from semantic_guard_workflow.text_utils import first_match as _first_match
 from semantic_guard_workflow.text_utils import has_any as _has_any
+from semantic_guard_workflow.text_normalization import normalization_source_ranges, normalize_audit_text
 
 
 def _relation_evidence_excerpt(check: dict[str, object], role: str) -> str:
@@ -546,6 +547,12 @@ def audit_request(
     *,
     morphology_provider: object | None = None,
 ) -> dict[str, object]:
+    # Relation and direction-binding results carry character spans and bind the
+    # morphology analysis to the exact input, so that path keeps the caller's
+    # text. Every lexical detector below reads the normalized form.
+    source_text, source_context = text, context
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
     if morphology_provider is not None and input_kind != "requirement":
         raise ValueError("morphology_provider is supported only for requirement input")
@@ -554,7 +561,7 @@ def audit_request(
     if input_kind == "plan":
         return audit_plan(plan=text, context=context, strict=strict, input_kind=input_kind)
     if input_kind == "diff-summary":
-        return audit_diff(diff=text, intent=context, strict=strict, input_kind=input_kind)
+        return audit_diff(diff=source_text, intent=source_context, strict=strict, input_kind=input_kind)
 
     combined = _combine(text, context)
     findings: list[Finding] = []
@@ -570,9 +577,27 @@ def audit_request(
         requirement_profile=requirement_profile,
         requirement_structure=structure_profile,
     )
+    # Facts are determined from normalized spelling, but all published source
+    # spans and excerpts retain the caller's original coordinate system.
+    from semantic_guard_workflow.text_utils import excerpt_around
+
+    source_bodies = {"request": source_text, "context": source_context}
+    normalized_bodies = {"request": text, "context": context}
+    source_ranges = {
+        name: normalization_source_ranges(body)
+        for name, body in source_bodies.items()
+        if body != normalized_bodies[name]
+    }
+    for fact in logical_trace.facts:
+        for span in fact.evidence:
+            ranges = source_ranges.get(span.source)
+            if ranges is not None and span.start is not None and span.end is not None:
+                if 0 <= span.start < span.end <= len(ranges):
+                    span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
+                    span.excerpt = excerpt_around(source_bodies[span.source], span.start, span.end)
     relation_audit = audit_requirement_relations(
-        text,
-        context=context,
+        source_text,
+        context=source_context,
         morphology_provider=morphology_provider,
     )
     relation_summary = relation_audit.public_summary()
