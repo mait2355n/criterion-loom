@@ -237,6 +237,37 @@ class CodexExecReviewTests(unittest.TestCase):
         self.assertEqual(result.stderr, "codex unavailable")
         self.assertEqual(result.errors, ["codex unavailable"])
 
+    def test_execute_decodes_child_output_as_utf8_whatever_the_locale(self) -> None:
+        calls: list[dict[str, object]] = []
+
+        def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            calls.append(kwargs)
+            return subprocess.CompletedProcess(command, 0, stdout=json.dumps(_valid_review()), stderr="")
+
+        run_codex_exec_review(_request(), execute=True, runner=runner)
+
+        self.assertEqual(calls[0]["encoding"], "utf-8")
+        self.assertEqual(calls[0]["errors"], "replace")
+
+    def test_execute_reports_value_and_unicode_errors_as_execution_error(self) -> None:
+        for exc in (
+            ValueError("embedded null byte"),
+            UnicodeEncodeError("ascii", "あ", 0, 1, "ordinal not in range(128)"),
+            UnicodeDecodeError("utf-8", b"\xff", 0, 1, "invalid start byte"),
+        ):
+            with self.subTest(error=type(exc).__name__):
+
+                def runner(_command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+                    raise exc
+
+                result = run_codex_exec_review(_request(), execute=True, runner=runner)
+
+                self.assertTrue(result.executed)
+                self.assertFalse(result.valid)
+                self.assertEqual(result.execution_status, "execution_error")
+                self.assertEqual(result.failure_kind, "execution_error")
+                self.assertEqual(result.errors, [str(exc)])
+
     def test_command_display_quotes_prompt_marker_safely(self) -> None:
         display = command_display(["codex", "exec", "--cd", "/tmp/has space", "-"])
 

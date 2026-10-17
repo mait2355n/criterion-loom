@@ -127,7 +127,7 @@ class ExplorationJobStoreTests(unittest.TestCase):
         store = ExplorationJobStore()
 
         def runner(_command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
-            raise ValueError("runner broke")
+            raise RuntimeError("runner broke")
 
         initial = store.start(_request(), runner=runner)
         done = _wait_for_done(store, initial["job_id"])

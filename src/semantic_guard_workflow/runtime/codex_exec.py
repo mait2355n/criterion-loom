@@ -113,6 +113,8 @@ def run_codex_exec_runtime(
             command,
             input=prompt,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             capture_output=True,
             timeout=timeout_seconds,
             cwd=str(Path(working_directory)) if working_directory is not None else None,
@@ -130,7 +132,8 @@ def run_codex_exec_runtime(
             failure_kind="timeout",
             **base,
         )
-    except OSError as exc:
+    except (OSError, ValueError) as exc:
+        # UnicodeError is a ValueError; NUL bytes in an argument raise ValueError too.
         return CodexExecRuntimeResult(
             executed=True,
             execution_status="execution_error",
