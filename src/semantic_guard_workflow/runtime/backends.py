@@ -140,7 +140,8 @@ def extract_agent_output(backend: str, stdout: str) -> tuple[str, list[str], str
     text = _strip_fence(stdout)
     envelope = _load_envelope(text)
     if envelope is not None and ("structured_output" in envelope or "is_error" in envelope):
-        return _unwrap_claude_envelope(text)
+        # A generic agent need not report every claude status field, but one it does report must be a success.
+        return _unwrap_claude_envelope(text, require_status=False)
     return text, [], None
 
 
@@ -241,17 +242,16 @@ def _load_envelope(text: str) -> Mapping[str, Any] | None:
     return loaded if isinstance(loaded, dict) else None
 
 
-def _unwrap_claude_envelope(stdout: str) -> tuple[str, list[str], str | None]:
+def _unwrap_claude_envelope(stdout: str, *, require_status: bool = True) -> tuple[str, list[str], str | None]:
     stripped = stdout.strip()
     if not stripped:
         return stdout, [], None
     envelope = _load_envelope(stripped)
     if envelope is None:
         return stdout, [], None
-    if envelope.get("is_error") is True:
-        detail = envelope.get("result")
-        message = detail if isinstance(detail, str) and detail.strip() else "agent reported an error"
-        return stdout, [f"agent reported an error: {message}"], "agent_error"
+    failures = _envelope_failures(envelope, require_status=require_status)
+    if failures:
+        return stdout, failures, "agent_error"
     structured = envelope.get("structured_output")
     if isinstance(structured, dict):
         return json.dumps(structured, ensure_ascii=False), [], None
@@ -259,3 +259,36 @@ def _unwrap_claude_envelope(stdout: str) -> tuple[str, list[str], str | None]:
     if isinstance(result, str) and result.strip():
         return _strip_fence(result), [], None
     return stdout, ["agent envelope has neither structured_output nor a result string"], "invalid_json"
+
+
+def _envelope_failures(envelope: Mapping[str, Any], *, require_status: bool) -> list[str]:
+    """Reasons the envelope does not report success; empty when it does.
+
+    Success is ``subtype == "success"``, ``is_error is False`` (the JSON boolean,
+    not a truthy-looking string or integer) and no permission denials. With
+    ``require_status`` unset only the status fields that are present are checked.
+    """
+    failures: list[str] = []
+    if "is_error" in envelope or require_status:
+        is_error = envelope.get("is_error")
+        if is_error is True:
+            detail = envelope.get("result")
+            message = detail if isinstance(detail, str) and detail.strip() else "agent reported an error"
+            failures.append(f"agent reported an error: {message}")
+        elif is_error is not False:
+            failures.append(f"agent envelope is_error must be the boolean false, got {is_error!r}")
+    if "subtype" in envelope or require_status:
+        subtype = envelope.get("subtype")
+        if subtype != "success":
+            failures.append(f"agent envelope subtype must be 'success', got {subtype!r}")
+    denials = envelope.get("permission_denials")
+    if denials is not None and denials != []:
+        failures.append(f"agent reported permission denials: {_denial_summary(denials)}")
+    return failures
+
+
+def _denial_summary(denials: object) -> str:
+    if not isinstance(denials, list):
+        return "permission_denials must be an empty list"
+    names = [str(item.get("tool_name")) for item in denials if isinstance(item, Mapping) and item.get("tool_name")]
+    return ", ".join(names) if names else f"{len(denials)} denied"

@@ -178,6 +178,77 @@ class ClaudeBackendTests(unittest.TestCase):
         self.assertEqual(result.failure_kind, "agent_error")
         self.assertIn("rate limited", result.errors[0])
 
+    def test_only_a_clean_success_envelope_is_accepted(self) -> None:
+        structured = _review()
+        fenced = "```json\n" + json.dumps(structured, ensure_ascii=False) + "\n```"
+        cases = {
+            "error_during_execution": {"subtype": "error_during_execution", "structured_output": structured},
+            "error_max_turns": {"subtype": "error_max_turns", "structured_output": structured},
+            "error_max_turns_result_string": {"subtype": "error_max_turns", "result": fenced},
+            "is_error_string": {"is_error": "true", "structured_output": structured},
+            "is_error_false_string": {"is_error": "false", "structured_output": structured},
+            "is_error_integer": {"is_error": 1, "structured_output": structured},
+            "is_error_zero": {"is_error": 0, "structured_output": structured},
+            "is_error_null": {"is_error": None, "structured_output": structured},
+            "permission_denied": {
+                "permission_denials": [{"tool_name": "Bash", "tool_use_id": "t1", "tool_input": {}}],
+                "structured_output": structured,
+            },
+            "permission_denials_not_a_list": {"permission_denials": "Bash", "structured_output": structured},
+        }
+        for name, fields in cases.items():
+            with self.subTest(name=name):
+                result = run_codex_exec_review(
+                    _request(BACKEND_CLAUDE), execute=True, runner=_runner(_claude_envelope(**fields))
+                )
+
+                self.assertFalse(result.valid)
+                self.assertIsNone(result.review)
+                self.assertEqual(result.execution_status, "invalid_review")
+                self.assertEqual(result.failure_kind, "agent_error")
+                self.assertTrue(result.errors)
+
+    def test_failure_reasons_are_reported(self) -> None:
+        result = run_codex_exec_review(
+            _request(BACKEND_CLAUDE),
+            execute=True,
+            runner=_runner(
+                _claude_envelope(
+                    subtype="error_max_turns",
+                    is_error="true",
+                    permission_denials=[{"tool_name": "Bash"}],
+                    structured_output=_review(),
+                )
+            ),
+        )
+
+        joined = "\n".join(result.errors)
+        self.assertIn("'error_max_turns'", joined)
+        self.assertIn("is_error", joined)
+        self.assertIn("Bash", joined)
+
+    def test_status_fields_are_required_from_the_claude_envelope(self) -> None:
+        for missing in ("subtype", "is_error"):
+            with self.subTest(missing=missing):
+                envelope = json.loads(_claude_envelope(structured_output=_review()))
+                del envelope[missing]
+
+                result = run_codex_exec_review(
+                    _request(BACKEND_CLAUDE), execute=True, runner=_runner(json.dumps(envelope))
+                )
+
+                self.assertFalse(result.valid)
+                self.assertEqual(result.failure_kind, "agent_error")
+
+    def test_success_envelope_with_empty_permission_denials_is_accepted(self) -> None:
+        result = run_codex_exec_review(
+            _request(BACKEND_CLAUDE),
+            execute=True,
+            runner=_runner(_claude_envelope(permission_denials=[], structured_output=_review())),
+        )
+
+        self.assertTrue(result.valid)
+
     def test_envelope_without_payload_is_invalid(self) -> None:
         result = run_codex_exec_review(_request(BACKEND_CLAUDE), execute=True, runner=_runner(_claude_envelope()))
 
@@ -256,6 +327,30 @@ class CommandBackendTests(unittest.TestCase):
         text, errors, failure = extract_agent_output(BACKEND_CODEX, fenced)
 
         self.assertEqual((text, errors, failure), (fenced, [], None))
+
+    def test_envelope_from_a_generic_agent_is_checked_for_the_status_it_reports(self) -> None:
+        structured = _review()
+        accepted = [
+            json.dumps({"structured_output": structured}),
+            json.dumps({"is_error": False, "structured_output": structured}),
+            json.dumps({"subtype": "success", "is_error": False, "structured_output": structured}),
+        ]
+        for stdout in accepted:
+            with self.subTest(stdout=stdout):
+                text, errors, failure = extract_agent_output(BACKEND_COMMAND, stdout)
+                self.assertEqual((json.loads(text), errors, failure), (structured, [], None))
+
+        rejected = [
+            {"is_error": 1, "structured_output": structured},
+            {"is_error": "true", "structured_output": structured},
+            {"is_error": False, "subtype": "error_max_turns", "structured_output": structured},
+            {"structured_output": structured, "permission_denials": [{"tool_name": "Bash"}]},
+        ]
+        for envelope in rejected:
+            with self.subTest(envelope=envelope):
+                _text, errors, failure = extract_agent_output(BACKEND_COMMAND, json.dumps(envelope))
+                self.assertEqual(failure, "agent_error")
+                self.assertTrue(errors)
 
     def test_request_without_a_template_is_rejected(self) -> None:
         with self.assertRaises(ValueError):
