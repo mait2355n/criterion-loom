@@ -1,0 +1,23 @@
+{
+  "id": "DOC-EXAMPLE-001",
+  "title": "Usage described without a runnable example is flagged",
+  "phase": "audit_request",
+  "kind": "document",
+  "text": "# Local Audit Helper\n\n## Overview\n\nThis document describes a local CLI audit helper for Codex work.\n\n## Status\n\nThe helper is a prototype. It is not a release gate.\n\n## When To Use\n\nUse it when a reader needs enough context to run a document audit and inspect the JSON result.\n\n## CLI\n\nRun this command to inspect document audit output:\n\n\n\n## Output Shape\n\nThe command returns status, score, findings, missing, next_actions, and details.\n\n## Limitations\n\nIt is heuristic and does not replace human review.\n",
+  "strict": true,
+  "rationale": "A command described in prose but never shown cannot be tried or checked.",
+  "labels": {
+    "expected_rules": [
+      "doc.usage.example_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "doc.usage.example_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
@@ -151,6 +152,9 @@ def review_if_needed(
     working_directory: str = "",
     include_schema: bool = False,
     runner: Runner | None = None,
+    backend: str = "codex",
+    agent_binary: str = "",
+    agent_command: Sequence[str] = (),
 ) -> dict[str, Any]:
     audit = _mapping(payload.get("deterministic_audit") or payload.get("audit_result"))
     phase = _string(payload.get("phase")) or _string(audit.get("phase"))
@@ -179,6 +183,9 @@ def review_if_needed(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=backend,
+            agent_binary=agent_binary,
+            agent_command=agent_command,
         )
     except ValueError as exc:
         return {

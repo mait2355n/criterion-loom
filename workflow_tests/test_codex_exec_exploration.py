@@ -93,6 +93,7 @@ class CodexExecExplorationTests(unittest.TestCase):
                 "errors",
                 "exploration",
                 "failure_kind",
+                "backend",
             ],
         )
         self.assertEqual(calls[0]["timeout"], 42)

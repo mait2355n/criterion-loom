@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import sys
 from pathlib import Path
 from typing import NoReturn, Sequence
@@ -13,14 +14,13 @@ from semantic_guard_workflow.acceptance_review import (
     validate_acceptance_review_bundle,
 )
 from semantic_guard_workflow.artifact_membership import audit_artifact_membership
+from semantic_guard_workflow.runtime.backends import BACKEND_CODEX, BACKENDS, COMMAND_PLACEHOLDERS
 from semantic_guard_workflow.runtime.exploration import (
-    DEFAULT_CODEX_MODEL as DEFAULT_EXPLORATION_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
     CodexExecExplorationRequest,
     run_codex_exec_exploration,
 )
 from semantic_guard_workflow.runtime.review import (
-    DEFAULT_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS,
     CodexExecReviewRequest,
     run_codex_exec_review,
@@ -39,6 +39,7 @@ from semantic_guard_workflow.doctor import run_doctor
 from semantic_guard_workflow.escalation import review_if_needed
 from semantic_guard_workflow.evaluation import DEFAULT_FIXTURE_ROOT, evaluate_fixture_tree
 from semantic_guard_workflow.exploration import explore_request
+from semantic_guard_workflow.metamorphic import evaluate_metamorphic
 from semantic_guard_workflow.llm_review import (
     CandidateGapReviewInput,
     build_candidate_gap_review_prompt,
@@ -76,6 +77,7 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     _add_llm_review_command(subparsers, "llm-review-run")
     _add_review_if_needed_command(subparsers, "review-if-needed")
     _add_evaluate_fixtures_command(subparsers)
+    _add_evaluate_metamorphic_command(subparsers)
     _add_doctor_command(subparsers)
     _add_json_command(subparsers, "trace-report")
     subparsers.add_parser("audit-result-schema")
@@ -144,11 +146,12 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
         try:
             request = CodexExecExplorationRequest.from_mapping(
                 payload,
-                model=args.model,
+                model=args.model or "",
                 timeout_seconds=args.timeout_seconds,
                 working_directory=args.working_directory,
                 codex_binary=args.codex_binary,
                 include_schema_in_prompt=args.include_schema,
+                **_backend_kwargs(args),
             )
         except ValueError as exc:
             print(
@@ -183,14 +186,21 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
         result = review_if_needed(
             payload,
             execute=args.execute,
-            model=args.model,
+            model=args.model or "",
             timeout_seconds=args.timeout_seconds,
             working_directory=args.working_directory or "",
             include_schema=args.include_schema,
+            **_backend_kwargs(args),
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         review_result = result.get("review_result")
         if args.execute and isinstance(review_result, dict) and review_result.get("executed") and not review_result.get("valid"):
+            raise SystemExit(1)
+        return
+    if args.command == "evaluate-metamorphic":
+        result = evaluate_metamorphic(args.path)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        if not result["passed"]:
             raise SystemExit(1)
         return
     if args.command == "evaluate-fixtures":
@@ -386,19 +396,20 @@ def _add_llm_exploration_command(subparsers: argparse._SubParsersAction[argparse
     parser.add_argument("--non-goals", help="Known non-goals to pass to the exploration reviewer.")
     parser.add_argument("--known-sources", help="Known source list or evidence notes available to the reviewer.")
     parser.add_argument("--no-strict", action="store_true", help="Downgrade strict blockers in the deterministic preflight.")
-    parser.add_argument("--model", default=DEFAULT_EXPLORATION_CODEX_MODEL, help="Codex model for the isolated exploration reviewer.")
+    parser.add_argument("--model", default=None, help=_MODEL_HELP)
     parser.add_argument(
         "--timeout-seconds",
         type=int,
         default=DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
-        help="Timeout for codex exec when --execute is used.",
+        help="Timeout for the reviewer process when --execute is used.",
     )
-    parser.add_argument("--working-directory", help="Working directory passed to codex exec with --cd.")
-    parser.add_argument("--codex-binary", default="codex", help="Codex executable to run.")
+    parser.add_argument("--working-directory", help="Working directory for the reviewer process (also passed to codex exec with --cd).")
+    parser.add_argument("--codex-binary", default="codex", help="Codex executable to run (backend codex only).")
+    _add_backend_arguments(parser)
     parser.add_argument("--include-schema", action="store_true", help="Append the output JSON schema to the prompt.")
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--dry-run", action="store_true", help="Default. Build prompt and command without running codex exec.")
-    mode.add_argument("--execute", action="store_true", help="Run codex exec and validate its JSON output.")
+    mode.add_argument("--dry-run", action="store_true", help="Default. Build prompt and command without running the reviewer.")
+    mode.add_argument("--execute", action="store_true", help="Run the reviewer and validate its JSON output.")
 
 
 def _add_llm_review_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -406,20 +417,21 @@ def _add_llm_review_command(subparsers: argparse._SubParsersAction[argparse.Argu
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--text", help="JSON review bundle.")
     source.add_argument("--file", help="JSON review bundle file. Reads stdin when neither --text nor --file is provided.")
-    parser.add_argument("--model", default=DEFAULT_CODEX_MODEL, help="Codex model for the isolated reviewer.")
+    parser.add_argument("--model", default=None, help=_MODEL_HELP)
     parser.add_argument(
         "--timeout-seconds",
         type=int,
         default=DEFAULT_TIMEOUT_SECONDS,
-        help="Timeout for codex exec when --execute is used.",
+        help="Timeout for the reviewer process when --execute is used.",
     )
-    parser.add_argument("--working-directory", help="Working directory passed to codex exec with --cd.")
-    parser.add_argument("--codex-binary", default="codex", help="Codex executable to run.")
+    parser.add_argument("--working-directory", help="Working directory for the reviewer process (also passed to codex exec with --cd).")
+    parser.add_argument("--codex-binary", default="codex", help="Codex executable to run (backend codex only).")
+    _add_backend_arguments(parser)
     parser.add_argument("--include-schema", action="store_true", help="Append the output JSON schema to the prompt.")
     if name == "llm-review-run":
         mode = parser.add_mutually_exclusive_group()
-        mode.add_argument("--dry-run", action="store_true", help="Build command and prompt without running codex exec.")
-        mode.add_argument("--execute", action="store_true", help="Run codex exec and validate its JSON output.")
+        mode.add_argument("--dry-run", action="store_true", help="Build command and prompt without running the reviewer.")
+        mode.add_argument("--execute", action="store_true", help="Run the reviewer and validate its JSON output.")
 
 
 def _add_review_if_needed_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -427,18 +439,19 @@ def _add_review_if_needed_command(subparsers: argparse._SubParsersAction[argpars
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--text", help="JSON escalation bundle.")
     source.add_argument("--file", help="JSON escalation bundle file. Reads stdin when neither --text nor --file is provided.")
-    parser.add_argument("--model", default=DEFAULT_CODEX_MODEL, help="Codex model for the isolated reviewer.")
+    parser.add_argument("--model", default=None, help=_MODEL_HELP)
     parser.add_argument(
         "--timeout-seconds",
         type=int,
         default=DEFAULT_TIMEOUT_SECONDS,
-        help="Timeout for codex exec when --execute is used.",
+        help="Timeout for the reviewer process when --execute is used.",
     )
-    parser.add_argument("--working-directory", help="Working directory passed to codex exec with --cd.")
+    parser.add_argument("--working-directory", help="Working directory for the reviewer process (also passed to codex exec with --cd).")
     parser.add_argument("--include-schema", action="store_true", help="Append the output JSON schema to the prompt.")
+    _add_backend_arguments(parser)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true", help="Default. Build command and prompt only when escalation is needed.")
-    mode.add_argument("--execute", action="store_true", help="Run codex exec only when escalation is needed.")
+    mode.add_argument("--execute", action="store_true", help="Run the reviewer only when escalation is needed.")
 
 
 def _add_evaluate_fixtures_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
@@ -451,10 +464,54 @@ def _add_evaluate_fixtures_command(subparsers: argparse._SubParsersAction[argpar
     parser.add_argument("--include-passed", action="store_true", help="Include passed fixture rows in `results`.")
 
 
+def _add_evaluate_metamorphic_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+    parser = subparsers.add_parser(
+        "evaluate-metamorphic",
+        help="Check verdict invariance under semantics-preserving rewrites and rule sensitivity to field deletion.",
+    )
+    parser.add_argument(
+        "--path",
+        default=str(DEFAULT_FIXTURE_ROOT),
+        help="Fixture root containing *.expected.json files.",
+    )
+
+
 def _add_doctor_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     parser = subparsers.add_parser("doctor")
     parser.add_argument("--project-root", default=".", help="Project checkout root to inspect.")
     parser.add_argument("--no-fixtures", action="store_true", help="Skip fixture evaluation.")
+
+
+_MODEL_HELP = "Model for the isolated reviewer. Defaults to the selected backend's default model."
+
+
+def _add_backend_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--backend",
+        choices=BACKENDS,
+        default=BACKEND_CODEX,
+        help="Reviewer agent: codex (default), claude (Claude Code `claude -p`), or command (operator template).",
+    )
+    parser.add_argument("--agent-binary", default="", help="Executable for the selected preset backend. Defaults to the backend's own CLI.")
+    parser.add_argument(
+        "--agent-command",
+        default="",
+        help=(
+            "Argument template for backend command, split using POSIX shell quoting on every OS. "
+            "Quote Windows paths to preserve backslashes. The prompt is sent on stdin and "
+            f"stdout must be one JSON object. Placeholders: {', '.join(COMMAND_PLACEHOLDERS)}."
+        ),
+    )
+
+
+def _backend_kwargs(args: argparse.Namespace) -> dict[str, object]:
+    agent_command: list[str] = []
+    if args.agent_command:
+        try:
+            agent_command = shlex.split(args.agent_command, posix=True)
+        except ValueError as exc:
+            _fail_input(f"invalid --agent-command: {exc}")
+    return {"backend": args.backend, "agent_binary": args.agent_binary, "agent_command": agent_command}
 
 
 def _read_input(args: argparse.Namespace) -> str:
@@ -505,11 +562,12 @@ def _codex_exec_request_from_args(payload: dict[str, object], args: argparse.Nam
     try:
         return CodexExecReviewRequest.from_mapping(
             payload,
-            model=args.model,
+            model=args.model or "",
             timeout_seconds=args.timeout_seconds,
             working_directory=args.working_directory,
             codex_binary=args.codex_binary,
             include_schema_in_prompt=args.include_schema,
+            **_backend_kwargs(args),
         )
     except (ValueError, KeyError) as exc:
         _fail_input(str(exc))

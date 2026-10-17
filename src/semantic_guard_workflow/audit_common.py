@@ -270,6 +270,7 @@ def _add_ambiguity_findings(text: str, findings: list[Finding]) -> None:
                 finding=f"曖昧語 `{term}` が含まれている。",
                 evidence=_first_match(text, [term]),
                 suggested_fix="測定可能な条件、閾値、受入基準、または判断主体を足す。",
+                rule_id="req.clarity.ambiguous_term",
             )
         )
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import redirect_stdout
+import ast
 import importlib.util
 import io
 import json
@@ -23,10 +24,25 @@ SPEC.loader.exec_module(verifier)
 
 
 class PackagedContractVerifierTests(unittest.TestCase):
+    def test_installed_audit_reads_text_resources_as_utf8(self) -> None:
+        reads = [
+            node for node in ast.walk(ast.parse(verifier._AUDIT_PROGRAM))
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "read_text"
+        ]
+        self.assertGreaterEqual(len(reads), 4)
+        for node in reads:
+            with self.subTest(line=node.lineno):
+                encodings = [item.value for item in node.keywords if item.arg == "encoding"]
+                self.assertEqual(len(encodings), 1)
+                self.assertIsInstance(encodings[0], ast.Constant)
+                self.assertEqual(encodings[0].value, "utf-8")
+
     def test_fixed_installed_audit_program_compiles(self) -> None:
         compile(verifier._AUDIT_PROGRAM, "<installed-contract-audit>", "exec")
         self.assertIn("adjacent_decoys_not_selected", verifier._AUDIT_PROGRAM)
         self.assertIn("operational_empty_object_rejected", verifier._AUDIT_PROGRAM)
+        self.assertIn("field_intake_module_and_schema_packaged", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_distribution_identity", verifier._AUDIT_PROGRAM)
         self.assertIn("canonical_mcp_surface", verifier._AUDIT_PROGRAM)
         self.assertIn("public_audit_producer_version", verifier._AUDIT_PROGRAM)
@@ -256,6 +272,58 @@ class PackagedContractVerifierTests(unittest.TestCase):
                     phase="test",
                 )
         self.assertEqual(caught.exception.code, "executable_not_allowed")
+
+    def test_console_version_accepts_only_standard_line_endings(self) -> None:
+        for stdout in (
+            "semantic-guard 1.2.0.dev0\n",
+            "semantic-guard 1.2.0.dev0\r\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertTrue(verifier._is_exact_console_version_output(stdout))
+
+        for stdout in (
+            "semantic-guard 1.2.0.dev0",
+            "semantic-guard 1.2.0.dev0\r",
+            "semantic-guard 1.2.0.dev0\nextra\n",
+            "semantic-guard 1.2.1\n",
+        ):
+            with self.subTest(stdout=repr(stdout)):
+                self.assertFalse(verifier._is_exact_console_version_output(stdout))
+
+    def test_clean_environment_preserves_windows_bootstrap_and_confines_user_paths(self) -> None:
+        base = {
+            "SystemRoot": r"C:\Windows",
+            "WINDIR": r"C:\Windows",
+            "USERPROFILE": r"C:\Users\runner",
+            "TEMP": r"C:\Users\runner\Temp",
+            "PYTHONPATH": r"D:\source",
+            "pythonhome": r"C:\host-python",
+            "https_proxy": "http://proxy.example.invalid:8080",
+        }
+        home = Path("controlled-home")
+        temporary = Path("controlled-tmp")
+        environment = verifier._clean_environment(
+            home=home,
+            temporary=temporary,
+            executable_directory=Path("venv") / "Scripts",
+            base_environment=base,
+            os_name="nt",
+        )
+
+        self.assertEqual(environment["SYSTEMROOT"], r"C:\Windows")
+        self.assertEqual(environment["WINDIR"], r"C:\Windows")
+        for name in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA"):
+            self.assertEqual(environment[name], str(home))
+        for name in ("TEMP", "TMP", "TMPDIR"):
+            self.assertEqual(environment[name], str(temporary))
+        self.assertNotIn("pythonpath", {name.casefold() for name in environment})
+        self.assertNotIn("pythonhome", {name.casefold() for name in environment})
+        self.assertEqual(environment["PYTHONIOENCODING"], "utf-8")
+        self.assertEqual(environment["PYTHONUTF8"], "1")
+        self.assertEqual(
+            environment["HTTPS_PROXY"],
+            "http://proxy.example.invalid:8080",
+        )
 
     def test_public_arguments_cannot_select_executable_or_audit_program(self) -> None:
         destinations = {

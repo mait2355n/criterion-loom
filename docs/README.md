@@ -14,7 +14,8 @@ the repository is not authority. Links to Japanese-language detail are marked
 | Understand the project in a few minutes | [Project overview](../README.md) | [Current public surface](../PUBLIC-SNAPSHOT.md) |
 | Run the CLI or MCP server | [Quickstart](../README.md#quickstart-one-bounded-proof) | [Operations guide](operations.md) (Japanese) |
 | Audit one structured functional requirement | [Requirement example](operations.md#要求関係入力契約) (Japanese) | [Analysis flow](operations.md#解析の流れ) (Japanese) and [CLI/result states](operations.md#終了コードと監査状態) (Japanese) |
-| Integrate an agent through MCP or the companion Skill | [Choose an interface](../README.md#choose-an-interface) | [Skill contract](../skills/semantic-implementation/references/mcp-contract.md) |
+| Integrate an agent through MCP or the companion Skill | [Choose an interface](../README.md#choose-an-interface) | [Skill contract](../skills/semantic-implementation/references/mcp-contract.md) and [per-agent setup and reviewer backends](local-integration.md#エージェント別の接続) (Japanese) |
+| Check how reliably workflow rules are applied | [Rule application checks](local-integration.md#規則適用の機械検査) (Japanese) | [Rule catalog tests](../workflow_tests/test_rule_catalog_consistency.py) |
 | Interpret a direction-binding result | [Direction-binding audit](direction-binding-audit.md) (Japanese) | [Implementation status](implementation-status.md) (Japanese) |
 | Audit claims about maturity or evidence | [Implementation status](implementation-status.md) (Japanese) | [Evidence and audit records](#evidence-and-audit-records) |
 | Contribute or report a problem | [Contributing](../CONTRIBUTING.md) | [Support](../SUPPORT.md) or [Security](../SECURITY.md) |
@@ -61,6 +62,7 @@ adoption.
 | State validity over change | Implemented internal opt-in contract; no public workflow | [State assessment and requalification](state-assessment-and-requalification.md) (Japanese) |
 | Repair and responsibility | Implemented internal opt-in contract; practical effect untested | [Repair loop and responsibility material](repair-loop-and-responsibility-material.md) (Japanese) |
 | Field evaluation design | Implemented evaluation contract; no field result | [Field evaluation and ablation](field-evaluation-and-ablation.md) (Japanese) |
+| Prospective field-sample intake | Direct API and schema; policy pending, no field collection | [Intake gate](field-sample-intake.md) (Japanese) |
 | Outcome evaluation | Implemented evaluation contract; no real participants or outcomes | [Operational outcome evaluation](operational-outcome-evaluation.md) (Japanese) |
 | Qualification and transition | Implemented internal contract; no operational qualification or cutover | [Operational qualification and transition](operational-qualification-and-transition.md) (Japanese) |
 | Secure-operation boundary | Implemented internal-consistency audit; no security conclusion | [Secure-operation boundary](secure-operation-boundary.md) |

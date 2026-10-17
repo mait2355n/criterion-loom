@@ -1,0 +1,27 @@
+{
+  "id": "DOC-SECTIONS-001",
+  "title": "A document with neither purpose, usage, nor limits is flagged",
+  "phase": "audit_request",
+  "kind": "document",
+  "text": "# Tool\n\nThis tool is fast.",
+  "strict": true,
+  "rationale": "A reader cannot recover purpose, usage, or limits from a one-line document.",
+  "labels": {
+    "expected_rules": [
+      "doc.structure.required_section_missing",
+      "doc.structure.optional_section_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "doc.structure.required_section_missing"
+      },
+      {
+        "rule_id": "doc.structure.optional_section_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}

@@ -90,7 +90,7 @@ uv run --locked semantic-guard schema direction-binding-audit
 
 正式な基準となるリポジトリのルートを作業ディレクトリとし、信頼済みのローカル
 作業木から `wheel` を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。
-検証器は隣接する偽の `schemas/` と `validation/` を置いた上で、配布物内の24スキーマ、
+検証器は隣接する偽の `schemas/` と `validation/` を置いた上で、配布物内の25スキーマ、
 基幹MCPツール四件、追加のworkflow/candidate入口、ライフサイクル候補10件、工学規則候補11件とそのスキーマ、
 空オブジェクトを拒む運用成果スキーマを再現する。
 
@@ -119,6 +119,27 @@ uv run --locked python scripts/verify_packaged_contracts.py \
 観測値は、[実装状態](implementation-status.md)と日付付きの
 [統合証拠](audits/direction-binding-integration-2026-08-23.md)へ分離する。それらは
 記録対象の証拠であり、この運用コマンドや別の構築物の適合を自動的に保証しない。
+
+## CI内部の配布物拘束
+
+`scripts/distribution_binding.py` は、未追跡の非除外ファイルを含めて変更のないGit作業木と、
+一つずつの `wheel` / `sdist` を `semantic-guard-distribution-binding/v0` の記録へ結ぶ。
+公開監査CLIの処理結果とは別の、構築工程内の整合確認である。
+
+```sh
+python scripts/distribution_binding.py create --project-root . --dist-dir dist --expected-commit <commit-SHA>
+python scripts/distribution_binding.py check --project-root . --dist-dir dist --expected-commit <commit-SHA>
+```
+
+構築器が `dist/.gitignore` を作った場合、CIは通常ファイルかつ内容が一文字の `*` である
+ことを確認して、その印だけを除いてから拘束する。追加又は欠落した配布物、シンボリック
+リンク、内容改変、コミット・木の不一致は検証を失敗させる。
+
+`distribution-binding.json` と `SHA256SUMS` は配布物と共に保存する。標準出力は
+`schema_version`、`status`、`subject`、`limitations`、`errors` を持つJSON一個。
+成功は終了0、拘束不成立は `errors[].code / message / details` を伴い終了1、引数誤りは
+標準誤出力へ診断して終了2となる。宣言ハッシュ値は外部来歴、署名、実地性能又は人間受理を
+成立させない。対象試験は `tests.test_distribution_binding` と `tests.test_ci_contract`。
 
 ## 解析の流れ
 

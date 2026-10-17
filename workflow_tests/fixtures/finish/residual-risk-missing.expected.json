@@ -1,0 +1,23 @@
+{
+  "id": "FINISH-RESIDUAL-RISK-001",
+  "title": "A completion report that never states residual risk is flagged",
+  "phase": "finish_check",
+  "text": "表示を直した。",
+  "evidence": "unittest を実行して成功した。受入条件は表示が揃うこと。",
+  "strict": true,
+  "rationale": "Silence about residual risk cannot be told apart from none.",
+  "labels": {
+    "expected_rules": [
+      "finish.risk.residual_risk_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "finish.risk.residual_risk_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "pass"
+  }
+}

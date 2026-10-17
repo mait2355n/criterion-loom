@@ -20,12 +20,15 @@ from semantic_guard_workflow.text_utils import (
     strip_code_blocks as _strip_code_blocks,
     unique_nonempty as _unique_nonempty,
 )
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 REQUIREMENTS_BASIS = ["ISO/IEC/IEEE 29148", "BABOK", "NASA SEH"]
 MEANING_BASIS = ["semantic-implementation"]
 
 
 def audit_document(text: str, context: str = "", strict: bool = True, input_kind: str = "document") -> dict[str, object]:
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     combined = _combine(text, context)
     findings: list[Finding] = []
     missing: list[str] = []
@@ -48,18 +51,22 @@ def audit_document(text: str, context: str = "", strict: bool = True, input_kind
         patterns = fields[field]
         if score == 0:
             missing.append(field)
-            findings.append(
-                _missing_field_finding(
-                    field=field,
-                    patterns=patterns,
-                    text=combined,
-                    severity="major" if strict and field in critical else "info",
-                    category="documentation",
-                    basis=REQUIREMENTS_BASIS + MEANING_BASIS,
-                    finding=f"文書監査項目 `{field}` が見えない。",
-                    suggested_fix=f"`{field}` に相当する節や説明を足す。",
-                )
+            section_finding = _missing_field_finding(
+                field=field,
+                patterns=patterns,
+                text=combined,
+                severity="major" if strict and field in critical else "info",
+                category="documentation",
+                basis=REQUIREMENTS_BASIS + MEANING_BASIS,
+                finding=f"文書監査項目 `{field}` が見えない。",
+                suggested_fix=f"`{field}` に相当する節や説明を足す。",
             )
+            section_finding.rule_id = (
+                "doc.structure.required_section_missing"
+                if field in critical
+                else "doc.structure.optional_section_missing"
+            )
+            findings.append(section_finding)
 
     document_checks = _document_validity_checks(combined, findings, missing)
     claim_triples = _document_claim_triples(combined, findings)
@@ -81,9 +88,15 @@ def audit_document(text: str, context: str = "", strict: bool = True, input_kind
     )
 
 
+# A heading may sit inside a quote or a list item ("> # Title", "- # Title").
+_CONTAINER_PREFIX = r"(?:(?:>|[-*+]|\d+[.)])\s*)*"
+_HEADING_RE = re.compile(rf"(?m)^\s*{_CONTAINER_PREFIX}#{{1,3}}\s+\S+")
+_HEADING_LINE_RE = re.compile(rf"^\s*{_CONTAINER_PREFIX}#{{1,3}}\s+(.+?)\s*$")
+
+
 def _document_validity_checks(text: str, findings: list[Finding], missing: list[str]) -> dict[str, object]:
     checks = {
-        "has_headings": bool(re.search(r"(?m)^\s*#{1,3}\s+\S+", text)),
+        "has_headings": bool(_HEADING_RE.search(text)),
         "has_code_examples": "```" in text,
         "has_output_contract_terms": _has_any(text, ["status", "score", "findings", "missing", "next_actions", "details"]),
         "has_limitations": _has_any(text, ["limitations", "制限", "does not", "do not", "not ", "対象外", "しない"]),
@@ -149,6 +162,7 @@ def _document_validity_checks(text: str, findings: list[Finding], missing: list[
                     else "試作、制限、検証範囲、残リスク、根拠を明示するか、主張を弱める。"
                 ),
                 warning_class="generic caution" if document_only else "actionable",
+                rule_id="doc.claim.overclaim_without_basis",
             )
         )
 
@@ -209,7 +223,7 @@ def _document_claim_summary(claim_triples: list[dict[str, object]]) -> dict[str,
 def _document_blocks(text: str) -> list[tuple[str, str]]:
     blocks: list[tuple[str, list[str]]] = [("preamble", [])]
     for line in text.splitlines():
-        heading = re.match(r"^\s*#{1,3}\s+(.+?)\s*$", line)
+        heading = _HEADING_LINE_RE.match(line)
         if heading:
             blocks.append((heading.group(1), []))
         else:

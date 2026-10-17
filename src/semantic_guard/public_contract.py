@@ -51,6 +51,7 @@ KNOWN_SCHEMA_NAMES = frozenset(
         "direction-binding-audit",
         "evidence-validity-policy",
         "field-evaluation",
+        "field-sample-intake",
         "lifecycle-profile-registry",
         "lifecycle-trace",
         "llm-candidate-input",

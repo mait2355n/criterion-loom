@@ -210,26 +210,37 @@ _ALLOWED_ADDITIONAL_RESOURCES = frozenset({
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/command-defaults.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/complexity-growth.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/dependency-runtime-change.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/diffs/documentation-update-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/diffs/documented-change-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/failure-handling-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/field-test-command-no-contract.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/filename-content-overbreadth.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/filename-scope-underspecified.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/identity-boundary-change.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/diffs/intent-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/operational-observability-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/public-contract-change.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/source-without-tests.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/subprocess-security.diff',
     'semantic_guard_workflow/_resources/tests/fixtures/diffs/subprocess-security.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/documents/example-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/documents/heading-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/documents/output-fields-thin.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/documents/overclaim.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/documents/overclaim.md',
     'semantic_guard_workflow/_resources/tests/fixtures/documents/readme-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/documents/readme-good.md',
+    'semantic_guard_workflow/_resources/tests/fixtures/documents/sections-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/finish/no-evidence.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/finish/no-evidence.md',
     'semantic_guard_workflow/_resources/tests/fixtures/finish/public-behavior-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/finish/public-behavior-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/finish/residual-risk-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/finish/security-evidence-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/autonomy-permission-question-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/autonomy-question-necessity-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/broad-scope-unbounded.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/completion-evidence-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/field-rollback-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/good.md',
@@ -237,34 +248,46 @@ _ALLOWED_ADDITIONAL_RESOURCES = frozenset({
     'semantic_guard_workflow/_resources/tests/fixtures/plans/hazard-transfer-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/idempotency-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/minimality-justification-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/non-goals-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/objective-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/problem-fit-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/progress-control-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/release-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/release-provenance-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/release-weak.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/request-coverage-weak.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/required-field-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/rollback-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/unknowns-unstated.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/plans/validation-owner-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/plans/verification-plan-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/achievement-criteria-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/ambiguous-term.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/ambiguous.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/ambiguous.md',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/atomicity-bundled.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-direction-unbound-with-impact.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-morphology-disabled.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/decision-frame-order-direction-unspecified.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/detailed-search.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/evidence-artifact-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/field-priority-unprioritized.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/implementation-fixed.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/interface-contract-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/negated-assurance-fields.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/observable-behavior-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/priority-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/problem-mechanism-fit-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/problem-mechanism-fit-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/purpose-trace-missing.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/quality-constraint-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/rejection-condition-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/scenario-context-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/stakeholder-source-missing.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/structured-negated-assurance-fields.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/uncertainty-classified-good.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/uncertainty-unclassified.expected.json',
+    'semantic_guard_workflow/_resources/tests/fixtures/requests/unknowns-unstated.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/verification-method-weak.expected.json',
     'semantic_guard_workflow/_resources/tests/fixtures/requests/verification-target-mismatch.expected.json',
 })
@@ -331,7 +354,7 @@ for decoy_root in (adjacent_root, Path.cwd()):
     (decoy_root / "validation" / "engineering-rule-pack.candidate.json").write_text("{}\n")
 
 from semantic_guard import __version__, lifecycle_profiles
-from semantic_guard import operational_outcomes
+from semantic_guard import field_sample_intake, operational_outcomes
 from semantic_guard.cli import build_parser
 from semantic_guard.lifecycle_profiles import (
     load_candidate_registry,
@@ -387,6 +410,7 @@ require(
 selected_schema_directory = schema_directory().resolve()
 selected_lifecycle = Path(lifecycle_profiles._CANDIDATE_PATH).resolve()
 selected_operational = Path(operational_outcomes._SCHEMA_PATH).resolve()
+selected_field_intake = Path(field_sample_intake._SCHEMA_PATH).resolve()
 require(
     selected_schema_directory == package_root / "schemas",
     f"schema directory escaped package: {selected_schema_directory}",
@@ -399,13 +423,17 @@ require(
     selected_operational == package_root / "schemas" / "operational-outcome-evaluation.schema.json",
     f"operational schema escaped package: {selected_operational}",
 )
+require(
+    selected_field_intake == package_root / "schemas" / "field-sample-intake.schema.json",
+    f"field-intake schema escaped package: {selected_field_intake}",
+)
 
 present_names = {
     path.name.removesuffix(".schema.json")
     for path in selected_schema_directory.glob("*.schema.json")
 }
 known_names = set(KNOWN_SCHEMA_NAMES)
-require(len(known_names) == 24, f"expected 24 public schemas, found {len(known_names)}")
+require(len(known_names) == 25, f"expected 25 public schemas, found {len(known_names)}")
 require(present_names == known_names, "KNOWN_SCHEMA_NAMES and packaged schemas differ")
 
 loaded = {}
@@ -478,6 +506,7 @@ require(
 require(len(engineering_candidate.get("rules", [])) == 11, "engineering rule denominator is not eleven")
 
 operational_schema = load_public_schema("operational-outcome-evaluation")
+field_intake_schema = load_public_schema("field-sample-intake")
 require(
     not Draft202012Validator(operational_schema).is_valid({}),
     "public operational schema accepted an empty object",
@@ -485,6 +514,14 @@ require(
 require(
     not operational_outcomes._schema_validator().is_valid({}),
     "operational validator selected the permissive adjacent decoy",
+)
+require(
+    not Draft202012Validator(field_intake_schema).is_valid({}),
+    "public field-intake schema accepted an empty object",
+)
+require(
+    not field_sample_intake._schema_validator().is_valid({}),
+    "field-intake validator accepted an empty object",
 )
 
 audit_payload = audit_requirement_relations_service(
@@ -593,7 +630,7 @@ for name, loader in (
 ):
     schema = loader()
     Draft202012Validator.check_schema(schema)
-    require(schema == json.loads(workflow_resources.resource_path("schemas", name + ".schema.json").read_text()),
+    require(schema == json.loads(workflow_resources.resource_path("schemas", name + ".schema.json").read_text(encoding="utf-8")),
             "workflow schema loader selected another namespace: " + name)
     workflow_schemas[name] = schema
 
@@ -650,7 +687,7 @@ def cli_payload(module, arguments, expected_status=0):
     return json.loads(stdout.getvalue())
 
 workflow_schema = cli_payload(workflow_cli, ["audit-result-schema"])
-require(workflow_schema == json.loads(workflow_resources.resource_path("schemas", "audit-result.schema.json").read_text()),
+require(workflow_schema == json.loads(workflow_resources.resource_path("schemas", "audit-result.schema.json").read_text(encoding="utf-8")),
         "workflow schema CLI selected another namespace")
 for command in ("audit-plan", "finish-check"):
     payload = cli_payload(workflow_cli, [command, "--text", "確認資料は未提出。"])
@@ -715,6 +752,7 @@ print(json.dumps({
         "lifecycle_candidate_valid",
         "engineering_rule_pack_valid",
         "operational_empty_object_rejected",
+        "field_intake_module_and_schema_packaged",
         "canonical_distribution_identity",
         "canonical_mcp_surface",
         "public_audit_producer_version",
@@ -751,6 +789,10 @@ print(json.dumps({
                 sort_keys=True,
                 separators=(",", ":"),
             ).encode("utf-8")
+        ).hexdigest(),
+        "field_intake_schema_sha256": hashlib.sha256(
+            json.dumps(loaded["field-sample-intake"], ensure_ascii=False,
+                       sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest(),
         "direction_binding_payload_sha256": hashlib.sha256(
             json.dumps(
@@ -1196,6 +1238,13 @@ def _require_success(result: ProcessResult, *, phase: str) -> None:
     )
 
 
+def _is_exact_console_version_output(stdout: str) -> bool:
+    return stdout in {
+        "semantic-guard 1.2.0.dev0\n",
+        "semantic-guard 1.2.0.dev0\r\n",
+    }
+
+
 def _remaining(deadline: float, *, phase: str) -> float:
     value = deadline - time.monotonic()
     if value <= 0:
@@ -1219,17 +1268,50 @@ def _venv_console_script(venv_root: Path, name: str) -> Path:
     return venv_root / "bin" / name
 
 
-def _clean_environment(*, home: Path, temporary: Path, executable_directory: Path) -> dict[str, str]:
+def _environment_value(environment: Mapping[str, str], name: str) -> str | None:
+    for key, value in environment.items():
+        if key.casefold() == name.casefold():
+            return value
+    return None
+
+
+def _clean_environment(
+    *,
+    home: Path,
+    temporary: Path,
+    executable_directory: Path,
+    base_environment: Mapping[str, str] | None = None,
+    os_name: str | None = None,
+) -> dict[str, str]:
+    source_environment = os.environ if base_environment is None else base_environment
+    selected_os = os.name if os_name is None else os_name
     environment = {
         "HOME": str(home),
         "PATH": str(executable_directory) + os.pathsep + os.defpath,
         "PIP_CONFIG_FILE": os.devnull,
         "PIP_DISABLE_PIP_VERSION_CHECK": "1",
         "PIP_NO_INPUT": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONHASHSEED": "0",
+        "PYTHONIOENCODING": "utf-8",
         "PYTHONNOUSERSITE": "1",
+        "PYTHONUTF8": "1",
+        "TEMP": str(temporary),
+        "TMP": str(temporary),
         "TMPDIR": str(temporary),
     }
+    if selected_os == "nt":
+        environment.update(
+            {
+                "APPDATA": str(home),
+                "LOCALAPPDATA": str(home),
+                "USERPROFILE": str(home),
+            }
+        )
+        for name in ("SYSTEMROOT", "WINDIR"):
+            value = _environment_value(source_environment, name)
+            if value:
+                environment[name] = value
     for name in (
         "ALL_PROXY",
         "HTTPS_PROXY",
@@ -1238,7 +1320,7 @@ def _clean_environment(*, home: Path, temporary: Path, executable_directory: Pat
         "SSL_CERT_FILE",
         "REQUESTS_CA_BUNDLE",
     ):
-        value = os.environ.get(name)
+        value = _environment_value(source_environment, name)
         if value:
             environment[name] = value
     return environment
@@ -1388,7 +1470,10 @@ def verify_wheel(
             phase="audit_console_version",
         )
         _require_success(version_result, phase="audit_console_version")
-        if version_result.stdout != "semantic-guard 1.2.0.dev0\n" or version_result.stderr:
+        if (
+            not _is_exact_console_version_output(version_result.stdout)
+            or version_result.stderr
+        ):
             raise VerificationFailure(
                 "console_version_mismatch",
                 "installed console version does not identify semantic-guard 1.2.0.dev0",

@@ -16,7 +16,8 @@
 | 数分でプロジェクトを把握する | [プロジェクト概要](../README.ja.md) | [現行公開面](../PUBLIC-SNAPSHOT.md)（英語） |
 | CLI / MCP サーバーを動かす | [最短実例](../README.ja.md#最短実例) | [運用手引](operations.md) |
 | 構造化機能要求一件を監査する | [要求監査の実例](operations.md#要求関係入力契約) | [解析の流れ](operations.md#解析の流れ)と[終了コード・監査状態](operations.md#終了コードと監査状態) |
-| MCP または付属スキルからエージェントに利用させる | [実行面の選択](../README.ja.md#実行面を選ぶ) | [スキルの MCP 契約](../skills/semantic-implementation/references/mcp-contract.md)（英語） |
+| MCP または付属スキルからエージェントに利用させる | [実行面の選択](../README.ja.md#実行面を選ぶ) | [スキルの MCP 契約](../skills/semantic-implementation/references/mcp-contract.md)（英語）と[エージェント別の接続・査読エージェント](local-integration.md#エージェント別の接続) |
+| 工程別規則がどれだけ安定して適用されるかを確かめる | [規則適用の機械検査](local-integration.md#規則適用の機械検査) | [規則カタログの整合試験](../workflow_tests/test_rule_catalog_consistency.py) |
 | 方向拘束結果を解釈する | [方向拘束監査](direction-binding-audit.md) | [実装状態](implementation-status.md) |
 | 成熟度・証拠の主張を査読する | [実装状態](implementation-status.md) | [証拠・監査記録](#証拠監査記録) |
 | 変更提案・問題報告をする | [変更提案](../CONTRIBUTING.md)（英語） | [利用支援](../SUPPORT.md)（英語）又は[セキュリティ方針](../SECURITY.md)（英語） |
@@ -58,6 +59,7 @@
 | 変更後の状態妥当性 | 明示的に有効化する内部契約を実装済み。公開処理経路には未統合 | [状態評価・再評価](state-assessment-and-requalification.md) |
 | 修正と責任 | 明示的に有効化する内部契約を実装済み。実務効果は未評価 | [修正循環・責任材料](repair-loop-and-responsibility-material.md) |
 | 実地評価設計 | 評価契約を実装済み。実地結果なし | [実地評価・除去比較](field-evaluation-and-ablation.md) |
+| 前向き標本取込 | 直接APIとスキーマ。方針未採択、実標本未収集 | [取込門](field-sample-intake.md) |
 | 成果評価 | 評価契約を実装済み。実参加者・実成果なし | [運用成果評価](operational-outcome-evaluation.md) |
 | 運用適格性と移行 | 内部契約実装済み。運用適格性・切替なし | [運用適格性・移行](operational-qualification-and-transition.md) |
 | 安全運用境界 | 内部整合性の監査を実装済み。安全性に関する結論なし | [安全運用境界](secure-operation-boundary.md)（英語） |

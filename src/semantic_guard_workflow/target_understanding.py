@@ -5,6 +5,7 @@ from semantic_guard_workflow.field_detection import missing_field_finding as _mi
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions
 from semantic_guard_workflow.text_utils import combine as _combine
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 UNDERSTANDING_FIELDS: dict[str, list[str]] = {
     "subject_identity": ["対象", "target", "subject", "module", "feature", "document", "機能", "実体", "識別子", "何を扱う"],
@@ -26,6 +27,8 @@ CRITICAL_UNDERSTANDING = ["purpose", "desired_state", "non_goals", "unknowns", "
 INPUT_KINDS = {"requirement", "plan", "document", "diff-summary"}
 
 def understand_target(text: str, context: str = "", strict: bool = True) -> dict[str, object]:
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     combined = _combine(text, context)
     field_scores = {field: _score_field(combined, patterns) for field, patterns in UNDERSTANDING_FIELDS.items()}
     findings: list[Finding] = []

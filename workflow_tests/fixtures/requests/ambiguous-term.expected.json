@@ -1,0 +1,23 @@
+{
+  "id": "REQ-AMBIGUOUS-TERM-001",
+  "title": "An unmeasured evaluation word in the purpose is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "利用者: 保守者。問題: 旧 JSON の import が失敗する。原因: required field の欠落を新 schema として扱っている。解決策: 欠落 field に migration default を補う。目的: 旧 JSON をできるだけ読み込む。シナリオ: 保守者が旧 JSON を import する場合、欠落 field が default として記録される。期待結果: migration log と import 結果が残る。受入基準: 旧 JSON が migration され、欠落 field は default として記録される。検証方法: pytest。証拠: 試験結果。不合格条件: 未知 field を silent に捨てた場合は差し戻し。対象外: UI。未確定: なし。優先度: 必須。",
+  "strict": true,
+  "rationale": "A word without a threshold or judge makes the achievement condition undecidable.",
+  "labels": {
+    "expected_rules": [
+      "req.clarity.ambiguous_term"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "req.clarity.ambiguous_term"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}
