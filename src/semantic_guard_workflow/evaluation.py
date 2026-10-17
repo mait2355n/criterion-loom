@@ -855,6 +855,10 @@ def _rule_catalog_coverage(results: list[dict[str, object]]) -> dict[str, object
         "emitted_rule_ids": sorted(emitted_rule_ids),
         "unhit_rule_ids": sorted(catalog_set - labeled_rule_ids),
         "unhit_rule_count": len(catalog_set - labeled_rule_ids),
+        # A rule with a positive fixture but no negative control can only be
+        # shown to fire, never shown to stay quiet when it should.
+        "unguarded_rule_ids": sorted(catalog_set - forbidden_rule_ids),
+        "unguarded_rule_count": len(catalog_set - forbidden_rule_ids),
         "unemitted_rule_ids": sorted(catalog_set - emitted_rule_ids),
         "unemitted_rule_count": len(catalog_set - emitted_rule_ids),
     }

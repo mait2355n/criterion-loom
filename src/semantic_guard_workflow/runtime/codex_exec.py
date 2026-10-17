@@ -1,4 +1,9 @@
-"""Shared Codex process execution mechanics."""
+"""Shared reviewer process execution mechanics.
+
+The module keeps its historical ``codex_exec`` name because existing callers
+import it; the mechanics are shared by every backend in
+:mod:`semantic_guard_workflow.runtime.backends`.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +14,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-DEFAULT_CODEX_MODEL = "gpt-5.4-mini"
+from .backends import (
+    BACKEND_CODEX,
+    DEFAULT_CODEX_MODEL as DEFAULT_CODEX_MODEL,
+    build_agent_command,
+    extract_agent_output,
+    process_label,
+)
+
 DEFAULT_TIMEOUT_SECONDS = 180
 
 Runner = Callable[..., subprocess.CompletedProcess[str]]
@@ -31,6 +43,7 @@ class CodexExecRuntimeResult:
     errors: list[str] = field(default_factory=list)
     payload: dict[str, Any] | None = None
     failure_kind: str | None = None
+    backend: str = BACKEND_CODEX
 
     def domain_result_fields(self) -> dict[str, Any]:
         return {
@@ -46,6 +59,7 @@ class CodexExecRuntimeResult:
             "valid": self.valid,
             "errors": self.errors,
             "failure_kind": self.failure_kind,
+            "backend": self.backend,
         }
 
 
@@ -56,26 +70,13 @@ def build_codex_exec_runtime_command(
     model: str,
     working_directory: str | Path | None,
 ) -> list[str]:
-    command = [
-        codex_binary,
-        "exec",
-        "--ephemeral",
-        "--ignore-user-config",
-        "--ignore-rules",
-        "--skip-git-repo-check",
-        "--sandbox",
-        "read-only",
-        "-c",
-        'approval_policy="never"',
-        "--output-schema",
-        str(schema_path),
-        "-m",
-        model,
-    ]
-    if working_directory is not None:
-        command.extend(["--cd", str(Path(working_directory))])
-    command.append("-")
-    return command
+    return build_agent_command(
+        backend=BACKEND_CODEX,
+        binary=codex_binary,
+        schema_path=schema_path,
+        model=model,
+        working_directory=working_directory,
+    )
 
 
 def run_codex_exec_runtime(
@@ -91,11 +92,14 @@ def run_codex_exec_runtime(
     output_name: str,
     validator: Validator,
     runner: Runner = subprocess.run,
+    backend: str = BACKEND_CODEX,
 ) -> CodexExecRuntimeResult:
+    label = process_label(backend)
     base = {
         "command": command,
         "schema_path": str(schema_path),
         "prompt": prompt,
+        "backend": backend,
     }
     if not execute:
         return CodexExecRuntimeResult(
@@ -122,7 +126,7 @@ def run_codex_exec_runtime(
             stdout=_string_or_empty(exc.stdout or exc.output),
             stderr=_string_or_empty(exc.stderr),
             timed_out=True,
-            errors=[f"codex exec timed out after {timeout_seconds} seconds"],
+            errors=[f"{label} timed out after {timeout_seconds} seconds"],
             failure_kind="timeout",
             **base,
         )
@@ -146,12 +150,25 @@ def run_codex_exec_runtime(
             returncode=completed.returncode,
             stdout=stdout,
             stderr=stderr,
-            errors=[f"codex exec exited with status {completed.returncode}"],
+            errors=[f"{label} exited with status {completed.returncode}"],
             failure_kind="non_zero_exit",
             **base,
         )
 
-    payload, parse_errors = parse_json_object(stdout, output_name=output_name)
+    json_text, envelope_errors, envelope_failure = extract_agent_output(backend, stdout)
+    if envelope_errors:
+        return CodexExecRuntimeResult(
+            executed=True,
+            execution_status=invalid_execution_status,
+            returncode=completed.returncode,
+            stdout=stdout,
+            stderr=stderr,
+            errors=envelope_errors,
+            failure_kind=envelope_failure or "invalid_json",
+            **base,
+        )
+
+    payload, parse_errors = parse_json_object(json_text, output_name=output_name)
     if parse_errors:
         return CodexExecRuntimeResult(
             executed=True,

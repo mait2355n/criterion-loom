@@ -27,5 +27,34 @@
     "details": {
       "input_kind": "plan"
     }
+  },
+  "labels": {
+    "forbidden_rules": [
+      "plan.objective.purpose_missing",
+      "plan.scope.non_goals_missing",
+      "plan.verification.plan_missing",
+      "plan.completion.evidence_missing",
+      "plan.structure.required_field_missing",
+      "plan.uncertainty.unknowns_unstated",
+      "plan.traceability.request_coverage_weak",
+      "plan.scope.broad_scope_unbounded",
+      "plan.risk.rollback_missing",
+      "plan.validation.problem_fit_missing",
+      "plan.validation.owner_missing",
+      "plan.control.progress_control_missing",
+      "plan.control.change_control_missing",
+      "plan.structure.work_package_decomposition_missing",
+      "plan.schedule.dependency_sequence_missing",
+      "plan.resource.estimate_or_capacity_missing",
+      "plan.risk.response_missing",
+      "plan.risk.hazard_transfer_analysis_missing",
+      "plan.system.idempotency_missing",
+      "plan.control.baseline_or_metric_missing",
+      "plan.governance.decision_gate_missing",
+      "plan.release.provenance_missing",
+      "plan.minimality.justification_missing",
+      "plan.autonomy.human_question_necessity_missing",
+      "plan.autonomy.auto_execution_range_missing"
+    ]
   }
 }

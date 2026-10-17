@@ -108,7 +108,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="非要求または対象外が明示されていない。",
         remediation="今回やらないこと、誤って含めてはいけないことを追加する。",
@@ -231,7 +231,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="達成確認に使う証拠成果物が見えない。",
         remediation="コマンド結果、試験結果、ログ、スクリーンショット、出力 JSON、レビュー記録など、残す証拠を明示する。",
@@ -261,7 +261,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="不合格、棄却、戻しが必要になる条件が見えない。",
         remediation="どの結果なら未達、差し戻し、保留、または rollback とするかを明示する。",
@@ -292,7 +292,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="利用場面、入力条件、操作文脈が見えない。",
         remediation="誰が、どの状態で、何を入力または操作し、何が返ればよいかを短いシナリオで明示する。",
@@ -352,7 +352,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="要求が満たされる前提条件または発火条件が見えない。",
         remediation="Given/When、前提状態、入力条件、操作、発火条件、対象データを明示する。",
@@ -417,7 +417,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="操作や入力に対する期待結果が見えない。",
         remediation="期待する出力、表示、状態変化、エラー、拒否、通知、保存結果を明示する。",
@@ -448,7 +448,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="入出力または公開面に触れているが、契約の項目が薄い。",
         remediation="入力項目、出力項目、形式、状態コード、エラー、既定値、例、schema のいずれかを明示する。",
@@ -540,7 +540,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="複数要求らしき入力に優先度または実施順序が見えない。",
         remediation="必須/任意、先にやる/後でやる、採用/保留などの優先度を分ける。",
@@ -570,7 +570,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="不確実な表現があるが、未確定、仮説、判断待ちなどの扱いが分かれていない。",
         remediation="推測を要求に混ぜず、未確定、仮説、判断待ち、片側観測、時点差のいずれかへ分類する。",
@@ -663,7 +663,7 @@ RULES: tuple[Rule, ...] = (
             "退避またはbackupの有無",
         ),
         severity_policy=(
-            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="strict", severity="major"),
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画に復旧またはrollback経路が見えない。",
@@ -754,7 +754,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="複数段階の計画だが、進捗確認点または状態報告の方法が見えない。",
         remediation="中間確認、進捗報告、状態更新、停止条件、または不要理由を足す。",
@@ -785,7 +785,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="範囲変更や追加要求が起きやすい計画だが、変更統制が見えない。",
         remediation="追加要求、範囲変更、逸脱、後続化、判断待ちの扱いを決める。",
@@ -815,7 +815,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="成果物や作業が、管理可能な作業パッケージへ分解されていない。",
         remediation="WBS、成果物分解、ファイル別/機能別/担当別の作業パッケージを明示する。",
@@ -846,7 +846,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="複数作業の先行関係、依存順序、並行可否が見えない。",
         remediation="先に終える作業、後続作業、並行できる作業、ブロッカーを明示する。",
@@ -876,7 +876,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="作業量、所要時間、担当、資源、容量の前提が見えない。",
         remediation="工数、所要時間、担当、追加依存なし、容量制約、または見積不要な理由を明示する。",
@@ -998,7 +998,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="進捗や完了を測る基準線、指標、節目条件が見えない。",
         remediation="scope/schedule baseline、節目、完了基準、測定指標、判定基準、または不要理由を足す。",
@@ -1028,7 +1028,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="移行、公開、運用、設定変更などの高影響作業に対する判断ゲートが見えない。",
         remediation="go/no-go、承認、停止条件、保留条件、または人間判断へ回す条件を明示する。",
@@ -1058,7 +1058,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="公開または配布を扱う計画だが、版、変更履歴、生成物の由来、または再現手順が見えない。",
         remediation="公開物の版、tag/commit、変更履歴、生成物の出所、build/release 手順、照合方法、または不要理由を明示する。",
@@ -1090,7 +1090,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="新規依存、抽象、層、wrapper、schema などを足す計画だが、既存機能や最小案で足りない理由が見えない。",
         remediation="既存機能、標準機能、平台機能、既存依存で足りるかを確認し、新規要素が必要な根拠、後続化できる範囲、削減してはいけない安全・証跡境界を明示する。",
@@ -1150,7 +1150,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="確認待ちにする前の自動実行範囲が見えない。",
         remediation="人間判断までに自動で進める範囲と止まる条件を分ける。例: 読み取り専用調査、dry-run、局所編集、試験、報告までは進め、削除、送信、公開、本番変更で止まる。",
@@ -1211,7 +1211,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="major"),
-            SeverityPolicy(mode="relaxed", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="安全性に関わる差分の可能性がある。",
         remediation="入力、出力、認証、認可、秘密、ログ、依存、構成の確認証拠を残す。",
@@ -1242,7 +1242,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="CLI/API/MCP/出力契約など公開面の変更の可能性がある。",
         remediation="互換性、既定値、移行要否、文書、代表実行、出力契約確認を finish_check に残す。",
@@ -1305,7 +1305,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="運用中に失敗し得る処理に対する状態報告や観測性の証拠が薄い。",
         remediation="log、status、returncode、通知、監視、retry 記録、または不要理由を残す。",
@@ -1337,7 +1337,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="依存、実行環境、構成、CI に関わる変更の可能性がある。",
         remediation="依存更新、実行環境、互換性、安全性、lockfile、CI 影響の確認結果を残す。",
@@ -1368,7 +1368,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="差分で複雑性が増えている可能性がある。",
         remediation="必要な安全・証跡・失敗処理を残したまま、不要な抽象、分岐、将来対応、新規依存、標準機能の手製実装を削れないか確認する。",
@@ -1402,7 +1402,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="ファイル名が示す責務に対して、追加内容が複数の別責務へ広がっている可能性がある。",
         remediation="ファイルを分ける、ファイル名を広げる、または同居が必要な理由と確認証拠を finish_check に残す。",
@@ -1436,7 +1436,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="ファイル名による機能範囲管理が弱く、膨張を抑える命名または補助管理線が見えない。",
         remediation="可能なら basename をより具体的な機能範囲へ絞る。main/core など名前で絞りづらい場合は、責務、対象外、同居条件、分割条件を明示する。",
@@ -1465,7 +1465,7 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="minor"),
-            SeverityPolicy(mode="relaxed", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
         ),
         finding="名前、表示、識別子、保管、所属、正典に関わる差分の可能性がある。",
         remediation="名前と実体、表示と識別子、物理配置と意味所属を混同していないか確認する。",
@@ -1556,10 +1556,700 @@ RULES: tuple[Rule, ...] = (
         ),
         severity_policy=(
             SeverityPolicy(mode="strict", severity="major"),
-            SeverityPolicy(mode="relaxed", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="受入条件と証拠の対応が薄い。",
         remediation="要求または目的に対して、何をもって完了としたかを明記する。",
+    ),
+    # --- Rules that make previously unattributed findings traceable to the catalog. ---
+    # Each rule's severity policy mirrors what the detector emits; the catalog
+    # consistency test in workflow_tests/test_rule_catalog_consistency.py enforces it.
+    Rule(
+        id="req.necessity.purpose_trace_missing",
+        discipline="requirements_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: necessity and traceability of a requirement",
+            "BABOK: requirements analysis and design definition, business need traceability",
+            "NASA SEH: requirements allocation traced to stakeholder expectations",
+        ),
+        concern="要求が、何の目的や価値のために必要なのか追跡できないまま実装されること。",
+        applies_when=(
+            "入力が要求または要求候補である。",
+            "目的、価値、理由、意図、利益のいずれも、要求本文にも文脈にも見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が説明文書、計画、差分、完了報告である。",
+            "文脈側に上位の目的、価値、または依頼理由が明示されている。",
+        ),
+        evidence_required=(
+            "目的",
+            "価値または利益",
+            "依頼理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="要求が上位目的や価値へ追跡できない。",
+        remediation="この要求が何を叶えるために必要かを足す。",
+    ),
+    Rule(
+        id="req.atomicity.multiple_requirements_bundled",
+        discipline="requirements_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: singular requirement characteristic",
+            "BABOK: requirements specification and modeling, atomic requirement statements",
+        ),
+        concern="複数の要求が一文に束ねられ、個別に検証、優先付け、変更できなくなること。",
+        applies_when=(
+            "入力が要求または要求候補である。",
+            "接続語や列挙で複数の独立した動作・成果が一つの要求にまとめられている。",
+        ),
+        does_not_apply_when=(
+            "束ねられた項目が、境界と検証を持つ単一の作業パッケージとして明示されている。",
+            "列挙が同一対象の属性や入力項目の説明で、独立した要求ではない。",
+        ),
+        evidence_required=(
+            "要求ごとの分割",
+            "優先度",
+            "依存関係",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="複数の要求が一つに束ねられている可能性がある。",
+        remediation="一要求一意味へ分け、優先度と依存を別に書く。",
+    ),
+    Rule(
+        id="req.solution.implementation_fixed",
+        discipline="requirements_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: implementation-free requirement characteristic",
+            "BABOK: distinguishing needs from solutions",
+            "INCOSE Guide to Writing Requirements: avoid design constraints disguised as needs",
+        ),
+        concern="必要な性質ではなく実装方式が要求として固定され、より良い解の探索を塞ぐこと。",
+        applies_when=(
+            "入力が要求または要求候補である。",
+            "特定の製品、言語、保存方式、形式などが、その必要性の説明なしに要求へ含まれている。",
+        ),
+        does_not_apply_when=(
+            "方式が既存の外部契約や互換性制約として根拠付きで要求されている。",
+            "入力が既存実装の説明であり、新しい要求ではない。",
+        ),
+        evidence_required=(
+            "方式を固定する根拠",
+            "方式に依存しない達成条件",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="要求が実装方式を固定している可能性がある。",
+        remediation="方式が意味上必要なら根拠を書く。単なる案なら仕様案へ分離する。",
+    ),
+    Rule(
+        id="req.uncertainty.unknowns_unstated",
+        discipline="requirements_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: TBD and open-issue management",
+            "BABOK: managing assumptions, constraints, and risks",
+            "NASA SEH: tracking technical uncertainty",
+        ),
+        concern="未確定事項の有無が書かれず、無いのか未把握なのか区別できないこと。",
+        applies_when=(
+            "入力が要求または要求候補である。",
+            "未確定、仮説、判断待ち、不明のいずれの記述も、無い旨の明示も見えない。",
+        ),
+        does_not_apply_when=(
+            "文脈側に未確定事項の一覧または「なし」の明示がある。",
+            "入力種別が説明文書、計画、差分、完了報告である。",
+        ),
+        evidence_required=(
+            "未確定事項の一覧",
+            "未確定なしの明示",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="未確定事項が明示されていない。無いなら無いと書く方がよい。",
+        remediation="未確定、仮説、判断待ち、片側観測、時点差を分ける。",
+    ),
+    Rule(
+        id="req.clarity.ambiguous_term",
+        discipline="requirements_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: unambiguous requirement characteristic",
+            "INCOSE Guide to Writing Requirements: vague terms and unverifiable adjectives",
+        ),
+        concern="測定も判定もできない語が要求の達成条件を曖昧にすること。",
+        applies_when=(
+            "入力が要求または要求候補である。",
+            "「いい感じ」「できるだけ」「安全」など、基準を持たない評価語が使われている。",
+        ),
+        does_not_apply_when=(
+            "同じ要求内で、その語の測定可能な定義、閾値、または判断主体が示されている。",
+            "語が固有名詞、引用、または否定される対象としてのみ現れている。",
+        ),
+        evidence_required=(
+            "測定可能な条件",
+            "閾値",
+            "判断主体",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="曖昧語が含まれている。",
+        remediation="測定可能な条件、閾値、受入基準、または判断主体を足す。",
+    ),
+    Rule(
+        id="doc.structure.required_section_missing",
+        discipline="software_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: design and development of information for users",
+            "ISO/IEC/IEEE 29148: information items for the reader of a specification",
+        ),
+        concern="読み手が目的、使い方、制限を文書から取り出せず、誤用や過信が起きること。",
+        applies_when=(
+            "入力が説明文書または README である。",
+            "目的・概要、使い方・例、制限・対象外のいずれかに相当する記述が見えない。",
+        ),
+        does_not_apply_when=(
+            "入力が要求、計画、差分、完了報告である。",
+            "該当内容が文書の別ファイルに分かれ、その参照先が明示されている。",
+        ),
+        evidence_required=(
+            "目的または概要",
+            "使い方または実行例",
+            "制限または対象外",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="文書の必須項目が見えない。",
+        remediation="目的、使い方、制限に相当する節や説明を足す。",
+    ),
+    Rule(
+        id="doc.structure.optional_section_missing",
+        discipline="software_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: design and development of information for users",
+        ),
+        concern="対象読者、状態、出力契約などの補助情報が無く、読み手が適用範囲を推測すること。",
+        applies_when=(
+            "入力が説明文書または README である。",
+            "対象読者、状態・範囲、出力・契約に相当する記述が見えない。",
+        ),
+        does_not_apply_when=(
+            "入力が要求、計画、差分、完了報告である。",
+            "文書が短い補足メモで、独立した説明文書として扱われない。",
+        ),
+        evidence_required=(
+            "対象読者",
+            "状態または適用範囲",
+            "出力または契約",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="文書の補助項目が見えない。",
+        remediation="該当する節や説明を足す。範囲外なら範囲外と明示する。",
+    ),
+    Rule(
+        id="doc.structure.heading_missing",
+        discipline="software_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: navigation and structure of user information",
+        ),
+        concern="見出しが無く、読み手が必要な節を走査して探せないこと。",
+        applies_when=(
+            "入力が複数の話題を含む説明文書である。",
+            "Markdown の見出し、またはそれに相当する節区切りが見えない。",
+        ),
+        does_not_apply_when=(
+            "文書が一つの話題だけを扱う短い説明である。",
+            "見出しが引用や箇条書きの内側に置かれている。",
+        ),
+        evidence_required=(
+            "見出し",
+            "節構成",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="文書に見出し構造が見えない。",
+        remediation="読み手が走査できるように、目的、使い方、制限などを見出しで分ける。",
+    ),
+    Rule(
+        id="doc.usage.example_missing",
+        discipline="software_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: procedures and examples in user information",
+        ),
+        concern="使い方を述べながら再現可能な例が無く、読み手が手順を試して確かめられないこと。",
+        applies_when=(
+            "文書が CLI、MCP、command、使い方などの操作を述べている。",
+            "コードブロックまたは実行できるコマンド例・設定例が見えない。",
+        ),
+        does_not_apply_when=(
+            "文書が操作を述べず、概念や設計の説明に限られる。",
+            "実行例が参照先の文書にあり、その参照先が明示されている。",
+        ),
+        evidence_required=(
+            "コマンド例",
+            "設定例",
+            "コードブロック",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="使い方を述べているが、実行例やコードブロックが見えない。",
+        remediation="少なくとも一つ、再現可能なコマンド例または設定例を追加する。",
+    ),
+    Rule(
+        id="doc.contract.output_fields_thin",
+        discipline="software_engineering",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: reference information for interfaces",
+            "ISO/IEC 25010: compatibility and interoperability of interface contracts",
+        ),
+        concern="出力形式に触れながら返却項目が説明されず、利用側が契約を推測すること。",
+        applies_when=(
+            "文書が JSON、出力、schema、契約に触れている。",
+            "主要な返却項目の名前や意味の説明が見えない。",
+        ),
+        does_not_apply_when=(
+            "出力契約が別の schema 文書にあり、その参照先が明示されている。",
+            "文書が出力を述べず、入力側の説明に限られる。",
+        ),
+        evidence_required=(
+            "返却項目の一覧",
+            "項目の意味",
+            "schema への参照",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="出力契約に触れているが、返却項目の説明が薄い。",
+        remediation="`status`, `score`, `findings`, `missing`, `next_actions`, `details` などの主要項目を明示する。",
+    ),
+    Rule(
+        id="doc.claim.overclaim_without_basis",
+        discipline="semantic_preservation",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: accuracy and completeness of user information",
+            "ISO/IEC 25010: functional correctness claims require evidence",
+        ),
+        concern="完成度、安全性、正確性が、根拠や制限なしに断定されること。",
+        applies_when=(
+            "文書が完全、安全、正確、保証などの強い主張を含む。",
+            "同じ文書に、検証範囲、制限、未証明範囲、実装証拠のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "主張が否定形、または適用範囲を限定した形で書かれている。",
+            "主張の直後に実行結果、試験結果、または制限が示されている。",
+        ),
+        evidence_required=(
+            "検証範囲",
+            "制限または未証明範囲",
+            "実装証拠",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="文書が強い完成度・安全性・正確性を主張しているが、制限や証拠で支えられていない可能性がある。",
+        remediation="試作、制限、検証範囲、残リスク、根拠を明示するか、主張を弱める。",
+    ),
+    Rule(
+        id="doc.claim.evidence_or_limit_missing",
+        discipline="semantic_preservation",
+        phase="audit_request",
+        engineering_basis=(
+            "ISO/IEC/IEEE 26514: accuracy and completeness of user information",
+            "ISO/IEC 25010: functional correctness claims require evidence",
+        ),
+        concern="節内の強い主張に、その節で読める証拠も制限も付かないこと。",
+        applies_when=(
+            "文書の節が強い主張を含む。",
+            "同じ節に、実行例、検証結果、制限、未証明範囲のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "主張が否定形、または適用範囲を限定した形で書かれている。",
+            "同じ節の別の箇所に証拠または制限がある。",
+        ),
+        evidence_required=(
+            "同じ節の実行例または検証結果",
+            "制限または未証明範囲",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="文書内の強い主張に対応する証拠または制限が見えない。文書だけでは実行時正しさまでは証明できない。",
+        remediation="同じ節に、実行例、検証結果、制限、未証明範囲、または主張を弱める説明を足す。",
+    ),
+    Rule(
+        id="plan.objective.purpose_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: project charter, objectives, and success criteria",
+            "ISO 21502: defining the purpose of a project",
+        ),
+        concern="計画が何を達成するためのものか分からないまま作業が始まること。",
+        applies_when=(
+            "入力が計画である。",
+            "目的、目標、狙い、意図のいずれも、計画にも要求にも文脈にも見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "要求側に目的が明示され、計画がそれを参照している。",
+        ),
+        evidence_required=(
+            "目的",
+            "達成したい状態",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="計画に目的が見えない。",
+        remediation="`objective` を計画へ足す。該当なしなら、該当なしと明示する。",
+    ),
+    Rule(
+        id="plan.scope.non_goals_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: scope statement and exclusions",
+            "ISO 21502: scope definition and boundaries",
+        ),
+        concern="今回やらないことが決まらず、作業範囲が暗黙に広がること。",
+        applies_when=(
+            "入力が計画である。",
+            "対象外、非目標、やらないこと、含めないことが見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "要求側の非要求を計画が明示的に引き継いでいる。",
+        ),
+        evidence_required=(
+            "対象外",
+            "変更禁止領域",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="計画に対象外が見えない。",
+        remediation="`non_goals` を計画へ足す。該当なしなら、該当なしと明示する。",
+    ),
+    Rule(
+        id="plan.verification.plan_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: quality management and verification planning",
+            "ISO/IEC/IEEE 12207: verification process",
+            "NASA SEH: verification planning",
+        ),
+        concern="作ったものが仕様どおりか確かめる手段が計画に無いこと。",
+        applies_when=(
+            "入力が計画である。",
+            "検証、試験、テスト、確認、検査のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "計画が調査だけで、検証対象の成果物を作らない。",
+        ),
+        evidence_required=(
+            "検証方法",
+            "実行する試験",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="計画に検証計画が見えない。",
+        remediation="`verification_plan` を計画へ足す。該当なしなら、該当なしと明示する。",
+    ),
+    Rule(
+        id="plan.completion.evidence_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: acceptance of deliverables and evidence of completion",
+            "ISO 21502: closing and handover",
+        ),
+        concern="何を証拠に完了とするかが決まらず、完了報告が主張だけになること。",
+        applies_when=(
+            "入力が計画である。",
+            "完了の証拠、証跡、根拠、実行結果の残し方が見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "完了が成果物の存在だけで示され、別の検証を要さない一時作業である。",
+        ),
+        evidence_required=(
+            "残す証拠の種類",
+            "保存先",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="計画に完了証拠が見えない。",
+        remediation="`completion_evidence` を計画へ足す。該当なしなら、該当なしと明示する。",
+    ),
+    Rule(
+        id="plan.structure.required_field_missing",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: planning deliverables, work, dependencies, and risks",
+            "ISO 21502: planning and control information",
+        ),
+        concern="成果物、作業、依存、リスクのいずれかが計画に無く、実行順序や影響が読めないこと。",
+        applies_when=(
+            "入力が計画である。",
+            "成果物、作業手順、依存、リスクのいずれかに相当する記述が見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "該当項目が文脈側にあり、計画がそれを参照している。",
+        ),
+        evidence_required=(
+            "成果物",
+            "作業手順",
+            "依存",
+            "リスク",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="計画の必須項目が見えない。",
+        remediation="該当項目を計画へ足す。該当なしなら、該当なしと明示する。",
+    ),
+    Rule(
+        id="plan.uncertainty.unknowns_unstated",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: assumptions, issues, and open decisions log",
+            "ISO 21502: managing uncertainty",
+        ),
+        concern="未決事項の有無が書かれず、無いのか未把握なのか区別できないこと。",
+        applies_when=(
+            "入力が計画である。",
+            "未確定、未決、判断待ち、保留のいずれの記述も、無い旨の明示も見えない。",
+        ),
+        does_not_apply_when=(
+            "入力種別が要求、差分、完了報告である。",
+            "文脈側に未決事項の一覧または「なし」の明示がある。",
+        ),
+        evidence_required=(
+            "未決事項の一覧",
+            "未確定なしの明示",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="計画に未確定事項が見えない。",
+        remediation="`unknowns_or_decisions` を計画へ足す。無ければ「未確定: なし」と明示する。",
+    ),
+    Rule(
+        id="plan.traceability.request_coverage_weak",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "ISO/IEC/IEEE 29148: bidirectional traceability",
+            "PMBOK: requirements traceability to deliverables",
+        ),
+        concern="計画が元の要求を覆っておらず、要求の一部が作業に落ちないこと。",
+        applies_when=(
+            "計画と一緒に要求が渡されている。",
+            "要求の語彙と計画の語彙の接続が弱い。",
+        ),
+        does_not_apply_when=(
+            "要求が渡されていない。",
+            "計画に要求項目ごとの対応表があり、語彙が異なるだけである。",
+        ),
+        evidence_required=(
+            "要求項目と作業の対応",
+            "要求項目と検証の対応",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="要求と計画の語彙接続が弱い。計画が要求を覆っていない可能性がある。",
+        remediation="要求項目ごとに対応する作業と検証を紐付ける。",
+    ),
+    Rule(
+        id="plan.scope.broad_scope_unbounded",
+        discipline="project_planning",
+        phase="audit_plan",
+        engineering_basis=(
+            "PMBOK: scope control and work package definition",
+            "ISO 21502: scope management",
+        ),
+        concern="全体を一度に変更する計画が、境界も段階も持たないまま進むこと。",
+        applies_when=(
+            "計画が全体、全面、まとめて、全部などの広い範囲を一度に扱う。",
+            "作業パッケージ、変更禁止領域、段階境界のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "広い範囲が作業パッケージに分割され、各パッケージに検証と戻し方がある。",
+            "変更禁止領域と段階境界が明示されている。",
+        ),
+        evidence_required=(
+            "作業パッケージ",
+            "変更禁止領域",
+            "段階境界",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="範囲が広がりすぎている可能性がある。",
+        remediation="成果物単位に分割し、変更禁止領域と段階境界を置く。",
+    ),
+    Rule(
+        id="diff.traceability.intent_missing",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: change traceability to requirements",
+            "SWEBOK: software configuration management, change rationale",
+        ),
+        concern="差分が何の要求や計画のためなのか分からず、妥当性を判断できないこと。",
+        applies_when=(
+            "入力が差分または変更要約である。",
+            "変更意図、要求、計画への参照が渡されていない。",
+        ),
+        does_not_apply_when=(
+            "差分に変更理由を述べたコミットメッセージや説明が含まれ、意図として渡されている。",
+            "入力が差分でなく、計画や要求である。",
+        ),
+        evidence_required=(
+            "変更意図",
+            "対応する要求または計画",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="変更意図が渡されていない。",
+        remediation="要求または計画を `intent` として渡し、差分との対応を見る。",
+    ),
+    Rule(
+        id="diff.documentation.update_missing",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: documentation management process",
+            "SWEBOK: software maintenance, documentation updates with change",
+        ),
+        concern="仕様、設定、移行に関わる変更が、利用者向け文書の更新なしに入ること。",
+        applies_when=(
+            "意図または文脈が仕様、README、運用、設定、移行に触れている。",
+            "差分に文書ファイルの変更が含まれない。",
+        ),
+        does_not_apply_when=(
+            "文書更新が不要な理由が完了報告または文脈に明記されている。",
+            "文書が別の変更または別のリポジトリで更新されることが示されている。",
+        ),
+        evidence_required=(
+            "文書の変更箇所",
+            "更新不要の理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="minor"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="文書更新が必要そうな意図に対して文書差分が見えない。",
+        remediation="仕様、README、設定例、移行手順の更新要否を finish_check で明記する。",
+    ),
+    Rule(
+        id="finish.security.evidence_missing",
+        discipline="secure_development",
+        phase="finish_check",
+        engineering_basis=(
+            "NIST SSDF: verify third-party software and review code for vulnerabilities",
+            "OWASP ASVS: verification of security requirements",
+            "ISO/IEC 25010: security",
+        ),
+        concern="安全性に関わる変更が、確認した証拠なしに完了とされること。",
+        applies_when=(
+            "完了報告が認証認可、秘密情報、入力処理、外部実行など安全性に関わる変更を述べている。",
+            "秘密情報、依存、入力出力、ログの確認結果が見えない。",
+        ),
+        does_not_apply_when=(
+            "変更が安全性に関わる面に触れていない。",
+            "秘密情報走査、依存確認、手動確認などの結果が証拠欄にある。",
+        ),
+        evidence_required=(
+            "秘密情報の確認結果",
+            "依存の確認結果",
+            "入力出力の確認結果",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="安全性に関わる変更の証拠が不足している。",
+        remediation="秘密情報、依存、認証認可、入力出力、ログの確認結果を記録する。",
+    ),
+    Rule(
+        id="finish.risk.residual_risk_missing",
+        discipline="project_planning",
+        phase="finish_check",
+        engineering_basis=(
+            "PMBOK: residual risk and lessons learned at closure",
+            "ISO 21502: closing a project with open items",
+        ),
+        concern="残ったリスクや未実行事項の有無が書かれず、完了の範囲が過大に読まれること。",
+        applies_when=(
+            "入力が完了報告である。",
+            "残リスク、未実行、未確認、または「なし」の明示のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "報告に未実行事項または残リスクの一覧がある。",
+            "報告が「残リスクなし」を明示している。",
+        ),
+        evidence_required=(
+            "残リスク",
+            "未実行事項",
+            "残リスクなしの明示",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="info"),
+            SeverityPolicy(mode="relaxed", severity="info"),
+        ),
+        finding="残リスクまたは未実行事項の有無が明示されていない。",
+        remediation="残リスクが無い場合も `残リスクなし` と書く。",
     ),
 )
 

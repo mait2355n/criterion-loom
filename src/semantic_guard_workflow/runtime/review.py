@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import subprocess
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .backends import BACKEND_CODEX, build_request_command, resolve_model, validate_backend
 from .codex_exec import (
     DEFAULT_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS,
     Runner,
-    build_codex_exec_runtime_command,
+    build_codex_exec_runtime_command,  # noqa: F401 - preserved adapter-level import
     command_display,  # noqa: F401 - preserved adapter-level import
     parse_json_object,
     run_codex_exec_runtime,
@@ -31,6 +32,13 @@ class CodexExecReviewRequest:
     working_directory: str | Path | None = None
     codex_binary: str = "codex"
     include_schema_in_prompt: bool = False
+    backend: str = BACKEND_CODEX
+    agent_binary: str = ""
+    agent_command: tuple[str, ...] = ()
+
+    def __post_init__(self) -> None:
+        validate_backend(self.backend, self.agent_command)
+        object.__setattr__(self, "model", resolve_model(self.backend, self.model))
 
     @classmethod
     def from_mapping(
@@ -42,6 +50,9 @@ class CodexExecReviewRequest:
         working_directory: str | Path | None = None,
         codex_binary: str = "codex",
         include_schema_in_prompt: bool = False,
+        backend: str = BACKEND_CODEX,
+        agent_binary: str = "",
+        agent_command: Sequence[str] = (),
     ) -> CodexExecReviewRequest:
         return cls(
             review_input=CandidateGapReviewInput.from_mapping(payload),
@@ -50,6 +61,9 @@ class CodexExecReviewRequest:
             working_directory=working_directory,
             codex_binary=codex_binary,
             include_schema_in_prompt=include_schema_in_prompt,
+            backend=backend,
+            agent_binary=agent_binary,
+            agent_command=tuple(agent_command),
         )
 
     @property
@@ -76,6 +90,7 @@ class CodexExecReviewResult:
     errors: list[str] = field(default_factory=list)
     review: dict[str, Any] | None = None
     failure_kind: str | None = None
+    backend: str = BACKEND_CODEX
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -92,16 +107,12 @@ class CodexExecReviewResult:
             "errors": self.errors,
             "review": self.review,
             "failure_kind": self.failure_kind,
+            "backend": self.backend,
         }
 
 
 def build_codex_exec_command(request: CodexExecReviewRequest) -> list[str]:
-    return build_codex_exec_runtime_command(
-        codex_binary=request.codex_binary,
-        schema_path=request.schema_path,
-        model=request.model,
-        working_directory=request.working_directory,
-    )
+    return build_request_command(request)
 
 
 def run_codex_exec_review(
@@ -123,6 +134,7 @@ def run_codex_exec_review(
         output_name="reviewer",
         validator=validate_candidate_gap_review,
         runner=runner,
+        backend=request.backend,
     )
     return CodexExecReviewResult(
         review=runtime_result.payload,

@@ -62,8 +62,21 @@ def _quality_requirement_signal(text: str) -> str:
     return _first_match(text, terms)
 
 
+# A comparator counts only next to a number. A bare ``>`` or ``<`` is also a
+# quote marker, an arrow, an HTML tag, or a generic, and must not satisfy a
+# measurable-constraint obligation.
+_QUALITY_CONSTRAINT_RE = re.compile(
+    r"\d+(?:\.\d+)?\s*(?:milliseconds?|msec|ms|seconds?|secs?|sec|s|minutes?|min|kib|mib|gib|kb|mb|gb|秒|分|件|回|%)(?![a-z])"
+    r"|(?<![a-z0-9])p9[059](?![0-9])"
+    r"|[<>≤≥]=?\s*\d"
+    r"|\d\s*[<>≤≥]"
+    r"|以内|以上|以下|未満",
+    re.IGNORECASE,
+)
+
+
 def _has_quality_constraint_evidence(text: str) -> bool:
-    if re.search(r"(\d+(\.\d+)?\s*(ms|s|sec|秒|分|件|回|%|kb|mb|gb)|p9[059]|[<>]=?|以内|以上|以下|未満)", text, re.IGNORECASE):
+    if _QUALITY_CONSTRAINT_RE.search(text):
         return True
     return _has_any(
         text,

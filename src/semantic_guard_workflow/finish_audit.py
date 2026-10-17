@@ -15,6 +15,7 @@ from semantic_guard_workflow.assertion_context import find_field_assertion
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import combine as _combine, has_any as _has_any
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 
 _VERIFICATION_TERMS = (
@@ -190,6 +191,9 @@ def _present_completion_assertion(clause: str, terms: tuple[str, ...]) -> bool:
 
 
 def finish_check(summary: str, evidence: str = "", context: str = "", strict: bool = True) -> dict[str, object]:
+    summary = normalize_audit_text(summary)
+    evidence = normalize_audit_text(evidence)
+    context = normalize_audit_text(context)
     combined = _combine(summary, evidence, context)
     verification_present, acceptance_present, not_run_reason = _completion_evidence_presence(combined)
     findings: list[Finding] = []

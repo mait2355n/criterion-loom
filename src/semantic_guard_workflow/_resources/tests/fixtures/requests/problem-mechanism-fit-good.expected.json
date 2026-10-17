@@ -9,7 +9,29 @@
   "labels": {
     "forbidden_rules": [
       "req.solution.problem_mechanism_fit_missing",
-      "req.acceptance.symptom_only_success_criteria"
+      "req.acceptance.symptom_only_success_criteria",
+      "req.necessity.purpose_trace_missing",
+      "req.atomicity.multiple_requirements_bundled",
+      "req.solution.implementation_fixed",
+      "req.uncertainty.unknowns_unstated",
+      "req.clarity.ambiguous_term",
+      "req.verifiability.acceptance_missing",
+      "req.scope.non_goals_missing",
+      "req.achievement.criteria_missing",
+      "req.verification.method_detail_missing",
+      "req.relation.verification_target_mismatch",
+      "req.evidence.artifact_missing",
+      "req.acceptance.rejection_condition_missing",
+      "req.context.scenario_missing",
+      "req.structure.observable_behavior_missing",
+      "req.context.precondition_trigger_missing",
+      "req.precondition.order_direction_unspecified",
+      "req.result.expected_result_missing",
+      "req.interface.contract_missing",
+      "req.stakeholder.source_missing",
+      "req.quality.measurable_constraint_missing",
+      "req.priority.multiple_requirements_unprioritized",
+      "req.uncertainty.unclassified_uncertainty"
     ],
     "forbidden_findings": [
       {

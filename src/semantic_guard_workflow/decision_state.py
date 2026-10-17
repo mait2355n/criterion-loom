@@ -9,6 +9,7 @@ from semantic_guard_workflow.result_builder import (
     next_actions as _next_actions,
     score_from_findings as _score_from_findings,
 )
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 DECISION_STATE_AUDIT_SCHEMA_VERSION = "decision-state-audit/v1"
 DEFAULT_SNIPPET_LIMIT = 220
@@ -53,6 +54,8 @@ DECISION_STATE_CONTROL_TERMS: dict[str, list[str]] = {
 def audit_decision_state(text: str, context: str = "", strict: bool = True, input_kind: str = "document") -> dict[str, object]:
     """Expose decided, undecided, inferred, hypothetical, and evidence-gap states without resolving them."""
     input_kind = _normalize_input_kind(input_kind)
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     combined = _combine(text, context)
     findings: list[Finding] = []
     missing: list[str] = []

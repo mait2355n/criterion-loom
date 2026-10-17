@@ -4,6 +4,7 @@ import re
 from collections.abc import Iterable
 
 from semantic_guard_workflow.models import AuditResult, Finding
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 EXPLORATION_SCHEMA_VERSION = "request-exploration/v1"
 ELICITATION_BASIS = ["semantic-implementation", "requirements elicitation", "ISO/IEC/IEEE 29148", "BABOK"]
@@ -77,6 +78,8 @@ CREATIVE_TERMS = ["創作", "本文", "人物", "読者", "設定", "canon", "st
 
 def explore_request(text: str, context: str = "", strict: bool = True) -> dict[str, object]:
     """Expose material ambiguities before turning an open-ended idea into a spec."""
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     combined = _combine(text, context)
     signals = _signals(combined)
     findings: list[Finding] = []

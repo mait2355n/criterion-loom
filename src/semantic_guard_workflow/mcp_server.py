@@ -6,6 +6,7 @@ from mcp.server.fastmcp import FastMCP
 
 from semantic_guard_workflow.acceptance_review import build_acceptance_review_bundle_template, validate_acceptance_review_bundle
 from semantic_guard_workflow.artifact_membership import audit_artifact_membership
+from semantic_guard_workflow.runtime.backends import validate_mcp_backend
 from semantic_guard_workflow.runtime.exploration import (
     DEFAULT_CODEX_MODEL as DEFAULT_EXPLORATION_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
@@ -42,6 +43,15 @@ _review_jobs = ReviewJobStore()
 _exploration_jobs = ExplorationJobStore()
 
 
+def _mcp_backend(backend: str) -> str:
+    """Return ``backend`` when MCP may select it, else raise ``ValueError``.
+
+    The ``command`` backend runs an operator-supplied template and stays CLI-only.
+    """
+    validate_mcp_backend(backend)
+    return backend
+
+
 @mcp.tool()
 def explore_request_tool(text: str, context: str = "", strict: bool = True, profile: str = "default") -> dict[str, object]:
     """Expose material ambiguities and necessary questions before turning an open-ended idea into a spec."""
@@ -57,6 +67,7 @@ def llm_explore_request_tool(
     timeout_seconds: int = DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
     """Run or dry-run an isolated LLM exploration reviewer for pre-spec questions. Dry-run is the default."""
     deterministic_exploration = explore_request(text=text, context=context, strict=True)
@@ -72,6 +83,7 @@ def llm_explore_request_tool(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=_mcp_backend(backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -86,6 +98,7 @@ def llm_explore_request_start_tool(
     timeout_seconds: int = DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
     """Start the isolated LLM exploration reviewer as a pollable background job."""
     deterministic_exploration = explore_request(text=text, context=context, strict=True)
@@ -101,6 +114,7 @@ def llm_explore_request_start_tool(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=_mcp_backend(backend),
         )
     except ValueError as exc:
         return {
@@ -311,8 +325,9 @@ def llm_review_command_tool(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
-    """Build the isolated codex exec LLM reviewer command and prompt without executing it."""
+    """Build the isolated LLM reviewer command and prompt without executing it. `backend` is `codex` or `claude`."""
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
@@ -321,6 +336,7 @@ def llm_review_command_tool(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=_mcp_backend(backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -335,8 +351,9 @@ def llm_review_run_tool(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
-    """Run or dry-run the isolated codex exec LLM reviewer. Dry-run is the default."""
+    """Run or dry-run the isolated LLM reviewer (`backend`: `codex` or `claude`). Dry-run is the default."""
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
@@ -345,6 +362,7 @@ def llm_review_run_tool(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=_mcp_backend(backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -358,8 +376,9 @@ def llm_review_start_tool(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
-    """Start the isolated codex exec LLM reviewer as a pollable background job."""
+    """Start the isolated LLM reviewer (`backend`: `codex` or `claude`) as a pollable background job."""
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
@@ -368,6 +387,7 @@ def llm_review_start_tool(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=_mcp_backend(backend),
         )
     except ValueError as exc:
         return {
@@ -391,8 +411,23 @@ def review_if_needed_start_tool(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
     """Start an isolated reviewer job only when review-if-needed escalation says it is useful."""
+    try:
+        selected = _mcp_backend(backend)
+    except ValueError as exc:
+        return {
+            "job_id": None,
+            "state": "input_error",
+            "done": True,
+            "running": False,
+            "process_finished": False,
+            "review_received": False,
+            "response_state": "input_error",
+            "valid": False,
+            "errors": [str(exc)],
+        }
     return start_review_if_needed_job(
         _review_jobs,
         payload,
@@ -400,6 +435,7 @@ def review_if_needed_start_tool(
         timeout_seconds=timeout_seconds,
         working_directory=working_directory,
         include_schema=include_schema,
+        backend=selected,
     )
 
 
@@ -417,8 +453,21 @@ def review_if_needed_tool(
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS,
     working_directory: str = "",
     include_schema: bool = False,
+    backend: str = "codex",
 ) -> dict[str, object]:
     """Escalate deterministic audit uncertainty to the isolated reviewer when needed. Dry-run is the default."""
+    try:
+        selected = _mcp_backend(backend)
+    except ValueError as exc:
+        return {
+            "escalation": None,
+            "review_result": {
+                "executed": False,
+                "execution_status": "input_error",
+                "valid": False,
+                "errors": [str(exc)],
+            },
+        }
     return review_if_needed(
         payload,
         execute=execute,
@@ -426,6 +475,7 @@ def review_if_needed_tool(
         timeout_seconds=timeout_seconds,
         working_directory=working_directory,
         include_schema=include_schema,
+        backend=selected,
     )
 
 

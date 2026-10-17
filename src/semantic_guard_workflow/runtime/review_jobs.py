@@ -62,6 +62,7 @@ def start_review_if_needed_job(
     working_directory: str = "",
     include_schema: bool = False,
     runner: Runner = subprocess.run,
+    backend: str = "codex",
 ) -> dict[str, Any]:
     audit = _mapping(payload.get("deterministic_audit") or payload.get("audit_result"))
     phase = _string(payload.get("phase")) or _string(audit.get("phase"))
@@ -100,6 +101,7 @@ def start_review_if_needed_job(
             working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
+            backend=backend,
         )
     except ValueError as exc:
         return {
@@ -157,6 +159,7 @@ def _exception_result(request: CodexExecReviewRequest, exc: Exception) -> CodexE
         valid=False,
         errors=[str(exc)],
         failure_kind="job_exception",
+        backend=request.backend,
     )
 
 

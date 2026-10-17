@@ -15,12 +15,22 @@
       {
         "category": "documentation",
         "finding_contains": "実行例"
+      },
+      {
+        "rule_id": "doc.claim.overclaim_without_basis"
+      },
+      {
+        "rule_id": "doc.claim.evidence_or_limit_missing"
       }
     ],
     "forbidden_findings": [
       {
         "category": "security"
       }
+    ],
+    "expected_rules": [
+      "doc.claim.overclaim_without_basis",
+      "doc.claim.evidence_or_limit_missing"
     ]
   },
   "expect": {

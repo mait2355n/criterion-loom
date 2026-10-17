@@ -1,0 +1,23 @@
+{
+  "id": "DOC-OUTPUT-FIELDS-001",
+  "title": "Output mentioned without naming any returned field is flagged",
+  "phase": "audit_request",
+  "kind": "document",
+  "text": "# Tool\n\n## Overview\n\nThis tool returns JSON output.\n\n## Scope\n\nPrototype.\n\n## Limitations\n\nIt does not replace review.\n\n## Usage\n\n```sh\ntool run\n```\n",
+  "strict": true,
+  "rationale": "A consumer cannot rely on an output whose fields are never named.",
+  "labels": {
+    "expected_rules": [
+      "doc.contract.output_fields_thin"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "doc.contract.output_fields_thin"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}

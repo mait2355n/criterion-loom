@@ -10,7 +10,9 @@
     "forbidden_rules": [
       "finish.evidence.tests_missing",
       "finish.implementation.behavior_evidence_missing",
-      "finish.validation.acceptance_evidence_missing"
+      "finish.validation.acceptance_evidence_missing",
+      "finish.security.evidence_missing",
+      "finish.risk.residual_risk_missing"
     ]
   },
   "expect": {

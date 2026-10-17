@@ -1,0 +1,29 @@
+{
+  "id": "DIFF-DOCUMENTED-CHANGE-GOOD-001",
+  "title": "A change with its intent, a test, and a document update passes the traceability rules",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/src/a.py b/src/a.py\n--- a/src/a.py\n+++ b/src/a.py\n@@ -1 +1,2 @@\n-x = 1\n+x = 2\n+y = 3\ndiff --git a/tests/test_a.py b/tests/test_a.py\n--- a/tests/test_a.py\n+++ b/tests/test_a.py\n@@ -1 +1,2 @@\n+def test_y():\n+    assert y == 3\ndiff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1,2 @@\n+設定の既定値を x=2 に変更した。\n",
+  "intent": "設定の既定値を変更し README の説明も揃える",
+  "strict": true,
+  "rationale": "A change that states its intent, adds a test, and updates the document it promised must not be flagged for traceability or documentation.",
+  "labels": {
+    "forbidden_rules": [
+      "diff.traceability.intent_missing",
+      "diff.documentation.update_missing",
+      "diff.test_obligation.source_without_tests",
+      "diff.security.sensitive_surface_change",
+      "diff.implementation.public_contract_change",
+      "diff.implementation.failure_handling_gap",
+      "diff.implementation.operational_observability_gap",
+      "diff.implementation.dependency_runtime_change",
+      "diff.implementation.complexity_growth",
+      "diff.implementation.filename_content_overbreadth",
+      "diff.implementation.filename_scope_underspecified",
+      "diff.meaning.identity_boundary_change"
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff"
+  }
+}

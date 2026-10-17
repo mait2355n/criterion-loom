@@ -42,5 +42,16 @@
         ]
       }
     }
+  },
+  "labels": {
+    "forbidden_rules": [
+      "doc.structure.required_section_missing",
+      "doc.structure.optional_section_missing",
+      "doc.structure.heading_missing",
+      "doc.usage.example_missing",
+      "doc.contract.output_fields_thin",
+      "doc.claim.overclaim_without_basis",
+      "doc.claim.evidence_or_limit_missing"
+    ]
   }
 }

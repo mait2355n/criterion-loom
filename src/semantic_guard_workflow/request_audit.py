@@ -54,6 +54,7 @@ from semantic_guard_workflow.result_builder import score_from_findings as _score
 from semantic_guard_workflow.text_utils import combine as _combine
 from semantic_guard_workflow.text_utils import first_match as _first_match
 from semantic_guard_workflow.text_utils import has_any as _has_any
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 
 def _relation_evidence_excerpt(check: dict[str, object], role: str) -> str:
@@ -546,6 +547,12 @@ def audit_request(
     *,
     morphology_provider: object | None = None,
 ) -> dict[str, object]:
+    # Relation and direction-binding results carry character spans and bind the
+    # morphology analysis to the exact input, so that path keeps the caller's
+    # text. Every lexical detector below reads the normalized form.
+    source_text, source_context = text, context
+    text = normalize_audit_text(text)
+    context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
     if morphology_provider is not None and input_kind != "requirement":
         raise ValueError("morphology_provider is supported only for requirement input")
@@ -571,8 +578,8 @@ def audit_request(
         requirement_structure=structure_profile,
     )
     relation_audit = audit_requirement_relations(
-        text,
-        context=context,
+        source_text,
+        context=source_context,
         morphology_provider=morphology_provider,
     )
     relation_summary = relation_audit.public_summary()

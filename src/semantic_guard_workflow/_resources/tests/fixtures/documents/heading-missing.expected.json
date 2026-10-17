@@ -1,0 +1,23 @@
+{
+  "id": "DOC-HEADING-001",
+  "title": "A document without any heading cannot be scanned",
+  "phase": "audit_request",
+  "kind": "document",
+  "text": "Local Audit Helper\n\nOverview\n\nThis document describes a local CLI audit helper for Codex work.\n\nStatus\n\nThe helper is a prototype. It is not a release gate.\n\nWhen To Use\n\nUse it when a reader needs enough context to run a document audit and inspect the JSON result.\n\nCLI\n\nRun this command to inspect document audit output:\n\n```sh\nsemantic-guard audit-request --kind document --file README.md\n```\n\nOutput Shape\n\nThe command returns status, score, findings, missing, next_actions, and details.\n\nLimitations\n\nIt is heuristic and does not replace human review.\n",
+  "strict": true,
+  "rationale": "Sections that are not marked as headings cannot be located by a reader.",
+  "labels": {
+    "expected_rules": [
+      "doc.structure.heading_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "doc.structure.heading_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}
