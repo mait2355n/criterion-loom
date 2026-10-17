@@ -11,8 +11,23 @@ All notable repository and public-contract changes are recorded here. Package ve
 - Recorded source mappings, added coexistence regression tests, and extended installed-package checks. Candidate governance adoption, privileged U10 deployment, field validity, and runtime cutover are outside this change.
 
 
+### Workflow reviewer agents and rule accuracy
+
+- Added reviewer backends to the workflow interface. `--backend codex` (default, command line unchanged), `--backend claude` (Claude Code `claude -p --json-schema`, no tools, no session, no settings/MCP/skills), and the operator-only `--backend command --agent-command TEMPLATE`. The MCP tools accept `backend` for `codex` and `claude` only; `command` is refused there because it would let a caller start an arbitrary process. Every backend is validated against the same schema.
+- Review and exploration results gain a `backend` field (additive). `doctor` replaces the `codex_binary` check with `reviewer_agents`, which passes when any preset agent CLI is on `PATH`.
+- Added `semantic-guard workflow evaluate-metamorphic`: replays every fixture under 14 semantics-preserving rewrites (full-width, decomposed kana, half-width katakana, zero-width characters, CRLF, Markdown markers, line order, ...) and deletes fields from known-good documents to check that the owning rule fires. Exceptions are listed with a reason and fail as stale once they stop occurring. It runs in CI.
+- Normalized input at each workflow audit entry point (NFKC, invisible format characters, line terminators). Findings now quote the normalized text. The requirement-relation and direction-binding audit still receives the caller's text because its spans and morphology binding refer to it, so it remains sensitive to full-width, decomposed-kana, and half-width-katakana spelling (registered as known drift).
+- Added 24 catalog rules so that every fixture finding is attributable to a rule (31 of 179 were not): `req.necessity.purpose_trace_missing`, `req.atomicity.multiple_requirements_bundled`, `req.solution.implementation_fixed`, `req.uncertainty.unknowns_unstated`, `req.clarity.ambiguous_term`, seven `doc.*` rules, eight `plan.*` rules (including `plan.scope.broad_scope_unbounded`, which detectors already referenced), `diff.traceability.intent_missing`, `diff.documentation.update_missing`, `finish.security.evidence_missing`, and `finish.risk.residual_risk_missing`. The catalog now holds 73 rules, each with a positive and a negative fixture (negative controls: 18 of 49 before, 73 of 73 now).
+- Aligned catalog `severity_policy` with detector output: the relaxed severity of 28 rules, and the strict severity of `plan.risk.rollback_missing` (the fixtures pinned `major`). Added a test that fails on any future divergence in either mode.
+- `evaluate-fixtures` reports `unguarded_rule_ids`/`unguarded_rule_count` (rules without a negative control).
+- The packaged-resource allowlist in `scripts/verify_packaged_contracts.py` lists the 22 new fixtures. `integration/workflow-migration.json` records import-time bytes and is not rewritten, so its destination digests no longer match the modified workflow files.
+
 ### Fixed
 
+- Stopped a bare `<` or `>` (quote marker, arrow, HTML tag, generic) from satisfying the measurable-constraint obligation, and tightened unit matching so that `5 sources` is not `5 s`.
+- Made the deliverable item count read only the deliverable sentence, so a plan written on one line no longer gains `plan.structure.work_package_decomposition_missing` that the same plan split across lines does not.
+- Stopped `成果物` (deliverables) from satisfying the plan objective through the substring `成果`.
+- Recognised Markdown headings inside quotes and list items when checking document structure and splitting claim blocks.
 - Prevented state-assessment freshness checks from overflowing for schema-valid large policy lifetimes or observations near the maximum representable year. Expiration still occurs at the earlier evidence or policy deadline, including exact microsecond boundaries and ties.
 
 ### Documentation and distribution metadata

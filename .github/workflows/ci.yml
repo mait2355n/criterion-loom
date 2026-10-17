@@ -51,6 +51,9 @@ jobs:
       - name: Replay workflow fixtures
         run: uv run --locked semantic-guard workflow evaluate-fixtures
 
+      - name: Check workflow rule invariance and sensitivity
+        run: uv run --locked semantic-guard workflow evaluate-metamorphic
+
       - name: Validate verification source
         run: uv run --locked python scripts/validate_verification_source.py
 

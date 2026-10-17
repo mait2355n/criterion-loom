@@ -98,7 +98,7 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 | --- | --- | --- |
 | CLI | 人間、スクリプト、CI が実行と JSON 保存を担う | `uv run --locked semantic-guard --help` |
 | MCP | エージェント用クライアントが標準入出力を通じて同じ限定監査機能を使う | `uv run --locked semantic-guard-mcp` |
-| 付属スキル | Codex が監査境界を保って設計・実装作業を進める | [`skills/semantic-implementation/`](skills/semantic-implementation/) |
+| 付属スキル | エージェント（Codex、Claude Code）が監査境界を保って設計・実装作業を進める | [`skills/semantic-implementation/`](skills/semantic-implementation/)・[エージェント別の接続](docs/local-integration.md#エージェント別の接続) |
 
 `command`、`args`、`cwd` を受ける MCP クライアントなら、ソースコードの
 作業ディレクトリに対する構成は概ね次と等価になる。

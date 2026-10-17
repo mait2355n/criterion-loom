@@ -102,7 +102,7 @@ contracts. Their servers are `semantic-guard-workflow-mcp` (27 tools) and
 | --- | --- | --- |
 | CLI | A person, script, or CI job owns invocation and JSON persistence | `uv run --locked semantic-guard --help` |
 | MCP | An agent client needs the same bounded tools over standard input/output | `uv run --locked semantic-guard-mcp` |
-| Companion Skill | Codex should preserve the audit boundary while planning and implementing work | [`skills/semantic-implementation/`](skills/semantic-implementation/) |
+| Companion Skill | An agent (Codex or Claude Code) should preserve the audit boundary while planning and implementing work | [`skills/semantic-implementation/`](skills/semantic-implementation/) · [agent setup](docs/local-integration.md#エージェント別の接続) (Japanese) |
 
 For an MCP client that accepts `command`, `args`, and `cwd`, the equivalent
 source-checkout configuration is:
