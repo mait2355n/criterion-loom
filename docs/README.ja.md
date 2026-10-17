@@ -58,6 +58,7 @@
 | 変更後の状態妥当性 | 明示的に有効化する内部契約を実装済み。公開処理経路には未統合 | [状態評価・再評価](state-assessment-and-requalification.md) |
 | 修正と責任 | 明示的に有効化する内部契約を実装済み。実務効果は未評価 | [修正循環・責任材料](repair-loop-and-responsibility-material.md) |
 | 実地評価設計 | 評価契約を実装済み。実地結果なし | [実地評価・除去比較](field-evaluation-and-ablation.md) |
+| 前向き標本取込 | 直接APIとスキーマ。方針未採択、実標本未収集 | [取込門](field-sample-intake.md) |
 | 成果評価 | 評価契約を実装済み。実参加者・実成果なし | [運用成果評価](operational-outcome-evaluation.md) |
 | 運用適格性と移行 | 内部契約実装済み。運用適格性・切替なし | [運用適格性・移行](operational-qualification-and-transition.md) |
 | 安全運用境界 | 内部整合性の監査を実装済み。安全性に関する結論なし | [安全運用境界](secure-operation-boundary.md)（英語） |

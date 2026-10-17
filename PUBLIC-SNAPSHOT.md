@@ -1,6 +1,6 @@
 # Development Surface: Criterion Loom / semantic-guard 1.2.0.dev0
 
-Documentation date: 2026-10-01
+Documentation date: 2026-10-17
 
 This file describes the current public source contract. It is not release-artifact evidence, a deployment record, or a claim that every repository document describes the current implementation.
 
@@ -35,7 +35,7 @@ Canonical MCP tools (unchanged):
 - `shadow_compare_legacy_tool`
 - `semantic_guard_schema_tool`
 
-The schema tool exposes 24 closed contract schemas. Schema availability does not assert that every sidecar has a public end-to-end workflow.
+The schema tool exposes 25 closed contract schemas, including the prospective field-sample intake sidecar. Schema availability does not assert that every sidecar has a public end-to-end workflow. Intake processing is a direct Python API; its policy remains a pending draft and no field collection is claimed.
 
 The same installation additionally provides `semantic-guard-workflow` and
 `semantic-guard-vnext`, and their separate `-mcp` servers with 27 and three tools
