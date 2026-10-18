@@ -10,7 +10,7 @@ from semantic_guard_workflow.plan_audit import _deliverable_item_count
 from semantic_guard_workflow.request_direction_binding import direction_binding_contract_violations
 from semantic_guard_workflow.request_signals import _has_quality_constraint_evidence
 from semantic_guard_workflow.rule_mapping import enrich_finding_mapping
-from semantic_guard_workflow.text_normalization import normalize_audit_text
+from semantic_guard_workflow.text_normalization import normalization_source_ranges, normalize_audit_text
 from workflow_tests.test_request_direction_binding import CharacterSignalProvider
 
 GOOD_REQUEST = json.loads(
@@ -36,6 +36,32 @@ class NormalizeAuditTextTests(unittest.TestCase):
     def test_invisible_characters_are_removed(self) -> None:
         self.assertEqual(normalize_audit_text("﻿a​b⁠c­d"), "abcd")
 
+    def test_every_unicode_format_character_is_removed(self) -> None:
+        import unicodedata
+
+        for code in list(range(0x20000)) + list(range(0xE0000, 0xE0200)):
+            character = chr(code)
+            if unicodedata.category(character) == "Cf":
+                with self.subTest(code=hex(code)):
+                    self.assertEqual(normalize_audit_text(f"a{character}b"), "ab")
+
+    def test_selectors_joiners_and_tags_are_removed(self) -> None:
+        # Not all of these are "Cf": variation selectors, the combining grapheme
+        # joiner, Mongolian free variation selectors, and tag characters.
+        for code in (0x034F, 0x180B, 0x180C, 0x180D, 0x180E, 0x180F, 0xFE00, 0xFE0F, 0xE0020, 0xE007F, 0xE0100, 0xE01EF):
+            with self.subTest(code=hex(code)):
+                self.assertEqual(normalize_audit_text(f"適{chr(code)}切"), "適切")
+
+    def test_source_ranges_skip_every_removed_character(self) -> None:
+        text = "適\u2062切\ufe0fに\U000e0020\u034f"
+        normalized = normalize_audit_text(text)
+
+        ranges = normalization_source_ranges(text)
+
+        self.assertEqual(normalized, "適切に")
+        self.assertEqual(len(ranges), len(normalized))
+        self.assertEqual([text[start:end] for start, end in ranges][0], "適")
+
     def test_line_terminators_are_unified(self) -> None:
         self.assertEqual(normalize_audit_text("a\r\nb\rc d e"), "a\nb\nc\nd\ne")
 
@@ -56,6 +82,23 @@ class SpellingDoesNotChangeTheVerdictTests(unittest.TestCase):
 
         self.assertEqual(_rule_ids(wide, "audit_request"), _rule_ids(plain, "audit_request"))
         self.assertEqual(wide["status"], plain["status"])
+
+    def test_invisible_characters_inside_a_word_do_not_hide_the_finding(self) -> None:
+        base = "利用者: 保守者。目的: 帳票を適切に出力する。受入基準: 応答は 200ms 以内。検証方法: pytest。"
+        expected = _rule_ids(audit_request(base), "audit_request")
+        self.assertIn("req.clarity.ambiguous_term", expected)
+        plan = "目的: 古い設定を削除する。\n対象: config/\n検証: pytest\n"
+        plan_expected = _rule_ids(audit_plan(plan), "audit_plan")
+        self.assertIn("plan.governance.decision_gate_missing", plan_expected)
+
+        for character in ("\u2062", "\u061c", "\u180e", "\u206a", "\ufe0f", "\U000e0020", "\u034f"):
+            with self.subTest(code=hex(ord(character))):
+                self.assertEqual(
+                    _rule_ids(audit_request(base.replace("適切に", f"適{character}切に")), "audit_request"), expected
+                )
+                self.assertEqual(
+                    _rule_ids(audit_plan(plan.replace("削除", f"削{character}除")), "audit_plan"), plan_expected
+                )
 
     def test_decomposed_plan_matches_its_composed_form(self) -> None:
         plan = (Path(DEFAULT_FIXTURE_ROOT) / "plans" / "good.md").read_text(encoding="utf-8")
