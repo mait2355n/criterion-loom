@@ -5,7 +5,8 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .providers import (
     AnalysisAttempt,
@@ -34,7 +35,7 @@ class SubmittedLLMCandidateProvider:
 
     def __init__(self, bundle: Mapping[str, Any]) -> None:
         material = dict(bundle)
-        Draft202012Validator(
+        StrictDraft202012Validator(
             json.loads(
                 schema_path("llm-candidate-input.schema.json").read_text(
                     encoding="utf-8"

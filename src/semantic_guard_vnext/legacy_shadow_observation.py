@@ -16,6 +16,7 @@ import json
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .legacy_runner import normalize_legacy_result
 from .public_contract import validate_public_audit
@@ -97,7 +98,7 @@ def _envelope_id(digest: Mapping[str, str]) -> str:
 def _validator() -> Draft202012Validator:
     schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def build_legacy_shadow_observation(

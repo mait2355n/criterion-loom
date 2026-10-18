@@ -16,6 +16,7 @@ import json
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .candidate_governance_adapters import (
     CandidateGovernanceAdapterError,
@@ -77,7 +78,7 @@ def _copy(value: Any) -> Any:
 def _validator() -> Draft202012Validator:
     schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _axis(

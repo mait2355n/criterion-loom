@@ -35,6 +35,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 )
 from cryptography.exceptions import InvalidSignature
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_u10_broker.strict_schema import StrictDraft202012Validator
 from referencing import Registry, Resource
 
 from .internal_contracts import (
@@ -763,7 +764,7 @@ def _validate(value: Mapping[str, Any], schema_name: str, code: str) -> None:
                 Resource.from_contents(candidate),
             )
     issues = sorted(
-        Draft202012Validator(
+        StrictDraft202012Validator(
             _load_schema(schema_name),
             registry=registry,
             format_checker=FormatChecker(),

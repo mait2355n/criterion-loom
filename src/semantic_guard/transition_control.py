@@ -16,6 +16,7 @@ import json
 from typing import Any, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard.strict_schema import StrictDraft202012Validator
 
 from .schema_access import schema_directory
 
@@ -157,7 +158,7 @@ def _schema() -> dict[str, Any]:
 def _validator() -> Draft202012Validator:
     schema = _schema()
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 @lru_cache(maxsize=None)
@@ -169,7 +170,7 @@ def _subvalidator(definition: str) -> Draft202012Validator:
         "$ref": f"#/$defs/{definition}",
     }
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _validate_schema(

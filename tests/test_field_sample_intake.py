@@ -354,7 +354,7 @@ def _reviewers() -> list[dict]:
     ]
 
 
-def _evaluation(policy: dict, cases: list[dict]) -> dict:
+def _evaluation(policy: dict, cases: list[dict], *, decision: dict | None = None) -> dict:
     guide = versioned_ref(
         "label-guide.functional-relations",
         "v1",
@@ -391,7 +391,7 @@ def _evaluation(policy: dict, cases: list[dict]) -> dict:
     return build_field_evaluation(
         evaluation_id="field-evaluation.single-function-requests.v1",
         policy=policy,
-        human_decision_records=[_decision(policy)],
+        human_decision_records=[decision or _decision(policy)],
         label_guide=guide,
         reviewers=_reviewers(),
         cases=cases,
@@ -955,6 +955,209 @@ class FieldSampleIntakeTests(unittest.TestCase):
         with self.assertRaises(FieldSampleIntakeValidationError) as caught:
             validate_field_sample_intake(bundle)
         self.assertIn("candidate_digest_mismatch", caught.exception.codes)
+
+
+class FieldSampleIntakeDecisionBindingTests(unittest.TestCase):
+    def _other_decision(self, policy: dict, decision_id: str, recorded_at: str = POLICY_DECIDED_AT) -> dict:
+        return build_human_policy_decision(
+            decision_id=decision_id,
+            decision_type="adopt_policy",
+            human_actor_ref="human.evaluation-owner",
+            policy=policy,
+            rationale="Human adoption of the declared population, costs, and thresholds.",
+            evidence_refs=["record.evaluation-policy-review"],
+            recorded_at=recorded_at,
+        )
+
+    def _cases(self, policy: dict) -> list[dict]:
+        return project_holdout_field_cases(_intake(policy=policy), policy=policy)
+
+    def test_the_decision_the_intake_binds_must_be_the_one_the_policy_cites(self) -> None:
+        policy = _policy()
+        other = self._other_decision(policy, "human-decision.some-other-decision")
+        intake = _intake(policy=policy, decision=other)
+
+        with self.assertRaises(FieldSampleIntakeValidationError) as raised:
+            project_holdout_field_cases(intake, policy=policy)
+
+        self.assertIn("projection_policy_decision_mismatch", {item["code"] for item in raised.exception.errors})
+
+    def test_an_evaluation_cannot_cite_a_later_decision_than_the_one_the_intake_bound(self) -> None:
+        policy = _policy()
+        intake = _intake(policy=policy)
+        cases = self._cases(policy)
+        # Same id, recorded after the collection opened but before the holdout was sealed.
+        late = _decision(policy, recorded_at="2026-08-28T06:30:00Z")
+        evaluation = _evaluation(policy, cases, decision=late)
+
+        codes = {item["code"] for item in field_sample_intake_evaluation_errors(intake, evaluation)}
+
+        self.assertIn("intake_evaluation_decision_mismatch", codes)
+        self.assertIn("intake_evaluation_policy_adopted_after_collection_open", codes)
+        with self.assertRaises(FieldSampleIntakeValidationError):
+            validate_field_sample_intake_evaluation(intake, evaluation)
+
+    def test_an_intake_that_bound_a_different_decision_id_fails_the_evaluation_binding(self) -> None:
+        policy = _policy()
+        cases = self._cases(policy)
+        other = self._other_decision(policy, "human-decision.some-other-decision")
+        intake = _intake(policy=policy, decision=other)
+
+        codes = {item["code"] for item in field_sample_intake_evaluation_errors(intake, _evaluation(policy, cases))}
+
+        self.assertTrue(
+            {"intake_evaluation_decision_mismatch", "projection_policy_decision_mismatch"} & codes, codes
+        )
+
+    def test_the_matching_decision_still_binds(self) -> None:
+        policy = _policy()
+        intake = _intake(policy=policy)
+        evaluation = _evaluation(policy, self._cases(policy))
+
+        self.assertEqual(field_sample_intake_evaluation_errors(intake, evaluation), ())
+
+
+class FieldSampleIntakeTrailingNewlineTests(unittest.TestCase):
+    def _errors(self, mutate) -> tuple[dict[str, str], ...]:
+        bundle = deepcopy(_intake())
+        mutate(bundle)
+        return field_sample_intake_errors(bundle)
+
+    def test_a_digest_with_a_trailing_newline_is_a_schema_error(self) -> None:
+        def mutate(bundle: dict) -> None:
+            bundle["policy_binding"]["policy_digest"]["value"] += "\n"
+
+        errors = self._errors(mutate)
+
+        self.assertIn("schema_validation_failed", {item["code"] for item in errors})
+
+    def test_an_identifier_with_a_trailing_newline_is_a_schema_error(self) -> None:
+        def mutate(bundle: dict) -> None:
+            bundle["candidates"][0]["candidate_id"] += "\n"
+
+        self.assertIn("schema_validation_failed", {item["code"] for item in self._errors(mutate)})
+
+    def test_a_timestamp_that_does_not_parse_is_a_structured_error_not_an_exception(self) -> None:
+        for bad in ("2026-08-28T00:00:00Z\n", "2026-13-45T00:00:00Z", "yesterday", "2026-08-28 00:00:00Z"):
+            with self.subTest(value=repr(bad)):
+                def mutate(bundle: dict, bad: str = bad) -> None:
+                    bundle["collection"]["opened_at"] = bad
+
+                errors = self._errors(mutate)
+
+                self.assertIn("schema_validation_failed", {item["code"] for item in errors})
+
+    def test_valid_timestamps_with_offsets_and_fractions_are_accepted(self) -> None:
+        def mutate(bundle: dict) -> None:
+            bundle["collection"]["opened_at"] = "2026-08-28T09:00:00.250+09:00"
+
+        codes = {item["code"] for item in self._errors(mutate)}
+
+        self.assertNotIn("schema_validation_failed", codes)
+
+
+class FieldSampleIntakeReferenceIntegrityTests(unittest.TestCase):
+    def _codes(self, bundle: dict) -> set[str]:
+        return {item["code"] for item in field_sample_intake_errors(bundle)}
+
+    def test_one_subject_cannot_sit_in_two_duplicate_clusters(self) -> None:
+        first = _candidate(1)
+        second = deepcopy(_candidate(2))
+        second["subject_ref"] = first["subject_ref"]
+        second["candidate_digest"] = digest_value({k: v for k, v in second.items() if k != "candidate_digest"})
+
+        split = _intake(candidates=[first, second], clusters=[_cluster(1), _cluster(2)])
+        self.assertIn("subject_ref_split_across_clusters", self._codes(split))
+
+        together = _intake(
+            candidates=[first, second],
+            clusters=[
+                build_duplicate_cluster(
+                    cluster_id="duplicate-cluster.single-function-requests.1",
+                    member_refs=[first["candidate_id"], second["candidate_id"]],
+                    representative_ref=first["candidate_id"],
+                    assigned_split="holdout",
+                    assignment_protocol=_assignment_protocol(),
+                    assignment_record_ref="record.assignment.1",
+                    assigned_at=ASSIGNED_AT,
+                )
+            ],
+        )
+        self.assertNotIn("subject_ref_split_across_clusters", self._codes(together))
+
+    def test_error_messages_never_repeat_the_offending_value(self) -> None:
+        bundle = deepcopy(_intake())
+        secret = "顧客 山田太郎 090-1234-5678"
+        bundle["candidates"][0]["subject_ref"] = secret
+
+        errors = field_sample_intake_errors(bundle)
+
+        self.assertTrue(errors)
+        self.assertNotIn("山田", json.dumps(errors, ensure_ascii=False))
+        self.assertNotIn("090-1234", json.dumps(errors, ensure_ascii=False))
+        with self.assertRaises(FieldSampleIntakeValidationError) as raised:
+            validate_field_sample_intake(bundle)
+        self.assertNotIn("山田", str(raised.exception))
+
+    def test_a_reference_that_looks_like_an_email_url_or_path_is_rejected(self) -> None:
+        for value in ("alice@example.com", "https://example.com/x", "C:/Users/alice/secret.txt", "a/../../etc/passwd", "/etc/passwd", "~/secrets"):
+            with self.subTest(value=value):
+                bundle = deepcopy(_intake())
+                bundle["candidates"][0]["origin_ref"] = value
+
+                errors = field_sample_intake_errors(bundle)
+
+                # A leading "/" or "~" is already outside the reference grammar; the rest
+                # is accepted by the grammar and caught by the opacity check.
+                self.assertTrue({"reference_not_opaque", "schema_validation_failed"} & {item["code"] for item in errors})
+                self.assertNotIn(value, json.dumps(errors, ensure_ascii=False))
+
+    def test_opaque_references_with_ordinary_punctuation_are_accepted(self) -> None:
+        self.assertNotIn("reference_not_opaque", self._codes(_intake()))
+
+    def test_an_exposure_record_cannot_name_a_candidate_that_declares_no_exposure(self) -> None:
+        other = _candidate(2)
+        record = {
+            "exposure_id": "exposure.1",
+            "kind": "tuning",
+            "subject_digest": other["original_digest"],
+            "actor_ref": "actor.a",
+            "actor_version": "v1",
+            "artifact_ref": "artifact.x",
+            "occurred_at": "2026-08-20T00:00:00Z",
+        }
+        exposed = _candidate(1, exposure_status="known_exposure", exposure_records=[record])
+
+        bundle = _intake(candidates=[exposed, other], clusters=[_cluster(1, split="calibration"), _cluster(2)])
+
+        self.assertIn("exposure_record_contradicts_candidate", self._codes(bundle))
+
+    def test_a_model_or_agent_reference_cannot_hold_a_human_role(self) -> None:
+        policy = _policy()
+        decision = build_human_policy_decision(
+            decision_id=policy["decision_record_ref"],
+            decision_type="adopt_policy",
+            human_actor_ref="agent.llm-claude",
+            policy=policy,
+            rationale="auto",
+            evidence_refs=["record.auto"],
+            recorded_at=POLICY_DECIDED_AT,
+        )
+        self.assertIn("human_role_has_machine_reference", self._codes(_intake(policy=policy, decision=decision)))
+
+        candidates = [_candidate(1), _candidate(2)]
+        for candidate in candidates:
+            candidate["unit_assessment"] = build_function_unit_assessment(
+                status="single_function",
+                assessor_ref="llm.claude-opus",
+                assessment_record_ref="record.auto",
+                recorded_at=candidate["acquired_at"],
+            )
+            candidate["candidate_digest"] = digest_value({k: v for k, v in candidate.items() if k != "candidate_digest"})
+        self.assertIn("human_role_has_machine_reference", self._codes(_intake(candidates=candidates)))
+
+    def test_ordinary_reviewer_references_are_accepted(self) -> None:
+        self.assertNotIn("human_role_has_machine_reference", self._codes(_intake()))
 
 
 if __name__ == "__main__":

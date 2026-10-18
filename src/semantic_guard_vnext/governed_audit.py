@@ -17,6 +17,7 @@ import json
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .assurance_graph import validate_assurance_claim_v1
 from .audit.report import RequirementAuditReport
@@ -804,7 +805,7 @@ def _validator() -> Draft202012Validator:
     with _SCHEMA_PATH.open("r", encoding="utf-8") as handle:
         schema = json.load(handle)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 @lru_cache(maxsize=1)
@@ -812,7 +813,7 @@ def _legacy_output_validator() -> Draft202012Validator:
     with _LEGACY_OUTPUT_SCHEMA_PATH.open("r", encoding="utf-8") as handle:
         schema = json.load(handle)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def legacy_output_errors(payload: Mapping[str, Any]) -> tuple[dict[str, str], ...]:

@@ -17,6 +17,7 @@ import re
 from typing import Any, Iterable, Mapping
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from semantic_guard.strict_schema import StrictDraft202012Validator
 
 from ._version import __version__
 from .legacy_runner import validate_requirement_input_size
@@ -873,7 +874,7 @@ def audit_direction_binding(
 def _validator() -> Draft202012Validator:
     schema = load_public_schema("direction-binding-audit")
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _walk(value: Any) -> Iterable[Any]:

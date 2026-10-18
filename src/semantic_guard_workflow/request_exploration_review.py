@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
-from jsonschema import Draft202012Validator
+from semantic_guard_workflow.strict_schema import StrictDraft202012Validator
 
 from semantic_guard_workflow.resources import resource_path
 
@@ -107,7 +107,7 @@ def validate_request_exploration_review(payload: object) -> list[str]:
     schema = load_request_exploration_review_schema()
     errors: list[str] = []
     reported_top_level: set[str] = set()
-    for error in Draft202012Validator(schema).iter_errors(payload):
+    for error in StrictDraft202012Validator(schema).iter_errors(payload):
         # Retain established top-level diagnostics without maintaining a second
         # set of validation rules. Only schema-reported failures reach this path.
         if not error.absolute_path and error.validator == "required":

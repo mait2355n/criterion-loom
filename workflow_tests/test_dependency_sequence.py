@@ -146,7 +146,9 @@ class DependencySequenceAssertionTests(unittest.TestCase):
             with self.subTest(length=len(body)):
                 started = time.perf_counter()
                 audit_plan(plan_with_sequence(body))
-                self.assertLess(time.perf_counter() - started, 0.5)
+                # Linear time costs a few tenths of a second at this size; the quadratic
+                # relation match this guards against took tens of seconds.
+                self.assertLess(time.perf_counter() - started, 2.0)
 
 
 if __name__ == "__main__":

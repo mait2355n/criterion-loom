@@ -8,13 +8,16 @@ does not authenticate those declarations or establish field validity.
 
 from __future__ import annotations
 
+import re
+
 import copy
 from datetime import datetime
 from functools import lru_cache
 import json
 from typing import Any, Iterable, Mapping, Sequence
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import Draft202012Validator
+from semantic_guard.strict_schema import StrictDraft202012Validator, strict_format_checker
 from referencing import Registry, Resource
 
 from .field_evaluation import (
@@ -135,6 +138,22 @@ def _duplicates(values: Iterable[str]) -> set[str]:
             duplicates.add(value)
         seen.add(value)
     return duplicates
+
+
+# Keywords whose message repeats the offending value. A raw request body put into a
+# reference field would otherwise be copied into the error, its logs and exceptions.
+_VALUE_ECHOING_KEYWORDS = frozenset({
+    "pattern", "enum", "const", "type", "format", "minLength", "maxLength", "minimum", "maximum",
+    "exclusiveMinimum", "exclusiveMaximum", "multipleOf", "minItems", "maxItems", "minProperties",
+    "maxProperties", "uniqueItems", "contains", "minContains", "maxContains", "propertyNames",
+    "additionalProperties", "unevaluatedProperties",
+})
+
+
+def _schema_failure_message(failure: Any) -> str:
+    if failure.validator in _VALUE_ECHOING_KEYWORDS:
+        return f"value violates the schema constraint '{failure.validator}'"
+    return str(failure.message)
 
 
 def _schema_location(path: Any) -> str:
@@ -315,6 +334,23 @@ def build_duplicate_cluster(
     return _bound(material, "cluster_digest")
 
 
+def _decision_material(source: Mapping[str, Any]) -> dict[str, Any]:
+    """The part of a human policy decision that an intake binds and an evaluation must replay."""
+    return {
+        "decision_id": source["decision_id"],
+        "decision_type": source["decision_type"],
+        "issuer_kind": source["issuer_kind"],
+        "human_actor_ref": source["human_actor_ref"],
+        "policy_id": source["policy_id"],
+        "policy_version": source["policy_version"],
+        "policy_digest": copy.deepcopy(dict(source["policy_digest"])),
+        "decision": source["decision"],
+        "rationale_digest": digest_value(source["rationale"]),
+        "evidence_refs": sorted(set(source["evidence_refs"])),
+        "recorded_at": source["recorded_at"],
+    }
+
+
 def _bind_policy(
     policy: Mapping[str, Any],
     human_policy_decision: Mapping[str, Any] | None,
@@ -322,21 +358,7 @@ def _bind_policy(
     target = policy["target_population"]
     decision: dict[str, Any] | None = None
     if human_policy_decision is not None:
-        source = human_policy_decision
-        decision_material = {
-            "decision_id": source["decision_id"],
-            "decision_type": source["decision_type"],
-            "issuer_kind": source["issuer_kind"],
-            "human_actor_ref": source["human_actor_ref"],
-            "policy_id": source["policy_id"],
-            "policy_version": source["policy_version"],
-            "policy_digest": copy.deepcopy(dict(source["policy_digest"])),
-            "decision": source["decision"],
-            "rationale_digest": digest_value(source["rationale"]),
-            "evidence_refs": sorted(set(source["evidence_refs"])),
-            "recorded_at": source["recorded_at"],
-        }
-        decision = _bound(decision_material, "decision_digest")
+        decision = _bound(_decision_material(human_policy_decision), "decision_digest")
     material = {
         "policy_id": policy["policy_id"],
         "policy_version": policy["version"],
@@ -747,8 +769,8 @@ def _schema_validator() -> Draft202012Validator:
     registry = Registry().with_resources(
         [(schema["$id"], Resource.from_contents(schema)) for schema in schemas]
     )
-    return Draft202012Validator(
-        schemas[0], registry=registry, format_checker=FormatChecker()
+    return StrictDraft202012Validator(
+        schemas[0], registry=registry, format_checker=strict_format_checker()
     )
 
 
@@ -759,10 +781,10 @@ def _policy_schema_validator() -> Draft202012Validator:
     registry = Registry().with_resource(
         field_schema["$id"], Resource.from_contents(field_schema)
     )
-    return Draft202012Validator(
+    return StrictDraft202012Validator(
         {"$ref": f"{field_schema['$id']}#/$defs/policy"},
         registry=registry,
-        format_checker=FormatChecker(),
+        format_checker=strict_format_checker(),
     )
 
 
@@ -824,6 +846,96 @@ def _lineage_cycle(candidate_by_id: Mapping[str, Mapping[str, Any]]) -> bool:
     return visited != len(candidate_by_id)
 
 
+_MACHINE_NAMESPACES = frozenset({
+    "llm", "agent", "model", "machine", "bot", "ai", "automated", "auto", "gpt", "claude", "codex",
+})
+_MACHINE_ANYWHERE = frozenset({"llm", "agent"})
+_NON_OPAQUE_REFERENCE = re.compile(r"@|://|\\|\.\.|^/|^~/|^[A-Za-z]:[\\/]")
+
+
+def _walk_strings(value: Any, location: str = "$") -> Iterable[tuple[str, str]]:
+    if isinstance(value, str):
+        yield location, value
+    elif isinstance(value, Mapping):
+        for key, item in value.items():
+            yield from _walk_strings(item, f"{location}.{key}")
+    elif isinstance(value, (list, tuple)):
+        for index, item in enumerate(value):
+            yield from _walk_strings(item, f"{location}.{index}")
+
+
+def _looks_machine(reference: str) -> bool:
+    tokens = [token for token in re.split(r"[.\-_:/]", reference.lower()) if token]
+    return bool(tokens) and (tokens[0] in _MACHINE_NAMESPACES or bool(_MACHINE_ANYWHERE & set(tokens)))
+
+
+def _extra_integrity_errors(bundle: Mapping[str, Any]) -> list[dict[str, str]]:
+    """Checks that need no policy: opaque references, human roles, subjects and exposure."""
+    errors: list[dict[str, str]] = []
+    candidates = bundle["candidates"]
+
+    # References are opaque identifiers. An e-mail address, URL or file path is a
+    # sign that a person or a private location was written into the record.
+    for location, value in _walk_strings(bundle):
+        if location.endswith(("_digest", ".value")) or ".digest." in location:
+            continue
+        if _NON_OPAQUE_REFERENCE.search(value):
+            _add(errors, "reference_not_opaque", location, "reference looks like an e-mail address, URL or file path")
+
+    # The library stamps the human kind on whatever reference it is given; a
+    # reference that names a model or an agent cannot stand behind that stamp.
+    human_roles: list[tuple[str, str]] = []
+    decision = bundle["policy_binding"]["human_decision"]
+    if decision is not None:
+        human_roles.append(("$.policy_binding.human_decision.human_actor_ref", decision["human_actor_ref"]))
+    human_roles.append(("$.duplicate_review.reviewer_ref", bundle["duplicate_review"]["reviewer_ref"]))
+    for index, candidate in enumerate(candidates):
+        human_roles.append((f"$.candidates.{index}.unit_assessment.assessor_ref", candidate["unit_assessment"]["assessor_ref"]))
+        human_roles.append((f"$.candidates.{index}.privacy_review.reviewer_ref", candidate["privacy_review"]["reviewer_ref"]))
+    for location, reference in human_roles:
+        if _looks_machine(str(reference)):
+            _add(errors, "human_role_has_machine_reference", location, "a human-attested role cannot be held by a model or agent reference")
+
+    # One subject is one duplicate unit: the same subject_ref in two clusters would
+    # count one source twice in the held-out sample.
+    cluster_of: dict[str, set[str]] = {}
+    for cluster in bundle["duplicate_clusters"]:
+        for member in cluster["member_refs"]:
+            cluster_of.setdefault(str(member), set()).add(str(cluster["cluster_id"]))
+    by_subject: dict[str, list[tuple[int, str]]] = {}
+    for index, candidate in enumerate(candidates):
+        by_subject.setdefault(str(candidate["subject_ref"]), []).append((index, str(candidate["candidate_id"])))
+    for members in by_subject.values():
+        if len(members) < 2:
+            continue
+        clusters = set().union(*(cluster_of.get(candidate_id, {candidate_id}) for _, candidate_id in members))
+        if len(clusters) > 1:
+            for index, _ in members[1:]:
+                _add(errors, "subject_ref_split_across_clusters", f"$.candidates.{index}.subject_ref", "one subject appears in more than one duplicate unit")
+
+    # An exposure record names a subject by digest. That subject must not be a
+    # candidate that elsewhere declares no known exposure.
+    exposed = {
+        (item["subject_digest"]["algorithm"], item["subject_digest"]["value"])
+        for candidate in candidates
+        for item in candidate["exposure_declaration"]["records"]
+    }
+    for index, candidate in enumerate(candidates):
+        if candidate["exposure_declaration"]["status"] == "known_exposure":
+            continue
+        for field in ("original_digest", "normalized_digest", "evaluation_subject_digest"):
+            digest = candidate[field]
+            if (digest["algorithm"], digest["value"]) in exposed:
+                _add(
+                    errors,
+                    "exposure_record_contradicts_candidate",
+                    f"$.candidates.{index}.exposure_declaration.status",
+                    "an exposure record names this candidate's content while it declares no known exposure",
+                )
+                break
+    return errors
+
+
 def field_sample_intake_errors(
     bundle: Mapping[str, Any],
 ) -> tuple[dict[str, str], ...]:
@@ -838,7 +950,7 @@ def field_sample_intake_errors(
             errors,
             "schema_validation_failed",
             _schema_location(failure.path),
-            failure.message,
+            _schema_failure_message(failure),
         )
     if schema_failures:
         return tuple(
@@ -848,6 +960,7 @@ def field_sample_intake_errors(
     _check_record_digest(
         errors, bundle, "bundle_digest", "$", "bundle_digest_mismatch"
     )
+    errors.extend(_extra_integrity_errors(bundle))
     policy_binding = bundle["policy_binding"]
     _check_record_digest(
         errors,
@@ -1455,7 +1568,7 @@ def _projection_policy_errors(
             errors,
             "projection_policy_schema_invalid",
             "$.policy" if location == "$" else f"$.policy{location[1:]}",
-            failure.message,
+            _schema_failure_message(failure),
         )
     if schema_failures:
         return errors
@@ -1497,6 +1610,15 @@ def _projection_policy_errors(
                 f"$.policy_binding.{field}",
                 field,
             )
+    bound_decision = binding["human_decision"]
+    bound_id = bound_decision["decision_id"] if bound_decision is not None else None
+    if bound_id != policy["decision_record_ref"]:
+        _add(
+            errors,
+            "projection_policy_decision_mismatch",
+            "$.policy.decision_record_ref",
+            "the decision bound by the intake is not the decision the policy cites",
+        )
     if bundle["holdout_projection"]["status"] != "ready":
         _add(
             errors,
@@ -1520,6 +1642,52 @@ def project_holdout_field_cases(
     if errors:
         raise FieldSampleIntakeValidationError(errors)
     return copy.deepcopy(list(bundle["holdout_projection"]["cases"]))
+
+
+def _evaluation_decision_errors(
+    intake: Mapping[str, Any], evaluation: Mapping[str, Any]
+) -> list[dict[str, str]]:
+    """The evaluation's decision record must be the very record the intake bound.
+
+    Matching only the policy digest let an intake bind one human decision while
+    the evaluation cited, and was judged against, another one recorded after the
+    collection opened.
+    """
+    errors: list[dict[str, str]] = []
+    reference = evaluation["policy"]["decision_record_ref"]
+    bound = intake["policy_binding"]["human_decision"]
+    location = "$.evaluation.policy.decision_record_ref"
+    if bound is None or reference is None:
+        if bound is not None or reference is not None:
+            _add(errors, "intake_evaluation_decision_mismatch", location, "only one side cites a policy decision")
+        return errors
+    records = [
+        item for item in evaluation["human_decision_records"] if item["decision_id"] == reference
+    ]
+    if bound["decision_id"] != reference or len(records) != 1:
+        _add(
+            errors,
+            "intake_evaluation_decision_mismatch",
+            location,
+            "the evaluation cites a decision the intake did not bind",
+        )
+        return errors
+    record = records[0]
+    if _bound(_decision_material(record), "decision_digest") != dict(bound):
+        _add(
+            errors,
+            "intake_evaluation_decision_mismatch",
+            "$.evaluation.human_decision_records",
+            "the evaluation's decision record differs from the one the intake bound",
+        )
+    if _parse_time(record["recorded_at"]) >= _parse_time(intake["collection"]["opened_at"]):
+        _add(
+            errors,
+            "intake_evaluation_policy_adopted_after_collection_open",
+            "$.evaluation.human_decision_records",
+            "the policy must be adopted before the collection opens",
+        )
+    return errors
 
 
 def field_sample_intake_evaluation_errors(
@@ -1569,6 +1737,7 @@ def field_sample_intake_evaluation_errors(
                 f"$.evaluation.policy.{field}",
                 field,
             )
+    errors.extend(_evaluation_decision_errors(intake, evaluation))
     if evaluation["cases"] != projection["cases"]:
         _add(
             errors,

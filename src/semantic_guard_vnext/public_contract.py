@@ -17,6 +17,7 @@ import re
 from typing import Any, Iterable
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 from referencing import Registry, Resource
 
 from .audit.report import RequirementAuditReport
@@ -1772,7 +1773,7 @@ def _validator() -> Draft202012Validator:
     if root is None:
         raise FileNotFoundError("audit-result.schema.json is missing")
     registry = Registry().with_resources(resources)
-    return Draft202012Validator(
+    return StrictDraft202012Validator(
         root,
         registry=registry,
         format_checker=FormatChecker(),

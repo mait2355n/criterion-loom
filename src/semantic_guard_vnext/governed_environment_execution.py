@@ -18,6 +18,7 @@ import subprocess
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .environment_resolution import EnvironmentResolutionError, canonical_digest, file_digest
 from .qualified_environment import (
@@ -828,7 +829,7 @@ def validate_execution_receipt_v1(
             "schema_unavailable", f"{_RECEIPT_SCHEMA}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(
+        StrictDraft202012Validator(
             schema, format_checker=FormatChecker()
         ).iter_errors(receipt),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),

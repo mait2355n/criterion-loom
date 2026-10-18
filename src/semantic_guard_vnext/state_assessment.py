@@ -18,6 +18,7 @@ import re
 from typing import Any, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .schema_access import schema_directory
 
@@ -109,7 +110,7 @@ def _schema(name: str) -> dict[str, Any]:
 def _validator(name: str) -> Draft202012Validator:
     schema = _schema(name)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 @lru_cache(maxsize=1)
@@ -121,7 +122,7 @@ def _evidence_validator() -> Draft202012Validator:
         "$ref": "#/$defs/evidence_observation",
     }
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _validate_schema(

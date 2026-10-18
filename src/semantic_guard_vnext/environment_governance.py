@@ -13,6 +13,7 @@ import json
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .environment_resolution import (
     EnvironmentResolutionError,
@@ -49,7 +50,7 @@ def _validate_schema(value: Mapping[str, Any]) -> None:
             "schema_unavailable", f"{_SCHEMA_PATH}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),
     )
     if issues:
@@ -89,7 +90,7 @@ def validate_candidate_environment_resolution(resolution: Mapping[str, Any]) -> 
             "schema_unavailable", f"{_CANDIDATE_RESOLUTION_SCHEMA_PATH}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(
             resolution
         ),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),

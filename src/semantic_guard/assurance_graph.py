@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from semantic_guard.strict_schema import StrictDraft202012Validator
 from referencing import Registry, Resource
 
 from .engine import RequirementAuditReport, audit_requirement_relations
@@ -1420,7 +1421,7 @@ def _validator() -> Draft202012Validator:
             root = schema
     if root is None:
         raise FileNotFoundError("assurance-claim-v1.schema.json is missing")
-    return Draft202012Validator(
+    return StrictDraft202012Validator(
         root,
         registry=Registry().with_resources(resources),
         format_checker=FormatChecker(),

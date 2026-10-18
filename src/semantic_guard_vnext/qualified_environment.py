@@ -23,6 +23,7 @@ import uuid
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .environment_resolution import (
     EnvironmentResolutionError,
@@ -215,7 +216,7 @@ def _validate_schema(
             "schema_unavailable", f"{path}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(
+        StrictDraft202012Validator(
             schema, format_checker=FormatChecker()
         ).iter_errors(value),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),

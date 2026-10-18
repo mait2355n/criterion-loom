@@ -3,7 +3,8 @@ from __future__ import annotations
 import hashlib
 from typing import Any, Mapping
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import FormatChecker
+from semantic_guard.strict_schema import StrictDraft202012Validator
 
 from .providers import (
     AnalysisAttempt,
@@ -32,7 +33,7 @@ class SubmittedLLMCandidateProvider:
 
     def __init__(self, bundle: Mapping[str, Any]) -> None:
         material = dict(bundle)
-        Draft202012Validator(
+        StrictDraft202012Validator(
             load_public_schema("llm-candidate-input"),
             format_checker=FormatChecker(),
         ).validate(material)
