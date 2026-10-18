@@ -76,6 +76,68 @@ def _relation_evidence_excerpt(check: dict[str, object], role: str) -> str:
     return ""
 
 
+def _relation_summary_in_source_coordinates(
+    summary: dict[str, object],
+    *,
+    text: str,
+    context: str,
+    source_text: str,
+    source_context: str,
+    source_ranges: dict[str, list[tuple[int, int]]],
+) -> dict[str, object]:
+    """Return ``summary`` with its evidence spans moved to the caller's text.
+
+    The relation audit ran on the normalized text and context, whose combined
+    input is ``text + "\n" + context``. Published spans must index the caller's
+    own combined input, so each endpoint is mapped back through
+    ``normalization_source_ranges`` and re-based onto the original layout.
+    """
+    separator = "\n" if text and context else ""
+    normalized_context_start = len(text) + len(separator)
+    source_separator = "\n" if source_text and source_context else ""
+    source_context_start = len(source_text) + len(source_separator)
+    source_combined = f"{source_text}{source_separator}{source_context}"
+
+    def locate(position: int, *, end: bool) -> int | None:
+        if position < len(text):
+            ranges, local, base = source_ranges.get("request"), position, 0
+        elif position >= normalized_context_start:
+            ranges, local, base = source_ranges.get("context"), position - normalized_context_start, source_context_start
+        else:
+            return len(source_text) + (1 if end else 0)
+        if ranges is None:
+            return base + local + (1 if end else 0)
+        if not 0 <= local < len(ranges):
+            return None
+        return base + ranges[local][1 if end else 0]
+
+    def remap(span: object) -> object:
+        if not isinstance(span, dict):
+            return span
+        start, end = span.get("start"), span.get("end")
+        if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end:
+            return span
+        mapped = dict(span)
+        new_start, new_end = locate(start, end=False), locate(end - 1, end=True)
+        if new_start is None or new_end is None or not new_start < new_end <= len(source_combined):
+            mapped.pop("start", None)
+            mapped.pop("end", None)
+            return mapped
+        mapped["start"], mapped["end"] = new_start, new_end
+        mapped["excerpt"] = source_combined[new_start:new_end][:240]
+        return mapped
+
+    checks = summary.get("checks")
+    if not isinstance(checks, list):
+        return summary
+    remapped_checks: list[object] = []
+    for check in checks:
+        if isinstance(check, dict) and isinstance(check.get("evidence_spans"), list):
+            check = {**check, "evidence_spans": [remap(span) for span in check["evidence_spans"]]}
+        remapped_checks.append(check)
+    return {**summary, "checks": remapped_checks}
+
+
 def _add_requirement_relation_result(
     summary: dict[str, object],
     findings: list[Finding],
@@ -595,12 +657,45 @@ def audit_request(
                 if 0 <= span.start < span.end <= len(ranges):
                     span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
                     span.excerpt = excerpt_around(source_bodies[span.source], span.start, span.end)
-    relation_audit = audit_requirement_relations(
-        source_text,
-        context=source_context,
-        morphology_provider=morphology_provider,
-    )
-    relation_summary = relation_audit.public_summary()
+    # The relation audit compares labelled fields, so it must see the same
+    # spelling the lexical detectors do: an invisible character inside a label
+    # otherwise turns a closed record into an unknown one and a warning into a
+    # pass. Without a morphology provider it therefore runs on the normalized
+    # text and its spans are mapped back to the caller's coordinates. A provider
+    # binds its analysis to the exact input, so that run keeps the caller's text
+    # for the bound summaries, while the verdict still comes from a provider-less
+    # run on the normalized text.
+    view_changed = text != source_text or context != source_context
+
+    def normalized_relation_summary() -> dict[str, object]:
+        return _relation_summary_in_source_coordinates(
+            audit_requirement_relations(text, context=context).public_summary(),
+            text=text,
+            context=context,
+            source_text=source_text,
+            source_context=source_context,
+            source_ranges=source_ranges,
+        )
+
+    if morphology_provider is None and view_changed:
+        relation_audit = audit_requirement_relations(text, context=context)
+        relation_summary = _relation_summary_in_source_coordinates(
+            relation_audit.public_summary(),
+            text=text,
+            context=context,
+            source_text=source_text,
+            source_context=source_context,
+            source_ranges=source_ranges,
+        )
+        relation_decision = relation_summary
+    else:
+        relation_audit = audit_requirement_relations(
+            source_text,
+            context=source_context,
+            morphology_provider=morphology_provider,
+        )
+        relation_summary = relation_audit.public_summary()
+        relation_decision = normalized_relation_summary() if view_changed else relation_summary
     decision_frame_summary = (
         audit_precondition_sufficiency(relation_audit.ir)
         if morphology_provider is not None
@@ -759,7 +854,7 @@ def audit_request(
     )
 
     _add_requirement_relation_result(
-        relation_summary,
+        relation_decision,
         findings,
         non_emitted_rules,
         strict=strict,

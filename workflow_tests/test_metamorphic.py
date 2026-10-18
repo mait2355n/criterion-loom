@@ -71,20 +71,31 @@ class InvarianceTests(unittest.TestCase):
         self.assertEqual(report["checked"], 2)
 
     def test_known_drift_rejects_unrelated_findings_and_changed_status(self) -> None:
-        rewrites = tuple(item for item in REWRITES if item.name in {
-            name for name, _ in metamorphic.KNOWN_DRIFT
-        })
+        fixture = "requests/verification-target-mismatch.expected.json"
+        rule = "req.relation.verification_target_mismatch"
+        known = {
+            (name, fixture): {
+                "reason": "synthetic exception used to exercise the allowance",
+                "status": {"before": "warn", "after": "pass"},
+                "lost": [rule],
+                "gained": [],
+            }
+            for name in ("fullwidth_ascii", "decomposed_kana", "halfwidth_katakana")
+        }
+        rewrites = tuple(item for item in REWRITES if item.name in {name for name, _ in known})
         original_rerun = metamorphic._rerun
-        for mutation in ("finding", "status"):
+        for mutation in ("exact", "finding", "status"):
             def altered(spec, expected_path, text):
                 result = original_rerun(spec, expected_path, text)
                 if expected_path.name == "verification-target-mismatch.expected.json":
+                    result["status"] = "pass"
+                    result["findings"] = [item for item in result["findings"] if item.get("rule_id") != rule]
                     if mutation == "finding":
                         result["findings"].append({
                             "severity": "blocker", "category": "security",
                             "rule_id": "req.example.unrelated_regression",
                         })
-                    else:
+                    elif mutation == "status":
                         result["status"] = "blocked"
                 return result
 
@@ -95,11 +106,23 @@ class InvarianceTests(unittest.TestCase):
                 target.write_text((Path(DEFAULT_FIXTURE_ROOT) / "requests" / target.name).read_text(encoding="utf-8"), encoding="utf-8")
                 with (
                     patch.object(metamorphic, "REWRITES", rewrites),
+                    patch.object(metamorphic, "KNOWN_DRIFT", known),
                     patch.object(metamorphic, "_rerun", altered),
                 ):
                     report = evaluate_invariance(root)
-                self.assertFalse(report["passed"])
-                self.assertEqual(len(report["unexpected_drift"]), 3)
+                if mutation == "exact":
+                    self.assertTrue(report["passed"])
+                    self.assertEqual(len(report["known_drift"]), 3)
+                else:
+                    self.assertFalse(report["passed"])
+                    self.assertEqual(len(report["unexpected_drift"]), 3)
+
+    def test_no_rewrite_drifts_on_the_repository_fixtures(self) -> None:
+        self.assertEqual(metamorphic.KNOWN_DRIFT, {})
+        report = evaluate_invariance()
+
+        self.assertEqual(report["drifted"], 0)
+        self.assertEqual(report["known_drift"], [])
 
     def test_repository_fixtures_are_stable_under_every_rewrite(self) -> None:
         report = evaluate_invariance()

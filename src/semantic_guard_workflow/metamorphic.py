@@ -173,15 +173,10 @@ REWRITES: tuple[RewriteSpec, ...] = (
 
 # A known pair permits only this exact status and rule delta. Other regressions
 # in the same fixture must remain unexpected; a reason alone is not a waiver.
-KNOWN_DRIFT: dict[tuple[str, str], dict[str, Any]] = {
-    (name, "requests/verification-target-mismatch.expected.json"): {
-        "reason": "the relation audit receives the caller's text unchanged because its spans and morphology binding refer to that text",
-        "status": {"before": "warn", "after": "pass"},
-        "lost": ["req.relation.verification_target_mismatch"],
-        "gained": [],
-    }
-    for name in ("fullwidth_ascii", "decomposed_kana", "halfwidth_katakana")
-}
+# No rewrite currently drifts: the relation audit reads the normalized text, so
+# spelling and invisible characters no longer change a verdict. An entry that
+# stops occurring is reported as stale, which keeps this table from rotting.
+KNOWN_DRIFT: dict[tuple[str, str], dict[str, Any]] = {}
 
 
 def _applicable(spec: RewriteSpec, fixture: dict[str, Any]) -> bool:

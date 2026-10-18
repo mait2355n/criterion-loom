@@ -1,12 +1,91 @@
 from __future__ import annotations
 
+import unicodedata
 import unittest
 import random
 
 from semantic_guard_workflow.core import audit_diff, audit_plan, audit_request
 from semantic_guard_workflow.plan_audit import _deliverable_item_count
 from semantic_guard_workflow.rule_mapping import enrich_finding_mapping
+from workflow_tests.test_request_direction_binding import CharacterSignalProvider
 from semantic_guard_workflow.text_normalization import normalization_source_ranges, normalize_audit_text
+
+MISMATCH_RULE = "req.relation.verification_target_mismatch"
+MISMATCH_REQUEST = (
+    "利用者: 運用者。目的: 検索応答性能を保証する。"
+    "シナリオ: 運用者が検索語を入力した場合、検索結果一覧が返る。"
+    "受入基準: 検索応答時間の p95 が 500ms 以下。"
+    "検証方法: pytest でログイン認証の成功と失敗を試験する。"
+    "証拠: ログイン認証の pytest 結果を保存する。"
+    "不合格条件: p95 が 500ms を超えた場合は差し戻し。"
+    "対象外: UI刷新。未確定: なし。利害関係者: 運用者。優先度: 必須。"
+)
+
+
+def _full_width(text: str) -> str:
+    return "".join(chr(ord(c) + 0xFEE0) if 0x21 <= ord(c) <= 0x7E else c for c in text)
+
+
+class RelationAuditSeesNormalizedTextTests(unittest.TestCase):
+    def _rules(self, text: str, **kwargs: object) -> tuple[str, set[object]]:
+        result = audit_request(text, **kwargs)
+        return result["status"], {finding.get("rule_id") for finding in result["findings"]}
+
+    def test_invisible_characters_inside_a_label_do_not_hide_the_mismatch(self) -> None:
+        baseline = self._rules(MISMATCH_REQUEST)
+        self.assertEqual(baseline[0], "warn")
+        self.assertIn(MISMATCH_RULE, baseline[1])
+        for label in ("受入基準", "検証方法"):
+            for character in ("\ufeff", "\u200b", "\u2062", "\ufe0f", "\U000e0020"):
+                with self.subTest(label=label, character=hex(ord(character))):
+                    variant = MISMATCH_REQUEST.replace(label, label[0] + character + label[1:])
+                    self.assertEqual(self._rules(variant), baseline)
+
+    def test_spelling_variants_keep_the_mismatch(self) -> None:
+        baseline = self._rules(MISMATCH_REQUEST)
+        for name, variant in {
+            "fullwidth": _full_width(MISMATCH_REQUEST),
+            "decomposed": unicodedata.normalize("NFD", MISMATCH_REQUEST),
+            "crlf": MISMATCH_REQUEST.replace("。", "。\r\n"),
+            "bom_prefix": "\ufeff" + MISMATCH_REQUEST,
+        }.items():
+            with self.subTest(variant=name):
+                self.assertEqual(self._rules(variant), baseline)
+
+    def test_relation_spans_index_the_callers_own_text(self) -> None:
+        for name, variant in {
+            "plain": MISMATCH_REQUEST,
+            "fullwidth": _full_width(MISMATCH_REQUEST),
+            "decomposed": unicodedata.normalize("NFD", MISMATCH_REQUEST),
+            "invisible": "\u200b\ufeff" + MISMATCH_REQUEST.replace("検証方法", "検\u2062証方法"),
+            "crlf": MISMATCH_REQUEST.replace("。", "。\r\n"),
+        }.items():
+            with self.subTest(variant=name):
+                result = audit_request(variant)
+                check = result["details"]["requirement_relation_summary"]["checks"][0]
+                self.assertEqual(check["status"], "mismatch")
+                spans = check["evidence_spans"]
+                self.assertEqual(len(spans), 2)
+                for span in spans:
+                    self.assertEqual(variant[span["start"]:span["end"]], span["excerpt"])
+                finding = next(item for item in result["findings"] if item.get("rule_id") == MISMATCH_RULE)
+                self.assertEqual(finding["derivation"]["evidence_spans"], spans)
+
+    def test_spans_into_context_are_rebased_onto_the_original_layout(self) -> None:
+        context = "\u200b" + MISMATCH_REQUEST
+        result = audit_request("", context=context)
+        check = result["details"]["requirement_relation_summary"]["checks"][0]
+
+        for span in check.get("evidence_spans", []):
+            self.assertEqual(context[span["start"]:span["end"]], span["excerpt"])
+
+    def test_a_provider_run_keeps_the_callers_text_and_still_reports_the_mismatch(self) -> None:
+        text = _full_width(MISMATCH_REQUEST)
+
+        result = audit_request(text, morphology_provider=CharacterSignalProvider())
+
+        self.assertIn(MISMATCH_RULE, {finding.get("rule_id") for finding in result["findings"]})
+        self.assertIn("direction_binding_summary", result["details"])
 
 
 class NormalizationContractTests(unittest.TestCase):
