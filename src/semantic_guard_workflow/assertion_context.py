@@ -50,6 +50,9 @@ class AssertionMatch:
     excerpt: str
     status: AssertionStatus
     reason: str
+    # True when the field is stated with its own value (an exact label, a table
+    # cell, a heading, or ``Xは未定``) rather than merely mentioned.
+    labelled: bool = False
 
     @property
     def state(self) -> AssertionState:
@@ -148,7 +151,7 @@ _JAPANESE_NEGATED_FIELD_VALUE = re.compile(
     r"(?:定め|設け)(?:ない|ません|ず|ぬ)"
     r"|(?:設定|規定|定義|記載|用意|策定|明示|実施|実行|使用|採用|保持|保存|記録|作成|生成|提出|取得)"
     r"(?:しない|しません|せず|していない|していません|されていない|されていません)"
-    r"|残(?:さない|しません|さず|していない|していません)"
+    r"|(?:残|戻|巻き戻)(?:さない|しません|さず|していない|していません)|(?:復旧|復元|退避|撤回|ロールバック)(?:しない|しません|せず|していない|していません)"
     r"|行(?:わ(?:ない|ず)|いません)"
     r")(?:です|方針です|こと(?:と|に)する)?$"
 )
@@ -171,7 +174,7 @@ _JAPANESE_NEGATED_RELATION = re.compile(
     r"|(?:定め|設け)(?:ない|ません|ず|ぬ)"
     r"|(?:設定|規定|定義|記載|用意|策定|明示|保持|保存|記録|実施|実行|使用|採用|作成|生成|提出|取得)"
     r"(?:しない|しません|せず|していない|していません|されていない|されていません)"
-    r"|残(?:さない|しません|さず|していない|していません)"
+    r"|(?:残|戻|巻き戻)(?:さない|しません|さず|していない|していません)|(?:復旧|復元|退避|撤回|ロールバック)(?:しない|しません|せず|していない|していません)"
     r"|行(?:わ(?:ない|ず)|いません)"
     r"|存在(?:し)?(?:ない|しません)"
     r")"
@@ -337,6 +340,9 @@ _ENGLISH_EVIDENCE_FIELD_ACTIONS = {
 }
 
 
+_Chosen = tuple[str, int, int, AssertionStatus, str, bool]
+
+
 def find_field_assertion(text: str, terms: Iterable[str], *, accept_none: bool = False) -> AssertionMatch | None:
     """Return the strongest deterministic assertion for the supplied field terms.
 
@@ -353,17 +359,29 @@ def find_field_assertion(text: str, terms: Iterable[str], *, accept_none: bool =
         return None
 
     # Classify in reading order and stop at the first decision: only the chosen
-    # match needs an excerpt, and a text with many mentions stays linear.
-    first: tuple[str, int, int, AssertionStatus, str] | None = None
+    # match needs an excerpt, and a text with many mentions stays linear. A
+    # field stated with its own value is judged by that value alone; a passing
+    # mention of the same word elsewhere does not turn ``検証: 後で決める`` into a
+    # verification plan. Without such a statement, any decided mention counts.
+    first_labelled: _Chosen | None = None
+    first_weak_present: _Chosen | None = None
+    first_any: _Chosen | None = None
     for term, start, end in matches:
-        status, reason = _classify(text, term, start, end)
+        status, reason, labelled = _classify(text, term, start, end)
         if accept_none and reason in _NONE_REASONS:
             status = "present"
-        if status == "present":
-            return _match(text, term, start, end, status, reason)
-        if first is None:
-            first = (term, start, end, status, reason)
-    return _match(text, *first) if first is not None else None
+        item = (term, start, end, status, reason, labelled)
+        if labelled:
+            if status == "present":
+                return _match(text, *item)
+            if first_labelled is None:
+                first_labelled = item
+        elif status == "present" and first_weak_present is None:
+            first_weak_present = item
+        if first_any is None:
+            first_any = item
+    chosen = first_labelled or first_weak_present or first_any
+    return _match(text, *chosen) if chosen is not None else None
 
 
 def asserted_excerpt(text: str, terms: Iterable[str], *, accept_none: bool = False) -> str:
@@ -431,25 +449,29 @@ _NEGATION_COMPLETE = re.compile(
 )
 
 
-def _classify(text: str, term: str, start: int, end: int) -> tuple[AssertionStatus, str]:
+def _classify(text: str, term: str, start: int, end: int) -> tuple[AssertionStatus, str, bool]:
     structured = _structured_value(text, term, start, end)
     if structured is not None:
-        value, reason = structured
-        return ("rejected" if reason else "present"), (reason or "asserted_field_value")
+        value, reason, exact = structured
+        # A concrete value under any label is a statement of the field; an empty
+        # or postponed one only speaks for the field under its exact label.
+        return ("rejected" if reason else "present"), (reason or "asserted_field_value"), exact or not reason
 
     before = text[max(0, start - 48):start]
     after = text[end:min(len(text), end + 96)]
     english_action_prefix = _ENGLISH_NEGATED_ACTION_PREFIX.search(before)
     if _ENGLISH_NEGATED_PREFIX.search(before) or _ENGLISH_NEGATED_DETERMINER_PREFIX.search(before):
-        return "rejected", "explicit_negation"
+        return "rejected", "explicit_negation", False
     if english_action_prefix:
-        return "rejected", "explicit_negation"
+        return "rejected", "explicit_negation", False
+    valued = False
     for copula in (_COPULA, _ENGLISH_COPULA):
         stated = copula.match(after)
         if stated is not None:
             reason = _placeholder_reason(stated.group("value"), term)
             if reason:
-                return "rejected", reason
+                return "rejected", reason, True
+            valued = True
     japanese_negation = _JAPANESE_NEGATED_RELATION.search(after)
     if (
         japanese_negation
@@ -457,13 +479,13 @@ def _classify(text: str, term: str, start: int, end: int) -> tuple[AssertionStat
         and _japanese_relation_applies(term, japanese_negation.group(0))
         and not _looks_like_japanese_field_content(after[japanese_negation.end():], term)
     ):
-        return "rejected", "explicit_negation"
+        return "rejected", "explicit_negation", False
     if _ENGLISH_NEGATED_RELATION.search(after):
-        return "rejected", "explicit_negation"
-    return "present", "lexical_assertion"
+        return "rejected", "explicit_negation", False
+    return "present", "lexical_assertion", valued
 
 
-def _structured_value(text: str, term: str, start: int, end: int) -> tuple[str, str] | None:
+def _structured_value(text: str, term: str, start: int, end: int) -> tuple[str, str, bool] | None:
     # Look at a bounded window around the mention so that a very long line with
     # many mentions costs the same per mention as a short one.
     window_start = max(0, start - _WINDOW_BEFORE)
@@ -480,28 +502,29 @@ def _structured_value(text: str, term: str, start: int, end: int) -> tuple[str, 
 
     tail = line[relative_end:]
     prefix = line[:relative_start]
-    label = _LABEL_SEPARATOR.match(tail) or _COMPOUND_LABEL.match(tail)
+    exact_label = _LABEL_SEPARATOR.match(tail)
+    label = exact_label or _COMPOUND_LABEL.match(tail)
     if label is not None:
         value = _first_sentence_value(label.group("value"))
         if not _has_content(value) and not cut_short:
             value = _following_structured_value(text, line_end)
-        return value, _placeholder_reason(value, term)
+        return value, _placeholder_reason(value, term), exact_label is not None
 
     # Table row: ``| 検証 | 未定 |``. The term must open its cell.
     if "|" in prefix:
         cell = _TABLE_CELL.match(tail)
         if cell is not None and prefix.strip().strip("|").strip("*_` ") == "":
             value = cell.group("value")
-            return value, _placeholder_reason(value, term)
+            return value, _placeholder_reason(value, term), tail.lstrip().startswith("|")
 
     markdown_heading = bool(re.match(r"^\s*#{1,6}\s+", prefix))
     normalized_line = re.sub(r"^\s*(?:>\s*)*(?:#{1,6}\s+|[-*]\s+|\d+[.)]\s+)", "", line).strip().strip("*_`~ ")
     if markdown_heading and normalized_line.casefold() == term.casefold() and not cut_short:
         value = _following_structured_value(text, line_end)
-        return value, _placeholder_reason(value, term)
+        return value, _placeholder_reason(value, term), True
 
     if normalized_line.casefold() == term.casefold():
-        return "", "empty_or_placeholder_value"
+        return "", "empty_or_placeholder_value", True
     return None
 
 
@@ -686,6 +709,7 @@ def _match(
     end: int,
     status: AssertionStatus,
     reason: str,
+    labelled: bool = False,
 ) -> AssertionMatch:
     return AssertionMatch(
         term=term,
@@ -694,6 +718,7 @@ def _match(
         excerpt=excerpt_around(text, start, end),
         status=status,
         reason=reason,
+        labelled=labelled,
     )
 
 

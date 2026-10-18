@@ -155,7 +155,7 @@ class DecisionStateTests(unittest.TestCase):
             f"{TERM}: " + "=" * n,
             f"{TERM}: " + "*" * n + "未定",
             f"{TERM}: x" + " / " * n,
-            f"{TERM}" + "検証" * n,
+            f"{TERM}" + "検証" * 20_000,
             f"{TERM}は未定。" * 10_000,
             f"{TERM}: 未定。\n" * 10_000,
             f"## {TERM}\n" * 10_000,

@@ -7,6 +7,7 @@ from semantic_guard_workflow.audit_common import (
     CHANGE_CONTROL_TERMS,
     SCOPE_BOUNDARY_TERMS,
     _has_any,
+    _has_asserted_any,
     _has_bounded_broad_scope_controls,
     _has_overlap,
     _normalize_input_kind,
@@ -14,6 +15,7 @@ from semantic_guard_workflow.audit_common import (
     _suppression_trace,
     _tokens,
 )
+from semantic_guard_workflow.matching import STRONG_FIELD_ALIASES
 from semantic_guard_workflow.field_detection import field_match_diagnostic as _field_match_diagnostic, missing_field_finding as _missing_field_finding
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.problem_signals import (
@@ -453,6 +455,9 @@ NEGATABLE_HUMAN_QUESTION_NECESSITY_TERMS = {
 
 # Required-field gaps without a dedicated detector map to the catalog rule that
 # owns the field. Rollback and validation set their own rule below.
+# Fields for which "nothing" is an answer: ``未確定: なし`` and ``依存: なし`` state a
+# decision, while ``検証: なし`` states that there is no verification plan.
+_ACCEPT_NONE_FIELDS = frozenset({"non_goals", "unknowns_or_decisions", "risks", "dependencies"})
 _REQUIRED_FIELD_RULE_IDS = {
     "objective": "plan.objective.purpose_missing",
     "non_goals": "plan.scope.non_goals_missing",
@@ -497,7 +502,15 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
 
     for field, patterns in required.items():
         diagnostic = _field_match_diagnostic(combined, field, patterns)
-        if not _has_any(combined, patterns) and diagnostic.match_status != "matched":
+        # A label is not a decision: when the field's words occur, the value
+        # behind them must be one. Only a field whose words are absent can
+        # still be recognized through an alias.
+        terms = [*patterns, *STRONG_FIELD_ALIASES.get(field, [])]
+        if _has_any(combined, terms):
+            satisfied = _has_asserted_any(combined, terms, accept_none=field in _ACCEPT_NONE_FIELDS)
+        else:
+            satisfied = diagnostic.match_status == "matched"
+        if not satisfied:
             missing.append(field)
             severity = "blocker" if strict and field in critical else "minor" if field in advisory else "major"
             finding_text = f"計画に `{field}` が見えない。"

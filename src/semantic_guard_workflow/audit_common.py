@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 
-from semantic_guard_workflow.assertion_context import find_field_assertion
+from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import build_result
 from semantic_guard_workflow.text_utils import (
@@ -273,6 +274,21 @@ def _add_ambiguity_findings(text: str, findings: list[Finding]) -> None:
                 rule_id="req.clarity.ambiguous_term",
             )
         )
+
+
+def _has_asserted_any(text: str, terms: Iterable[str], *, accept_none: bool = False) -> bool:
+    """Whether a term is present as a decision, not as an empty or postponed label.
+
+    ``_has_any`` answers "does the word occur"; a label with ``未定`` behind it
+    contains the word and states no decision. ``accept_none`` is for fields
+    where "nothing" (``なし``, ``該当なし``) is itself an answer.
+    """
+    match = find_field_assertion(text, list(terms), accept_none=accept_none)
+    return match is not None and match.status == "present"
+
+
+def _first_asserted(text: str, terms: Iterable[str], *, accept_none: bool = False) -> str:
+    return asserted_excerpt(text, list(terms), accept_none=accept_none)
 
 
 def _looks_multi_requirement(text: str) -> bool:
