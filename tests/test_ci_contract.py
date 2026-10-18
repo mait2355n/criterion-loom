@@ -27,6 +27,20 @@ FULL_CONTRACT_COMMANDS = (
     "uv run --locked python -m unittest discover -s workflow_tests -t . -v",
     "uv run --locked python -m unittest discover -s candidate_tests -t . -v",
     "uv run --locked semantic-guard workflow evaluate-fixtures",
+    "uv run --locked semantic-guard workflow evaluate-metamorphic",
+)
+EXPECTED_TRIGGERS = (
+    "on:\n"
+    "  push:\n"
+    '    branches: ["main"]\n'
+    "  pull_request:\n"
+    '    branches: ["main"]\n'
+    "  workflow_dispatch:\n"
+)
+EXPECTED_PERMISSIONS = "permissions:\n  contents: read\n"
+PACKAGE_NEEDS = "needs: [v1-contract, legacy-smoke]"
+PACKAGED_CONTRACTS_COMMAND = (
+    'uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"'
 )
 ACTION_USES = {
     "actions/checkout": (
@@ -166,10 +180,70 @@ def audit_ci_contract(text: str) -> list[str]:
     positions = [portability_job.find(token) for token in ordered_portability_tokens]
     if all(position >= 0 for position in positions) and positions != sorted(positions):
         errors.append("the bound artifact must be downloaded and rechecked before execution")
+
+    # The workflow's own trust boundary: who can trigger it, with which token
+    # rights, and whether any step may fail without failing the run.
+    trigger_block = re.search(r"(?ms)^on:\n.*?(?=^\S)", text)
+    if trigger_block is None or trigger_block.group(0) != EXPECTED_TRIGGERS + "\n":
+        errors.append("the workflow must run only on push and pull_request to main and on workflow_dispatch")
+    if "pull_request_target" in text:
+        errors.append("pull_request_target runs untrusted code with repository secrets and must not be used")
+    if "continue-on-error" in text:
+        errors.append("no step or job may continue on error")
+    if text.count("permissions:") != 1 or EXPECTED_PERMISSIONS not in text:
+        errors.append("permissions must be exactly one top-level block granting contents: read")
+    if re.search(r"(?m)^\s+[A-Za-z-]+:\s*write(?:-all)?\s*$", text) or "write-all" in text or "read-all" in text:
+        errors.append("no permission may be widened beyond contents: read")
+
+    if package_job and PACKAGE_NEEDS not in package_job:
+        errors.append("the package job must depend on both the contract and the legacy smoke jobs")
+    if package_job and (
+        "- name: Verify packaged contracts" not in package_job
+        or PACKAGED_CONTRACTS_COMMAND not in package_job
+    ):
+        errors.append("the package job must verify packaged contracts before it uploads")
+    elif package_job and package_job.find(PACKAGED_CONTRACTS_COMMAND) > package_job.find(action_ref("actions/upload-artifact")):
+        errors.append("the package job must verify packaged contracts before it uploads")
     return errors
 
 
 class CiContractTests(unittest.TestCase):
+    def test_trust_boundary_mutations_are_detected(self) -> None:
+        text = WORKFLOW.read_text(encoding="utf-8")
+        step = "      - name: Check workflow rule invariance and sensitivity\n        run: uv run --locked semantic-guard workflow evaluate-metamorphic\n\n"
+        verify = (
+            "      - name: Verify packaged contracts\n"
+            "        run: |\n"
+            '          WHEEL="dist/${{ steps.distribution.outputs.wheel_filename }}"\n'
+            '          SDIST="dist/${{ steps.distribution.outputs.sdist_filename }}"\n'
+            f"          {PACKAGED_CONTRACTS_COMMAND}\n\n"
+        )
+        self.assertIn(step, text)
+        self.assertIn(verify, text)
+        mutations = {
+            "remove the evaluate-metamorphic step": (text.replace(step, "", 1), "evaluate-metamorphic"),
+            "permissions: write-all": (text.replace(EXPECTED_PERMISSIONS, "permissions: write-all\n", 1), "permissions"),
+            "widen contents to write": (text.replace("  contents: read\n", "  contents: write\n", 1), "permissions"),
+            "add id-token write": (text.replace(EXPECTED_PERMISSIONS, EXPECTED_PERMISSIONS + "  id-token: write\n", 1), "permission"),
+            "add pull_request_target": (text.replace("  workflow_dispatch:\n", "  pull_request_target:\n  workflow_dispatch:\n", 1), "pull_request_target"),
+            "add continue-on-error": (text.replace("    runs-on: ubuntu-latest\n", "    runs-on: ubuntu-latest\n    continue-on-error: true\n", 1), "continue on error"),
+            "drop the package job needs": (text.replace(PACKAGE_NEEDS, "needs: [v1-contract]", 1), "package job must depend"),
+            "remove the packaged contracts step": (text.replace(verify, "", 1), "verify packaged contracts"),
+        }
+        for name, (mutated, expected) in mutations.items():
+            with self.subTest(mutation=name):
+                self.assertNotEqual(mutated, text)
+                errors = audit_ci_contract(mutated)
+                self.assertTrue(any(expected in error for error in errors), (expected, errors))
+
+    def test_trigger_set_is_fixed(self) -> None:
+        text = WORKFLOW.read_text(encoding="utf-8")
+        mutated = text.replace("  workflow_dispatch:\n", "  workflow_dispatch:\n  schedule:\n    - cron: '0 0 * * *'\n", 1)
+
+        self.assertNotEqual(mutated, text)
+        self.assertTrue(any("must run only on" in error for error in audit_ci_contract(mutated)))
+
+
     def test_current_workflow_satisfies_hardening_contract(self) -> None:
         self.assertEqual(audit_ci_contract(WORKFLOW.read_text(encoding="utf-8")), [])
 
