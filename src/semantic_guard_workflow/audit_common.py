@@ -47,7 +47,7 @@ AMBIGUOUS_TERMS = [
     "as needed",
 ]
 
-SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "しない", "やらない", "非要求", "非目標", "out of scope", "non-goal", "not"]
+SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "スコープ外", "範囲外", "しない", "やらない", "非要求", "非目標", "out of scope", "non-goal", "not"]
 
 CHANGE_CONTROL_TERMS = [
     "変更統制",
@@ -324,7 +324,7 @@ def _is_bounded_work_package_request(text: str, combined: str) -> bool:
 # no boundary (``検証はしない`` limits nothing), and the sequence is judged by the same
 # signal that raises ``plan.schedule.dependency_sequence_missing``, so the two can
 # never contradict each other.
-_BROAD_SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "非目標", "非要求", "non-goal", "out of scope"]
+_BROAD_SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "non-goal", "out of scope"]
 
 
 def _has_bounded_broad_scope_controls(plan: str, combined: str, *, dependency_sequence: str = "") -> bool:
@@ -346,7 +346,7 @@ def _classify_requirements(text: str) -> list[str]:
         "transition": ["移行", "変換", "導入", "migration", "transition"],
         "quality": ["性能", "安全", "保守", "可用", "速", "security", "performance", "maintain"],
         "operation": ["運用", "通知", "実行", "ログ", "監視", "backup", "schedule"],
-        "non_requirement": ["対象外", "しない", "非要求", "non-goal", "out of scope"],
+        "non_requirement": ["対象外", "スコープ外", "範囲外", "しない", "非要求", "non-goal", "out of scope"],
     }
     for label, needles in checks.items():
         if _has_any(text, needles):
@@ -362,13 +362,32 @@ _SOLUTION_TOOL_PATTERN = re.compile(
 )
 
 
+# A sentence that describes what the system already does is not a new requirement
+# (the rule's own exclusion: "入力が既存実装の説明であり、新しい要求ではない").
+_CURRENT_STATE_MARKERS = re.compile(
+    r"現行|現在|既存|現状|いまは|今は|従来|\b(?:currently|existing|at present|as-is|legacy)\b", re.IGNORECASE
+)
+_SENTENCE_BOUNDARY = re.compile(r"[。！？\n;；]|[.!?](?=\s|$)")
+
+
+def _prescriptive_tool_mentions(text: str) -> list[re.Match[str]]:
+    mentions: list[re.Match[str]] = []
+    for match in _SOLUTION_TOOL_PATTERN.finditer(text):
+        start = max((m.end() for m in _SENTENCE_BOUNDARY.finditer(text, 0, match.start())), default=0)
+        boundary = _SENTENCE_BOUNDARY.search(text, match.end())
+        sentence = text[start : boundary.start() if boundary else len(text)]
+        if not _CURRENT_STATE_MARKERS.search(sentence):
+            mentions.append(match)
+    return mentions
+
+
 def _first_solution_tool_mention(text: str) -> str:
-    match = _SOLUTION_TOOL_PATTERN.search(text)
-    return _first_match(text[match.start():], [match.group(0)]) if match else ""
+    mentions = _prescriptive_tool_mentions(text)
+    return _first_match(text[mentions[0].start():], [mentions[0].group(0)]) if mentions else ""
 
 
 def _has_solution_bias(text: str) -> bool:
-    return bool(_SOLUTION_TOOL_PATTERN.search(text)) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因"])
+    return bool(_prescriptive_tool_mentions(text)) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因", "要因"])
 
 
 def _tokens(text: str) -> set[str]:

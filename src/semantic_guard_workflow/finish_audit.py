@@ -6,6 +6,7 @@ from semantic_guard_workflow.audit_common import (
     BASIS,
     _BEHAVIOR_DECLARATIONS,
     _blocker,
+    _has_asserted_any,
     _has_behavior_evidence,
     _implemented_public_behavior,
     _result,
@@ -190,7 +191,12 @@ def _present_completion_assertion(clause: str, terms: tuple[str, ...]) -> bool:
     return not _UNRESOLVED_COMPLETION_VALUE.fullmatch(tail)
 
 
-_SECURITY_EVIDENCE_TERMS = ["secret scan", "dependency", "owasp", "nist", "安全", "セキュリティ", "手動確認"]
+# Names of a security check, and the surfaces such a check is about. A surface word
+# counts only in a clause that also states a result, so "認証処理を変更した" is not evidence.
+_SECURITY_EVIDENCE_TERMS = [
+    "secret scan", "dependency", "owasp", "nist", "安全", "セキュリティ", "手動確認",
+    "認可", "認証", "権限", "秘密情報", "機密", "脆弱性", "入力検証", "authz", "authn", "injection", "csrf", "xss",
+]
 # A statement of what was confirmed. A security word alone ("安全。", "dependency")
 # names a topic and reports nothing; "未実施" and "していない" report the opposite.
 _SECURITY_RESULT_STATEMENT = re.compile(
@@ -202,6 +208,12 @@ _SECURITY_RESULT_STATEMENT = re.compile(
     re.IGNORECASE,
 )
 _SECURITY_CLAUSE_BOUNDARY = re.compile(r"[。\n；;]|(?<=[.!?])\s")
+
+
+_RESIDUAL_RISK_TERMS = [
+    "残リスク", "残存リスク", "残る危険", "残る懸念", "残る問題", "リスクなし", "懸念なし", "未解決", "未実行", "未確認",
+    "できなかった", "not run", "residual", "risk", "none",
+]
 
 
 def _has_security_evidence(text: str) -> bool:
@@ -286,7 +298,7 @@ def finish_check(summary: str, evidence: str = "", context: str = "", strict: bo
         )
         missing.append("behavior_evidence")
 
-    if not _has_any(combined, ["残リスク", "未実行", "未確認", "できなかった", "not run", "residual", "risk", "none"]):
+    if not _has_asserted_any(combined, _RESIDUAL_RISK_TERMS, accept_none=True):
         findings.append(
             Finding(
                 severity="info",

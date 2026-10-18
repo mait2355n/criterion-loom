@@ -494,6 +494,7 @@ def _expected_result_signal(text: str) -> str:
             "error",
             "state",
             "期待結果",
+            "期待される結果",
             "期待状態",
             "返る",
             "返す",

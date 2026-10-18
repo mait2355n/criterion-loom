@@ -16,7 +16,7 @@ UNDERSTANDING_FIELDS: dict[str, list[str]] = {
     "value": ["価値", "意義", "benefit", "value", "効用", "何が変わる"],
     "domain_terms": ["用語", "語彙", "term", "禁則", "alias", "domain"],
     "constraints": ["制約", "条件", "must", "shall", "必要", "禁止", "constraint", "権限", "期限", "守る"],
-    "non_goals": ["しない", "対象外", "非対象", "非目標", "非要求", "除外", "not", "non-goal", "out of scope", "やらない"],
+    "non_goals": ["しない", "対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "除外", "not", "non-goal", "out of scope", "やらない"],
     "assumptions": ["前提", "仮定", "assume", "assumption", "推測"],
     "unknowns": ["未確定", "未決", "不明", "判断待ち", "unknown", "tbd", "tbr", "保留", "仮説", "片側", "時点差"],
     "conflicts": ["矛盾", "競合", "衝突", "tradeoff", "conflict"],

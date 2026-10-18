@@ -100,6 +100,12 @@ class EscalationDecision:
         }
 
 
+def _input_kind_entry(audit: Mapping[str, Any]) -> dict[str, str]:
+    details = audit.get("details")
+    kind = details.get("input_kind") if isinstance(details, Mapping) else None
+    return {"input_kind": kind} if isinstance(kind, str) and kind else {}
+
+
 def decide_escalation(
     *,
     candidate: str,
@@ -139,6 +145,7 @@ def decide_escalation(
             "unknowns": unknowns,
             "context": context,
             "phase": normalized_phase,
+            **_input_kind_entry(audit),
         },
     ).as_dict()
 

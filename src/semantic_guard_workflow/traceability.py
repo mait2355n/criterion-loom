@@ -734,7 +734,7 @@ _TRACE_TAG_ALIASES = {
     "deliverable": ["成果物", "deliverable", "artifact"],
     "evidence": ["証拠", "根拠", "実行結果", "コマンド結果", "evidence", "proof"],
     "interface_contract": ["入力項目", "interface contract", "api", "cli", "mcp", "command"],
-    "non_goal": ["対象外", "非対象", "non-goal", "non goal", "out of scope"],
+    "non_goal": ["対象外", "非対象", "スコープ外", "範囲外", "non-goal", "non goal", "out of scope"],
     "objective": ["目的", "目標", "狙い", "goal", "objective", "intent"],
     "output_contract": [
         "出力項目",

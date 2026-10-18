@@ -279,7 +279,11 @@ class InvarianceTests(unittest.TestCase):
         ]
 
         self.assertTrue(morphology_fixtures)
-        self.assertLess(report["checked"], 14 * len(list(Path(DEFAULT_FIXTURE_ROOT).rglob("*.expected.json"))))
+        skipped = {row["fixture"] for row in report["skipped"] if row["rewrite"] == "*"}
+        for path in morphology_fixtures:
+            with self.subTest(fixture=path.name):
+                self.assertIn(path.relative_to(DEFAULT_FIXTURE_ROOT).as_posix(), skipped)
+        self.assertLess(report["checked"], len(REWRITES) * len(list(Path(DEFAULT_FIXTURE_ROOT).rglob("*.expected.json"))))
 
 
 class SensitivityTests(unittest.TestCase):

@@ -175,6 +175,29 @@ def _sentence_newlines(text: str) -> str:
     return text.replace("。", "。\n")
 
 
+# Natural alternative spellings of a field label. A detector that recognizes only the
+# label a fixture happens to use is checking the fixture, not the obligation. The pairs
+# are ones a writer would choose, not artificial words (``残リスク`` is not ``残懸念``).
+SYNONYM_PAIRS: tuple[tuple[str, str], ...] = (
+    ("対象外", "スコープ外"),
+    ("対象外", "範囲外"),
+    ("原因", "要因"),
+    ("目的", "狙い"),
+    ("期待結果", "期待される結果"),
+    ("受入基準", "合格基準"),
+    ("受入基準", "受け入れ基準"),
+    ("検証方法", "確認方法"),
+    ("証拠", "証跡"),
+    ("シナリオ", "利用場面"),
+    ("解決策", "対策案"),
+    ("不合格条件", "却下条件"),
+)
+
+
+def _synonym(old: str, new: str) -> Transform:
+    return lambda text: _outside_fences(text, lambda line: line.replace(old, new))
+
+
 @dataclass(frozen=True)
 class RewriteSpec:
     name: str
@@ -200,6 +223,10 @@ REWRITES: tuple[RewriteSpec, ...] = (
     RewriteSpec("line_separators", "U+2028 line separators", _line_break("\u2028")),
     RewriteSpec("paragraph_separators", "U+2029 paragraph separators", _line_break("\u2029")),
     RewriteSpec("next_line_breaks", "U+0085 next-line characters", _line_break("\x85")),
+    *(
+        RewriteSpec(f"synonym:{old}->{new}", f"the label {old} written as {new}", _synonym(old, new))
+        for old, new in SYNONYM_PAIRS
+    ),
     RewriteSpec("trailing_whitespace", "two trailing spaces on every line", _trailing_whitespace, diff_safe=True),
     RewriteSpec("bold_label", "Markdown bold around field labels", _bold_label),
     RewriteSpec("bullet_markers", "'- ' list markers", _prefix("- "), prose_only=True),
@@ -330,7 +357,7 @@ def _rerun(spec: dict[str, Any], expected_path: Path, text: str) -> dict[str, An
 # The fewest rewrite-versus-fixture comparisons the repository's own tree must
 # yield. A tree that silently stops being replayed (an empty directory, a skipped
 # phase) lowers the count and fails the check instead of reporting a vacuous pass.
-MINIMUM_CHECKED_COMPARISONS = 800
+MINIMUM_CHECKED_COMPARISONS = 1000
 
 
 def _is_default_root(root: Path) -> bool:

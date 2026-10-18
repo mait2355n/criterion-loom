@@ -279,13 +279,13 @@ class _FieldSpec:
 
 
 _FIELD_SPECS = (
-    _FieldSpec("purpose", "behavior", "purpose", ("Purpose", "目的")),
+    _FieldSpec("purpose", "behavior", "purpose", ("Purpose", "目的", "狙い")),
     _FieldSpec("user", "scenario_actor", "scenario_actor", ("User", "利用者")),
-    _FieldSpec("scenario", "condition", "scenario", ("Scenario", "シナリオ", "前提")),
-    _FieldSpec("expected_result", "observable_result", "expected_result", ("Expected result", "期待結果")),
-    _FieldSpec("acceptance_criteria", "acceptance_criterion", "acceptance_criterion", ("Acceptance criteria", "受入基準")),
-    _FieldSpec("verification_method", "verification_method", "verification_method", ("Verification method", "検証方法")),
-    _FieldSpec("evidence", "evidence_artifact", "evidence_artifact", ("Evidence", "証拠")),
+    _FieldSpec("scenario", "condition", "scenario", ("Scenario", "シナリオ", "利用場面", "前提")),
+    _FieldSpec("expected_result", "observable_result", "expected_result", ("Expected result", "期待結果", "期待される結果")),
+    _FieldSpec("acceptance_criteria", "acceptance_criterion", "acceptance_criterion", ("Acceptance criteria", "受入基準", "合格基準", "受け入れ基準")),
+    _FieldSpec("verification_method", "verification_method", "verification_method", ("Verification method", "検証方法", "確認方法")),
+    _FieldSpec("evidence", "evidence_artifact", "evidence_artifact", ("Evidence", "証拠", "証跡")),
 )
 _LABEL_TO_SPEC = {label.casefold(): spec for spec in _FIELD_SPECS for label in spec.labels}
 _LABELS = tuple(sorted((label for spec in _FIELD_SPECS for label in spec.labels), key=len, reverse=True))
@@ -295,7 +295,7 @@ _STRUCTURED_FIELD_RE = re.compile(
     re.IGNORECASE,
 )
 _BOUNDARY_FIELD_RE = re.compile(
-    rf"(?<![0-9A-Za-z_一-龥ぁ-んァ-ヶ])(?:{_LABEL_PATTERN}|不合格条件|対象外|未確定|"
+    rf"(?<![0-9A-Za-z_一-龥ぁ-んァ-ヶ])(?:{_LABEL_PATTERN}|不合格条件|却下条件|対象外|スコープ外|範囲外|未確定|"
     r"利害関係者|優先度|入力条件|問題|原因|解決策|成果物|非目標|非要求)"
     r"(?:\s*\*\*)?\s*[:：]\s*",
     re.IGNORECASE,

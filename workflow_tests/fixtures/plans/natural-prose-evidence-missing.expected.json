@@ -1,0 +1,23 @@
+{
+  "id": "PLAN-NATURAL-EVIDENCE-001",
+  "title": "A prose plan that never says what proves completion is flagged",
+  "phase": "audit_plan",
+  "kind": "plan",
+  "text": "今回の目的は、設定ファイルの読込不具合を直すことである。触らないのは表示まわりで、画面の見た目は対象外とする。成果物は修正した読込処理と、その試験である。手順は、原因の調査、読込処理の修正、試験の追加の順に進め、調査が済んでから修正に入る。試験は pytest で実行し、全件が成功することを確かめる。失敗した場合は、修正前のコミットへ戻して元の状態に復旧する。保守者が、目的に合っているかを確認して受け入れるかを判断する。まだ決まっていない点はない。",
+  "strict": true,
+  "rationale": "The obligation is written as ordinary sentences, not as labelled fields, so a detector that only knows the field label would miss it.",
+  "labels": {
+    "expected_rules": [
+      "plan.completion.evidence_missing"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "plan.completion.evidence_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_plan",
+    "status": "block"
+  }
+}

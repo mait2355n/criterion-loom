@@ -485,7 +485,7 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
         # "成果物" (deliverables) contains "成果" (outcome); only forms that cannot be the
         # deliverables label count as an objective.
         "objective": ["目的", "目標", "狙い", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
-        "non_goals": ["対象外", "非対象", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
+        "non_goals": ["対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
         "deliverables": ["成果物", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
         "work_breakdown": ["手順", "段取り", "作業分解", "作業項目", "実施手順", "step", "作業", "実装", "検証", "文書"],
         "dependencies": ["依存", "前提", "順序", "先行", "先に", "dependency", "prerequisite"],
@@ -659,7 +659,7 @@ def _planning_quality_signals(plan: str, combined: str, structure: dict[str, str
         signals["progress_control"] = _first_match(plan, ["手順", "段取り", "工程", "step", "作業", "実装", "検証"])
 
     if _requires_control_baseline(plan) and not structure["control_baseline"]:
-        signals["control_baseline"] = _first_match(plan, ["確認点", "進捗", "工程", "手順", "検証", "証拠"])
+        signals["control_baseline"] = _first_match(plan, ["確認点", "進捗", "工程", "手順", "検証", "証拠", "証跡"])
 
     change_scope = _change_control_scope_signal(plan)
     if change_scope and not _has_change_control(combined):
@@ -1283,7 +1283,7 @@ def _release_provenance_gap_signal(plan: str, combined: str) -> str:
 
 
 def _requires_control_baseline(plan: str) -> bool:
-    return _plan_has_multiple_steps(plan) and _has_any(plan, ["確認点", "進捗", "状態", "報告", "検証", "証拠", "工程"])
+    return _plan_has_multiple_steps(plan) and _has_any(plan, ["確認点", "進捗", "状態", "報告", "検証", "証拠", "証跡", "工程"])
 
 
 def _requires_decision_gate(plan: str) -> bool:

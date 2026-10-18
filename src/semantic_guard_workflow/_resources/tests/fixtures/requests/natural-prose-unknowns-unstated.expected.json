@@ -1,0 +1,23 @@
+{
+  "id": "REQ-NATURAL-UNKNOWNS-001",
+  "title": "A prose requirement that never says whether anything is undecided is flagged",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "保守者は、旧形式の設定ファイルを壊さずに読み込めるようにしたい。目的は、移行の手間を減らすことである。画面表示は今回の対象外とする。読み込みに失敗した場合は、元のファイルを変更せずにエラーを返す。受入の条件は、旧形式の設定 20 件がすべて読み込めることである。検証は pytest で行い、結果を保存する。",
+  "strict": true,
+  "rationale": "The obligation is written as ordinary sentences, not as labelled fields, so a detector that only knows the field label would miss it.",
+  "labels": {
+    "expected_rules": [
+      "req.uncertainty.unknowns_unstated"
+    ],
+    "expected_findings": [
+      {
+        "rule_id": "req.uncertainty.unknowns_unstated"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}
