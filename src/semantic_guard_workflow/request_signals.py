@@ -65,8 +65,10 @@ def _quality_requirement_signal(text: str) -> str:
 # A quantity counts only as a number with a unit, a number bound by 以内/以上/以下/
 # 未満/超, or a rate. A bare 以内 ("それ以上の議論は不要"), 分/件/回 ("3分野",
 # "5件の画面", "1回押す"), and a ``>`` or ``<`` that is a quote marker, an arrow, an
-# HTML tag or a generic must not satisfy a measurable-constraint obligation. The
-# number is anchored at its start so a long run of digits is scanned once.
+# HTML tag or a generic must not satisfy a measurable-constraint obligation: a
+# comparator counts only when no word, arrow or tag character precedes it and a
+# number follows. The number is anchored at its start so a long run of digits is
+# scanned once.
 _NUMBER = r"(?<![\d.,])\d+(?:[.,]\d+)*"
 _UNIT = (
     r"(?:milliseconds?|millis|msec|ms|microseconds?|μs|ns|seconds?|secs?|sec|s|minutes?|mins?|min|hours?|hrs?|days?"
@@ -77,7 +79,7 @@ _QUALITY_CONSTRAINT_RE = re.compile(
     rf"|{_NUMBER}\s*[^\W\d_]{{0,8}}\s*(?:以内|以上|以下|未満|超)"
     rf"|{_NUMBER}\s*(?:rps|qps|tps|req/s|requests?/s|件/(?:秒|分)|回/(?:秒|分)|/s|/sec|/min|per\s+(?:second|minute))(?![a-z])"
     rf"|(?<![\w<>=\-/])[≤≥≦≧]\s*{_NUMBER}"
-    rf"|(?<![\w<>=\-/])[<>]=?\s*{_NUMBER}\s*{_UNIT}(?![a-z])"
+    rf"|(?<![\w<>=\-/])[<>]=?\s*{_NUMBER}"
     r"|(?<![a-z0-9])p9[059](?![0-9])",
     re.IGNORECASE,
 )

@@ -143,7 +143,7 @@ class QuantityEvidenceTests(unittest.TestCase):
                 self.assertTrue(_has_quality_constraint_evidence(text))
 
     def test_comparators_count_only_next_to_a_number(self) -> None:
-        for text in ("応答は200ms以内", "p95 < 300ms", "処理時間 > 3秒", "3 < x", "CPU ≤ 80%", "10 seconds", "1000件"):
+        for text in ("応答は200ms以内", "p95 < 300ms", "処理時間 > 3秒", "CPU ≤ 80%", "10 seconds", "1000件/秒"):
             with self.subTest(text=text):
                 self.assertTrue(_has_quality_constraint_evidence(text))
 

@@ -15,7 +15,7 @@ class QualityConstraintTests(unittest.TestCase):
     def test_words_and_units_that_are_not_constraints_do_not_count(self) -> None:
         for text in (
             "それ以上の議論は不要", "要件は以下の通り", "It is slow today", "対象は3分野", "5件の画面を対象にする",
-            "ユーザーが1回押す", "a->3 items", "<div>3 items</div>", "List<3>", "x<3", "以内で対応する",
+            "ユーザーが1回押す", "a->3 items", "a => 3 items", "<div>3 items</div>", "List<3>", "x<3", "3 < x", "1000件", "以内で対応する",
             "受入基準: 未定", "基準: TBD", "閾値は後で決める",
         ):
             with self.subTest(text=text):
