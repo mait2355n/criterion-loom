@@ -429,7 +429,9 @@ def _term_matches(text: str, terms: Iterable[str]) -> list[tuple[str, int, int]]
 def _term_pattern(term: str) -> str:
     escaped = re.escape(term)
     if re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_ ./+-]*", term):
-        return rf"(?<![A-Za-z0-9_]){escaped}(?![A-Za-z0-9_])"
+        # A whole word, optionally inflected: ``response`` matches ``Responses`` but
+        # ``not`` does not match ``note`` and ``slo`` does not match ``slow``.
+        return rf"(?<![A-Za-z0-9_]){escaped}(?:s|es|ed|d|ing)?(?![A-Za-z0-9_])"
     return escaped
 
 

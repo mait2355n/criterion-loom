@@ -8,6 +8,7 @@ from semantic_guard_workflow.audit_common import (
     CHANGE_CONTROL_TERMS,
     SCOPE_BOUNDARY_TERMS,
     _has_any,
+    _first_asserted,
     _has_asserted_any,
     _has_bounded_broad_scope_controls,
     _has_overlap,
@@ -984,7 +985,7 @@ def _add_planning_quality_findings(
 
 
 def _work_package_decomposition_signal(text: str) -> str:
-    return _first_match(
+    return _first_asserted(
         text,
         [
             "WBS",
@@ -1093,7 +1094,7 @@ def _dependency_sequence_signal(text: str) -> str:
 
 
 def _estimation_or_resource_signal(text: str) -> str:
-    return _first_match(
+    return _first_asserted(
         text,
         [
             "estimate",
@@ -1123,7 +1124,7 @@ def _estimation_or_resource_signal(text: str) -> str:
 
 
 def _risk_response_signal(text: str) -> str:
-    return _first_match(
+    return _first_asserted(
         text,
         [
             "mitigation",
@@ -1144,7 +1145,6 @@ def _risk_response_signal(text: str) -> str:
             "再検証",
             "再試行",
             "検知",
-            "保留",
             "影響度",
             "発生確率",
             "責任者",
@@ -1154,7 +1154,7 @@ def _risk_response_signal(text: str) -> str:
 
 
 def _control_baseline_signal(text: str) -> str:
-    return _first_match(
+    return _first_asserted(
         text,
         [
             "baseline",
@@ -1182,7 +1182,7 @@ def _control_baseline_signal(text: str) -> str:
 
 
 def _decision_gate_signal(text: str) -> str:
-    return _first_match(
+    return _first_asserted(
         text,
         [
             "go/no-go",
