@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import time
 import unittest
 
 from semantic_guard_workflow.plan_audit import audit_plan
@@ -100,6 +101,52 @@ class DependencySequenceAssertionTests(unittest.TestCase):
                 evidence = result["details"]["planning_structure"]["dependency_sequence"]
                 self.assertIn(current, evidence)
                 self.assertNotIn("後で決める", evidence)
+
+    def test_deferral_and_back_reference_sentences_do_not_state_an_order(self) -> None:
+        for sequence in (
+            "期限は後で決める。",
+            "担当者は後で決める。",
+            "予算は後で見積もる。",
+            "ログは後で確認する。",
+            "先に述べた通り範囲は限定する。",
+            "後で検討する。",
+            "依存: 後で決める。",
+            "依存: 未定。",
+            "以前に説明した。",
+            "外部依存なし。",
+        ):
+            with self.subTest(sequence=sequence):
+                result = audit_plan(plan_with_sequence(sequence))
+
+                self.assertIn("dependency_sequence", result["missing"])
+                self.assertIn(SEQUENCE_RULE, {finding["rule_id"] for finding in result["findings"]})
+
+    def test_order_constructs_state_an_order_without_a_label(self) -> None:
+        for sequence in (
+            "設計を先に終え、その後で試験する。",
+            "Aの後でBを行う。",
+            "依存: Aの後でB",
+            "順序: A→B→C",
+            "まずAを実装し、次にBを行う。",
+            "Aを終えてから試験する。",
+            "公開前に確認する。",
+            "完了次第Bを始める。",
+            "Aを先に実装し、Bを後で追加する。",
+            "Bは A に depends on",
+            "Run A, then B.",
+        ):
+            with self.subTest(sequence=sequence):
+                result = audit_plan(plan_with_sequence(sequence))
+
+                self.assertNotIn("dependency_sequence", result["missing"])
+                self.assertEqual(result["details"]["planning_structure"]["dependency_sequence"], sequence)
+
+    def test_long_whitespace_runs_are_linear(self) -> None:
+        for body in ("順序: x" + " " * 100_000, "順序:" + " " * 100_000 + "x", "順序: x" + " \t" * 50_000):
+            with self.subTest(length=len(body)):
+                started = time.perf_counter()
+                audit_plan(plan_with_sequence(body))
+                self.assertLess(time.perf_counter() - started, 0.5)
 
 
 if __name__ == "__main__":

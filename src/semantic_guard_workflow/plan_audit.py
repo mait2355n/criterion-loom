@@ -23,7 +23,7 @@ from semantic_guard_workflow.problem_signals import (
     _side_effect_transfer_evidence_signal,
 )
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
-from semantic_guard_workflow.text_utils import combine as _combine, first_match as _first_match
+from semantic_guard_workflow.text_utils import combine as _combine, excerpt_around as _excerpt_around, first_match as _first_match
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 MINIMALITY_EXPANSION_TERMS = [
@@ -980,55 +980,91 @@ def _work_package_decomposition_signal(text: str) -> str:
     )
 
 
+# ``先に`` and ``後で`` are not terms: ``期限は後で決める`` defers a decision and
+# ``先に述べた通り`` refers back to text, so neither states an order. An order is
+# recognized by the construct that relates two steps, or by a sequence label.
+_SEQUENCE_TERMS = (
+    "dependency sequence",
+    "predecessor",
+    "successor",
+    "critical path",
+    "after",
+    "before",
+    "parallel",
+    "blocked by",
+    "順序",
+    "先行",
+    "後続",
+    "前後関係",
+    "依存関係",
+    "並行",
+    "直列",
+    "ブロッカー",
+)
+# Labels that introduce a value without being a sequence word on their own:
+# ``依存: AをBより先に`` is an order statement, ``外部依存なし`` is not.
+_SEQUENCE_LABELS = _SEQUENCE_TERMS + ("依存順序", "依存")
+_SEQUENCE_RELATION = re.compile(
+    r"(?:その)?(?P<term>" + "|".join(re.escape(term) for term in sorted(_SEQUENCE_LABELS, key=len, reverse=True))
+    + r")(?:については|は|が|を|[:：])\s*(?P<value>\S.*)",
+    re.DOTALL,
+)
+_ORDER_CONSTRUCT = re.compile(
+    "|".join(
+        (
+            r"(?:の|た|だ)(?:後|あと)(?:で|に|は)",
+            r"その後",
+            r"先に(?!述べ|記し|記載|示し|挙げ|触れ|説明|書い|言及|申し上げ|お伝え)",
+            r"(?<![以午事])前(?:に|で)",
+            r"[てで]から",
+            r"次に",
+            r"次第(?!です|だ)",
+            r"→|⇒|->|=>",
+            r"\bthen\b",
+            r"\bdepends?\s+on\b",
+            r"\bfollowed\s+by\b",
+        )
+    ),
+    re.IGNORECASE,
+)
+_MARKDOWN_PREFIX = re.compile(r"[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\d+[.)][ \t]+)*")
+
+
 def _dependency_sequence_signal(text: str) -> str:
     from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
 
-    terms = (
-        "dependency sequence",
-        "predecessor",
-        "successor",
-        "critical path",
-        "after",
-        "before",
-        "parallel",
-        "blocked by",
-        "順序",
-        "先に",
-        "後で",
-        "先行",
-        "後続",
-        "前後関係",
-        "依存関係",
-        "並行",
-        "直列",
-        "ブロッカー",
-    )
-    relation = re.compile(
-        r"^\s*(?:その)?(?P<term>" + "|".join(re.escape(term) for term in terms)
-        + r")(?:については|は|が|を|[:：])\s*(?P<value>.+?)\s*$"
-    )
     clauses = re.split(r"([。！？!?；;\n]|\.(?=\s|$))", text)
+    construct_clause = -1
     for index in range(0, len(clauses), 2):
         # Use the same Markdown prefix forms as deliverable fields for the
         # decision only; retained clauses keep their original evidence text.
-        decision_clause = re.sub(
-            r"^[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\d+[.)][ \t]+)*",
-            "",
-            clauses[index],
-        )
-        match = relation.fullmatch(decision_clause)
+        clause = clauses[index]
+        prefix = _MARKDOWN_PREFIX.match(clause)
+        decision_clause = clause[prefix.end() if prefix else 0:].strip()
+        match = _SEQUENCE_RELATION.match(decision_clause)
         if match is not None:
             term, value = match["term"], match["value"]
-        elif _first_match(decision_clause, terms):
-            term, value = "順序", decision_clause.strip()
+        elif _first_match(decision_clause, _SEQUENCE_TERMS):
+            term, value = "順序", decision_clause
         else:
+            if construct_clause < 0 and _ORDER_CONSTRUCT.search(decision_clause):
+                construct_clause = index
             continue
         # Reuse the placeholder classifier on the whole value. Additional
         # concrete content prevents a placeholder match and stays intact.
         assertion = find_field_assertion(f"{term}: {value}", (term,))
         if assertion is not None and assertion.reason == "deferred_placeholder":
             clauses[index] = ""
-    return asserted_excerpt("".join(clauses), terms)
+        elif match is not None and term not in _SEQUENCE_TERMS and construct_clause < 0:
+            # A bare label such as ``依存`` only counts through its value.
+            if _ORDER_CONSTRUCT.search(value):
+                construct_clause = index
+    joined = "".join(clauses)
+    evidence = asserted_excerpt(joined, _SEQUENCE_TERMS)
+    if evidence or construct_clause < 0 or not clauses[construct_clause]:
+        return evidence
+    offset = sum(len(clause) for clause in clauses[:construct_clause])
+    return _excerpt_around(joined, offset, offset + len(clauses[construct_clause]))
 
 
 def _estimation_or_resource_signal(text: str) -> str:
