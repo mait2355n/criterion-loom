@@ -78,6 +78,35 @@ class NormalizationContractTests(unittest.TestCase):
                 self.assertEqual(routed["details"]["changed_files"], direct["details"]["changed_files"])
                 self.assertEqual(routed["details"]["changed_files"], [name])
 
+    def test_diff_summary_signals_do_not_depend_on_spelling(self) -> None:
+        wide = lambda text: "".join(chr(ord(c) + 0xFEE0) if 0x21 <= ord(c) <= 0x7E else c for c in text)
+        for sentence in ("token を平文で保存する。", "SQL を連結で組み立てる。", "cookie を共有する。"):
+            for variant in (sentence, wide(sentence)):
+                with self.subTest(variant=variant):
+                    for result in (
+                        audit_request(variant, context="目的: 表示を整える。", input_kind="diff-summary"),
+                        audit_diff(variant, intent="目的: 表示を整える。"),
+                    ):
+                        self.assertEqual(result["status"], "warn")
+                        self.assertIn(
+                            "diff.security.sensitive_surface_change",
+                            {finding.get("rule_id") for finding in result["findings"]},
+                        )
+
+    def test_unified_diff_signals_do_not_depend_on_spelling(self) -> None:
+        plain = "diff --git a/src/app.py b/src/app.py\n+++ b/src/app.py\n+password = request.args['p']\n+subprocess.run(cmd)\n"
+        wide = plain.replace("password", "ｐａｓｓｗｏｒｄ").replace("subprocess", "ｓｕｂｐｒｏｃｅｓｓ")
+
+        def shape(result: dict[str, object]) -> tuple[object, ...]:
+            return (
+                result["status"],
+                sorted(str(finding.get("rule_id") or finding["category"]) for finding in result["findings"]),
+                sorted(result["details"]["implementation_signals"]),
+                result["details"]["changed_files"],
+            )
+
+        self.assertEqual(shape(audit_diff(wide, intent="設定を読む")), shape(audit_diff(plain, intent="設定を読む")))
+
 
 class DeliverableFieldTests(unittest.TestCase):
     def test_explicit_deliverable_field_follows_sentence_or_clause_boundaries(self) -> None:

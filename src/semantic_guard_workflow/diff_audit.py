@@ -16,11 +16,13 @@ from semantic_guard_workflow.text_utils import (
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = True, input_kind: str = "diff-summary") -> dict[str, object]:
-    # The diff body is code and file names; only the prose around it is normalized.
+    # File identity (header lines, paths) is read from the caller's own text so a
+    # composed and a decomposed file name stay different files. Every lexical
+    # signal reads the normalized view, so spelling never decides a verdict.
     intent = normalize_audit_text(intent)
     context = normalize_audit_text(context)
+    signal_diff = normalize_audit_text(diff)
     input_kind = _normalize_input_kind(input_kind)
-    combined = _combine(diff, intent, context)
     findings: list[Finding] = []
     missing: list[str] = []
     changed_files = _changed_files(diff)
@@ -41,7 +43,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("intent")
 
-    security_evidence = _security_signal(diff)
+    security_evidence = _security_signal(signal_diff)
     if security_evidence:
         findings.append(
             Finding(
@@ -54,7 +56,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    implementation_signals = _implementation_change_signals(diff, changed_files)
+    implementation_signals = _implementation_change_signals(signal_diff, changed_files)
     _add_implementation_findings(implementation_signals, findings, missing, strict)
 
     source_changed = any(_is_source_file(path) for path in changed_files)
@@ -73,7 +75,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("test_obligation")
 
-    semantic_boundaries = _semantic_boundaries(diff)
+    semantic_boundaries = _semantic_boundaries(signal_diff)
     document_only_boundaries: list[dict[str, object]] = []
     reportable_boundaries: list[dict[str, str]] = []
     if semantic_boundaries:
@@ -106,7 +108,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    complexity_growth = _complexity_growth_signal(diff)
+    complexity_growth = _complexity_growth_signal(signal_diff)
     if complexity_growth:
         finding = (
             Finding(
@@ -595,7 +597,7 @@ def _filename_content_scope_signals(diff: str, changed_files: list[str]) -> list
         filename_domains = _responsibility_domain_hits(" ".join(filename_tokens))
         if not filename_domains:
             continue
-        added_text = added_text_by_file.get(path, "")
+        added_text = normalize_audit_text(added_text_by_file.get(path, ""))
         if not added_text.strip():
             continue
         content_domains = _responsibility_domain_hits(added_text)
@@ -630,7 +632,7 @@ def _filename_content_scope_evidence(signal: dict[str, object]) -> str:
 
 
 def _filename_naming_scope_signals(diff: str, changed_files: list[str], intent: str, context: str) -> list[dict[str, object]]:
-    scope_management_present = _filename_scope_management_present(_combine(diff, intent, context))
+    scope_management_present = _filename_scope_management_present(_combine(normalize_audit_text(diff), intent, context))
     actions = _changed_file_actions(diff, changed_files)
     signals: list[dict[str, object]] = []
     for path in changed_files:
@@ -736,7 +738,7 @@ def _changed_file_actions(diff: str, changed_files: list[str]) -> dict[str, str]
         previous_line = line
 
     for line in diff.splitlines():
-        lowered = line.lower()
+        lowered = normalize_audit_text(line).lower()
         if not _line_can_list_changed_files(line):
             continue
         action = ""
@@ -1040,7 +1042,7 @@ def _summary_changed_files(text: str) -> list[str]:
 
 
 def _line_can_list_changed_files(line: str) -> bool:
-    stripped = line.strip()
+    stripped = normalize_audit_text(line).strip()
     if not stripped:
         return False
     if re.match(r"^(?:uv|python|pytest|git|semantic-guard|codex)\b", stripped):
