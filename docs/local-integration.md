@@ -127,8 +127,11 @@ MCP の `llm_review_*`、`llm_explore_request_*`、`review_if_needed_*` 工具�
 引数は、`codex` と `claude` だけを受ける。`command` は呼出元が指定した引数の雛形で任意の
 プロセスを起動するため、操作者が直接指定する CLI に限り、MCP からは拒否して何も起動しない。
 
-実行は `--execute` 又は `execute=true` のときだけ起きる。対象の資料はそのエージェントの
-提供元へ送られるため、送ってよいかは呼出元が判断する。査読の結果は不足の候補であり、
+CLI と同期の MCP 工具は、`--execute` 又は `execute=true` のときだけ実行する。非同期の
+`*_start_tool`（`llm_review_start_tool`、`llm_explore_request_start_tool`、
+`review_if_needed_start_tool`）には `execute` 引数が無く、呼び出した時点で査読者を起動する。
+対象の資料はそのエージェントの提供元へ送られるため、送ってよいかは呼出元が判断する。
+特に `*_start_tool` の呼出しは、その同意を含む。査読の結果は不足の候補であり、
 採択も却下も代行しない。
 
 `--agent-command` は全OSでPOSIXの引用規則により引数へ分割し、シェル自体は起動しない。

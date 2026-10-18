@@ -20,7 +20,10 @@ are expected. Do not invoke external LLM jobs merely because a server is connect
 When an isolated reviewer is wanted, choose its agent per call: `--backend codex` (default)
 or `--backend claude`, also available as `backend` on the MCP tools. `--backend command` runs
 an operator-supplied template and is CLI-only. Every backend is validated against the same
-schema, nothing runs without `--execute`, and the result records which `backend` answered.
+schema, and the result records which `backend` answered. The CLI and the synchronous MCP
+tools run nothing without `--execute` / `execute=true`. The asynchronous `*_start_tool` MCP
+tools have no such switch and start the reviewer as soon as they are called, so calling one
+is consent to send the material to that agent.
 See [the integration guide](../../docs/local-integration.md). Existing deployed
 clients are not changed automatically.
 
