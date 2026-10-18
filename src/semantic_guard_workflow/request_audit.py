@@ -7,6 +7,8 @@ from semantic_guard_workflow.audit_common import (
     _blocker,
     _classify_requirements,
     _has_solution_bias,
+    _first_asserted,
+    _has_asserted_any,
     _is_bounded_work_package_request,
     _looks_multi_requirement,
     _normalize_input_kind,
@@ -53,7 +55,7 @@ from semantic_guard_workflow.result_builder import next_actions as _next_actions
 from semantic_guard_workflow.result_builder import score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import combine as _combine
 from semantic_guard_workflow.text_utils import first_match as _first_match
-from semantic_guard_workflow.text_utils import has_any as _has_any
+
 from semantic_guard_workflow.text_normalization import normalization_source_ranges, normalize_audit_text
 
 
@@ -772,7 +774,7 @@ def audit_request(
         missing.append("verification_or_acceptance")
 
     purpose_terms = ["目的", "狙い", "意図", "価値", "意義", "理由", "why", "purpose", "value", "benefit"]
-    if not _has_any(combined, purpose_terms):
+    if not _has_asserted_any(combined, purpose_terms):
         findings.append(
             _missing_field_finding(
                 field="purpose_trace",
@@ -799,7 +801,7 @@ def audit_request(
             )
         )
 
-    if not _has_any(combined, SCOPE_BOUNDARY_TERMS):
+    if not _has_asserted_any(combined, SCOPE_BOUNDARY_TERMS, accept_none=True):
         findings.append(
             _missing_field_finding(
                 field="non_requirements",
@@ -820,13 +822,13 @@ def audit_request(
                 rule_id="req.scope.non_goals_missing",
                 emission_status="satisfied",
                 reason="explicit_scope_boundary_satisfies_rule",
-                evidence=_first_match(combined, SCOPE_BOUNDARY_TERMS),
+                evidence=_first_asserted(combined, SCOPE_BOUNDARY_TERMS, accept_none=True),
                 source="required_field.non_requirements",
             )
         )
 
     unknown_terms = ["未確定", "未決", "不明", "判断待ち", "仮説", "保留", "unknown", "tbd", "pending"]
-    if not _has_any(combined, unknown_terms):
+    if not _has_asserted_any(combined, unknown_terms, accept_none=True):
         findings.append(
             _missing_field_finding(
                 field="unknowns",

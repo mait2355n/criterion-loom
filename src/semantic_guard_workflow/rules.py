@@ -1934,7 +1934,7 @@ RULES: tuple[Rule, ...] = (
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画に目的が見えない。",
-        remediation="`objective` を計画へ足す。該当なしなら、該当なしと明示する。",
+        remediation="`objective` を計画へ足す。決められないなら、未決として未確定欄に書く。",
     ),
     Rule(
         id="plan.scope.non_goals_missing",
@@ -1962,7 +1962,7 @@ RULES: tuple[Rule, ...] = (
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画に対象外が見えない。",
-        remediation="`non_goals` を計画へ足す。該当なしなら、該当なしと明示する。",
+        remediation="`non_goals` を計画へ足す。無いことが答えなら、無いと明示する。",
     ),
     Rule(
         id="plan.verification.plan_missing",
@@ -1991,7 +1991,7 @@ RULES: tuple[Rule, ...] = (
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画に検証計画が見えない。",
-        remediation="`verification_plan` を計画へ足す。該当なしなら、該当なしと明示する。",
+        remediation="`verification_plan` を計画へ足す。決められないなら、未決として未確定欄に書く。",
     ),
     Rule(
         id="plan.completion.evidence_missing",
@@ -2019,7 +2019,7 @@ RULES: tuple[Rule, ...] = (
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画に完了証拠が見えない。",
-        remediation="`completion_evidence` を計画へ足す。該当なしなら、該当なしと明示する。",
+        remediation="`completion_evidence` を計画へ足す。決められないなら、未決として未確定欄に書く。",
     ),
     Rule(
         id="plan.structure.required_field_missing",
@@ -2049,7 +2049,7 @@ RULES: tuple[Rule, ...] = (
             SeverityPolicy(mode="relaxed", severity="major"),
         ),
         finding="計画の必須項目が見えない。",
-        remediation="該当項目を計画へ足す。該当なしなら、該当なしと明示する。",
+        remediation="該当項目を計画へ足す。依存やリスクのように「無い」ことが答えの項目は、無いと明示する。決められない項目は未確定欄に書く。",
     ),
     Rule(
         id="plan.uncertainty.unknowns_unstated",

@@ -554,6 +554,10 @@ def _following_structured_value(text: str, line_end: int) -> str:
             return ""
         if re.match(r"^[^:：]{1,48}[:：]\s*$", stripped):
             return ""
+        # A plain ``ラベル: 値`` line opens the next field; only a list item or a
+        # bare line can be the value of the empty label above it.
+        if re.match(r"^(?:>\s*)*[^\s:：、。,，.|*`>\-][^\s:：、。,，.|*`]{0,23}[:：]\s*\S", stripped):
+            return ""
         return re.sub(r"^(?:>\s*)*(?:[-*]\s+|\d+[.)]\s+)", "", stripped).strip()
     return ""
 

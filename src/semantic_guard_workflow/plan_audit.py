@@ -516,7 +516,11 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
             finding_text = f"計画に `{field}` が見えない。"
             category = "planning"
             rule_id = _REQUIRED_FIELD_RULE_IDS.get(field, "")
-            suggested_fix = f"`{field}` を計画へ足す。該当なしなら、該当なしと明示する。"
+            suggested_fix = (
+                f"`{field}` を計画へ足す。無いことが答えなら、無いと明示する。"
+                if field in _ACCEPT_NONE_FIELDS
+                else f"`{field}` を計画へ足す。決められないなら、未決として未確定欄に書く。"
+            )
             if field == "rollback_or_recovery":
                 rule_id = "plan.risk.rollback_missing"
                 finding_text = "計画に復旧またはrollback経路が見えない。"
@@ -558,7 +562,7 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
 
     if _has_any(plan, ["全部", "全体", "全面", "まとめて", "rewrite all", "refactor all"]):
         broad_scope_evidence = _first_match(plan, ["全部", "全体", "全面", "まとめて", "rewrite all", "refactor all"])
-        if _has_bounded_broad_scope_controls(plan, combined):
+        if _has_bounded_broad_scope_controls(plan, combined, dependency_sequence=planning_structure["dependency_sequence"]):
             non_emitted_rules.append(
                 _suppression_trace(
                     phase="audit_plan",

@@ -299,7 +299,7 @@ def _looks_multi_requirement(text: str) -> bool:
 def _is_bounded_work_package_request(text: str, combined: str) -> bool:
     if not _looks_multi_requirement(text):
         return False
-    has_package_language = _has_any(
+    has_package_language = _has_asserted_any(
         combined,
         [
             "作業パッケージ",
@@ -314,17 +314,25 @@ def _is_bounded_work_package_request(text: str, combined: str) -> bool:
             "順序",
         ],
     )
-    has_scope_control = _has_any(combined, SCOPE_BOUNDARY_TERMS)
-    has_validation = _has_any(combined, ["検証", "確認", "受入", "完了条件", "証拠", "test", "acceptance", "evidence"])
+    has_scope_control = _has_asserted_any(combined, SCOPE_BOUNDARY_TERMS)
+    has_validation = _has_asserted_any(combined, ["検証", "確認", "受入", "完了条件", "証拠", "test", "acceptance", "evidence"])
     return has_package_language and has_scope_control and has_validation
 
 
-def _has_bounded_broad_scope_controls(plan: str, combined: str) -> bool:
+# A broad rewrite is bounded only by controls that are stated, not merely named:
+# ``進め方: 後で決める`` names a work breakdown and decides nothing. ``しない`` alone is
+# no boundary (``検証はしない`` limits nothing), and the sequence is judged by the same
+# signal that raises ``plan.schedule.dependency_sequence_missing``, so the two can
+# never contradict each other.
+_BROAD_SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "非目標", "非要求", "non-goal", "out of scope"]
+
+
+def _has_bounded_broad_scope_controls(plan: str, combined: str, *, dependency_sequence: str = "") -> bool:
     return (
-        _has_any(combined, ["作業分解", "作業パッケージ", "成果物", "ファイル別", "段階", "stage", "work package"])
-        and _has_any(combined, ["対象外", "非対象", "しない", "non-goal", "out of scope"])
-        and _has_any(combined, ["順序", "依存", "先に", "後で", "dependency", "sequence"])
-        and _has_any(combined, ["検証", "試験", "確認", "証拠", "受入", "test", "evidence"])
+        _has_asserted_any(combined, ["作業分解", "作業パッケージ", "成果物", "ファイル別", "段階", "stage", "work package"])
+        and _has_asserted_any(combined, _BROAD_SCOPE_BOUNDARY_TERMS)
+        and bool(dependency_sequence)
+        and _has_asserted_any(combined, ["検証", "試験", "確認", "証拠", "受入", "test", "evidence"])
         and not _has_any(plan, ["無制限", "全部書き換え", "unbounded"])
     )
 
