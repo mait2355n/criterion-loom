@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 
-from semantic_guard_workflow.assertion_context import asserted_excerpt as _asserted_excerpt
+from semantic_guard_workflow.assertion_context import asserted_excerpt as _asserted_excerpt, find_field_assertion
 from semantic_guard_workflow.text_utils import first_match as _first_match, has_any as _has_any
 
 STAKEHOLDER_SOURCE_TERMS = [
@@ -62,48 +62,57 @@ def _quality_requirement_signal(text: str) -> str:
     return _first_match(text, terms)
 
 
-# A comparator counts only next to a number. A bare ``>`` or ``<`` is also a
-# quote marker, an arrow, an HTML tag, or a generic, and must not satisfy a
-# measurable-constraint obligation.
+# A quantity counts only as a number with a unit, a number bound by 以内/以上/以下/
+# 未満/超, or a rate. A bare 以内 ("それ以上の議論は不要"), 分/件/回 ("3分野",
+# "5件の画面", "1回押す"), and a ``>`` or ``<`` that is a quote marker, an arrow, an
+# HTML tag or a generic must not satisfy a measurable-constraint obligation. The
+# number is anchored at its start so a long run of digits is scanned once.
+_NUMBER = r"(?<![\d.,])\d+(?:[.,]\d+)*"
+_UNIT = (
+    r"(?:milliseconds?|millis|msec|ms|microseconds?|μs|ns|seconds?|secs?|sec|s|minutes?|mins?|min|hours?|hrs?|days?"
+    r"|kib|mib|gib|tib|kb|mb|gb|tb|pb|bytes?|kbps|mbps|gbps|ミリ秒|マイクロ秒|秒|時間|バイト|%|％)"
+)
 _QUALITY_CONSTRAINT_RE = re.compile(
-    r"\d+(?:\.\d+)?\s*(?:milliseconds?|msec|ms|seconds?|secs?|sec|s|minutes?|min|kib|mib|gib|kb|mb|gb|秒|分|件|回|%)(?![a-z])"
-    r"|(?<![a-z0-9])p9[059](?![0-9])"
-    r"|[<>≤≥]=?\s*\d"
-    r"|\d\s*[<>≤≥]"
-    r"|以内|以上|以下|未満",
+    rf"{_NUMBER}\s*{_UNIT}(?![a-z])"
+    rf"|{_NUMBER}\s*[^\W\d_]{{0,8}}\s*(?:以内|以上|以下|未満|超)"
+    rf"|{_NUMBER}\s*(?:rps|qps|tps|req/s|requests?/s|件/(?:秒|分)|回/(?:秒|分)|/s|/sec|/min|per\s+(?:second|minute))(?![a-z])"
+    rf"|(?<![\w<>=\-/])[≤≥≦≧]\s*{_NUMBER}"
+    rf"|(?<![\w<>=\-/])[<>]=?\s*{_NUMBER}\s*{_UNIT}(?![a-z])"
+    r"|(?<![a-z0-9])p9[059](?![0-9])",
     re.IGNORECASE,
 )
+_MAX_CONSTRAINT_SCAN = 200_000
+_QUALITY_CONSTRAINT_TERMS = [
+    "threshold",
+    "metric",
+    "measure",
+    "measurement",
+    "acceptance",
+    "criteria",
+    "benchmark",
+    "slo",
+    "sla",
+    "閾値",
+    "指標",
+    "測定",
+    "計測",
+    "受入",
+    "受入基準",
+    "許容",
+    "基準",
+    "ベンチ",
+]
 
 
 def _has_quality_constraint_evidence(text: str) -> bool:
     # Leading Markdown quote markers are containers, including before a digit.
     # Keep >= intact and retain comparisons and quantities inside the quote.
-    content = re.sub(r"(?m)^[ \t]*(?:>(?!=)[ \t]*)+", "", text)
+    content = re.sub(r"(?m)^[ \t]*(?:>(?!=)[ \t]*)+", "", text[:_MAX_CONSTRAINT_SCAN])
     if _QUALITY_CONSTRAINT_RE.search(content):
         return True
-    return _has_any(
-        content,
-        [
-            "threshold",
-            "metric",
-            "measure",
-            "measurement",
-            "acceptance",
-            "criteria",
-            "benchmark",
-            "slo",
-            "sla",
-            "閾値",
-            "指標",
-            "測定",
-            "計測",
-            "受入",
-            "受入基準",
-            "許容",
-            "基準",
-            "ベンチ",
-        ],
-    )
+    # The words name a constraint only where one is stated: ``受入基準: 未定`` does not.
+    match = find_field_assertion(content, _QUALITY_CONSTRAINT_TERMS)
+    return match is not None and match.status == "present"
 
 
 def _has_priority_evidence(text: str) -> bool:
