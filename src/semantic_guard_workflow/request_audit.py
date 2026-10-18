@@ -8,6 +8,7 @@ from semantic_guard_workflow.audit_common import (
     _classify_requirements,
     _has_solution_bias,
     _first_asserted,
+    _first_solution_tool_mention,
     _has_asserted_any,
     _is_bounded_work_package_request,
     _looks_multi_requirement,
@@ -796,7 +797,7 @@ def audit_request(
                 category="solution_bias",
                 basis=BASIS["requirements"],
                 finding="要求が実装方式を固定している可能性がある。",
-                evidence=_first_match(text, ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON"]),
+                evidence=_first_solution_tool_mention(text),
                 suggested_fix="方式が意味上必要なら根拠を書く。単なる案なら仕様案へ分離する。",
             )
         )

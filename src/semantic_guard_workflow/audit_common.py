@@ -354,9 +354,21 @@ def _classify_requirements(text: str) -> list[str]:
     return classifications or ["unclassified"]
 
 
+_SOLUTION_TOOLS = ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON", "YAML"]
+# Whole words (and their plural): ``client`` is not CLI, ``capital`` and ``rapid`` are not API.
+_SOLUTION_TOOL_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(?:" + "|".join(re.escape(tool) for tool in _SOLUTION_TOOLS) + r")s?(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+
+
+def _first_solution_tool_mention(text: str) -> str:
+    match = _SOLUTION_TOOL_PATTERN.search(text)
+    return _first_match(text[match.start():], [match.group(0)]) if match else ""
+
+
 def _has_solution_bias(text: str) -> bool:
-    tools = ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON", "YAML"]
-    return _has_any(text, tools) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因"])
+    return bool(_SOLUTION_TOOL_PATTERN.search(text)) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因"])
 
 
 def _tokens(text: str) -> set[str]:

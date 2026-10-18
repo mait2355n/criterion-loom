@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 
+from semantic_guard_workflow.assertion_context import find_field_assertion
 from semantic_guard_workflow.audit_common import (
     BASIS,
     CHANGE_CONTROL_TERMS,
@@ -25,7 +26,7 @@ from semantic_guard_workflow.problem_signals import (
     _side_effect_transfer_evidence_signal,
 )
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
-from semantic_guard_workflow.text_utils import combine as _combine, excerpt_around as _excerpt_around, first_match as _first_match
+from semantic_guard_workflow.text_utils import combine as _combine, excerpt_around as _excerpt_around, first_match as _first_match, fold
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 MINIMALITY_EXPANSION_TERMS = [
@@ -506,8 +507,15 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
         # behind them must be one. Only a field whose words are absent can
         # still be recognized through an alias.
         terms = [*patterns, *STRONG_FIELD_ALIASES.get(field, [])]
-        if _has_any(combined, terms):
-            satisfied = _has_asserted_any(combined, terms, accept_none=field in _ACCEPT_NONE_FIELDS)
+        accept_none = field in _ACCEPT_NONE_FIELDS
+        own_statement = find_field_assertion(plan, terms, accept_none=accept_none)
+        if own_statement is not None and own_statement.labelled:
+            # The plan states the field itself, so that statement decides. The
+            # request and the context only fill a field the plan does not state:
+            # their vocabulary must not cancel the plan's own postponement.
+            satisfied = own_statement.status == "present"
+        elif _has_any(combined, terms):
+            satisfied = _has_asserted_any(combined, terms, accept_none=accept_none)
         else:
             satisfied = diagnostic.match_status == "matched"
         if not satisfied:
@@ -1315,13 +1323,23 @@ def _deliverable_clause(plan: str) -> str:
     labels = "|".join(re.escape(term) for term in _DELIVERABLE_TERMS)
     labelled = re.search(
         rf"(?:^|[。\n;；]|(?<=\.)[ \t]+)[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{{1,6}}[ \t]+|\d+[.)][ \t]+)*"
-        rf"(?:{labels})[ \t]*[:：][ \t]*(?P<value>[^。\n]*)",
+        rf"(?:{labels})[ \t]*[:：][ \t]*(?P<value>[^。\n;；]*)",
         plan,
         re.IGNORECASE,
     )
     if labelled is not None:
-        return labelled.group("value")
-    lowered = plan.lower()
+        value = labelled.group("value")
+        if value.strip():
+            return value
+        # ``成果物:`` with the items on the following list lines.
+        items: list[str] = []
+        for line in plan[labelled.end():].lstrip("\n").split("\n"):
+            bullet = re.match(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+(?P<item>.+?)[ \t]*$", line)
+            if bullet is None:
+                break
+            items.append(bullet.group("item"))
+        return "、".join(items)
+    lowered = fold(plan)
     hits = [(lowered.find(term), term) for term in _DELIVERABLE_TERMS if term in lowered]
     if not hits:
         return ""
@@ -1333,7 +1351,9 @@ def _deliverable_item_count(plan: str) -> int:
     clause = _deliverable_clause(plan)
     if not clause.strip():
         return 0
-    return len([part for part in re.split(r"[、,，/／]+|\s+and\s+|\s+と\s+", clause) if part.strip()])
+    # A slash inside a token is a path (``src/app.py``); only a spaced or full-width
+    # slash separates two deliverables.
+    return len([part for part in re.split(r"[、,，／]+|\s+/\s+|\s+and\s+|\s+と\s+", clause) if part.strip()])
 
 
 VALIDATION_OWNER_TERMS = [

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable
 
+from semantic_guard_workflow.text_utils import fold
 from semantic_guard_workflow.models import AuditResult, Finding
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
@@ -504,7 +505,7 @@ def _combine(text: str, context: str = "") -> str:
 
 
 def _has_any(text: str, terms: Iterable[str]) -> bool:
-    lowered = text.lower()
+    lowered = fold(text)
     for term in terms:
         normalized = term.lower()
         if _is_ascii_word(normalized):

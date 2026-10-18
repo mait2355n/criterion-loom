@@ -15,6 +15,7 @@ from semantic_guard_workflow.audit_common import (
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import (
+    fold,
     combine as _combine,
     compact_snippet as _compact_snippet,
     excerpt_around as _excerpt_around,
@@ -924,7 +925,7 @@ def _semantic_boundaries(diff: str) -> list[dict[str, str]]:
 
 
 def _semantic_boundary_evidence(text: str, terms: list[str]) -> str:
-    lowered = text.lower()
+    lowered = fold(text)
     ignored_phrases = ["audit path", "document audit path", "code path", "path through"]
     for term in terms:
         term_lower = term.lower()
