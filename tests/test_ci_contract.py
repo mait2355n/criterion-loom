@@ -39,9 +39,12 @@ EXPECTED_TRIGGERS = (
 )
 EXPECTED_PERMISSIONS = "permissions:\n  contents: read\n"
 PACKAGE_NEEDS = "needs: [v1-contract, legacy-smoke]"
+BINDING_MANIFEST_OPTION = "--binding-manifest dist/distribution-binding.json"
 PACKAGED_CONTRACTS_COMMAND = (
-    'uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"'
+    'uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST" '
+    + BINDING_MANIFEST_OPTION
 )
+RECHECK_BEFORE_UPLOAD = "- name: Recheck distribution binding immediately before upload"
 ACTION_USES = {
     "actions/checkout": (
         "d23441a48e516b6c34aea4fa41551a30e30af803",
@@ -142,6 +145,8 @@ def audit_ci_contract(text: str) -> list[str]:
         "marker.unlink()",
         "scripts/distribution_binding.py create",
         "scripts/distribution_binding.py check",
+        PACKAGED_CONTRACTS_COMMAND,
+        RECHECK_BEFORE_UPLOAD,
         action_ref("actions/upload-artifact"),
     )
     positions = [package_job.find(token) for token in ordered_distribution_tokens]
@@ -167,6 +172,7 @@ def audit_ci_contract(text: str) -> list[str]:
         "scripts/verify_packaged_contracts.py",
         'dist/${{ needs.package.outputs.wheel_filename }}',
         'dist/${{ needs.package.outputs.sdist_filename }}',
+        BINDING_MANIFEST_OPTION,
         "--timeout-seconds 300",
     )
     for token in required_portability_tokens:
@@ -197,6 +203,8 @@ def audit_ci_contract(text: str) -> list[str]:
 
     if package_job and PACKAGE_NEEDS not in package_job:
         errors.append("the package job must depend on both the contract and the legacy smoke jobs")
+    if package_job and RECHECK_BEFORE_UPLOAD not in package_job:
+        errors.append("the package job must recheck the distribution binding immediately before it uploads")
     if package_job and (
         "- name: Verify packaged contracts" not in package_job
         or PACKAGED_CONTRACTS_COMMAND not in package_job
@@ -228,6 +236,9 @@ class CiContractTests(unittest.TestCase):
             "add pull_request_target": (text.replace("  workflow_dispatch:\n", "  pull_request_target:\n  workflow_dispatch:\n", 1), "pull_request_target"),
             "add continue-on-error": (text.replace("    runs-on: ubuntu-latest\n", "    runs-on: ubuntu-latest\n    continue-on-error: true\n", 1), "continue on error"),
             "drop the package job needs": (text.replace(PACKAGE_NEEDS, "needs: [v1-contract]", 1), "package job must depend"),
+            "verify without the binding manifest": (text.replace(" " + BINDING_MANIFEST_OPTION, "", 1), "verify packaged contracts"),
+            "drop the pre-upload recheck": (text.replace(RECHECK_BEFORE_UPLOAD, "- name: Something else", 1), "recheck the distribution binding"),
+            "portability verifies without the manifest": (text.replace("          " + BINDING_MANIFEST_OPTION + "\n", "", 1), "portability contract token"),
             "remove the packaged contracts step": (text.replace(verify, "", 1), "verify packaged contracts"),
         }
         for name, (mutated, expected) in mutations.items():

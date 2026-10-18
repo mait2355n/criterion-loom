@@ -329,7 +329,113 @@ class PackagedContractVerifierTests(unittest.TestCase):
         destinations = {
             action.dest for action in verifier.build_parser()._actions
         }
-        self.assertEqual(destinations, {"help", "wheel", "sdist", "timeout_seconds"})
+        self.assertEqual(destinations, {"help", "wheel", "sdist", "binding_manifest", "timeout_seconds"})
+
+
+class PackagedContractVerifierIntegrityTests(unittest.TestCase):
+    def test_the_main_namespace_accepts_only_code_and_its_data_directories(self) -> None:
+        stray = (
+            "id_rsa", ".env", ".git/config", "audit-log.jsonl", "node_modules/x.js", "a:b.py", "secrets.txt",
+            "schemas/nested/x.json", "schemas/notes.md", "constitution/key.pem", "module.pyc",
+        )
+        for relative in stray:
+            parts = ("semantic_guard", *relative.split("/"))
+            with self.subTest(member=relative):
+                self.assertTrue(verifier._wheel_member_crosses_distribution_boundary(parts))
+                self.assertTrue(verifier._sdist_member_crosses_distribution_boundary(("src", *parts)))
+        for relative in ("__init__.py", "core.py", "py.typed", "schemas/audit-result.schema.json", "constitution/semantic-guard-constitution.yaml"):
+            parts = ("semantic_guard", *relative.split("/"))
+            with self.subTest(member=relative):
+                self.assertFalse(verifier._wheel_member_crosses_distribution_boundary(parts))
+                self.assertFalse(verifier._sdist_member_crosses_distribution_boundary(("src", *parts)))
+
+    def test_top_level_sdist_data_directories_are_checked_too(self) -> None:
+        self.assertTrue(verifier._sdist_member_crosses_distribution_boundary(("schemas", "id_rsa")))
+        self.assertTrue(verifier._sdist_member_crosses_distribution_boundary(("constitution", "x.pem")))
+        self.assertFalse(verifier._sdist_member_crosses_distribution_boundary(("schemas", "audit-result.schema.json")))
+
+    def test_an_input_is_copied_once_and_hashed_while_copying(self) -> None:
+        import hashlib
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            original = root / "pkg-1.0-py3-none-any.whl"
+            original.write_bytes(b"first bytes")
+
+            copy, digest = verifier._snapshot_input(
+                original, root / "private", kind="wheel", suffix=".whl", maximum_bytes=1024
+            )
+            original.write_bytes(b"swapped after the copy")
+
+            self.assertEqual(copy.read_bytes(), b"first bytes")
+            self.assertEqual(digest, hashlib.sha256(b"first bytes").hexdigest())
+            self.assertNotEqual(copy, original)
+            self.assertEqual(copy.name, original.name)
+
+    def test_a_symlink_or_oversized_input_is_not_copied(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "real.whl"
+            target.write_bytes(b"x" * 10)
+            link = root / "link.whl"
+            link.symlink_to(target)
+
+            with self.assertRaises(verifier.VerificationFailure) as symlink:
+                verifier._snapshot_input(link, root / "a", kind="wheel", suffix=".whl", maximum_bytes=1024)
+            with self.assertRaises(verifier.VerificationFailure) as large:
+                verifier._snapshot_input(target, root / "b", kind="wheel", suffix=".whl", maximum_bytes=5)
+
+            self.assertEqual(symlink.exception.code, "wheel_not_regular_file")
+            self.assertEqual(large.exception.code, "wheel_size_out_of_bounds")
+
+    def test_the_result_is_ascii_json_whatever_the_stdout_encoding(self) -> None:
+        class Narrow(io.TextIOWrapper):
+            pass
+
+        buffer = io.BytesIO()
+        stream = io.TextIOWrapper(buffer, encoding="cp1252", errors="strict")
+        with redirect_stdout(stream):
+            verifier._json_print({"message": "日本語のエラー", "status": "error"})
+        stream.flush()
+
+        self.assertEqual(json.loads(buffer.getvalue().decode("ascii")), {"message": "日本語のエラー", "status": "error"})
+
+    def test_binding_manifest_digests_are_read_for_the_named_files_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "distribution-binding.json"
+            manifest.write_text(
+                json.dumps({"artifacts": [
+                    {"kind": "wheel", "filename": "pkg-1-py3-none-any.whl", "sha256": "a" * 64},
+                    {"kind": "sdist", "filename": "pkg-1.tar.gz", "sha256": "b" * 64},
+                ]}),
+                encoding="utf-8",
+            )
+
+            digests = verifier._expected_digests_from_binding(manifest, "pkg-1-py3-none-any.whl", "pkg-1.tar.gz")
+            self.assertEqual(digests, {"wheel": "a" * 64, "sdist": "b" * 64})
+            with self.assertRaises(verifier.VerificationFailure) as other:
+                verifier._expected_digests_from_binding(manifest, "other-1-py3-none-any.whl", "pkg-1.tar.gz")
+            self.assertEqual(other.exception.code, "binding_manifest_mismatch")
+
+    def test_a_missing_or_malformed_binding_manifest_is_a_structured_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            broken = Path(directory) / "broken.json"
+            broken.write_text("{not json", encoding="utf-8")
+            for path in (broken, Path(directory) / "absent.json"):
+                with self.subTest(path=path.name), self.assertRaises(verifier.VerificationFailure) as caught:
+                    verifier._expected_digests_from_binding(path, "a.whl", "a.tar.gz")
+                self.assertEqual(caught.exception.code, "binding_manifest_invalid")
+
+    def test_the_cli_accepts_a_binding_manifest(self) -> None:
+        arguments = verifier.build_parser().parse_args(
+            ["--wheel", "a.whl", "--sdist", "a.tar.gz", "--binding-manifest", "dist/distribution-binding.json"]
+        )
+
+        self.assertEqual(arguments.binding_manifest, "dist/distribution-binding.json")
+
+    def test_child_limits_are_reported_only_where_they_apply(self) -> None:
+        self.assertEqual(verifier._child_limits_supported(), verifier.os.name == "posix")
+        self.assertEqual(verifier._child_limit_function(5) is not None, verifier._child_limits_supported())
 
 
 if __name__ == "__main__":

@@ -1,15 +1,20 @@
 from __future__ import annotations
 
 from contextlib import redirect_stdout
+import gzip
 import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
+from unittest import mock
+import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,8 +29,43 @@ COMMIT = "a" * 40
 TREE = "b" * 40
 WHEEL_NAME = "semantic_guard-1.2.0.dev0-py3-none-any.whl"
 SDIST_NAME = "semantic_guard-1.2.0.dev0.tar.gz"
-WHEEL_BYTES = b"fixed wheel fixture\n"
-SDIST_BYTES = b"fixed source fixture\n"
+
+
+def make_wheel(name: str = "semantic_guard", version: str = "1.2.0.dev0") -> bytes:
+    """A minimal, deterministic wheel: stored members with a fixed timestamp."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
+        for member, body in (
+            (f"{name}-{version}.dist-info/METADATA", f"Metadata-Version: 2.4\nName: {name}\nVersion: {version}\n"),
+            (f"{name}-{version}.dist-info/WHEEL", "Wheel-Version: 1.0\nGenerator: fixture\n"),
+            (f"{name}/__init__.py", "x = 1\n"),
+        ):
+            info = zipfile.ZipInfo(member, date_time=(1980, 1, 1, 0, 0, 0))
+            archive.writestr(info, body)
+    return buffer.getvalue()
+
+
+def make_sdist(name: str = "semantic_guard", version: str = "1.2.0.dev0") -> bytes:
+    """A minimal, deterministic source distribution."""
+    raw = io.BytesIO()
+    with tarfile.open(fileobj=raw, mode="w") as archive:
+        for member, body in (
+            (f"{name}-{version}/PKG-INFO", f"Metadata-Version: 2.4\nName: {name}\nVersion: {version}\n"),
+            (f"{name}-{version}/src/{name}/__init__.py", "x = 1\n"),
+        ):
+            data = body.encode("utf-8")
+            info = tarfile.TarInfo(member)
+            info.size = len(data)
+            info.mtime = 0
+            archive.addfile(info, io.BytesIO(data))
+    compressed = io.BytesIO()
+    with gzip.GzipFile(fileobj=compressed, mode="wb", mtime=0) as handle:
+        handle.write(raw.getvalue())
+    return compressed.getvalue()
+
+
+WHEEL_BYTES = make_wheel()
+SDIST_BYTES = make_sdist()
 
 
 def write_fixture(root: Path) -> Path:
@@ -141,14 +181,74 @@ class DistributionBindingTests(unittest.TestCase):
             root = Path(directory)
             dist = write_fixture(root)
             create_fixture_binding(root, dist)
-            tampered = bytearray(WHEEL_BYTES)
-            tampered[0] ^= 1
-            (dist / WHEEL_NAME).write_bytes(tampered)
+            # A different but well-formed wheel: only the sidecar can tell it apart.
+            replacement = io.BytesIO()
+            with zipfile.ZipFile(io.BytesIO(WHEEL_BYTES)) as source, zipfile.ZipFile(replacement, "w") as target:
+                for item in source.infolist():
+                    target.writestr(item, source.read(item))
+                target.writestr(zipfile.ZipInfo("semantic_guard/extra.py", date_time=(1980, 1, 1, 0, 0, 0)), "y = 2\n")
+            (dist / WHEEL_NAME).write_bytes(replacement.getvalue())
 
             with self.assertRaises(binding.BindingFailure) as caught:
                 binding.check_binding(root, dist, source_commit=COMMIT, source_tree=TREE)
 
             self.assertEqual(caught.exception.code, "manifest_mismatch")
+
+    def test_a_file_that_is_not_an_archive_is_not_a_distribution(self) -> None:
+        for name, content in ((WHEEL_NAME, b"x"), (SDIST_NAME, b"x"), (WHEEL_NAME, b"fixed wheel fixture\n"), (SDIST_NAME, b"fixed source fixture\n")):
+            with self.subTest(name=name, content=content), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                dist = write_fixture(root)
+                (dist / name).write_bytes(content)
+
+                with self.assertRaises(binding.BindingFailure) as caught:
+                    create_fixture_binding(root, dist)
+
+                self.assertEqual(caught.exception.code, "artifact_not_a_distribution")
+
+    def test_a_corrupted_archive_is_rejected(self) -> None:
+        for name, body in ((WHEEL_NAME, bytearray(WHEEL_BYTES)), (SDIST_NAME, bytearray(SDIST_BYTES))):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                dist = write_fixture(root)
+                body[-40] ^= 0xFF
+                (dist / name).write_bytes(bytes(body))
+
+                with self.assertRaises(binding.BindingFailure) as caught:
+                    create_fixture_binding(root, dist)
+
+                self.assertEqual(caught.exception.code, "artifact_not_a_distribution")
+
+    def test_the_archive_metadata_must_name_this_project_and_version(self) -> None:
+        for kind, name, content in (
+            ("wheel", WHEEL_NAME, make_wheel(version="9.9.9")),
+            ("wheel", WHEEL_NAME, make_wheel(name="other_project")),
+            ("sdist", SDIST_NAME, make_sdist(version="9.9.9")),
+            ("sdist", SDIST_NAME, make_sdist(name="other_project")),
+        ):
+            with self.subTest(kind=kind, content=len(content)), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                dist = write_fixture(root)
+                (dist / name).write_bytes(content)
+
+                with self.assertRaises(binding.BindingFailure) as caught:
+                    create_fixture_binding(root, dist)
+
+                self.assertIn(caught.exception.code, {"artifact_metadata_mismatch", "artifact_not_a_distribution"})
+
+    def test_a_wheel_without_dist_info_metadata_is_rejected(self) -> None:
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, "w") as archive:
+            archive.writestr("semantic_guard/__init__.py", "x = 1\n")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            dist = write_fixture(root)
+            (dist / WHEEL_NAME).write_bytes(buffer.getvalue())
+
+            with self.assertRaises(binding.BindingFailure) as caught:
+                create_fixture_binding(root, dist)
+
+            self.assertEqual(caught.exception.code, "artifact_not_a_distribution")
 
     def test_commit_and_tree_mismatch_are_rejected(self) -> None:
         for label, commit, tree in (
@@ -403,6 +503,80 @@ class DistributionBindingTests(unittest.TestCase):
             payload = json.loads(output.getvalue())
             self.assertEqual(status, 1)
             self.assertEqual(payload["errors"][0]["code"], "git_worktree_dirty")
+
+
+def _git(root: Path, *arguments: str) -> str:
+    return subprocess.run(
+        ["git", "-C", str(root), *arguments], check=True, capture_output=True, text=True,
+        env={key: value for key, value in os.environ.items() if not key.startswith("GIT_")},
+    ).stdout.strip()
+
+
+def _committed_fixture(root: Path) -> tuple[Path, str]:
+    dist = write_fixture(root)
+    (root / ".gitignore").write_text("dist/\n", encoding="utf-8")
+    _git(root, "init", "-q")
+    _git(root, "config", "user.name", "Binding Test")
+    _git(root, "config", "user.email", "binding@example.invalid")
+    _git(root, "add", ".")
+    _git(root, "commit", "-q", "-m", "fixture")
+    return dist, _git(root, "rev-parse", "HEAD")
+
+
+class DistributionBindingGitIdentityTests(unittest.TestCase):
+    def _bind(self, root: Path, dist: Path, commit: str) -> tuple[int, dict]:
+        output = io.StringIO()
+        with redirect_stdout(output):
+            status = binding.main(["create", "--project-root", str(root), "--dist-dir", str(dist), "--expected-commit", commit])
+        return status, json.loads(output.getvalue())
+
+    def test_a_clean_checkout_binds(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            dist, commit = _committed_fixture(root)
+
+            status, payload = self._bind(root, dist, commit)
+
+            self.assertEqual((status, payload["status"]), (0, "pass"))
+
+    def test_skip_worktree_and_assume_unchanged_cannot_hide_an_edit(self) -> None:
+        for flag in ("--skip-worktree", "--assume-unchanged"):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                dist, commit = _committed_fixture(root)
+                _git(root, "update-index", flag, "pyproject.toml")
+                (root / "pyproject.toml").write_text(
+                    "[project]\nname = 'semantic-guard'\nversion = '1.2.0.dev0'\n# edited after the commit\n", encoding="utf-8"
+                )
+                self.assertEqual(_git(root, "status", "--porcelain"), "", "git status must not see the edit")
+
+                status, payload = self._bind(root, dist, commit)
+
+                self.assertEqual(status, 1)
+                self.assertEqual(payload["errors"][0]["code"], "git_worktree_changes_hidden")
+
+    def test_an_inherited_git_dir_cannot_redirect_the_binding_to_another_repository(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            other = Path(directory) / "other"
+            other.mkdir()
+            other_dist, other_commit = _committed_fixture(other)
+            plain = Path(directory) / "plain"
+            plain.mkdir()
+            plain_dist = write_fixture(plain)
+            with mock.patch.dict(os.environ, {"GIT_DIR": str(other / ".git"), "GIT_WORK_TREE": str(plain)}):
+                status, payload = self._bind(plain, plain_dist, other_commit)
+
+            self.assertEqual(status, 1)
+            self.assertEqual(payload["status"], "error")
+            self.assertNotEqual(payload["errors"][0]["code"], "unexpected_binding_error")
+
+    def test_git_is_run_without_any_inherited_git_variable(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _committed_fixture(root)
+            with mock.patch.dict(os.environ, {"GIT_DIR": "/nonexistent", "GIT_INDEX_FILE": "/nonexistent", "GIT_WORK_TREE": "/nonexistent"}):
+                self.assertEqual(len(binding._git_output(root, "rev-parse", "HEAD")), 40)
+                self.assertFalse([key for key in binding._git_environment() if key.upper().startswith("GIT_")])
 
 
 if __name__ == "__main__":

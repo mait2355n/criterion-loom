@@ -197,7 +197,7 @@ jobs:
         run: |
           WHEEL="dist/${{ steps.distribution.outputs.wheel_filename }}"
           SDIST="dist/${{ steps.distribution.outputs.sdist_filename }}"
-          uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST"
+          uv run --locked python scripts/verify_packaged_contracts.py --wheel "$WHEEL" --sdist "$SDIST" --binding-manifest dist/distribution-binding.json
 
       - name: Verify installed CLI and MCP inventory
         run: |
@@ -239,6 +239,15 @@ jobs:
           if payload["primary_rule_evaluation"]["state"] != "indeterminate":
               raise SystemExit("installed direction-binding dispatch did not fail closed")
           PY
+
+      - name: Recheck distribution binding immediately before upload
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          python scripts/distribution_binding.py check \
+            --project-root . \
+            --dist-dir dist \
+            --expected-commit "$EXPECTED_COMMIT"
 
       - name: Upload bound distributions
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -298,4 +307,5 @@ jobs:
           python scripts/verify_packaged_contracts.py
           --wheel "dist/${{ needs.package.outputs.wheel_filename }}"
           --sdist "dist/${{ needs.package.outputs.sdist_filename }}"
+          --binding-manifest dist/distribution-binding.json
           --timeout-seconds 300

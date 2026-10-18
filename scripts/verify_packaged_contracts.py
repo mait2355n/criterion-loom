@@ -856,7 +856,9 @@ class ProcessResult:
 
 
 def _json_print(payload: Mapping[str, Any]) -> None:
-    print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    # ASCII-only JSON is the same value on every stdout encoding; a cp1252 pipe
+    # would otherwise raise UnicodeEncodeError and print no result at all.
+    print(json.dumps(payload, ensure_ascii=True, sort_keys=True))
 
 
 def _sha256(path: Path) -> str:
@@ -876,6 +878,68 @@ def _canonical_json_sha256(value: Any) -> str:
             separators=(",", ":"),
         ).encode("utf-8")
     ).hexdigest()
+
+
+def _snapshot_input(
+    path_value: str | Path,
+    directory: Path,
+    *,
+    kind: str,
+    suffix: str,
+    maximum_bytes: int,
+) -> tuple[Path, str]:
+    """Copy an input once into a private directory, hashing the bytes as they are copied.
+
+    The scan, the install and the reported digest must all describe the same
+    bytes. Opening the caller's path separately for each let a swap between the
+    scan and the install go unnoticed while the reported digest named the
+    original. Everything after this call uses the private copy only.
+    """
+    path = Path(path_value).expanduser()
+    phase = f"{kind}_preflight"
+    if not path.name.endswith(suffix):
+        raise VerificationFailure(f"{kind}_suffix_invalid", f"--{kind} must name a {suffix} file", phase=phase)
+    try:
+        before = path.lstat()
+    except OSError as exc:
+        raise VerificationFailure(f"{kind}_unavailable", f"{kind} could not be inspected: {exc}", phase=phase) from exc
+    if not stat.S_ISREG(before.st_mode) or path.is_symlink():
+        raise VerificationFailure(f"{kind}_not_regular_file", f"--{kind} must be a non-symlink regular file", phase=phase)
+    if before.st_size <= 0 or before.st_size > maximum_bytes:
+        raise VerificationFailure(
+            f"{kind}_size_out_of_bounds",
+            f"{kind} size must be within 1..{maximum_bytes} bytes",
+            phase=phase,
+            details={"observed_bytes": before.st_size},
+        )
+    directory.mkdir()
+    target = directory / path.name
+    digest = hashlib.sha256()
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
+    copied = 0
+    try:
+        descriptor = os.open(path, flags)
+        with os.fdopen(descriptor, "rb") as source, target.open("xb") as sink:
+            opened = os.fstat(source.fileno())
+            if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino) or not stat.S_ISREG(opened.st_mode):
+                raise VerificationFailure(
+                    f"{kind}_changed_during_verification",
+                    f"{kind} was replaced while it was being read",
+                    phase=phase,
+                )
+            for block in iter(lambda: source.read(1024 * 1024), b""):
+                copied += len(block)
+                if copied > maximum_bytes:
+                    raise VerificationFailure(
+                        f"{kind}_size_out_of_bounds",
+                        f"{kind} grew beyond {maximum_bytes} bytes while it was being read",
+                        phase=phase,
+                    )
+                digest.update(block)
+                sink.write(block)
+    except OSError as exc:
+        raise VerificationFailure(f"{kind}_unavailable", f"{kind} could not be read: {exc}", phase=phase) from exc
+    return target, digest.hexdigest()
 
 
 def _validate_wheel(path_value: str | Path) -> tuple[Path, int, str]:
@@ -997,7 +1061,24 @@ def _wheel_member_crosses_distribution_boundary(parts: tuple[str, ...]) -> bool:
         return True
     if len(parts) >= 2 and parts[0] == "semantic_guard" and parts[1] == "validation":
         return len(parts) != 3 or parts[2] not in _ALLOWED_PACKAGED_VALIDATION_FILES
+    if parts[0] == "semantic_guard":
+        return _primary_namespace_member_forbidden(parts)
     return False
+
+
+# The main namespace ships code plus the force-included data directories. Anything
+# else tracked inside it (a key, an .env, a log) must not travel in a wheel or sdist.
+_PRIMARY_DATA_SUFFIXES = {"schemas": (".json",), "constitution": (".yaml", ".yml", ".json")}
+
+
+def _primary_namespace_member_forbidden(parts: tuple[str, ...]) -> bool:
+    """``parts`` starts at ``semantic_guard``: allow ``.py``, ``py.typed`` and the data directories."""
+    if any(":" in part for part in parts):
+        return True
+    name = parts[-1]
+    if len(parts) >= 2 and parts[1] in _PRIMARY_DATA_SUFFIXES:
+        return not (len(parts) == 3 and name.endswith(_PRIMARY_DATA_SUFFIXES[parts[1]]))
+    return not (name.endswith(".py") or name == "py.typed")
 
 
 def _additional_namespace_member_forbidden(parts: tuple[str, ...]) -> bool:
@@ -1130,6 +1211,10 @@ def _sdist_member_crosses_distribution_boundary(parts: tuple[str, ...]) -> bool:
         return True
     if parts[0] == "validation":
         return len(parts) != 2 or parts[1] not in _ALLOWED_PACKAGED_VALIDATION_FILES
+    if parts[0] == "src" and len(parts) >= 2 and parts[1] == "semantic_guard":
+        return _primary_namespace_member_forbidden(parts[1:])
+    if parts[0] in _PRIMARY_DATA_SUFFIXES:
+        return not (len(parts) == 2 and parts[1].endswith(_PRIMARY_DATA_SUFFIXES[parts[0]]))
     return False
 
 
@@ -1159,6 +1244,10 @@ def _child_limit_function(cpu_seconds: int):
         set_limit("RLIMIT_NOFILE", MAX_CHILD_OPEN_FILES)
 
     return apply_limits
+
+
+def _child_limits_supported() -> bool:
+    return os.name == "posix"
 
 
 def _address_space_limit_supported() -> bool:
@@ -1339,11 +1428,36 @@ def _clean_environment(
     return environment
 
 
+def _expected_digests_from_binding(manifest_value: str | Path, wheel_name: str, sdist_name: str) -> dict[str, str]:
+    """The wheel and sdist digests a distribution-binding manifest records for these files."""
+    path = Path(manifest_value).expanduser()
+    try:
+        metadata = path.lstat()
+        if not stat.S_ISREG(metadata.st_mode) or path.is_symlink() or not 0 < metadata.st_size <= 1024 * 1024:
+            raise ValueError("not a non-symlink regular file of 1..1048576 bytes")
+        document = json.loads(path.read_text(encoding="utf-8"))
+        records = {item["filename"]: item["sha256"] for item in document["artifacts"]}
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        raise VerificationFailure(
+            "binding_manifest_invalid", f"binding manifest could not be read: {exc}", phase="arguments"
+        ) from exc
+    try:
+        return {"wheel": str(records[wheel_name]), "sdist": str(records[sdist_name])}
+    except KeyError as exc:
+        raise VerificationFailure(
+            "binding_manifest_mismatch",
+            "the binding manifest does not name the wheel and sdist being verified",
+            phase="arguments",
+            details={"missing": str(exc)},
+        ) from exc
+
+
 def verify_wheel(
     wheel_value: str | Path,
     *,
     sdist_value: str | Path | None = None,
     timeout_seconds: float,
+    binding_manifest: str | Path | None = None,
 ) -> dict[str, Any]:
     if not MIN_TIMEOUT_SECONDS <= timeout_seconds <= MAX_TIMEOUT_SECONDS:
         raise VerificationFailure(
@@ -1351,8 +1465,6 @@ def verify_wheel(
             f"timeout must be between {MIN_TIMEOUT_SECONDS:g} and {MAX_TIMEOUT_SECONDS:g} seconds",
             phase="arguments",
         )
-    wheel, wheel_bytes, wheel_digest = _validate_wheel(wheel_value)
-    sdist, sdist_bytes, sdist_digest = _validate_sdist(sdist_value)
     deadline = time.monotonic() + timeout_seconds
 
     with tempfile.TemporaryDirectory(prefix="semantic-guard-wheel-") as directory:
@@ -1362,6 +1474,35 @@ def verify_wheel(
         venv_root = root / "venv"
         home.mkdir()
         temporary.mkdir()
+
+        # Scan, install and report the same private bytes, never the caller's path again.
+        wheel_label = str(Path(wheel_value).expanduser().absolute())
+        wheel_copy, wheel_copy_digest = _snapshot_input(
+            wheel_value, root / "inputs-wheel", kind="wheel", suffix=".whl", maximum_bytes=MAX_WHEEL_BYTES
+        )
+        wheel, wheel_bytes, wheel_digest = _validate_wheel(wheel_copy)
+        if sdist_value is None:
+            _validate_sdist(None)  # raises sdist_required: the source archive is not optional
+        sdist_label = str(Path(sdist_value).expanduser().absolute())
+        sdist_copy, sdist_copy_digest = _snapshot_input(
+            sdist_value, root / "inputs-sdist", kind="sdist", suffix=".tar.gz", maximum_bytes=MAX_SDIST_BYTES
+        )
+        sdist, sdist_bytes, sdist_digest = _validate_sdist(sdist_copy)
+        if sdist_digest != sdist_copy_digest:
+            raise VerificationFailure("sdist_changed_during_verification", "the private sdist copy changed", phase="sdist_preflight")
+        if wheel_digest != wheel_copy_digest:
+            raise VerificationFailure("wheel_changed_during_verification", "the private wheel copy changed", phase="wheel_preflight")
+        if binding_manifest is not None:
+            # Verify the very bytes the binding recorded, not whatever sits at the path now.
+            expected = _expected_digests_from_binding(binding_manifest, wheel_copy.name, sdist_copy.name)
+            for kind, observed in (("wheel", wheel_digest), ("sdist", sdist_digest)):
+                if observed != expected[kind]:
+                    raise VerificationFailure(
+                        f"{kind}_binding_mismatch",
+                        f"the {kind} bytes differ from the digest in the distribution binding manifest",
+                        phase="arguments",
+                        details={"observed": observed, "bound": expected[kind]},
+                    )
 
         bootstrap_environment = _clean_environment(
             home=home,
@@ -1741,10 +1882,11 @@ def verify_wheel(
         "schema_version": SCHEMA_VERSION,
         "status": "pass",
         "subject": {
-            "wheel": str(wheel),
+            "wheel": wheel_label,
+            "bound_to_manifest": binding_manifest is not None,
             "sha256": wheel_digest,
             "size_bytes": wheel_bytes,
-            "sdist": str(sdist),
+            "sdist": sdist_label,
             "sdist_sha256": sdist_digest,
             "sdist_size_bytes": sdist_bytes,
         },
@@ -1757,13 +1899,17 @@ def verify_wheel(
             "wheel_uncompressed_limit_bytes": MAX_WHEEL_UNCOMPRESSED_BYTES,
             "sdist_size_limit_bytes": MAX_SDIST_BYTES,
             "sdist_uncompressed_limit_bytes": MAX_SDIST_UNCOMPRESSED_BYTES,
-            "child_file_limit_bytes": MAX_CHILD_FILE_BYTES,
+            # Reported only where the limit is really applied: the child limits are
+            # POSIX rlimits, and the process-group kill needs a new session.
+            "child_file_limit_bytes": MAX_CHILD_FILE_BYTES if _child_limits_supported() else None,
             "child_address_space_limit_bytes": (
                 MAX_CHILD_ADDRESS_SPACE_BYTES
                 if _address_space_limit_supported()
                 else None
             ),
-            "child_open_file_limit": MAX_CHILD_OPEN_FILES,
+            "child_open_file_limit": MAX_CHILD_OPEN_FILES if _child_limits_supported() else None,
+            "child_cpu_limit_applied": _child_limits_supported(),
+            "process_group_kill": os.name == "posix",
         },
         "checks": checks,
         "counts": counts,
@@ -1776,7 +1922,14 @@ def verify_wheel(
                 [
                     "Darwin does not accept a finite RLIMIT_AS for these child processes; wheel size, uncompressed size, wall time, CPU, output, child-file size, and open-file limits remain enforced there."
                 ]
-                if not _address_space_limit_supported()
+                if _child_limits_supported() and not _address_space_limit_supported()
+                else []
+            ),
+            *(
+                [
+                    "This platform applies no CPU, child-file-size, address-space, or open-file limit to child processes, and a timeout stops only the direct child, not its descendants; wheel and archive size, wall time, and captured output remain enforced."
+                ]
+                if not _child_limits_supported()
                 else []
             ),
             "Pass establishes packaged-resource accessibility and local contract replay only; it does not establish field validity, operational qualification, external authenticity, security certification, or human acceptance.",
@@ -1791,6 +1944,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--sdist",
         required=True,
         help="Matching local semantic-guard .tar.gz source distribution.",
+    )
+    parser.add_argument(
+        "--binding-manifest",
+        help=(
+            "distribution-binding.json whose wheel and sdist digests the verified bytes must equal; "
+            "without it the result does not tie the verified files to a bound build."
+        ),
     )
     parser.add_argument(
         "--timeout-seconds",
@@ -1811,6 +1971,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             arguments.wheel,
             sdist_value=arguments.sdist,
             timeout_seconds=arguments.timeout_seconds,
+            binding_manifest=arguments.binding_manifest,
         )
     except VerificationFailure as exc:
         payload = {
