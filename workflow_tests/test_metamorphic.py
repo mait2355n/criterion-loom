@@ -17,6 +17,8 @@ from semantic_guard_workflow.metamorphic import (
     REWRITES,
     AblationDocument,
     RewriteSpec,
+    Silent,
+    Verdict,
     evaluate_invariance,
     evaluate_metamorphic,
     evaluate_sensitivity,
@@ -70,52 +72,63 @@ class InvarianceTests(unittest.TestCase):
                 report = evaluate_invariance(root)
         self.assertEqual(report["checked"], 2)
 
-    def test_known_drift_rejects_unrelated_findings_and_changed_status(self) -> None:
+    def _known_drift_report(self, mutation: str, status_after: str, hiding: bool = False) -> dict[str, object]:
         fixture = "requests/verification-target-mismatch.expected.json"
         rule = "req.relation.verification_target_mismatch"
         known = {
             (name, fixture): {
                 "reason": "synthetic exception used to exercise the allowance",
-                "status": {"before": "warn", "after": "pass"},
-                "lost": [rule],
+                "status": {"before": "warn", "after": status_after},
+                "lost": [rule] if hiding else [],
                 "gained": [],
             }
             for name in ("fullwidth_ascii", "decomposed_kana", "halfwidth_katakana")
         }
         rewrites = tuple(item for item in REWRITES if item.name in {name for name, _ in known})
         original_rerun = metamorphic._rerun
-        for mutation in ("exact", "finding", "status"):
-            def altered(spec, expected_path, text):
-                result = original_rerun(spec, expected_path, text)
-                if expected_path.name == "verification-target-mismatch.expected.json":
-                    result["status"] = "pass"
-                    result["findings"] = [item for item in result["findings"] if item.get("rule_id") != rule]
-                    if mutation == "finding":
-                        result["findings"].append({
-                            "severity": "blocker", "category": "security",
-                            "rule_id": "req.example.unrelated_regression",
-                        })
-                    elif mutation == "status":
-                        result["status"] = "blocked"
-                return result
 
-            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
-                root = Path(temporary)
-                target = root / "requests" / "verification-target-mismatch.expected.json"
-                target.parent.mkdir()
-                target.write_text((Path(DEFAULT_FIXTURE_ROOT) / "requests" / target.name).read_text(encoding="utf-8"), encoding="utf-8")
-                with (
-                    patch.object(metamorphic, "REWRITES", rewrites),
-                    patch.object(metamorphic, "KNOWN_DRIFT", known),
-                    patch.object(metamorphic, "_rerun", altered),
-                ):
-                    report = evaluate_invariance(root)
-                if mutation == "exact":
-                    self.assertTrue(report["passed"])
-                    self.assertEqual(len(report["known_drift"]), 3)
-                else:
-                    self.assertFalse(report["passed"])
-                    self.assertEqual(len(report["unexpected_drift"]), 3)
+        def altered(spec, expected_path, text):
+            result = original_rerun(spec, expected_path, text)
+            if expected_path.name == "verification-target-mismatch.expected.json":
+                result["status"] = status_after
+                if hiding:
+                    result["findings"] = [item for item in result["findings"] if item.get("rule_id") != rule]
+                if mutation == "finding":
+                    result["findings"].append({"severity": "blocker", "category": "security", "rule_id": "req.example.unrelated_regression"})
+                elif mutation == "status":
+                    result["status"] = "blocked"
+            return result
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = root / "requests" / "verification-target-mismatch.expected.json"
+            target.parent.mkdir()
+            target.write_text((Path(DEFAULT_FIXTURE_ROOT) / "requests" / target.name).read_text(encoding="utf-8"), encoding="utf-8")
+            with (
+                patch.object(metamorphic, "REWRITES", rewrites),
+                patch.object(metamorphic, "KNOWN_DRIFT", known),
+                patch.object(metamorphic, "_rerun", altered),
+            ):
+                return evaluate_invariance(root)
+
+    def test_known_drift_accepts_only_the_exact_recorded_delta(self) -> None:
+        # warn -> block with no rule change is excused exactly as recorded.
+        report = self._known_drift_report("exact", "block")
+        self.assertTrue(report["passed"])
+        self.assertEqual(len(report["known_drift"]), 3)
+
+        for mutation in ("finding", "status"):
+            with self.subTest(mutation=mutation):
+                report = self._known_drift_report(mutation, "block")
+                self.assertFalse(report["passed"])
+                self.assertEqual(len(report["unexpected_drift"]), 3)
+
+    def test_an_exception_may_not_excuse_a_finding_that_vanished_into_a_pass(self) -> None:
+        report = self._known_drift_report("exact", "pass", hiding=True)
+
+        self.assertEqual(len(report["known_drift"]), 3)
+        self.assertEqual(len(report["known_drift_hiding_findings"]), 3)
+        self.assertFalse(report["passed"])
 
     def test_no_rewrite_drifts_on_the_repository_fixtures(self) -> None:
         self.assertEqual(metamorphic.KNOWN_DRIFT, {})
@@ -123,6 +136,81 @@ class InvarianceTests(unittest.TestCase):
 
         self.assertEqual(report["drifted"], 0)
         self.assertEqual(report["known_drift"], [])
+
+    def test_a_narrowed_invisible_character_set_makes_the_harness_fail(self) -> None:
+        import re
+
+        narrowed = re.compile("[\ufeff\u200b]")
+        with (
+            patch("semantic_guard_workflow.text_normalization._invisible_pattern", lambda: narrowed),
+        ):
+            report = evaluate_invariance()
+
+        self.assertFalse(report["passed"])
+        self.assertIn("invisible_inside_words", {row["rewrite"] for row in report["unexpected_drift"]})
+
+    def test_the_signature_sees_severity_score_and_gaps(self) -> None:
+        base = {"status": "warn", "score": 0.8, "missing": ["a"], "findings": [{"severity": "major", "category": "x", "rule_id": "r.one"}]}
+        verdict = metamorphic._signature(base, "audit_plan")
+        self.assertIsInstance(verdict, Verdict)
+
+        for change, mutate in {
+            "severity": lambda r: r["findings"][0].update(severity="minor"),
+            "score": lambda r: r.update(score=0.7),
+            "missing": lambda r: r.update(missing=["a", "b"]),
+            "count": lambda r: r["findings"].append({"severity": "major", "category": "x", "rule_id": "r.one"}),
+        }.items():
+            with self.subTest(change=change):
+                variant = json.loads(json.dumps(base))
+                mutate(variant)
+                self.assertNotEqual(metamorphic._signature(variant, "audit_plan"), verdict)
+
+    def test_a_severity_change_in_a_variant_is_reported_as_drift(self) -> None:
+        original = metamorphic._rerun
+        broken = RewriteSpec("one_space", "adds a trailing space", lambda text: text + " ")
+
+        def lowered(spec, path, text):
+            result = original(spec, path, text)
+            for finding in result["findings"]:
+                finding["severity"] = "info"
+            return result
+
+        with patch.object(metamorphic, "REWRITES", (broken,)), patch.object(metamorphic, "_rerun", lowered):
+            report = evaluate_invariance()
+
+        self.assertFalse(report["passed"])
+        self.assertTrue(any("findings" in row.get("other", {}) or row["status"]["before"] != row["status"]["after"] for row in report["unexpected_drift"]))
+
+    def test_rewrites_that_change_nothing_are_not_counted_as_checks(self) -> None:
+        report = evaluate_invariance()
+
+        self.assertGreater(report["identity"], 0)
+        self.assertEqual(report["checked"], sum(row["checked"] for row in report["rewrites"].values()))
+        for name, row in report["rewrites"].items():
+            with self.subTest(rewrite=name):
+                self.assertGreater(row["checked"], 0)
+        self.assertGreaterEqual(report["checked"], metamorphic.MINIMUM_CHECKED_COMPARISONS)
+
+    def test_an_empty_or_missing_tree_does_not_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            empty = evaluate_invariance(temporary)
+        missing = evaluate_invariance(Path(temporary) / "nowhere")
+
+        self.assertFalse(empty["passed"])
+        self.assertTrue(empty["too_few_comparisons"])
+        self.assertFalse(missing["passed"])
+        self.assertIn("not a directory", missing["error"])
+        self.assertFalse(evaluate_metamorphic(Path(temporary) / "nowhere")["passed"])
+
+    def test_the_new_rewrites_cover_every_line_terminator_and_format_character(self) -> None:
+        names = {rewrite.name for rewrite in REWRITES}
+
+        self.assertTrue({"invisible_inside_words", "cr_line_breaks", "line_separators", "paragraph_separators", "next_line_breaks"} <= names)
+        by_name = {rewrite.name: rewrite for rewrite in REWRITES}
+        self.assertEqual(by_name["crlf"].apply("a\r\nb\nc"), "a\r\nb\r\nc")
+        inside = by_name["invisible_inside_words"].apply("検証方法: pytest を実行する。")
+        self.assertNotEqual(inside, "検証方法: pytest を実行する。")
+        self.assertEqual(normalize_audit_text(inside), "検証方法: pytest を実行する。")
 
     def test_repository_fixtures_are_stable_under_every_rewrite(self) -> None:
         report = evaluate_invariance()
@@ -227,7 +315,7 @@ class SensitivityTests(unittest.TestCase):
             plan.document_id,
             plan.phase,
             plan.fixture,
-            {**plan.expectations, "戻し方": "claimed to be covered elsewhere"},
+            {**plan.expectations, "戻し方": Silent("claimed to be covered elsewhere", also_remove=("証拠",), expected_rules=("plan.completion.evidence_missing",))},
         )
 
         report = evaluate_sensitivity((stale,))
@@ -261,6 +349,76 @@ class SensitivityTests(unittest.TestCase):
             self.assertTrue(row["silent_because"], row["field"])
 
 
+class SilentEntryTests(unittest.TestCase):
+    def _report(self, field: str, entry: object) -> dict[str, object]:
+        plan = ABLATION_DOCUMENTS[0]
+        document = AblationDocument(plan.document_id, plan.phase, plan.fixture, {**plan.expectations, field: entry})
+        return evaluate_sensitivity((document,))
+
+    def test_a_bare_reason_is_no_longer_accepted(self) -> None:
+        report = self._report("依存", "covered elsewhere")
+
+        self.assertFalse(report["passed"])
+        self.assertIn("Silent entry", report["mismatches"][0]["note"])
+
+    def test_the_joint_removal_must_raise_the_stated_rule(self) -> None:
+        wrong = Silent("claims a rule that never fires", also_remove=("順序",), expected_rules=("plan.risk.rollback_missing",))
+
+        report = self._report("依存", wrong)
+
+        self.assertFalse(report["passed"])
+        self.assertIn("did not raise", report["mismatches"][0]["note"])
+
+    def test_the_joint_removal_must_leave_the_stated_gap(self) -> None:
+        wrong = Silent("claims a gap that stays closed", also_remove=("順序",), expected_missing=("rollback_or_recovery",))
+
+        self.assertFalse(self._report("依存", wrong)["passed"])
+
+    def test_fields_to_remove_together_must_exist(self) -> None:
+        report = self._report("依存", Silent("names a field that is not there", also_remove=("存在しない",), expected_missing=("dependencies",)))
+
+        self.assertFalse(report["passed"])
+        self.assertIn("do not exist", report["mismatches"][0]["note"])
+
+    def test_a_silent_entry_must_state_what_it_expects(self) -> None:
+        report = self._report("依存", Silent("explains nothing", also_remove=("順序",)))
+
+        self.assertFalse(report["passed"])
+        self.assertIn("must state", report["mismatches"][0]["note"])
+
+    def test_a_cover_that_is_gone_is_reported(self) -> None:
+        report = self._report("依存", Silent("claims wording that is not in the text", also_remove=("順序",), still_present="存在しない語"))
+
+        self.assertFalse(report["passed"])
+        self.assertIn("stated cover is gone", report["mismatches"][0]["note"])
+
+
+class RuleCoverageTests(unittest.TestCase):
+    def test_the_assertions_cover_a_stated_share_of_the_catalog(self) -> None:
+        report = evaluate_sensitivity()
+
+        self.assertGreaterEqual(report["asserted_rule_count"], metamorphic.MINIMUM_ASSERTED_RULES)
+        self.assertEqual(report["catalog_rule_count"], 73)
+        catalog = {rule.id for rule in metamorphic.RULES}
+        self.assertTrue(set(report["asserted_rules"]) <= catalog)
+
+    def test_dropping_a_document_below_the_floor_fails(self) -> None:
+        report = evaluate_sensitivity()
+        reduced = tuple(document for document in ABLATION_DOCUMENTS if document.phase == "audit_plan")
+        with patch.object(metamorphic, "ABLATION_DOCUMENTS", reduced):
+            floor = evaluate_sensitivity()
+
+        self.assertTrue(report["passed"])
+        self.assertFalse(floor["passed"])
+        self.assertTrue(any("rules are asserted" in row["note"] for row in floor["mismatches"]))
+
+    def test_finish_and_document_phases_are_exercised(self) -> None:
+        phases = {(document["document"], document["phase"]) for document in evaluate_sensitivity()["documents"]}
+
+        self.assertIn(("finish/public-behavior-good", "finish_check"), phases)
+        self.assertIn(("documents/readme-good", "audit_request"), phases)
+
+
 class MetamorphicCliTests(unittest.TestCase):
     def test_cli_reports_a_passing_run(self) -> None:
         stdout = io.StringIO()
@@ -284,6 +442,20 @@ class MetamorphicCliTests(unittest.TestCase):
 
         self.assertEqual(raised.exception.code, 1)
         self.assertFalse(json.loads(stdout.getvalue())["passed"])
+
+    def test_cli_reports_a_bad_path_as_json_and_fails(self) -> None:
+        stdout = io.StringIO()
+        with (
+            patch.object(sys, "argv", ["semantic-guard", "evaluate-metamorphic", "--path", "/nonexistent-fixture-root"]),
+            redirect_stdout(stdout),
+            self.assertRaises(SystemExit) as raised,
+        ):
+            main()
+
+        self.assertEqual(raised.exception.code, 1)
+        payload = json.loads(stdout.getvalue())
+        self.assertFalse(payload["passed"])
+        self.assertIn("not a directory", payload["error"])
 
     def test_combined_report_requires_both_checks(self) -> None:
         report = evaluate_metamorphic()
