@@ -2,7 +2,16 @@ from __future__ import annotations
 
 import re
 
-from semantic_guard_workflow.audit_common import BASIS, _blocker, _has_implementation_evidence, _normalize_input_kind, _result, _security_signal
+from semantic_guard_workflow.assertion_context import value_state
+from semantic_guard_workflow.audit_common import (
+    BASIS,
+    _blocker,
+    _has_asserted_any,
+    _has_implementation_evidence,
+    _normalize_input_kind,
+    _result,
+    _security_signal,
+)
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import (
@@ -31,7 +40,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         findings.append(_blocker("evidence", "差分が空。", "unified diff または変更要約を渡す。", BASIS["implementation"]))
         missing.append("diff")
 
-    if not intent.strip():
+    if value_state(intent) != "decided":
         findings.append(
             Finding(
                 severity="major",
@@ -496,31 +505,22 @@ def _failure_prone_operation_signal(text: str) -> str:
     return _first_regex_match(text, patterns)
 
 
+# ``try`` is not in ``entry`` or ``retry``, and a comment that promises handling later
+# ("# TODO: 例外処理は後で追加する") is not handling.
+_FAILURE_WHOLE_WORDS = re.compile(r"(?<![A-Za-z0-9_])(?:try|except|catch|timeout|fallback|schema)(?![A-Za-z0-9_])", re.IGNORECASE)
+_FAILURE_PREFIXED_WORDS = re.compile(
+    r"(?<![A-Za-z0-9])(?:validat(?:e|ion|or)|returncode|check=True|raise_for_status|FileNotFoundError|JSONDecodeError)",
+    re.IGNORECASE,
+)
+_FAILURE_JAPANESE_TERMS = ["失敗", "例外", "タイムアウト", "検証", "戻り値", "異常"]
+_COMMENT_LINE = re.compile(r"^\s*(?:#|//|/\*|\*|--|<!--|;)")
+
+
 def _has_failure_handling_evidence(text: str) -> bool:
-    return _has_any(
-        text,
-        [
-            "timeout",
-            "try",
-            "except",
-            "catch",
-            "fallback",
-            "returncode",
-            "check=True",
-            "raise_for_status",
-            "validate",
-            "validation",
-            "schema",
-            "FileNotFoundError",
-            "JSONDecodeError",
-            "失敗",
-            "例外",
-            "タイムアウト",
-            "検証",
-            "戻り値",
-            "異常",
-        ],
-    )
+    code = "\n".join(line for line in text.splitlines() if not _COMMENT_LINE.match(line))
+    if _FAILURE_WHOLE_WORDS.search(code) or _FAILURE_PREFIXED_WORDS.search(code):
+        return True
+    return _has_asserted_any(code, _FAILURE_JAPANESE_TERMS)
 
 
 def _operational_change_signal(text: str) -> str:
@@ -1061,9 +1061,25 @@ def _is_source_file(path: str) -> bool:
     return path.endswith((".py", ".js", ".ts", ".tsx", ".jsx", ".swift", ".go", ".rs", ".java", ".kt", ".c", ".cc", ".cpp", ".h"))
 
 
+_TEST_DIRECTORIES = frozenset({"test", "tests", "__tests__", "spec", "specs"})
+_TEST_DIRECTORY_SUFFIX = re.compile(r"[_-](?:tests?|specs?)$")
+_TEST_FILE_NAME = re.compile(
+    r"^(?:test_.+|.+_test\.[a-z0-9]+|(?:tests?|conftest)\.[a-z0-9]+|.+\.(?:test|spec)\.[a-z0-9]+|.+_spec\.[a-z0-9]+)$"
+)
+_TEST_CLASS_FILE_NAME = re.compile(r"^.*[a-z0-9](?:Test|Tests|Spec|IT)\.(?:java|kt|swift|cs|scala)$")
+
+
 def _is_test_file(path: str) -> bool:
-    lowered = path.lower()
-    return "/test" in lowered or "test_" in lowered or lowered.endswith((".spec.ts", ".test.ts", ".spec.js", ".test.js"))
+    """Whether ``path`` is a test file, judged by directory and file-name conventions.
+
+    A substring test would take ``latest_release.py`` and ``attest_signature.py``
+    for tests and let a source change pass without one.
+    """
+    segments = path.replace("\\", "/").split("/")
+    name = segments[-1]
+    if any(segment.lower() in _TEST_DIRECTORIES or _TEST_DIRECTORY_SUFFIX.search(segment.lower()) for segment in segments[:-1]):
+        return True
+    return bool(_TEST_FILE_NAME.match(name.lower()) or _TEST_CLASS_FILE_NAME.match(name))
 
 
 def _is_doc_file(path: str) -> bool:

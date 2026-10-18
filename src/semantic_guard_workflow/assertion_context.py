@@ -384,6 +384,12 @@ def find_field_assertion(text: str, terms: Iterable[str], *, accept_none: bool =
     return _match(text, *chosen) if chosen is not None else None
 
 
+def value_state(value: str, term: str = "") -> AssertionState:
+    """Classify a whole free-text value (not a labelled field) into a decision state."""
+    reason = _placeholder_reason(value, term)
+    return _REASON_STATE.get(reason, "decided") if reason else "decided"
+
+
 def asserted_excerpt(text: str, terms: Iterable[str], *, accept_none: bool = False) -> str:
     match = find_field_assertion(text, terms, accept_none=accept_none)
     if match is None or match.status != "present":
@@ -726,4 +732,11 @@ def _match(
     )
 
 
-__all__ = ["AssertionMatch", "AssertionState", "AssertionStatus", "asserted_excerpt", "find_field_assertion"]
+__all__ = [
+    "AssertionMatch",
+    "AssertionState",
+    "AssertionStatus",
+    "asserted_excerpt",
+    "find_field_assertion",
+    "value_state",
+]
