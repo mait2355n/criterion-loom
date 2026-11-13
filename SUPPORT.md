@@ -2,6 +2,11 @@
 
 ## Start here
 
+Current source checkouts use development version `1.2.0.dev0` and provide three
+separate interfaces: canonical v1, `workflow`, and `candidate`. Choose the
+interface and result contract using the [integration guide](docs/local-integration.md)
+(Japanese). The commands below use canonical v1.
+
 ```sh
 uv sync --locked
 uv run --locked semantic-guard --help
@@ -9,7 +14,7 @@ uv run --locked semantic-guard schema audit-result
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-The 1.1.0 source contract has four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contains 24 names. Former 0.1.0 commands are available only in the publication-repaired legacy archive and are not aliases of the v1 implementation; the archive manifest identifies the original Git anchor. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
+The historical 1.1.0 source contract had four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contained 24 names. In that source line, former 0.1.0 commands were available only in the publication-repaired legacy archive and were not aliases of the v1 implementation; the archive manifest identifies the original Git anchor. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
 
 ## Asking for help
 
@@ -27,7 +32,7 @@ For an ordinary non-sensitive support issue, include:
 - redacted standard output and standard error;
 - smallest non-sensitive input that reproduces the problem;
 - whether optional morphology or dependency providers were installed;
-- whether the result came from canonical v1 or the archived 0.1.0 runtime.
+- whether the result came from canonical v1, `workflow`, `candidate`, or the archived 0.1.0 runtime.
 
 Do not attach secrets, proprietary requirements, personal information, tokens, or an uncontrolled legacy execution environment.
 

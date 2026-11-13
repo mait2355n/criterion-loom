@@ -114,7 +114,7 @@ uv run --locked semantic-guard workflow llm-review-run --file review-input.json 
   --backend command --agent-command "my-agent --model {model} --schema {schema_path}" --execute
 ```
 
-`--model` を省くと各エージェント既定のモデルを使う（`codex` は `gpt-5.4-mini`、
+`--model` を省くと、この実装が定める既定のモデルを使う（`codex` は `gpt-5.4-mini`、
 `claude` は `sonnet`）。`claude` の `--json-schema` は `$schema` と `$id` を解決できないため、
 インライン渡しの前にこの二つを除く。`--agent-binary` で実行ファイルの場所を替えられる。
 
@@ -127,9 +127,11 @@ MCP の `llm_review_*`、`llm_explore_request_*`、`review_if_needed_*` 工具�
 引数は、`codex` と `claude` だけを受ける。`command` は呼出元が指定した引数の雛形で任意の
 プロセスを起動するため、操作者が直接指定する CLI に限り、MCP からは拒否して何も起動しない。
 
-実行は `--execute` 又は `execute=true` のときだけ起きる。対象の資料はそのエージェントの
-提供元へ送られるため、送ってよいかは呼出元が判断する。査読の結果は不足の候補であり、
-採択も却下も代行しない。
+CLI では `--execute`、MCP の同期実行工具では `execute=true` を指定したときだけ
+実行する。非同期の開始工具にはこの指定はなく、呼び出すと実行を開始する。
+`review_if_needed_start_tool` は、査読が必要と判定された場合だけ開始する。
+対象の資料はそのエージェントの提供元へ送られるため、送ってよいかは呼出元が判断する。
+査読の結果は不足の候補であり、採択も却下も代行しない。
 
 `--agent-command` は全OSでPOSIXの引用規則により引数へ分割し、シェル自体は起動しない。
 Windowsのパスはテンプレート内でも `"C:\tools\agent.exe"` のように引用して、逆斜線を保つ。
