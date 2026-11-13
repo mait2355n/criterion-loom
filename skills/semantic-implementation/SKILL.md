@@ -20,7 +20,10 @@ are expected. Do not invoke external LLM jobs merely because a server is connect
 When an isolated reviewer is wanted, choose its agent per call: `--backend codex` (default)
 or `--backend claude`, also available as `backend` on the MCP tools. `--backend command` runs
 an operator-supplied template and is CLI-only. Every backend is validated against the same
-schema, nothing runs without `--execute`, and the result records which `backend` answered.
+schema, and the result records which `backend` answered. CLI calls require
+`--execute`; synchronous MCP calls require `execute=true`. Asynchronous MCP start
+tools begin execution when called; `review_if_needed_start_tool` starts a job only
+when review is needed. Check that material may be sent before invoking a start tool.
 See [the integration guide](../../docs/local-integration.md). Existing deployed
 clients are not changed automatically.
 
@@ -37,7 +40,7 @@ Use the CLI fallback from the repository root:
 
 ```sh
 uv run --locked semantic-guard audit-requirement --file requirement.txt
-uv run --locked semantic-guard audit-direction-binding \
+uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
   --text '体重が重い順に並べたとき、Cの次に体重が重い人は誰か。' \
   --context '候補集合は現在の表だけを使う。' \
   --morphology sudachi

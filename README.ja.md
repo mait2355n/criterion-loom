@@ -9,39 +9,31 @@
 > 工学上の主張と証拠の隔たりを、検査可能にする。
 
 AI と進めた作業では、事実、仮説、証拠不足、人間受理の違いが会話に
-閉じ込められがちだ。Criterion Loom が目指すのは、この四つの違いを、版付きで検査できる
-監査成果物として会話の外へ記録できる状態である。流暢な要約を信じるしかない状態から、
+閉じ込められがちだ。Criterion Loom が目指すのは、この四つを区別し、版付きで検査できる
+監査成果物として会話の外に記録できる状態である。流暢な要約を信じるしかない状態から、
 修正や判断をやり直せる状態へ変えるためのプロジェクトだ。
 
 `Criterion Loom` は公開プロジェクト名である。現行の配布物と CLI は
 `semantic-guard` 開発版 `1.2.0.dev0`、基幹の Python パッケージ名は `semantic_guard`、
 MCP サーバーの入口は `semantic-guard-mcp` である。
 
-> 現行 v1 で公開している監査対象は、一度に一件の構造化された機能要求と、
-> それとは独立した限定的な日本語の方向指定（方向拘束）である。計画、差分、完了などの
-> 監査は明示的な `workflow` 入口で扱う。未採用の統治付き vNext は `candidate` 入口で扱う。
+## 監査対象から入口を選ぶ
 
-この開発版では三実装を一つの導入環境にまとめ、各々の結果契約を保持する。
-[結合版の利用手引](docs/local-integration.md)で使う入口を選ぶ。
-この結合は、正式リリースや稼働環境の既定切替を意味しない。
+この開発版は、結果契約の異なる三つの入口を同じ導入環境に収める。
 
-## 何が違うのか
+| 監査したい対象 | CLI | MCP サーバー |
+| --- | --- | --- |
+| 一件の構造化された機能要求、又は限定的な日本語の方向指定（基幹 v1） | `semantic-guard audit-requirement` / `audit-direction-binding` | `semantic-guard-mcp` |
+| 依頼・計画・差分・完了・規約・成果物所属など（工程別監査） | `semantic-guard workflow COMMAND` | `semantic-guard-workflow-mcp` |
+| 統治資料と未解決義務を伴う要求（未採用の vNext 候補） | `semantic-guard candidate audit-requirement` | `semantic-guard-vnext-mcp` |
 
-単一の点数や合否へ畳むと、本来は別々に答えるべき問いが混ざる。
-`semantic-guard` は少なくとも次を分離する。
-
-- 選択した規則が何を結論したか。
-- その結論は暫定か終端か。
-- 疑義や競合が未解決のままか。
-- 宣言された対象をどこまで被覆したか。
-- 処理経路を継続、警告、停止のどれに対応付けるか。
-- 人間が何かを受理したか。
-
-出力は判断材料であって、人間の判断ではない。解析器の出力だけで、その結論が
-正しいと認められることはない。`pass` は正しさ、リリース承認、安全性の認証、
-人間による受理のいずれも意味しない。
+計画や差分の監査を始める場合は、[結合版の利用手引](docs/local-integration.md#入口を選ぶ)へ進む。
+各入口の結果は別の契約に従う。この結合は、正式リリース、候補規則の採択、
+稼働環境の既定切替を意味しない。
 
 ## 最短実例
+
+ここでは基幹 v1 を使い、辿る方向が対象と操作に明示的に結び付いているかを検査する。
 
 必要なのは [Python 3.11 以上](https://www.python.org/)と
 [`uv`](https://docs.astral.sh/uv/) である。現段階ではソースコードを取得した
@@ -56,7 +48,7 @@ cd criterion-loom
 uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
   --text '横一列を左から右へ辿るとき、Aの次の項目はどれですか？' \
   --morphology sudachi \
-  | python3 -c 'import json,sys; r=json.load(sys.stdin); print(json.dumps({"state": r["primary_rule_evaluation"]["state"], "direction": r["direction_binding_summary"]["frames"][0]["direction_binding"]["direction"], "workflow": r["workflow_disposition"]["status"], "human_acceptance": r["acceptance_owner"]["acceptance_status"]}, indent=2))'
+  | python3 -c 'import json,sys; r=json.load(sys.stdin); print(json.dumps({"state": r["primary_rule_evaluation"]["state"], "direction": r["direction_binding_summary"]["frames"][0]["direction_binding"].get("direction"), "workflow": r["workflow_disposition"]["status"], "human_acceptance": r["acceptance_owner"]["acceptance_status"]}, indent=2))'
 ```
 
 抜き出した結果は次の通りになる。
@@ -70,13 +62,33 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 }
 ```
 
-この例は二つの境界を示す。規則結果を人間受理へ昇格させないことと、必要な方向が
-入力に無ければ慣例から補わないことだ。後者では、情報不足を推測で補わず `gap` とし、
+`satisfied` と `left_to_right` は、この入力の方向指定が規則を満たしたことを示す。
+`workflow` の `pass` は選択した方針による処理経路の判定で、人間受理は `pending` のままである。
+必要な方向が入力に無ければ、慣例から補わず `gap` とし、
 監査 JSON の `workflow_disposition.status` を `warn` とする。
+原データに `direction` 項目がない場合、上の抽出表示では `null` とする。
 [方向拘束監査](docs/direction-binding-audit.md)には、
 明示あり・なしの対照入力と正確な項目状態を示す。
 
+## 何が違うのか
+
+単一の点数や合否へ畳むと、本来は別々に答えるべき問いが混ざる。
+基幹 v1 は次の問いを分けて扱う。
+
+- 選択した規則による結論は何か。
+- その結論は暫定か終端か。
+- 疑義や競合が未解決のままか。
+- 宣言された対象をどこまで被覆したか。
+- 処理経路を継続、警告、停止のどれに対応付けるか。
+- 人間が何かを受理したか。
+
+出力は判断材料であって、人間の判断ではない。解析器の出力だけでは、その結論の
+正しさは認められない。`pass` は正しさ、リリース承認、安全性の認証、
+人間による受理のいずれも意味しない。
+
 ## 現在の公開面
+
+次の四件は基幹 v1 の機能である。工程別監査と未採用候補は、先に示した別の入口を使う。
 
 | 能力 | CLI | MCP | 現在の境界 |
 | --- | --- | --- | --- |
@@ -97,11 +109,12 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 | 実行面 | 向く用途 | 最初の一手 |
 | --- | --- | --- |
 | CLI | 人間、スクリプト、CI が実行と JSON 保存を担う | `uv run --locked semantic-guard --help` |
-| MCP | エージェント用クライアントが標準入出力を通じて同じ限定監査機能を使う | `uv run --locked semantic-guard-mcp` |
+| MCP | エージェント用クライアントが、選んだ監査契約の工具を標準入出力で使う | [監査対象からサーバーを選ぶ](#監査対象から入口を選ぶ) |
 | 付属スキル | エージェント（Codex、Claude Code）が監査境界を保って設計・実装作業を進める | [`skills/semantic-implementation/`](skills/semantic-implementation/)・[エージェント別の接続](docs/local-integration.md#エージェント別の接続) |
 
-`command`、`args`、`cwd` を受ける MCP クライアントなら、ソースコードの
-作業ディレクトリに対する構成は概ね次と等価になる。
+次は基幹 v1 の4工具を使う構成例である。`command`、`args`、`cwd` を受ける
+MCP クライアントを、ソースコードの作業ディレクトリへ接続する。
+計画・差分などの工程別監査には、[工程別サーバーを登録する](docs/local-integration.md#エージェント別の接続)。
 
 ```json
 {
@@ -126,12 +139,12 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 - 記録された Python 3.11 / 3.13 環境でソースコード試験608件が通過。
 - 選択したローカルの `wheel` / `sdist` に対する配布契約検証20件が通過。
 - パッケージ内のスキーマ24件、CLIコマンド四件、MCPツール四件を観測。
-- 記録された、新しく構築した `wheel` の Sudachi 環境で、登録済み方向の `gap` / `bound` 222組を再現。
+- 新しく構築した `wheel` を使った、記録済みの Sudachi 環境で、登録済み方向の `gap` / `bound` 222組を再現。
 - 方向拘束の限定機能を GitHub の `main` へ統合し、定義済み CI 四ジョブが通過。
 
-これらは記録された対象に拘束され、現在の `HEAD` を自動的に再検証するものでは
-ない。契約と登録例の観測であって、ベンチマーク、採用実績、実務精度、無制限の
-日本語被覆、運用適格性、人間受理ではない。対象と限界は
+これらの観測が支持するのは、記録された対象に限られる。現在の `HEAD` を自動的に
+再検証するものではない。契約と登録例の観測であって、ベンチマーク、採用実績、実務精度、
+無制限の日本語被覆、運用適格性、人間受理ではない。対象と限界は
 [実装状態](docs/implementation-status.md)と日付付きの
 [方向拘束統合証拠](docs/audits/direction-binding-integration-2026-08-23.md)に記録する。
 
@@ -160,6 +173,9 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 歴史的な [1.0.0 正式採用判断](docs/canonical-promotion-decision.md)（英語）と
 [変更履歴](CHANGELOG.md)（英語）を参照する。
 
+最終受理、残余危険の受容、方針採択、既定経路の切替、旧版廃止は人間の判断に
+残る。
+
 ## 参加と支援
 
 - [変更提案](CONTRIBUTING.md)（英語）
@@ -167,6 +183,3 @@ uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
 - [セキュリティ方針](SECURITY.md)（英語）
 - [行動規範](CODE_OF_CONDUCT.md)（英語）
 - [MIT License](LICENSE)（英語）
-
-最終受理、残余危険の受容、方針採択、既定経路の切替、旧版廃止は人間の判断に
-残る。
