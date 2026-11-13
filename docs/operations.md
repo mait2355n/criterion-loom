@@ -75,7 +75,7 @@ CLI は `--text`、UTF-8 `--file` 又は標準入力を受け、任意の `--con
 `source_text` 内に書かれていなければならず、`context` だけに現れる別質問や例を主判定の対象にはしない。
 
 ```sh
-uv run --locked semantic-guard audit-direction-binding \
+uv run --locked --extra nlp-ja semantic-guard audit-direction-binding \
   --text '体重が重い順に並べたとき、Cの次に体重が重い人は誰か。' \
   --context '候補集合は現在の表だけを使う。' \
   --morphology sudachi

@@ -16,7 +16,8 @@
 | 数分でプロジェクトを把握する | [プロジェクト概要](../README.ja.md) | [現行公開面](../PUBLIC-SNAPSHOT.md)（英語） |
 | CLI / MCP サーバーを動かす | [最短実例](../README.ja.md#最短実例) | [運用手引](operations.md) |
 | 一件の構造化された機能要求を監査する | [要求監査の実例](operations.md#要求関係入力契約) | [解析の流れ](operations.md#解析の流れ)と[終了コード・監査状態](operations.md#終了コードと監査状態) |
-| MCP または付属スキルからエージェントに利用させる | [実行面の選択](../README.ja.md#実行面を選ぶ) | [スキルの MCP 契約](../skills/semantic-implementation/references/mcp-contract.md)（英語）と[エージェント別の接続・査読エージェント](local-integration.md#エージェント別の接続) |
+| 要求・計画・差分・完了証拠を工程別に監査する | [工程別監査の入口・結果契約・実行例](local-integration.md#入口を選ぶ) | [付属スキルの工程監査手順](../skills/semantic-implementation/SKILL.md#select-workflow-audits-for-other-lifecycle-work)（英語） |
+| MCP または付属スキルからエージェントに利用させる | [監査契約の選択](local-integration.md#入口を選ぶ)から[実行面の選択](../README.ja.md#実行面を選ぶ)へ進む | [基幹 v1 の CLI/MCP 契約](../skills/semantic-implementation/references/mcp-contract.md)（英語）と[エージェント別の接続・査読エージェント](local-integration.md#エージェント別の接続) |
 | 工程別規則がどれだけ安定して適用されるかを確かめる | [規則適用の機械検査](local-integration.md#規則適用の機械検査) | [規則カタログの整合試験](../workflow_tests/test_rule_catalog_consistency.py) |
 | 方向拘束結果を解釈する | [方向拘束監査](direction-binding-audit.md) | [実装状態](implementation-status.md) |
 | 成熟度・証拠の主張を査読する | [実装状態](implementation-status.md) | [証拠・監査記録](#証拠監査記録) |
