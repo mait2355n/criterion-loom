@@ -256,15 +256,26 @@ def find_field_assertion(text: str, terms: Iterable[str]) -> AssertionMatch | No
     satisfying an obligation by lexical presence alone.
     """
 
-    matches = _term_matches(text, terms)
-    if not matches:
+    classified = find_field_assertions(text, terms)
+    if not classified:
         return None
-
-    classified = [_classify_match(text, term, start, end) for term, start, end in matches]
     for item in classified:
         if item.status == "present":
             return item
     return classified[0]
+
+
+def find_field_assertions(text: str, terms: Iterable[str]) -> list[AssertionMatch]:
+    """Return every non-overlapping term occurrence with its assertion status.
+
+    Callers that apply a further bounded check to a ``present`` occurrence use
+    this so one rejected occurrence cannot hide a later independent one.
+    """
+
+    return [
+        _classify_match(text, term, start, end)
+        for term, start, end in _term_matches(text, terms)
+    ]
 
 
 def asserted_excerpt(text: str, terms: Iterable[str]) -> str:
@@ -497,4 +508,10 @@ def _match(
     )
 
 
-__all__ = ["AssertionMatch", "AssertionStatus", "asserted_excerpt", "find_field_assertion"]
+__all__ = [
+    "AssertionMatch",
+    "AssertionStatus",
+    "asserted_excerpt",
+    "find_field_assertion",
+    "find_field_assertions",
+]

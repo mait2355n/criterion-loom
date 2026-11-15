@@ -1,0 +1,29 @@
+{
+  "id": "FINISH-FAILURE-REPORTED-002",
+  "title": "A success claim cannot override failing runner output in the evidence",
+  "phase": "finish_check",
+  "text": "実装は完了しました。受入基準は満たしました。検証済み。残リスクなし。",
+  "evidence": "pytest: 3 failed, 117 passed",
+  "strict": true,
+  "rationale": "The summary asserts success while the attached runner summary counts three failures. The evidence is read as a result, not merged into the claim.",
+  "labels": {
+    "expected_rules": [
+      "finish.evidence.failure_reported"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "finish.evidence.failure_reported"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "failure_resolution"
+      ]
+    }
+  }
+}

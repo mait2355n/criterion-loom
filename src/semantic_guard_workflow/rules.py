@@ -1501,6 +1501,68 @@ RULES: tuple[Rule, ...] = (
         remediation="実行したコマンド、結果、または未実行理由を記録する。",
     ),
     Rule(
+        id="finish.evidence.failure_reported",
+        discipline="software_engineering",
+        phase="finish_check",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: verification and validation results",
+            "SWEBOK: software testing and quality assurance",
+            "ISO/IEC 25010: functional correctness evidence",
+        ),
+        concern="検証の失敗や受入基準の未達が報告されているのに、完了主張が受理されること。",
+        applies_when=(
+            "入力が完了報告である。",
+            "完了要約または証拠欄に、試験・検証・代表実行の失敗、0 を超える失敗件数、または受入基準の未達が結果として記録されている。",
+        ),
+        does_not_apply_when=(
+            "失敗件数が 0、または失敗が無いことの記録である。",
+            "失敗時の挙動や失敗処理の実装を説明しているだけで、検証結果の報告ではない。",
+            "失敗の記述より後に、再実行して成功した結果が記録されている。",
+            "失敗の記述が依頼文脈欄だけにあり、完了要約と証拠欄には無い。",
+        ),
+        evidence_required=(
+            "失敗の解消後に再実行した結果",
+            "未解消の失敗を既知事項として扱う判断主体と理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="検証の失敗または受入基準の未達が報告されている。",
+        remediation="失敗を解消して再実行した結果を記録するか、完了主張を取り下げ、未解消の失敗を人間判断へ渡す。",
+    ),
+    Rule(
+        id="finish.evidence.receipt_missing",
+        discipline="software_engineering",
+        phase="finish_check",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: verification evidence",
+            "SWEBOK: testing and quality assurance",
+            "ISO/IEC/IEEE 29148: verifiability of stated results",
+        ),
+        concern="検証したという宣言だけで、後から確かめられる記録なしに完了主張が受理されること。",
+        applies_when=(
+            "入力が完了報告である。",
+            "検証や試験を行った旨の記述はあるが、実行したコマンドや道具、件数、終了状態、出力や成果物の所在のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "実行したコマンドや道具の名前、件数、終了状態、ログや成果物の所在のいずれかが記録されている。",
+            "検証を実行しなかった理由が記録されている。",
+            "検証の失敗が報告されており、失敗報告の規則が適用される。",
+        ),
+        evidence_required=(
+            "実行コマンド",
+            "件数や終了状態などの結果",
+            "ログまたは成果物の所在",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="検証の宣言はあるが、確かめられる実行記録が見えない。",
+        remediation="実行したコマンド、件数、出力、保存先など、後から確かめられる記録を足す。",
+    ),
+    Rule(
         id="finish.implementation.behavior_evidence_missing",
         discipline="software_engineering",
         phase="finish_check",

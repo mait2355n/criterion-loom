@@ -26,6 +26,17 @@ All notable repository and public-contract changes are recorded here. Package ve
 - Restricted line rotation and sentence splitting to structurally safe inputs, recording skipped transformations. Known drift must match the exact status and rule-set delta, so unrelated regressions cannot inherit an exception. These checks measure fixture stability and sensitivity, not accuracy on real documents.
 - Documented POSIX argument quoting for command templates on every OS, and the inherited limitation that timeout supervision does not stop a wrapper's entire descendant process tree.
 
+### Workflow audits no longer pass on wording alone
+
+These change workflow results for inputs that previously passed. Canonical v1 and candidate contracts are unchanged.
+
+- `finish-check` reads a completion report for what it says happened. Added `finish.evidence.failure_reported` (strict `blocker`, relaxed `major`): a failure count above zero, a failed or failing verification activity, a runner `FAILED` verdict, or unmet acceptance criteria in the summary or evidence blocks the completion claim. A report stating `テストが3件失敗しました`, or a success claim with `pytest: 3 failed, 117 passed` as evidence, previously returned `pass` with score 1.0. Request context is not read for failures, zero counts are not failures, and a later recorded successful re-run closes an earlier failure.
+- Added `finish.evidence.receipt_missing` (strict `major`, relaxed `minor`): a statement that verification was done (`検証済み`) with no named command, count, exit state, or output location is a declaration, not a receipt, and now yields `warn`. A recorded not-run reason is exempt.
+- A negated predicate directly after the action noun (`テストは実行していません`, `検証はしていません`) and an unresolved value followed by a copula (`受入基準は未確認です`, `テストは未実行です`) no longer count as evidence; before, the copula alone turned `未確認` into present evidence. Skipped, omitted and not-yet-started forms are treated the same way. One denied check no longer hides an independent receipt in the same clause.
+- A failed representative execution still counts as execution evidence for `finish.implementation.behavior_evidence_missing`, but the report no longer passes: the reported failure is a separate finding. The tests that pinned `pass` for `CLI実行は失敗した` and `MCP build failed` now pin `block`.
+- `残余リスク` and `残存リスク` are recognized as residual-risk statements.
+- The catalog now holds 75 rules; five finish fixtures were added to both fixture trees and to the packaged-resource allowlist. These are bounded lexical readings of result statements, not a contradiction parser and not evidence of authenticity.
+
 ### Fixed
 
 - Stopped a bare `<` or `>` (quote marker, arrow, HTML tag, generic) from satisfying the measurable-constraint obligation, and tightened unit matching so that `5 sources` is not `5 s`.
