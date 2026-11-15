@@ -69,6 +69,13 @@ ACTION_USES = {
 }
 
 
+_REVIEWED_EXPRESSION = re.compile(
+    r"env\.UV_VERSION|github\.sha|matrix\.(?:os|python-version)|runner\.temp"
+    r"|needs\.package\.outputs\.(?:artifact_name|sdist_filename|wheel_filename)"
+    r"|steps\.distribution\.outputs\.(?:artifact_name|sdist_filename|wheel_filename)"
+)
+
+
 def action_ref(action: str) -> str:
     return f"uses: {action}@{ACTION_USES[action][0]}"
 
@@ -201,6 +208,28 @@ def audit_ci_contract(text: str) -> list[str]:
     if re.search(r"(?m)^\s+[A-Za-z-]+:\s*write(?:-all)?\s*$", text) or "write-all" in text or "read-all" in text:
         errors.append("no permission may be widened beyond contents: read")
 
+    # No step may be skipped or made harmless, and no expression may carry untrusted or secret input.
+    if re.search(r"(?m)^\s*(?:-\s+)?if:", text):
+        errors.append("no job or step may be conditional: a skipped check is a missing check")
+    if re.search(r"\|\|\s*(?:true|:)\b|;\s*true\b|set\s+\+e\b", text):
+        errors.append("no command may be made non-fatal")
+    expressions = set(re.findall(r"\$\{\{\s*([^}]*?)\s*\}\}", text))
+    if any(not _REVIEWED_EXPRESSION.fullmatch(expression) for expression in expressions):
+        errors.append("the workflow uses an expression outside the reviewed set (secrets and event data are not allowed)")
+    # The checks that make a green run mean something.
+    required_steps = {
+        "uv lock --check": 2,
+        "scripts/validate_verification_source.py": 1,
+        "if-no-files-found: error": 1,
+        '--expected-commit "$EXPECTED_COMMIT"': 3,
+        '--expected-commit "${{ github.sha }}"': 1,
+    }
+    for token, count in required_steps.items():
+        if text.count(token) != count:
+            errors.append(f"the workflow must contain {token!r} exactly {count} time(s)")
+    if re.search(r"(?m)^\s+runs-on: (?!ubuntu-latest$|\$\{\{ matrix\.os \}\}$)", text):
+        errors.append("jobs may run only on ubuntu-latest or the reviewed OS matrix")
+
     if package_job and PACKAGE_NEEDS not in package_job:
         errors.append("the package job must depend on both the contract and the legacy smoke jobs")
     if package_job and RECHECK_BEFORE_UPLOAD not in package_job:
@@ -240,6 +269,23 @@ class CiContractTests(unittest.TestCase):
             "drop the pre-upload recheck": (text.replace(RECHECK_BEFORE_UPLOAD, "- name: Something else", 1), "recheck the distribution binding"),
             "portability verifies without the manifest": (text.replace("          " + BINDING_MANIFEST_OPTION + "\n", "", 1), "portability contract token"),
             "remove the packaged contracts step": (text.replace(verify, "", 1), "verify packaged contracts"),
+            "skip the workflow tests": (
+                text.replace("      - name: Run workflow", "      - if: false\n        name: Run workflow", 1)
+                if "      - name: Run workflow" in text
+                else text.replace("        run: uv run --locked python -m unittest discover -s workflow_tests", "        if: false\n        run: uv run --locked python -m unittest discover -s workflow_tests", 1),
+                "conditional",
+            ),
+            "make the recheck non-fatal": (
+                text.replace('--expected-commit "${{ github.sha }}"', '--expected-commit "${{ github.sha }}" || true', 1),
+                "non-fatal",
+            ),
+            "package job drops --expected-commit": (text.replace('--expected-commit "$EXPECTED_COMMIT"', "", 1), "expected-commit"),
+            "drop uv lock --check": (text.replace("uv lock --check", "true", 1), "uv lock --check"),
+            "drop the verification-source check": (text.replace("scripts/validate_verification_source.py", "scripts/other.py", 1), "validate_verification_source"),
+            "upload even when no file matches": (text.replace("if-no-files-found: error", "if-no-files-found: warn", 1), "if-no-files-found"),
+            "use a secret": (text.replace("${{ github.sha }}", "${{ secrets.TOKEN }}", 1), "expression outside the reviewed set"),
+            "use event data": (text.replace("${{ github.sha }}", "${{ github.event.head_commit.message }}", 1), "expression outside the reviewed set"),
+            "move a job to another runner": (text.replace("    runs-on: ubuntu-latest\n", "    runs-on: self-hosted\n", 1), "may run only on"),
         }
         for name, (mutated, expected) in mutations.items():
             with self.subTest(mutation=name):

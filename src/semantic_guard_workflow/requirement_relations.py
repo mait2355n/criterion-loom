@@ -454,6 +454,8 @@ _DIMENSION_TERMS: dict[str, str] = {
 
 
 def _value(item: object, name: str, default: Any = None) -> Any:
+    if isinstance(item, dict):  # the common case; ``Mapping`` is an abstract class and checking it is slow
+        return item.get(name, default)
     if isinstance(item, Mapping):
         return item.get(name, default)
     return getattr(item, name, default)
@@ -491,12 +493,30 @@ def _entity_attributes(entity: object) -> Mapping[str, object]:
     return value if isinstance(value, Mapping) else {}
 
 
+# The lookups below are asked once per entity and per relation. Building each of them from
+# scratch on every call made the audit quadratic in the number of records; they are built once
+# per IR instead. The cache holds the last IR only and is checked by identity and by size.
+_INDEX_CACHE: tuple[object, tuple[int, ...], dict[str, Any], dict[str, Any], dict[str, Any]] | None = None
+
+
+def _indexes(ir: SemanticAssertionIR) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    global _INDEX_CACHE
+    names = ("source_segments", "assertions", "supports")
+    sizes = tuple(len(_value(ir, name, ()) or ()) for name in names)  # no copy: this runs once per lookup
+    cached = _INDEX_CACHE
+    if cached is not None and cached[0] is ir and cached[1] == sizes:
+        return cached[2], cached[3], cached[4]
+    built = tuple({str(_value(item, "id", "")): item for item in _items(ir, name)} for name in names)
+    _INDEX_CACHE = (ir, sizes, built[0], built[1], built[2])
+    return built  # type: ignore[return-value]
+
+
 def _segment_map(ir: SemanticAssertionIR) -> dict[str, SourceSegment]:
-    return {str(_value(item, "id", "")): item for item in _items(ir, "source_segments")}
+    return _indexes(ir)[0]
 
 
 def _assertion_map(ir: SemanticAssertionIR) -> dict[str, object]:
-    return {str(_value(item, "id", "")): item for item in _items(ir, "assertions")}
+    return _indexes(ir)[1]
 
 
 def _support_ids(item: object) -> list[str]:
@@ -507,9 +527,7 @@ def _support_ids(item: object) -> list[str]:
 
 
 def _assertion_capable_supports(ir: SemanticAssertionIR, item: object) -> list[object]:
-    support_map = {
-        str(_value(support, "id", "")): support for support in _items(ir, "supports")
-    }
+    support_map = _indexes(ir)[2]
     support_ids = _support_ids(item)
     if not support_ids:
         return []

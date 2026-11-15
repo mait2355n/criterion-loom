@@ -88,6 +88,7 @@ def audit_conventions(
         combined,
         catalog,
         rule_severity=lambda rule: _rule_severity(rule, strict=strict, catalog=catalog),
+        context_lines=len(combined.splitlines()) - len(text.splitlines()),
     )
     findings.extend(expression_findings)
     missing.extend(finding.rule_id for finding in expression_findings if finding.rule_id)

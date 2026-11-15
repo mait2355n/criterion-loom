@@ -5,6 +5,7 @@ from typing import Any
 
 from semantic_guard_workflow.core import audit_diff, audit_plan, audit_request, finish_check
 from semantic_guard_workflow.severity_profiles import apply_severity_profile
+from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 
 def build_trace_report(payload: dict[str, Any]) -> dict[str, object]:
@@ -29,6 +30,11 @@ def build_trace_report(payload: dict[str, Any]) -> dict[str, object]:
     if finish:
         audits["finish"] = apply_severity_profile(finish_check(finish, evidence=evidence, context=context, strict=strict), profile)
 
+    # The audits above normalize their own input. Links and tags compare words, so they
+    # read the same normalized spelling instead of the caller's raw segments.
+    request, plan, diff, finish, evidence = (
+        normalize_audit_text(value) for value in (request, plan, diff, finish, evidence)
+    )
     segments = {
         "request": request,
         "plan": plan,

@@ -17,6 +17,7 @@ from semantic_guard_workflow.metamorphic import (
     REWRITES,
     AblationDocument,
     RewriteSpec,
+    Raises,
     Silent,
     Verdict,
     evaluate_invariance,
@@ -87,8 +88,8 @@ class InvarianceTests(unittest.TestCase):
         rewrites = tuple(item for item in REWRITES if item.name in {name for name, _ in known})
         original_rerun = metamorphic._rerun
 
-        def altered(spec, expected_path, text):
-            result = original_rerun(spec, expected_path, text)
+        def altered(spec, expected_path, text, secondary=None):
+            result = original_rerun(spec, expected_path, text, secondary)
             if expected_path.name == "verification-target-mismatch.expected.json":
                 result["status"] = status_after
                 if hiding:
@@ -169,8 +170,8 @@ class InvarianceTests(unittest.TestCase):
         original = metamorphic._rerun
         broken = RewriteSpec("one_space", "adds a trailing space", lambda text: text + " ")
 
-        def lowered(spec, path, text):
-            result = original(spec, path, text)
+        def lowered(spec, path, text, secondary=None):
+            result = original(spec, path, text, secondary)
             for finding in result["findings"]:
                 finding["severity"] = "info"
             return result
@@ -465,6 +466,74 @@ class MetamorphicCliTests(unittest.TestCase):
         report = evaluate_metamorphic()
 
         self.assertEqual(report["passed"], report["invariance"]["passed"] and report["sensitivity"]["passed"])
+
+
+class SecondaryFieldAndRewriteQualityTests(unittest.TestCase):
+    def test_other_text_fields_are_rewritten_too(self) -> None:
+        # ``evidence`` of a finish report is read by the audit; a regression that stops
+        # normalizing it must not pass just because only ``text`` was rewritten.
+        real = metamorphic._run_fixture
+
+        def without_evidence_normalization(spec, path):
+            if spec.get("phase") == "finish_check" and spec.get("evidence"):
+                spec = {**spec, "evidence": spec["evidence"].translate({0x200B: None, 0xFEFF: None})}
+                with patch("semantic_guard_workflow.finish_audit.normalize_audit_text", lambda value: value):
+                    return real(spec, path)
+            return real(spec, path)
+
+        self.assertTrue(evaluate_invariance()["passed"])
+        with patch.object(metamorphic, "_run_fixture", without_evidence_normalization):
+            report = evaluate_invariance()
+        self.assertFalse(report["passed"])
+
+    def test_secondary_fields_skip_structural_rewrites(self) -> None:
+        spec = {"context": "Previously: tests run before merge.", "evidence": "結果: 通過"}
+        by_name = {rewrite.name: rewrite for rewrite in REWRITES}
+
+        self.assertEqual(metamorphic._secondary_rewrites(spec, by_name["bullet_markers"]), {})
+        self.assertEqual(metamorphic._secondary_rewrites(spec, by_name["bold_label"]), {})
+        changed = metamorphic._secondary_rewrites(spec, by_name["fullwidth_ascii"])
+        self.assertEqual(set(changed), {"context", "evidence"} & set(changed))
+        self.assertIn("context", changed)
+
+    def test_the_rewrites_keep_the_meaning_they_claim_to_keep(self) -> None:
+        by_name = {rewrite.name: rewrite for rewrite in REWRITES}
+
+        self.assertEqual(by_name["bold_label"].apply("- 目的: 箇条書き"), "- **目的**: 箇条書き")
+        self.assertEqual(by_name["bold_label"].apply("1. 目的: 番号"), "1. **目的**: 番号")
+        self.assertEqual(by_name["bold_label"].apply("目的: 本文"), "**目的**: 本文")
+        self.assertEqual(by_name["sentence_newlines"].apply("目的: A。対象外: B。"), "目的: A。\n対象外: B。\n")
+        self.assertEqual(by_name["sentence_newlines"].apply("彼は「行く。」と言った。"), "彼は「行く。」と言った。\n")
+        self.assertEqual(by_name["crlf"].apply("a\r\nb\n"), "a\r\nb\r\n")
+
+    def test_the_natural_synonyms_are_replayed(self) -> None:
+        names = {rewrite.name for rewrite in REWRITES}
+
+        for pair in ("目的->ねらい", "目的->ゴール", "受入基準->完了条件", "成果物->アウトプット", "判断主体->責任者", "順序->実施順"):
+            self.assertIn(f"synonym:{pair}", names)
+
+    def test_a_shared_rule_id_does_not_hide_the_wrong_field(self) -> None:
+        # Deleting リスク raises the shared required-field rule, but the gap must be ``risks``.
+        document = next(item for item in ABLATION_DOCUMENTS if item.document_id == "plans/good")
+        swapped = {**document.expectations, "リスク": Raises(("plan.structure.required_field_missing",), ("deliverables",))}
+        report = evaluate_sensitivity((AblationDocument(**{**document.__dict__, "expectations": swapped}),))
+
+        self.assertFalse(report["passed"])
+        self.assertTrue(any("fired for another field" in item.get("note", "") for item in report["mismatches"]))
+
+    def test_an_empty_or_missing_fixture_tree_is_not_a_pass(self) -> None:
+        for argument in (tempfile.mkdtemp(), "/nonexistent-fixture-root"):
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (
+                patch.object(sys, "argv", ["semantic-guard", "evaluate-fixtures", "--path", argument]),
+                redirect_stdout(stdout),
+                patch("sys.stderr", stderr),
+                self.assertRaises(SystemExit) as raised,
+            ):
+                main()
+
+            self.assertEqual(raised.exception.code, 1)
+            self.assertIn("no *.expected.json fixtures", stderr.getvalue())
 
 
 if __name__ == "__main__":

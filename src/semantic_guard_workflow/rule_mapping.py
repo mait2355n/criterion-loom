@@ -148,8 +148,11 @@ def infer_rule_id(phase: str, finding: dict[str, Any] | Any) -> str:
         if text == rule.finding:
             return rule.id
 
+    # A finding that quotes the rule's wording and adds to it belongs to the rule. The reverse,
+    # a short text that happens to occur inside a rule's wording (``証拠``, ``API``, ``。``),
+    # attributes nothing.
     for rule in phase_rules:
-        if rule.finding and (rule.finding in text or text in rule.finding):
+        if rule.finding and rule.finding in text:
             return rule.id
 
     return ""

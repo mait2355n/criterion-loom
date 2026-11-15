@@ -458,12 +458,13 @@ def _candidate_assessment(
 
     if permission["status"] != "granted":
         reasons.add("evaluation_permission_not_granted")
-    elif not can_holdout:
-        reasons.add(
-            "holdout_use_not_permitted"
-            if can_calibrate
-            else "calibration_use_not_permitted"
-        )
+    else:
+        # Name every missing use: a permission without calibration and without derived metrics
+        # lacks both, and saying only the first hides what the grantor would have to add.
+        if not can_calibrate:
+            reasons.add("calibration_use_not_permitted")
+        if not can_holdout:
+            reasons.add("holdout_use_not_permitted")
     valid_through = permission["valid_through"]
     if valid_through is not None and _parse_time(valid_through) < _parse_time(
         collection["assignment_frozen_at"]
@@ -1348,6 +1349,19 @@ def field_sample_intake_errors(
                             f"{candidate_location}.{record_name}.recorded_at",
                             str(member),
                         )
+                    # The review binds the whole candidate set, records included, so it cannot
+                    # have covered a record that did not exist yet when it was completed.
+                    if (
+                        recorded_at is not None
+                        and _parse_time(recorded_at)
+                        > _parse_time(bundle["duplicate_review"]["completed_at"])
+                    ):
+                        _add(
+                            errors,
+                            "candidate_record_after_duplicate_review",
+                            f"{candidate_location}.{record_name}.recorded_at",
+                            str(member),
+                        )
         if not (
             _parse_time(bundle["duplicate_review"]["completed_at"])
             <= _parse_time(cluster["assigned_at"])
@@ -1418,6 +1432,30 @@ def field_sample_intake_errors(
                     "$.duplicate_clusters",
                     f"{value}: {sorted(cluster_refs)}",
                 )
+    # The three digests name one content space: the original of one candidate can be the
+    # evaluated text of another. A value shared across clusters in any combination of fields is
+    # the same content in two duplicate units.
+    reported_values = {
+        value
+        for error in errors
+        if error.get("code", "").endswith("_duplicate_cluster_mismatch")
+        for value in [str(error.get("message", "")).split(":", 1)[0]]
+    }
+    content_clusters: dict[str, set[str]] = {}
+    for candidate in candidates:
+        cluster_id = candidate_to_cluster.get(str(candidate["candidate_id"]))
+        if cluster_id is None:
+            continue
+        for digest_field in ("original_digest", "normalized_digest", "evaluation_subject_digest"):
+            content_clusters.setdefault(str(candidate[digest_field]["value"]), set()).add(cluster_id)
+    for value, cluster_refs in sorted(content_clusters.items()):
+        if len(cluster_refs) > 1 and value not in reported_values:
+            _add(
+                errors,
+                "cross_field_duplicate_cluster_mismatch",
+                "$.duplicate_clusters",
+                f"{value}: {sorted(cluster_refs)}",
+            )
     for candidate in candidates:
         child_cluster = candidate_to_cluster.get(str(candidate["candidate_id"]))
         for parent in candidate["derived_from_refs"]:

@@ -101,6 +101,10 @@ _QUALITY_CONSTRAINT_TERMS = [
     "計測",
     "受入",
     "受入基準",
+    "完了条件",
+    "完了基準",
+    "completion criteria",
+    "definition of done",
     "許容",
     "基準",
     "ベンチ",
@@ -505,9 +509,21 @@ def _precondition_or_trigger_signal(text: str) -> str:
             "保存時",
             "受信時",
             "発火",
-            "条件",
         ],
-    )
+    ) or _generic_condition(text)
+
+
+# ``条件`` names a precondition on its own, but not as the end of a label that says when the
+# work is done, accepted or rejected: ``完了条件`` and ``不合格条件`` are outcomes.
+_OUTCOME_CONDITION = re.compile(r"(?:完了|合格|不合格|却下|終了|停止|受入|受け入れ|採用|達成|成功|失敗|中止|打切り|打ち切り)条件")
+
+
+def _generic_condition(text: str) -> str:
+    from semantic_guard_workflow.text_utils import excerpt_around
+
+    masked = _OUTCOME_CONDITION.sub(lambda match: "\0" * len(match.group()), text)
+    position = masked.find("条件")
+    return excerpt_around(text, position, position + 2) if position >= 0 else ""
 
 
 def _expected_result_signal(text: str) -> str:

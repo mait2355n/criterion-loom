@@ -642,8 +642,9 @@ def audit_request(
         requirement_profile=requirement_profile,
         requirement_structure=structure_profile,
     )
-    # Facts are determined from normalized spelling, but all published source
-    # spans and excerpts retain the caller's original coordinate system.
+    # Facts are determined from normalized spelling. Spans and excerpts of facts that cite
+    # the request or the context are published in the caller's coordinates; a fact that cites
+    # a derived view (``requirement_profile``) has no span and quotes the normalized text.
     from semantic_guard_workflow.text_utils import excerpt_around
 
     source_bodies = {"request": source_text, "context": source_context}
@@ -653,13 +654,21 @@ def audit_request(
         for name, body in source_bodies.items()
         if body != normalized_bodies[name]
     }
+    # Facts that cite the request or the context carry spans and excerpts in the caller's
+    # coordinates, in the same one-line form whether or not normalization changed the text.
+    # Facts that cite a derived view (``requirement_profile``) have no span and keep the
+    # normalized excerpt the profile was read from.
     for fact in logical_trace.facts:
         for span in fact.evidence:
+            body = source_bodies.get(span.source)
+            if body is None or span.start is None or span.end is None:
+                continue
             ranges = source_ranges.get(span.source)
-            if ranges is not None and span.start is not None and span.end is not None:
-                if 0 <= span.start < span.end <= len(ranges):
-                    span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
-                    span.excerpt = excerpt_around(source_bodies[span.source], span.start, span.end)
+            if ranges is not None:
+                if not 0 <= span.start < span.end <= len(ranges):
+                    continue
+                span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
+            span.excerpt = excerpt_around(body, span.start, span.end)
     # The relation audit compares labelled fields, so it must see the same
     # spelling the lexical detectors do: an invisible character inside a label
     # otherwise turns a closed record into an unknown one and a warning into a
@@ -667,7 +676,9 @@ def audit_request(
     # text and its spans are mapped back to the caller's coordinates. A provider
     # binds its analysis to the exact input, so that run keeps the caller's text
     # for the bound summaries, while the verdict still comes from a provider-less
-    # run on the normalized text.
+    # run on the normalized text. The decision frame and the direction binding of a
+    # provider run are therefore read from the caller's text, which a BOM or an
+    # invisible character inside a word can change (a known limit).
     view_changed = text != source_text or context != source_context
 
     def normalized_relation_summary() -> dict[str, object]:
@@ -774,7 +785,7 @@ def audit_request(
         findings.append(finding)
         missing.append("verification_or_acceptance")
 
-    purpose_terms = ["目的", "狙い", "意図", "価値", "意義", "理由", "why", "purpose", "value", "benefit"]
+    purpose_terms = ["目的", "狙い", "ねらい", "ゴール", "意図", "価値", "意義", "理由", "why", "purpose", "value", "benefit"]
     if not _has_asserted_any(combined, purpose_terms):
         findings.append(
             _missing_field_finding(

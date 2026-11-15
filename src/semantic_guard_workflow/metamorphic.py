@@ -138,7 +138,11 @@ def _trailing_whitespace(text: str) -> str:
 
 
 def _bold_label(text: str) -> str:
-    return _outside_fences(text, lambda line: re.sub(r"^([^:：\n*]{1,12})([:：])", r"**\1**\2", line))
+    # The list marker stays outside the emphasis: ``- 目的:`` becomes ``- **目的**:``.
+    return _outside_fences(
+        text,
+        lambda line: re.sub(r"^((?:[-*+]|\d+[.)])[ \t]+)?([^:：\n*]{1,12})([:：])", r"\1**\2**\3", line),
+    )
 
 
 def _prefix(prefix: str) -> Transform:
@@ -172,7 +176,8 @@ def _rotate_lines(text: str) -> str:
 
 
 def _sentence_newlines(text: str) -> str:
-    return text.replace("。", "。\n")
+    # A sentence end inside a quotation or a bracket (``「…。」``) is not the end of the line.
+    return re.sub(r"。(?![」』）)\]】\n])", "。\n", text)
 
 
 # Natural alternative spellings of a field label. A detector that recognizes only the
@@ -191,6 +196,12 @@ SYNONYM_PAIRS: tuple[tuple[str, str], ...] = (
     ("シナリオ", "利用場面"),
     ("解決策", "対策案"),
     ("不合格条件", "却下条件"),
+    ("目的", "ねらい"),
+    ("目的", "ゴール"),
+    ("受入基準", "完了条件"),
+    ("成果物", "アウトプット"),
+    ("判断主体", "責任者"),
+    ("順序", "実施順"),
 )
 
 
@@ -348,9 +359,31 @@ def _span_errors(result: dict[str, Any], text: str, context: str) -> list[str]:
     return errors
 
 
-def _rerun(spec: dict[str, Any], expected_path: Path, text: str) -> dict[str, Any]:
+# The other free-text inputs an audit reads. A regression that normalizes ``text`` but not
+# one of these is invisible if only ``text`` is rewritten.
+_SECONDARY_FIELDS = ("context", "intent", "request", "evidence")
+
+
+def _secondary_rewrites(spec: dict[str, Any], rewrite: RewriteSpec) -> dict[str, str]:
+    """The fixture's other text fields under ``rewrite``; only the ones it changes.
+
+    Structural rewrites (markers, reordering, emphasis) are defined on a document, not on a
+    one-line note, so they leave these fields alone.
+    """
+    if rewrite.prose_only or rewrite.name == "bold_label":
+        return {}
+    changed: dict[str, str] = {}
+    for key in _SECONDARY_FIELDS:
+        value = spec.get(key)
+        if isinstance(value, str) and value and (new := rewrite.apply(value)) != value:
+            changed[key] = new
+    return changed
+
+
+def _rerun(spec: dict[str, Any], expected_path: Path, text: str, secondary: dict[str, str] | None = None) -> dict[str, Any]:
     variant = {key: value for key, value in spec.items() if key != "input"}
     variant["text"] = text
+    variant.update(secondary or {})
     return _run_fixture(variant, expected_path)
 
 
@@ -404,12 +437,13 @@ def evaluate_invariance(root: str | Path = DEFAULT_FIXTURE_ROOT, *, minimum_chec
                 skipped.append({"rewrite": rewrite.name, "fixture": label, "reason": skip_reason})
                 continue
             rewritten = rewrite.apply(text)
-            if rewritten == text:
+            secondary = _secondary_rewrites(spec, rewrite)
+            if rewritten == text and not secondary:
                 per_rewrite[rewrite.name]["identity"] += 1
                 continue
             per_rewrite[rewrite.name]["checked"] += 1
-            result = _rerun(spec, expected_path, rewritten)
-            span_errors = _span_errors(result, rewritten, context)
+            result = _rerun(spec, expected_path, rewritten, secondary)
+            span_errors = _span_errors(result, rewritten, secondary.get("context", context))
             if span_errors:
                 unexpected.append({"rewrite": rewrite.name, "fixture": label, "span_errors": span_errors})
             variant = _signature(result, phase)
@@ -463,6 +497,19 @@ def evaluate_invariance(root: str | Path = DEFAULT_FIXTURE_ROOT, *, minimum_chec
 
 
 @dataclass(frozen=True)
+class Raises:
+    """A deletion that raises ``rules`` and reports ``missing`` among the gaps.
+
+    Several fields can share one rule id (``plan.structure.required_field_missing`` is
+    raised for each absent required field), so the rule alone cannot tell the field that
+    was deleted from another one. ``missing`` names the gap that must appear.
+    """
+
+    rules: tuple[str, ...]
+    missing: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class Silent:
     """A deletion that raises nothing by itself, and the evidence that explains why.
 
@@ -497,7 +544,7 @@ class AblationDocument:
     document_id: str
     phase: str
     fixture: str
-    expectations: dict[str, tuple[str, ...] | Silent | str]
+    expectations: dict[str, tuple[str, ...] | Raises | Silent | str]
     split: str = "lines"
     unit_labels: tuple[tuple[str, str], ...] = ()
 
@@ -566,6 +613,8 @@ def _asserted_rules(documents: tuple[AblationDocument, ...]) -> set[str]:
         for expected in document.expectations.values():
             if isinstance(expected, Silent):
                 rules.update(expected.expected_rules)
+            elif isinstance(expected, Raises):
+                rules.update(expected.rules)
             elif isinstance(expected, tuple):
                 rules.update(expected)
     return rules
@@ -613,6 +662,15 @@ def evaluate_sensitivity(
                     note = "deletion now raises findings; record them"
                 else:
                     note = _verify_silent(document, spec, units, label, expected, base_ids, base_missing)
+            elif isinstance(expected, Raises):
+                row["expected"] = list(expected.rules)
+                unraised = sorted(set(expected.rules) - set(raised))
+                gaps = set(result.get("missing", [])) - base_missing
+                absent = sorted(set(expected.missing) - gaps)
+                if unraised:
+                    note = f"expected rules not raised: {unraised}"
+                elif absent:
+                    note = f"the rule fired for another field: {absent} is not among the new gaps {sorted(gaps)}"
             else:
                 row["expected"] = list(expected)
                 unraised = sorted(set(expected) - set(raised))
@@ -705,7 +763,7 @@ ABLATION_DOCUMENTS: tuple[AblationDocument, ...] = (
         expectations={
             "目的": ("plan.objective.purpose_missing",),
             "対象外": ("plan.scope.non_goals_missing",),
-            "成果物": ("plan.structure.required_field_missing",),
+            "成果物": Raises(("plan.structure.required_field_missing",), ("deliverables",)),
             "作業分解": ("plan.structure.work_package_decomposition_missing",),
             "手順": Silent(
                 "the objective line itself contains 実装, a work-breakdown term",
@@ -715,7 +773,7 @@ ABLATION_DOCUMENTS: tuple[AblationDocument, ...] = (
             "順序": ("plan.schedule.dependency_sequence_missing",),
             "依存": Silent("the sequence line also names a dependency", also_remove=("順序",), expected_missing=("dependencies",)),
             "資源": ("plan.resource.estimate_or_capacity_missing",),
-            "リスク": ("plan.structure.required_field_missing",),
+            "リスク": Raises(("plan.structure.required_field_missing",), ("risks",)),
             "検証": Silent(
                 "the steps, sequence, validation and check points also name a verification",
                 also_remove=("妥当性", "手順", "確認点", "順序"),

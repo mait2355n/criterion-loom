@@ -89,7 +89,7 @@ uv run --locked semantic-guard schema direction-binding-audit
 ## 配布物（wheel）の隔離検証
 
 正式な基準となるリポジトリのルートを作業ディレクトリとし、信頼済みのローカル
-作業木から `wheel` を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。
+作業木から `wheel` と `sdist` を一個ずつ構築し、`wheel` を隔離仮想環境へ導入して配布実体を検証する。
 検証器は隣接する偽の `schemas/` と `validation/` を置いた上で、配布物内の25スキーマ、
 基幹MCPツール四件、追加のworkflow/candidate入口、ライフサイクル候補10件、工学規則候補11件とそのスキーマ、
 空オブジェクトを拒む運用成果スキーマを再現する。
@@ -102,7 +102,7 @@ uv run --locked python scripts/verify_packaged_contracts.py \
   --timeout-seconds 180
 ```
 
-`dist/` には対象 `wheel` 一個だけを置く。標準出力は機械可読 JSON 一個で、
+`dist/` には対象の `wheel` 一個と `sdist` 一個だけを置き、`--sdist` を省くことはできない。標準出力は機械可読 JSON 一個で、
 `status=pass` の時だけ終了コード `0`、入力、導入、資源上限、経路又は契約検証の不成立は
 非零となる。検証器は外部の Python、監査プログラム又は資源パスを引数で選ばせず、
 `wheel` ファイルの容量、展開量、全体の制限時間、子プロセスの CPU 使用量、出力量、生成ファイル量及び

@@ -1160,5 +1160,51 @@ class FieldSampleIntakeReferenceIntegrityTests(unittest.TestCase):
         self.assertNotIn("human_role_has_machine_reference", self._codes(_intake()))
 
 
+class FieldSampleIntakeContentIdentityTests(unittest.TestCase):
+    def _codes(self, bundle):
+        return {item["code"] for item in field_sample_intake_errors(bundle)}
+
+    def test_one_content_shared_across_fields_and_clusters_is_rejected(self) -> None:
+        first = _candidate(1, original_text="shared text", normalized_text="A-norm", evaluation_text="A-eval")
+        second = deepcopy(_candidate(2))
+        # The second candidate evaluates the text the first one originally was.
+        second["evaluation_subject_digest"] = first["original_digest"]
+        second["privacy_review"]["approved_subject_digest"] = first["original_digest"]
+        second["privacy_review"]["privacy_digest"] = digest_value(
+            {k: v for k, v in second["privacy_review"].items() if k != "privacy_digest"}
+        )
+        second["candidate_digest"] = digest_value({k: v for k, v in second.items() if k != "candidate_digest"})
+        bundle = _intake(
+            candidates=[first, second],
+            clusters=[_cluster(1, split="calibration"), _cluster(2)],
+        )
+
+        self.assertIn("cross_field_duplicate_cluster_mismatch", self._codes(bundle))
+
+    def test_a_record_made_after_the_duplicate_review_is_rejected(self) -> None:
+        late = "2026-08-28T04:59:00Z"
+        candidates = [
+            _candidate(i, record_times={k: late for k in ("permission", "privacy_review", "unit_assessment", "exposure_declaration")})
+            for i in (1, 2)
+        ]
+        bundle = _intake(candidates=candidates, clusters=[_cluster(1), _cluster(2)])
+
+        self.assertIn("candidate_record_after_duplicate_review", self._codes(bundle))
+
+    def test_a_permission_that_lacks_both_uses_names_both(self) -> None:
+        for uses, expected in (
+            (("holdout_evaluation",), {"calibration_use_not_permitted", "holdout_use_not_permitted"}),
+            (("derived_metrics",), {"calibration_use_not_permitted", "holdout_use_not_permitted"}),
+            (("calibration", "holdout_evaluation"), {"holdout_use_not_permitted"}),
+        ):
+            with self.subTest(uses=uses):
+                bundle = _intake(
+                    candidates=[_candidate(1, allowed_uses=uses), _candidate(2)],
+                    clusters=[_cluster(1, split="excluded"), _cluster(2)],
+                )
+                reasons = set(bundle["candidate_assessments"][0]["reason_codes"])
+                self.assertTrue(expected <= reasons, (uses, reasons))
+
+
 if __name__ == "__main__":
     unittest.main()

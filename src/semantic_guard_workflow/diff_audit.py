@@ -33,6 +33,8 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
     context = normalize_audit_text(context)
     signal_diff = normalize_audit_text(diff)
     input_kind = _normalize_input_kind(input_kind)
+    if input_kind != "diff-summary":
+        raise ValueError(f"audit_diff audits a diff summary, but the input kind is {input_kind!r}; use audit_request for it")
     findings: list[Finding] = []
     missing: list[str] = []
     changed_files = _changed_files(diff)

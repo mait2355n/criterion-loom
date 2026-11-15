@@ -33,7 +33,7 @@ def audit_document(text: str, context: str = "", strict: bool = True, input_kind
     findings: list[Finding] = []
     missing: list[str] = []
     fields = {
-        "purpose_or_overview": ["purpose", "overview", "what", "目的", "概要", "要旨", "何", "狙い", "位置づけ"],
+        "purpose_or_overview": ["purpose", "overview", "introduction", "what", "目的", "概要", "要旨", "何", "狙い", "はじめに", "位置づけ"],
         "audience_or_use": ["when to use", "use when", "audience", "reader", "読者", "利用者", "使いどころ", "用途", "誰"],
         "status_or_scope": ["status", "scope", "prototype", "alpha", "状態", "範囲", "試作", "現状", "適用範囲"],
         "usage_or_examples": ["usage", "example", "cli", "mcp", "使い方", "使用法", "例", "実行例", "設定"],

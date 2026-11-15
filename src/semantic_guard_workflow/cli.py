@@ -218,6 +218,10 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     if args.command == "evaluate-fixtures":
         result = evaluate_fixture_tree(args.path, include_passed=args.include_passed)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if not result["total"]:
+            # A tree with nothing to replay (a wrong path, an emptied directory) is not a pass.
+            print(f"semantic-guard: error: no *.expected.json fixtures under {args.path}", file=sys.stderr)
+            raise SystemExit(1)
         if result["failed"]:
             raise SystemExit(1)
         return
@@ -291,12 +295,18 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     elif args.command == "audit-decision-state":
         result = audit_decision_state(text, context=args.context or "", strict=strict, input_kind=kind)
     elif args.command == "audit-plan":
-        result = audit_plan(text, request=args.request or "", context=args.context or "", strict=strict, input_kind=kind)
+        try:
+            result = audit_plan(text, request=args.request or "", context=args.context or "", strict=strict, input_kind=kind)
+        except ValueError as exc:
+            _fail_input(f"{exc} (--kind {kind})")
     elif args.command == "audit-diff":
         stdin_intent = ""
         if args.intent is None and args.text is None and args.file is None:
             text, stdin_intent = _extract_audit_diff_metadata(text)
-        result = audit_diff(text, intent=args.intent or stdin_intent or "", context=args.context or "", strict=strict, input_kind=kind)
+        try:
+            result = audit_diff(text, intent=args.intent or stdin_intent or "", context=args.context or "", strict=strict, input_kind=kind)
+        except ValueError as exc:
+            _fail_input(f"{exc} (--kind {kind})")
     elif args.command == "finish-check":
         result = finish_check(text, evidence=args.evidence or "", context=args.context or "", strict=strict)
     elif args.command == "audit-conventions":

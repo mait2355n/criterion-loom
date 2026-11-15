@@ -478,15 +478,19 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
     request = normalize_audit_text(request)
     context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
+    if input_kind != "plan":
+        # The plan rules exclude requirements, documents and diffs; running them on one
+        # would report a missing plan field for every line of a requirement.
+        raise ValueError(f"audit_plan audits a plan, but the input kind is {input_kind!r}; use audit_request for it")
     combined = _combine(plan, request, context)
     findings: list[Finding] = []
     missing: list[str] = []
     required = {
         # "成果物" (deliverables) contains "成果" (outcome); only forms that cannot be the
         # deliverables label count as an objective.
-        "objective": ["目的", "目標", "狙い", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
+        "objective": ["目的", "目標", "狙い", "ねらい", "ゴール", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
         "non_goals": ["対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
-        "deliverables": ["成果物", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
+        "deliverables": ["成果物", "アウトプット", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
         "work_breakdown": ["手順", "段取り", "作業分解", "作業項目", "実施手順", "step", "作業", "実装", "検証", "文書"],
         "dependencies": ["依存", "前提", "順序", "先行", "先に", "dependency", "prerequisite"],
         "risks": ["危険", "リスク", "懸念", "失敗条件", "risk", "失敗", "障害", "副作用"],
@@ -1044,6 +1048,9 @@ _SEQUENCE_TERMS = (
     "parallel",
     "blocked by",
     "順序",
+    "実施順",
+    "実行順",
+    "着手順",
     "先行",
     "後続",
     "前後関係",
@@ -1220,7 +1227,7 @@ _RISK_RESPONSE_TERMS = [
         "検知",
         "影響度",
         "発生確率",
-        "責任者",
+        "リスク責任者",
         "抑える",
 ]
 
@@ -1448,6 +1455,7 @@ VALIDATION_OWNER_TERMS = [
     "user",
     "owner",
     "判断主体",
+    "責任者",
     "受入者",
     "承認者",
     "査読者",

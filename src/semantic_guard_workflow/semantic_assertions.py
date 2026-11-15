@@ -279,11 +279,11 @@ class _FieldSpec:
 
 
 _FIELD_SPECS = (
-    _FieldSpec("purpose", "behavior", "purpose", ("Purpose", "目的", "狙い")),
+    _FieldSpec("purpose", "behavior", "purpose", ("Purpose", "目的", "狙い", "ねらい", "ゴール")),
     _FieldSpec("user", "scenario_actor", "scenario_actor", ("User", "利用者")),
     _FieldSpec("scenario", "condition", "scenario", ("Scenario", "シナリオ", "利用場面", "前提")),
     _FieldSpec("expected_result", "observable_result", "expected_result", ("Expected result", "期待結果", "期待される結果")),
-    _FieldSpec("acceptance_criteria", "acceptance_criterion", "acceptance_criterion", ("Acceptance criteria", "受入基準", "合格基準", "受け入れ基準")),
+    _FieldSpec("acceptance_criteria", "acceptance_criterion", "acceptance_criterion", ("Acceptance criteria", "受入基準", "合格基準", "受け入れ基準", "完了条件", "完了基準")),
     _FieldSpec("verification_method", "verification_method", "verification_method", ("Verification method", "検証方法", "確認方法")),
     _FieldSpec("evidence", "evidence_artifact", "evidence_artifact", ("Evidence", "証拠", "証跡")),
 )
