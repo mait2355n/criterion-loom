@@ -66,8 +66,9 @@ _QUALIFIER = (
 )
 _QUALIFIERS = rf"(?:{_QUALIFIER}\s*)*"
 _DEFERRAL_MARKER = (
-    r"(?:未定|未決定|未確定|未策定|未設定|未定義|未記載|未検討|未選定|未指定|未整理|未合意|未承認"
-    r"|保留(?:中)?|検討(?:中|予定)|要(?:検討|確認|調整|協議|相談)|(?:調整|確認|協議|選定|準備|作成|策定|設計|相談)中"
+    r"(?:未定|未決定|未決|未確定|未策定|未設定|未定義|未記載|未検討|未選定|未指定|未整理|未合意|未承認"
+    r"|(?:決まって|決めて|決定して|確定して|定まって|定めて|固まって|詰めて|検討して|選定して|合意して)(?:い)?(?:ない|ません|おりません|いません)"
+    r"|保留(?:中)?|撤回(?:し(?:ます|た)?)?|取り下げ(?:ます|た)?|白紙(?:に戻す|撤回)?|検討(?:中|予定)|要(?:検討|確認|調整|協議|相談)|(?:調整|確認|協議|選定|準備|作成|策定|設計|相談)中"
     r"|不明|不詳|分からない|わからない|分かりません|わかりません|tbd|tbc|tba|todo|to-do|fixme|wip)"
 )
 _DEFERRAL_BARE_ADVERB = r"(?:別途|追って|後日|後ほど|のちほど|あとで|後で|いずれ|そのうち)"
@@ -87,11 +88,23 @@ _DEFERRAL_ENDING = (
 )
 # ``後で決める``, ``別途定める予定``, ``今後決定する予定``, ``追って連絡する``.
 _DEFERRAL_PHRASE = (
-    rf"{_DEFERRAL_ADVERB}\s*(?:{_DEFERRAL_SURU}(?:{_DEFERRAL_ENDING}|予定|する)|{_DEFERRAL_VERB}(?:{_DEFERRAL_ENDING}|予定)?)"
+    rf"{_DEFERRAL_ADVERB}\s*(?:{_DEFERRAL_SURU}(?:{_DEFERRAL_ENDING}|予定|する)?|{_DEFERRAL_VERB}(?:{_DEFERRAL_ENDING}|予定)?)"
+)
+# ``決まり次第記載する``, ``設計が終わった後で決める``: the value does not decide the field, it says
+# when the field will be decided. Only a verb of deciding counts, so ``実装後に pytest を実行する`` is
+# still a decision.
+_DECISION_ACT = (
+    r"(?:決め|決定|定め|確定|検討|判断|選定|策定|記載|追記|記入|見積もり|見積り|見積)"
+    r"(?:る|ます|します|する|予定|したい|いたします|致します|のうえ|の上)?"
 )
 _DEFERRAL_TAIL = (
     r"(?:の(?:まま|状態|予定)(?:と(?:する|します))?|です|でございます|である|だ|とする|とします|となっている|になっている"
     r"|となります|になります|の予定|予定|見込み|状態|段階|中|扱い)*"
+)
+_DEFERRED_CONDITIONAL = re.compile(
+    rf"^{_QUALIFIERS}(?:(?:決まり|決定|確定|定まり|判明|合意|承認)(?:次第|したら|すれば|後|し次第)"
+    rf"|[^。！？!?；;\n]{{0,40}}?(?<![最以])(?:後|あと)(?:に|で|には|では)?\s*{_DECISION_ACT}{_DEFERRAL_TAIL}$)",
+    re.IGNORECASE,
 )
 _DEFERRED_VALUE = re.compile(
     rf"^{_QUALIFIERS}(?:{_DEFERRAL_PHRASE}|{_DEFERRAL_NOUN}){_DEFERRAL_TAIL}$",
@@ -610,15 +623,27 @@ def _placeholder_reason(value: str, term: str) -> str:
     return _single_placeholder_reason(cleaned, term)
 
 
+# ``順序: 順番は未定``: a value that restates the field as its own topic and defers it.
+_TOPIC_VALUE = re.compile(r"^[^\s、。:：|]{1,20}(?:については|には|では|は|も)\s*(?P<rest>\S.{0,80})$")
+
+
+def _is_deferral(cleaned: str) -> bool:
+    return bool(
+        _DEFERRED_VALUE.fullmatch(cleaned)
+        or _ENGLISH_DEFERRED_VALUE.fullmatch(cleaned)
+        or _DEFERRED_LEAD.match(cleaned)
+        or _DEFERRED_CONDITIONAL.match(cleaned)
+    )
+
+
 def _single_placeholder_reason(cleaned: str, term: str) -> str:
     folded = cleaned.casefold()
     if folded in _EMPTY_WORDS:
         return "empty_or_placeholder_value"
-    if (
-        _DEFERRED_VALUE.fullmatch(cleaned)
-        or _ENGLISH_DEFERRED_VALUE.fullmatch(cleaned)
-        or _DEFERRED_LEAD.match(cleaned)
-    ):
+    if _is_deferral(cleaned):
+        return "deferred_placeholder"
+    topic = _TOPIC_VALUE.match(cleaned)
+    if topic is not None and _is_deferral(topic["rest"].strip()):
         return "deferred_placeholder"
     if _NOT_APPLICABLE_VALUE.fullmatch(cleaned):
         return "decided_not_applicable"

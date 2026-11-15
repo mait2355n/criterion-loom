@@ -47,5 +47,33 @@ class PlanSignalDecisionTests(unittest.TestCase):
         self.assertTrue(audit_plan(plan)["details"]["planning_structure"]["risk_response"])
 
 
+class QualitySignalDecisionTests(unittest.TestCase):
+    """A one-line postponement must not clear a quality signal, whatever the signal is."""
+
+    MIGRATION = "目的: 複数の設定を移行する。\n対象外: UI。\n成果物: 設定一覧、移行手順、検証結果。\n手順: 設計、実装、検証。\n"
+    CASES = (
+        ("progress_control", MIGRATION, "進捗: {v}", "進捗: 毎日の確認点で報告する。"),
+        ("change_control", MIGRATION, "{v}", "変更管理: 差分は承認してから反映する。"),
+        ("validation_owner", MIGRATION + "受入基準: 満たすこと。\n", "判断主体: {v}", "判断主体: 保守者が受入を判断する。"),
+        ("release_provenance", "目的: 公開する。\n対象外: UI。\n", "版: {v}", "版: タグ v1.2 と署名付き成果物を残す。"),
+        ("idempotency", "目的: 同期ジョブを再試行して通知を送信する。\n対象外: UI。\n", "冪等性: {v}", "冪等性: 再送しても重複通知を送らないよう識別子で判定する。"),
+    )
+
+    def signals(self, plan: str) -> dict[str, object]:
+        return audit_plan(plan)["details"]["planning_signals"]  # type: ignore[return-value]
+
+    def test_a_postponed_value_leaves_the_signal_raised(self) -> None:
+        for key, trigger, template, _ in self.CASES:
+            self.assertIn(key, self.signals(trigger), f"{key}: the trigger plan must raise it")
+            for value in ("未定", "後で決める", "TBD", "検討中", "保留"):
+                with self.subTest(key=key, value=value):
+                    self.assertIn(key, self.signals(trigger + template.format(v=value) + "\n"))
+
+    def test_a_stated_value_clears_the_signal(self) -> None:
+        for key, trigger, _, stated in self.CASES:
+            with self.subTest(key=key):
+                self.assertNotIn(key, self.signals(trigger + stated + "\n"))
+
+
 if __name__ == "__main__":
     unittest.main()

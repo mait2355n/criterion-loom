@@ -51,7 +51,9 @@ SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "スコープ外", "範囲外"
 
 CHANGE_CONTROL_TERMS = [
     "変更統制",
+    "変更管理",
     "change control",
+    "change management",
     "scope change",
     "範囲変更",
     "追加要求",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import bisect
 import re
 
 from semantic_guard_workflow.assertion_context import asserted_excerpt as _asserted_excerpt, find_field_assertion
@@ -72,7 +73,7 @@ def _quality_requirement_signal(text: str) -> str:
 _NUMBER = r"(?<![\d.,])\d+(?:[.,]\d+)*"
 _UNIT = (
     r"(?:milliseconds?|millis|msec|ms|microseconds?|μs|ns|seconds?|secs?|sec|s|minutes?|mins?|min|hours?|hrs?|days?"
-    r"|kib|mib|gib|tib|kb|mb|gb|tb|pb|bytes?|kbps|mbps|gbps|ミリ秒|マイクロ秒|秒|時間|バイト|%|％)"
+    r"|kib|mib|gib|tib|kb|mb|gb|tb|pb|bytes?|kbps|mbps|gbps|ミリ秒|マイクロ秒|秒|分間|時間|日間|週間|[かカヶケ]月|バイト|%|％)"
 )
 _QUALITY_CONSTRAINT_RE = re.compile(
     rf"{_NUMBER}\s*{_UNIT}(?![a-z])"
@@ -106,15 +107,43 @@ _QUALITY_CONSTRAINT_TERMS = [
 ]
 
 
+# A sentence that rejects, withdraws or dates a figure does not state a constraint:
+# ``閾値: 300ms は却下された``, ``300ms 以内（旧案）``, ``It was 300ms previously``.
+_HISTORICAL_CLAUSE = re.compile(
+    r"却下|旧案|廃止|取り下げ|取下げ|不採用|撤回|取りやめ|取り止め|見送(?:り|る|った)|以前の|従来の|過去の|旧(?:版|仕様|基準|閾値|値)"
+    r"|\b(?:rejected|deprecated|obsolete|withdrawn|dropped|previously|formerly|no\s+longer|superseded)\b",
+    re.IGNORECASE,
+)
+# ``300ms 以内にはしない``: the figure is named only to say it is not a requirement.
+_NEGATED_FIGURE = re.compile(
+    r"[ \t]*(?:以内|以上|以下|未満|超)?[ \t]*(?:に|と|を)?(?:は)?[ \t]*(?:しない|しません|ならない|でない|ではない|設けない|定めない|求めない|不要)"
+)
+_SENTENCE_BREAK = re.compile(r"[。！？!?；;\n]|\.(?=\s|$)")
+# Containers that do not assert: a fenced code block, and Markdown quote markers (also
+# after a list marker, so ``- > 5つの画面`` is read like ``> 5つの画面``).
+_FENCED_CODE = re.compile(r"(?ms)^[ \t]*(`{3,}|~{3,})[^\n]*\n.*?(?:^[ \t]*\1[^\n]*$|\Z)")
+_QUOTE_PREFIX = re.compile(r"(?m)^[ \t]*(?:(?:[-*+]|\d+[.)])[ \t]+)*(?:>(?!=)[ \t]*)+")
+
+
 def _has_quality_constraint_evidence(text: str) -> bool:
-    # Leading Markdown quote markers are containers, including before a digit.
-    # Keep >= intact and retain comparisons and quantities inside the quote.
-    content = re.sub(r"(?m)^[ \t]*(?:>(?!=)[ \t]*)+", "", text[:_MAX_CONSTRAINT_SCAN])
-    if _QUALITY_CONSTRAINT_RE.search(content):
-        return True
+    content = _QUOTE_PREFIX.sub("", _FENCED_CODE.sub("", text[:_MAX_CONSTRAINT_SCAN]))
+    ends = [match.end() for match in _SENTENCE_BREAK.finditer(content)]
+    stated: dict[int, bool] = {}
+
+    def sentence_states_it(position: int) -> bool:
+        index = bisect.bisect_right(ends, position)
+        if index not in stated:
+            begin = ends[index - 1] if index else 0
+            end = ends[index] if index < len(ends) else len(content)
+            stated[index] = _HISTORICAL_CLAUSE.search(content, begin, end) is None
+        return stated[index]
+
+    for match in _QUALITY_CONSTRAINT_RE.finditer(content):
+        if sentence_states_it(match.start()) and _NEGATED_FIGURE.match(content, match.end()) is None:
+            return True
     # The words name a constraint only where one is stated: ``受入基準: 未定`` does not.
-    match = find_field_assertion(content, _QUALITY_CONSTRAINT_TERMS)
-    return match is not None and match.status == "present"
+    found = find_field_assertion(content, _QUALITY_CONSTRAINT_TERMS)
+    return found is not None and found.status == "present" and sentence_states_it(found.start)
 
 
 def _has_priority_evidence(text: str) -> bool:

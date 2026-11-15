@@ -498,7 +498,7 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
     }
     critical = {"objective", "non_goals", "verification_plan", "validation_plan", "completion_evidence"}
     advisory = {"unknowns_or_decisions"}
-    planning_structure = _planning_structure_profile(combined)
+    planning_structure = _planning_structure_profile(plan, combined)
     planning_signals: dict[str, str] = {}
     non_emitted_rules: list[dict[str, object]] = []
 
@@ -612,15 +612,40 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
 
 
 
-def _planning_structure_profile(text: str) -> dict[str, str]:
+def _planning_structure_profile(plan: str, combined: str) -> dict[str, str]:
+    """Structure signals, judged on the plan's own statement before the request and context are read.
+
+    The request and the context only fill a signal the plan does not state. A plan that
+    states it as undecided (``順序は後で決める``) keeps it undecided: a sentence in the
+    request or an old note in the context must not decide it for the plan.
+    """
     return {
-        "work_package_decomposition": _work_package_decomposition_signal(text),
-        "dependency_sequence": _dependency_sequence_signal(text),
-        "estimation_or_resource_basis": _estimation_or_resource_signal(text),
-        "risk_response": _risk_response_signal(text),
-        "control_baseline": _control_baseline_signal(text),
-        "decision_gate": _decision_gate_signal(text),
+        "work_package_decomposition": _plan_first(plan, combined, _WORK_PACKAGE_TERMS),
+        "dependency_sequence": _dependency_sequence_for(plan, combined),
+        "estimation_or_resource_basis": _plan_first(plan, combined, _ESTIMATION_TERMS),
+        "risk_response": _plan_first(plan, combined, _RISK_RESPONSE_TERMS),
+        "control_baseline": _plan_first(plan, combined, _CONTROL_BASELINE_TERMS),
+        "decision_gate": _plan_first(plan, combined, _DECISION_GATE_TERMS),
     }
+
+
+def _plan_first(plan: str, combined: str, terms: list[str]) -> str:
+    from semantic_guard_workflow.assertion_context import find_field_assertion
+
+    own = _first_asserted(plan, terms)
+    if own:
+        return own
+    stated = find_field_assertion(plan, terms)
+    if stated is not None and stated.labelled:
+        return ""
+    return _first_asserted(combined, terms)
+
+
+def _dependency_sequence_for(plan: str, combined: str) -> str:
+    own, deferred = _dependency_sequence_scan(plan)
+    if own or deferred or plan == combined:
+        return own
+    return _dependency_sequence_scan(combined)[0]
 
 
 def _planning_quality_signals(plan: str, combined: str, structure: dict[str, str]) -> dict[str, str]:
@@ -984,26 +1009,26 @@ def _add_planning_quality_findings(
         missing.append("auto_execution_range")
 
 
+_WORK_PACKAGE_TERMS = [
+        "WBS",
+        "PBS",
+        "work breakdown",
+        "work package",
+        "product breakdown",
+        "作業分解構成",
+        "作業分解",
+        "作業パッケージ",
+        "成果物分解",
+        "機能別",
+        "ファイル別",
+        "モジュール別",
+        "担当別",
+        "component",
+]
+
+
 def _work_package_decomposition_signal(text: str) -> str:
-    return _first_asserted(
-        text,
-        [
-            "WBS",
-            "PBS",
-            "work breakdown",
-            "work package",
-            "product breakdown",
-            "作業分解構成",
-            "作業分解",
-            "作業パッケージ",
-            "成果物分解",
-            "機能別",
-            "ファイル別",
-            "モジュール別",
-            "担当別",
-            "component",
-        ],
-    )
+    return _first_asserted(text, _WORK_PACKAGE_TERMS)
 
 
 # ``先に`` and ``後で`` are not terms: ``期限は後で決める`` defers a decision and
@@ -1044,7 +1069,7 @@ _ORDER_CONSTRUCT = re.compile(
             r"(?<![以午事])前(?:に|で)",
             r"[てで]から",
             r"次に",
-            r"次第(?!です|だ)",
+            r"(?<!決まり)(?<!決め)(?<!決定)(?<!確定)(?<!定まり)(?<!判明)次第(?!です|だ)",
             r"→|⇒|->|=>",
             r"\bthen\b",
             r"\bdepends?\s+on\b",
@@ -1057,10 +1082,23 @@ _MARKDOWN_PREFIX = re.compile(r"[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\
 
 
 def _dependency_sequence_signal(text: str) -> str:
-    from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
+    return _dependency_sequence_scan(text)[0]
 
+
+def _dependency_sequence_scan(text: str) -> tuple[str, bool]:
+    """``(evidence, deferred)``: the order the text states, and whether it states the order as undecided.
+
+    A clause that defers the order is masked with spaces of the same length, so the
+    evidence stays a contiguous piece of ``text``. When the order is stated more than
+    once with a label, the last statement is the one that stands: a later
+    ``順序: 後で決める`` or ``順序は撤回する`` retracts an earlier concrete order. The
+    statements are not compared with each other, so two contradictory concrete
+    orders still count as an order.
+    """
     clauses = re.split(r"([。！？!?；;\n]|\.(?=\s|$))", text)
     construct_clause = -1
+    masked: set[int] = set()
+    last_statement = ""  # "", "concrete" or "deferred": the last labelled statement of the order
     for index in range(0, len(clauses), 2):
         # Use the same Markdown prefix forms as deliverable fields for the
         # decision only; retained clauses keep their original evidence text.
@@ -1070,8 +1108,8 @@ def _dependency_sequence_signal(text: str) -> str:
         match = _SEQUENCE_RELATION.match(decision_clause)
         if match is not None:
             term, value = match["term"], match["value"]
-        elif _first_match(decision_clause, _SEQUENCE_TERMS):
-            term, value = "順序", decision_clause
+        elif (found := _first_sequence_term(decision_clause)) is not None:
+            term, value = "順序", _value_after_term(decision_clause, *found)
         else:
             if construct_clause < 0 and _ORDER_CONSTRUCT.search(decision_clause):
                 construct_clause = index
@@ -1080,129 +1118,167 @@ def _dependency_sequence_signal(text: str) -> str:
         # concrete content prevents a placeholder match and stays intact.
         assertion = find_field_assertion(f"{term}: {value}", (term,))
         if assertion is not None and assertion.reason == "deferred_placeholder":
-            clauses[index] = ""
-        elif match is not None and term not in _SEQUENCE_TERMS and construct_clause < 0:
-            # A bare label such as ``依存`` only counts through its value.
-            if _ORDER_CONSTRUCT.search(value):
-                construct_clause = index
-    joined = "".join(clauses)
-    evidence = asserted_excerpt(joined, _SEQUENCE_TERMS)
-    if evidence or construct_clause < 0 or not clauses[construct_clause]:
-        return evidence
-    offset = sum(len(clause) for clause in clauses[:construct_clause])
-    return _excerpt_around(joined, offset, offset + len(clauses[construct_clause]))
+            masked.add(index)
+            last_statement = "deferred"
+        else:
+            last_statement = "concrete"
+            if match is not None and term not in _SEQUENCE_TERMS and construct_clause < 0:
+                # A bare label such as ``依存`` only counts through its value.
+                if _ORDER_CONSTRUCT.search(value):
+                    construct_clause = index
+    deferred = bool(masked)
+    view = "".join(" " * len(clause) if index in masked else clause for index, clause in enumerate(clauses))
+
+    starts = [0]
+    for clause in clauses[:-1]:
+        starts.append(starts[-1] + len(clause))
+
+    def clause_text(index: int) -> str:
+        """The sentence as written: its Markdown marker, its words and its own terminator."""
+        begin = starts[index]
+        stop = clauses[index + 1] if index + 1 < len(clauses) and clauses[index + 1].strip() else ""
+        line_start = text.rfind("\n", 0, begin) + 1
+        words_start = begin + len(clauses[index]) - len(clauses[index].lstrip())
+        if _MARKDOWN_PREFIX.fullmatch(text[line_start:words_start]):
+            begin = line_start
+        return text[begin : starts[index] + len(clauses[index]) + len(stop)].strip()
+
+    if last_statement != "deferred":
+        found = find_field_assertion(view, _SEQUENCE_TERMS)
+        if found is not None and found.status == "present":
+            index = max(i for i in range(0, len(clauses), 2) if starts[i] <= found.start)
+            return clause_text(index), deferred
+    if construct_clause < 0 or construct_clause in masked:
+        return "", deferred
+    return clause_text(construct_clause), deferred
+
+
+def _first_sequence_term(clause: str) -> tuple[int, str] | None:
+    """The first sequence word in ``clause`` as ``(position, word)``; ``fold`` keeps positions aligned."""
+    folded = fold(clause)
+    hits = [(folded.find(fold(term)), -len(term), term) for term in _SEQUENCE_TERMS if fold(term) in folded]
+    if not hits:
+        return None
+    position, _, term = min(hits)
+    return position, term
+
+
+def _value_after_term(clause: str, position: int, term: str) -> str:
+    """What the clause says after the sequence word: ``改訂: 順序は撤回し、後で決める`` gives ``撤回し、後で決める``."""
+    rest = re.sub(r"^(?:については|には|では|は|が|を|も|[:：])\s*", "", clause[position + len(term):].strip())
+    return rest or clause
+
+
+_ESTIMATION_TERMS = [
+        "estimate",
+        "duration",
+        "effort",
+        "cost",
+        "budget",
+        "resource",
+        "capacity",
+        "owner",
+        "assignee",
+        "見積",
+        "工数",
+        "所要時間",
+        "期間",
+        "期限",
+        "予算",
+        "費用",
+        "資源",
+        "容量",
+        "担当",
+        "担当者",
+        "追加依存なし",
+        "一作業単位",
+]
 
 
 def _estimation_or_resource_signal(text: str) -> str:
-    return _first_asserted(
-        text,
-        [
-            "estimate",
-            "duration",
-            "effort",
-            "cost",
-            "budget",
-            "resource",
-            "capacity",
-            "owner",
-            "assignee",
-            "見積",
-            "工数",
-            "所要時間",
-            "期間",
-            "期限",
-            "予算",
-            "費用",
-            "資源",
-            "容量",
-            "担当",
-            "担当者",
-            "追加依存なし",
-            "一作業単位",
-        ],
-    )
+    return _first_asserted(text, _ESTIMATION_TERMS)
+
+
+_RISK_RESPONSE_TERMS = [
+        "mitigation",
+        "contingency",
+        "fallback",
+        "workaround",
+        "response",
+        "risk owner",
+        "probability",
+        "impact",
+        "対策",
+        "対応",
+        "緩和",
+        "低減",
+        "回避",
+        "代替",
+        "退避",
+        "再検証",
+        "再試行",
+        "検知",
+        "影響度",
+        "発生確率",
+        "責任者",
+        "抑える",
+]
 
 
 def _risk_response_signal(text: str) -> str:
-    return _first_asserted(
-        text,
-        [
-            "mitigation",
-            "contingency",
-            "fallback",
-            "workaround",
-            "response",
-            "risk owner",
-            "probability",
-            "impact",
-            "対策",
-            "対応",
-            "緩和",
-            "低減",
-            "回避",
-            "代替",
-            "退避",
-            "再検証",
-            "再試行",
-            "検知",
-            "影響度",
-            "発生確率",
-            "責任者",
-            "抑える",
-        ],
-    )
+    return _first_asserted(text, _RISK_RESPONSE_TERMS)
+
+
+_CONTROL_BASELINE_TERMS = [
+        "baseline",
+        "scope baseline",
+        "schedule baseline",
+        "cost baseline",
+        "earned value",
+        "EVM",
+        "metric",
+        "measure",
+        "milestone",
+        "基準線",
+        "scope 基準",
+        "schedule 基準",
+        "測定",
+        "計測",
+        "指標",
+        "閾値",
+        "判定基準",
+        "完了基準",
+        "進捗基準",
+        "節目条件",
+]
 
 
 def _control_baseline_signal(text: str) -> str:
-    return _first_asserted(
-        text,
-        [
-            "baseline",
-            "scope baseline",
-            "schedule baseline",
-            "cost baseline",
-            "earned value",
-            "EVM",
-            "metric",
-            "measure",
-            "milestone",
-            "基準線",
-            "scope 基準",
-            "schedule 基準",
-            "測定",
-            "計測",
-            "指標",
-            "閾値",
-            "判定基準",
-            "完了基準",
-            "進捗基準",
-            "節目条件",
-        ],
-    )
+    return _first_asserted(text, _CONTROL_BASELINE_TERMS)
+
+
+_DECISION_GATE_TERMS = [
+        "go/no-go",
+        "gate",
+        "approval",
+        "hold point",
+        "stop condition",
+        "release gate",
+        "決定点",
+        "判断点",
+        "判断ゲート",
+        "承認",
+        "停止条件",
+        "中止条件",
+        "保留条件",
+        "継続判断",
+        "公開判定",
+        "移行判定",
+]
 
 
 def _decision_gate_signal(text: str) -> str:
-    return _first_asserted(
-        text,
-        [
-            "go/no-go",
-            "gate",
-            "approval",
-            "hold point",
-            "stop condition",
-            "release gate",
-            "決定点",
-            "判断点",
-            "判断ゲート",
-            "承認",
-            "停止条件",
-            "中止条件",
-            "保留条件",
-            "継続判断",
-            "公開判定",
-            "移行判定",
-        ],
-    )
+    return _first_asserted(text, _DECISION_GATE_TERMS)
 
 
 def _requires_work_package_decomposition(plan: str) -> bool:
@@ -1264,7 +1340,7 @@ def _idempotency_gap_signal(plan: str, combined: str) -> str:
     if duplicate_concern and _has_any(duplicate_concern, IDEMPOTENCY_DEFERRED_TERMS):
         return duplicate_concern
 
-    if _has_any(combined, IDEMPOTENCY_STRONG_EVIDENCE_TERMS):
+    if _has_asserted_any(combined, IDEMPOTENCY_STRONG_EVIDENCE_TERMS):
         return ""
     if not (duplicate_concern or _has_any(plan, IDEMPOTENCY_EFFECT_TERMS)):
         return ""
@@ -1277,7 +1353,7 @@ def _release_provenance_gap_signal(plan: str, combined: str) -> str:
         return ""
     if _has_any(combined, RELEASE_NOT_APPLICABLE_TERMS):
         return ""
-    if _has_any(combined, RELEASE_PROVENANCE_EVIDENCE_TERMS):
+    if _has_asserted_any(combined, RELEASE_PROVENANCE_EVIDENCE_TERMS):
         return ""
     return trigger
 
@@ -1327,24 +1403,31 @@ def _deliverable_clause(plan: str) -> str:
         plan,
         re.IGNORECASE,
     )
+    heading = re.search(rf"(?:^|\n)[ \t]*\#{{1,6}}[ \t]+(?:{labels})[ \t]*(?=\n|$)", plan, re.IGNORECASE)
+    if labelled is None and heading is not None:
+        return _list_items_after(plan, heading.end())
     if labelled is not None:
         value = labelled.group("value")
         if value.strip():
             return value
         # ``成果物:`` with the items on the following list lines.
-        items: list[str] = []
-        for line in plan[labelled.end():].lstrip("\n").split("\n"):
-            bullet = re.match(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+(?P<item>.+?)[ \t]*$", line)
-            if bullet is None:
-                break
-            items.append(bullet.group("item"))
-        return "、".join(items)
+        return _list_items_after(plan, labelled.end())
     lowered = fold(plan)
     hits = [(lowered.find(term), term) for term in _DELIVERABLE_TERMS if term in lowered]
     if not hits:
         return ""
     index, term = min(hits)
     return re.split(r"[。\n]", plan[index + len(term) :], maxsplit=1)[0]
+
+
+def _list_items_after(plan: str, position: int) -> str:
+    items: list[str] = []
+    for line in plan[position:].lstrip("\n").split("\n"):
+        bullet = re.match(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+(?P<item>.+?)[ \t]*$", line)
+        if bullet is None:
+            break
+        items.append(bullet.group("item"))
+    return "、".join(items)
 
 
 def _deliverable_item_count(plan: str) -> int:
@@ -1376,7 +1459,7 @@ VALIDATION_OWNER_TERMS = [
 
 
 def _has_validation_owner(text: str) -> bool:
-    return _has_any(text, VALIDATION_OWNER_TERMS)
+    return _has_asserted_any(text, VALIDATION_OWNER_TERMS)
 
 
 def _plan_has_multiple_steps(plan: str) -> bool:
@@ -1387,7 +1470,7 @@ def _plan_has_multiple_steps(plan: str) -> bool:
 
 
 def _has_progress_control(text: str) -> bool:
-    return _has_any(
+    return _has_asserted_any(
         text,
         [
             "checkpoint",
@@ -1430,4 +1513,4 @@ def _change_control_scope_signal(plan: str) -> str:
 
 
 def _has_change_control(text: str) -> bool:
-    return _has_any(text, CHANGE_CONTROL_TERMS)
+    return _has_asserted_any(text, CHANGE_CONTROL_TERMS)
