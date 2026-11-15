@@ -1,0 +1,30 @@
+{
+  "id": "DIFF-TESTS-REMOVED-002",
+  "title": "An unconditional skip marker added next to a source change is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/app/core.py b/app/core.py\n--- a/app/core.py\n+++ b/app/core.py\n@@ -1,4 +1,4 @@\n def total(items):\n-    return sum(item.price for item in items)\n+    return sum(item.price * item.qty for item in items)\ndiff --git a/tests/test_core.py b/tests/test_core.py\n--- a/tests/test_core.py\n+++ b/tests/test_core.py\n@@ -1,5 +1,6 @@\n import unittest\n class T(unittest.TestCase):\n+    @unittest.skip(\"flaky\")\n     def test_total(self):\n         self.assertEqual(total([Item(2, 1)]), 2)\n",
+  "intent": "合計金額の計算に数量を反映する。",
+  "strict": true,
+  "rationale": "Switching a test off with an unconditional skip keeps the file but removes the check. The intent does not ask for it.",
+  "labels": {
+    "expected_rules": [
+      "diff.test_obligation.tests_removed_or_disabled"
+    ],
+    "expected_findings": [
+      {
+        "category": "quality",
+        "rule_id": "diff.test_obligation.tests_removed_or_disabled"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "test_preservation"
+      ]
+    }
+  }
+}

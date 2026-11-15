@@ -1,0 +1,26 @@
+{
+  "id": "DIFF-TESTS-MOVED-GOOD-001",
+  "title": "Moving tests to a new file and adding a platform guard is not a removal",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/app/core.py b/app/core.py\n--- a/app/core.py\n+++ b/app/core.py\n@@ -1,4 +1,4 @@\n def total(items):\n-    return sum(item.price for item in items)\n+    return sum(item.price * item.qty for item in items)\ndiff --git a/tests/test_core.py b/tests/test_core.py\ndeleted file mode 100644\n--- a/tests/test_core.py\n+++ /dev/null\n@@ -1,4 +0,0 @@\n-import unittest\n-class T(unittest.TestCase):\n-    def test_total(self):\n-        self.assertEqual(total([Item(2, 1)]), 2)\ndiff --git a/tests/test_total.py b/tests/test_total.py\nnew file mode 100644\n--- /dev/null\n+++ b/tests/test_total.py\n@@ -0,0 +1,6 @@\n+import unittest\n+class T(unittest.TestCase):\n+    def test_total(self):\n+        self.assertEqual(total([Item(2, 1)]), 2)\n+    def test_total_uses_quantity(self):\n+        self.assertEqual(total([Item(2, 3)]), 6)\ndiff --git a/tests/test_paths.py b/tests/test_paths.py\n--- a/tests/test_paths.py\n+++ b/tests/test_paths.py\n@@ -1,5 +1,6 @@\n import unittest\n class T(unittest.TestCase):\n+    @unittest.skipIf(sys.platform == \"win32\", \"posix paths only\")\n     def test_posix_path(self):\n         self.assertEqual(join(\"a\", \"b\"), \"a/b\")\n",
+  "intent": "合計金額の計算に数量を反映する。",
+  "strict": true,
+  "rationale": "The deleted definition reappears in a new test file together with a new test, and skipIf narrows where a test runs without removing it. Neither is a loss of regression checks.",
+  "labels": {
+    "forbidden_rules": [
+      "diff.test_obligation.tests_removed_or_disabled",
+      "diff.test_obligation.source_without_tests",
+      "diff.traceability.intent_scope_conflict"
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "missing": {
+      "excludes": [
+        "test_obligation",
+        "test_preservation"
+      ]
+    }
+  }
+}

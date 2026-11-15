@@ -1186,6 +1186,38 @@ RULES: tuple[Rule, ...] = (
         remediation="試験を追加・更新するか、不要な理由と実行した確認を finish_check に残す。",
     ),
     Rule(
+        id="diff.test_obligation.tests_removed_or_disabled",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: software verification and regression control",
+            "SWEBOK: software testing and maintenance",
+            "ISO/IEC 25010: reliability and maintainability",
+        ),
+        concern="試験を削除または無効化して通過させた変更が、回帰確認を保ったものとして扱われること。",
+        applies_when=(
+            "差分が試験ファイルを削除している、試験定義を純減させている、または無条件の skip・xfail 標識を追加している。",
+            "意図または文脈が、その削除や無効化を述べていない。",
+        ),
+        does_not_apply_when=(
+            "意図または文脈が、試験の削除・無効化・置換・統合・移動を明示している。",
+            "意図が機能の削除を求めており、差分が対応する非試験ソースファイルの削除を含む。",
+            "削除された試験定義と同数以上の試験定義が同じ差分で追加されている（移動、改名、分割）。",
+            "skipIf などの条件付き実行制限、または skip 標識の削除である。",
+        ),
+        evidence_required=(
+            "削除・無効化の対象と理由",
+            "置き換える試験",
+            "削除を求めた要求または計画",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="試験の削除または無効化が、意図に示されないまま差分に含まれている。",
+        remediation="削除・無効化した試験を戻すか、置き換える試験を同じ差分に含める。意図した削除なら、対象と理由を intent に明記する。",
+    ),
+    Rule(
         id="diff.security.sensitive_surface_change",
         discipline="secure_development",
         phase="audit_diff",
@@ -2225,6 +2257,38 @@ RULES: tuple[Rule, ...] = (
         ),
         finding="変更意図が渡されていない。",
         remediation="要求または計画を `intent` として渡し、差分との対応を見る。",
+    ),
+    Rule(
+        id="diff.traceability.intent_scope_conflict",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: change traceability to requirements",
+            "SWEBOK: software configuration management, change control",
+            "ISO/IEC/IEEE 29148: requirement scope and constraints",
+        ),
+        concern="要求が明示的に除外した範囲まで変更した差分が、要求どおりの変更として扱われること。",
+        applies_when=(
+            "意図または文脈が、文書のみ、試験のみ、コードは変更しない、特定ファイルは変更しない、のいずれかの範囲制限を明示している。",
+            "差分が、その制限で除外されたファイルを変更している。",
+        ),
+        does_not_apply_when=(
+            "意図に範囲制限が無い。",
+            "制限の対象ファイルが差分に含まれない。",
+            "「〜以外は変更しない」のように例外を述べる節である。",
+            "「変更しないと動かない」のように条件を述べる節である。",
+        ),
+        evidence_required=(
+            "範囲制限の原文",
+            "制限に反する変更ファイル",
+            "範囲変更を認めた要求側の判断",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="意図が明示した変更範囲の制限に、差分が反している。",
+        remediation="制限に反する変更を差分から外すか、範囲の変更を要求側の判断として intent に反映する。",
     ),
     Rule(
         id="diff.documentation.update_missing",
