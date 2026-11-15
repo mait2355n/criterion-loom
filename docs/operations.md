@@ -310,7 +310,7 @@ uv run --locked python scripts/validate_verification_source.py
 
 旧版は、運用者が所有する外部ルートにある `vnext/migration/legacy-baseline-2026-07-17.json`
 の、項目を限定したファイルハッシュ値集合を照合してから別プロセスで実行する。現在の取得候補は
-155ファイルを照合するが、`capture_authority=pending_human_acceptance` であり、人間採択済みの
+154ファイルを照合するが、`capture_authority=pending_human_acceptance` であり、人間採択済みの
 正解基準ではない。リポジトリ内の `legacy/semantic-guard-v0.1.0/` は、公開用に修復した
 旧版資料及び実行ソースの保存場所であり、元のバイト列を示す正式な参照先は注釈付きタグ `v0.1.0` と
 コミット `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。この保存ディレクトリ自体は、

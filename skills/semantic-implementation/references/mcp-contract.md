@@ -109,7 +109,7 @@ semantic-guard schema llm-candidate-input
 
 MCP: `semantic_guard_schema_tool(name)`
 
-The name must be one of the 24 closed known schema names in the 1.1.0 source registry. Path selection and unknown names are rejected. `direction-binding-audit` has a matching CLI and MCP runtime; availability of any other sidecar schema still does not imply a public end-to-end workflow.
+The name must be one of the 25 closed known schema names (the 24 of the 1.1.0 source registry plus `field-sample-intake` in 1.2.0.dev0). Path selection and unknown names are rejected. `direction-binding-audit` has a matching CLI and MCP runtime; availability of any other sidecar schema still does not imply a public end-to-end workflow.
 
 ## Exit and transport behavior
 
