@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from .backends import BACKEND_CODEX, build_request_command, resolve_model, validate_backend
+from .backends import BACKEND_CODEX, build_request_command, normalize_request
 from .codex_exec import (
     DEFAULT_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS,
@@ -37,8 +37,7 @@ class CodexExecReviewRequest:
     agent_command: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        validate_backend(self.backend, self.agent_command)
-        object.__setattr__(self, "model", resolve_model(self.backend, self.model))
+        normalize_request(self)
 
     @classmethod
     def from_mapping(

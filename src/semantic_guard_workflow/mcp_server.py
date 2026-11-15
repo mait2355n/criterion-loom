@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
 from semantic_guard_workflow.acceptance_review import build_acceptance_review_bundle_template, validate_acceptance_review_bundle
 from semantic_guard_workflow.artifact_membership import audit_artifact_membership
-from semantic_guard_workflow.runtime.backends import validate_mcp_backend
+from semantic_guard_workflow.runtime.backends import (
+    resolve_mcp_working_directory,
+    validate_mcp_backend,
+    validate_model,
+    validate_timeout_seconds,
+)
 from semantic_guard_workflow.runtime.exploration import (
     DEFAULT_CODEX_MODEL as DEFAULT_EXPLORATION_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
@@ -52,6 +58,22 @@ def _mcp_backend(backend: str) -> str:
     return backend
 
 
+def _reviewer_options(model: str, timeout_seconds: int, working_directory: str, backend: str) -> dict[str, Any]:
+    """Validated reviewer options of one MCP call; raise ``ValueError`` (reported as ``input_error``) before anything starts.
+
+    ``working_directory`` must be an existing directory under the server's current
+    directory or ``SEMANTIC_GUARD_WORKDIR_ROOTS``; it is returned as its real path.
+    """
+    validate_timeout_seconds(timeout_seconds)
+    validate_model(model)
+    return {
+        "model": model,
+        "timeout_seconds": timeout_seconds,
+        "working_directory": resolve_mcp_working_directory(working_directory, os.environ),
+        "backend": _mcp_backend(backend),
+    }
+
+
 @mcp.tool()
 def explore_request_tool(text: str, context: str = "", strict: bool = True, profile: str = "default") -> dict[str, object]:
     """Expose material ambiguities and necessary questions before turning an open-ended idea into a spec."""
@@ -78,12 +100,9 @@ def llm_explore_request_tool(
                 "context": context,
                 "deterministic_exploration": deterministic_exploration,
             },
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
-            backend=_mcp_backend(backend),
+            **_reviewer_options(model, timeout_seconds, working_directory, backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -109,12 +128,9 @@ def llm_explore_request_start_tool(
                 "context": context,
                 "deterministic_exploration": deterministic_exploration,
             },
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
-            backend=_mcp_backend(backend),
+            **_reviewer_options(model, timeout_seconds, working_directory, backend),
         )
     except ValueError as exc:
         return {
@@ -331,12 +347,9 @@ def llm_review_command_tool(
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
-            backend=_mcp_backend(backend),
+            **_reviewer_options(model, timeout_seconds, working_directory, backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -357,12 +370,9 @@ def llm_review_run_tool(
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
-            backend=_mcp_backend(backend),
+            **_reviewer_options(model, timeout_seconds, working_directory, backend),
         )
     except ValueError as exc:
         return {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]}
@@ -382,12 +392,9 @@ def llm_review_start_tool(
     try:
         request = CodexExecReviewRequest.from_mapping(
             payload,
-            model=model,
-            timeout_seconds=timeout_seconds,
-            working_directory=working_directory or None,
             codex_binary="codex",
             include_schema_in_prompt=include_schema,
-            backend=_mcp_backend(backend),
+            **_reviewer_options(model, timeout_seconds, working_directory, backend),
         )
     except ValueError as exc:
         return {
@@ -415,7 +422,7 @@ def review_if_needed_start_tool(
 ) -> dict[str, object]:
     """Start an isolated reviewer job only when review-if-needed escalation says it is useful."""
     try:
-        selected = _mcp_backend(backend)
+        options = _reviewer_options(model, timeout_seconds, working_directory, backend)
     except ValueError as exc:
         return {
             "job_id": None,
@@ -431,11 +438,9 @@ def review_if_needed_start_tool(
     return start_review_if_needed_job(
         _review_jobs,
         payload,
-        model=model,
-        timeout_seconds=timeout_seconds,
-        working_directory=working_directory,
         include_schema=include_schema,
-        backend=selected,
+        working_directory=options.pop("working_directory") or "",
+        **options,
     )
 
 
@@ -457,7 +462,7 @@ def review_if_needed_tool(
 ) -> dict[str, object]:
     """Escalate deterministic audit uncertainty to the isolated reviewer when needed. Dry-run is the default."""
     try:
-        selected = _mcp_backend(backend)
+        options = _reviewer_options(model, timeout_seconds, working_directory, backend)
     except ValueError as exc:
         return {
             "escalation": None,
@@ -471,11 +476,9 @@ def review_if_needed_tool(
     return review_if_needed(
         payload,
         execute=execute,
-        model=model,
-        timeout_seconds=timeout_seconds,
-        working_directory=working_directory,
         include_schema=include_schema,
-        backend=selected,
+        working_directory=options.pop("working_directory") or "",
+        **options,
     )
 
 

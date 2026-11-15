@@ -19,6 +19,7 @@ from .backends import (
     DEFAULT_CODEX_MODEL as DEFAULT_CODEX_MODEL,
     build_agent_command,
     extract_agent_output,
+    normalize_working_directory,
     process_label,
 )
 from .process import MAX_OUTPUT_BYTES, cap_text, run_agent_process
@@ -118,7 +119,7 @@ def run_codex_exec_runtime(
             errors="replace",
             capture_output=True,
             timeout=timeout_seconds,
-            cwd=str(Path(working_directory)) if working_directory is not None else None,
+            cwd=normalize_working_directory(working_directory),
             check=False,
         )
     except subprocess.TimeoutExpired as exc:

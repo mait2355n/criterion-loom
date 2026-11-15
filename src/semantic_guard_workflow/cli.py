@@ -14,7 +14,14 @@ from semantic_guard_workflow.acceptance_review import (
     validate_acceptance_review_bundle,
 )
 from semantic_guard_workflow.artifact_membership import audit_artifact_membership
-from semantic_guard_workflow.runtime.backends import BACKEND_CODEX, BACKENDS, COMMAND_PLACEHOLDERS
+from semantic_guard_workflow.runtime.backends import (
+    BACKEND_CODEX,
+    BACKENDS,
+    COMMAND_PLACEHOLDERS,
+    resolve_working_directory,
+    validate_model,
+    validate_timeout_seconds,
+)
 from semantic_guard_workflow.runtime.exploration import (
     DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
     CodexExecExplorationRequest,
@@ -144,11 +151,12 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
             "known_sources": args.known_sources or "",
         }
         try:
+            working_directory = _reviewer_arguments(args)
             request = CodexExecExplorationRequest.from_mapping(
                 payload,
                 model=args.model or "",
                 timeout_seconds=args.timeout_seconds,
-                working_directory=args.working_directory,
+                working_directory=working_directory,
                 codex_binary=args.codex_binary,
                 include_schema_in_prompt=args.include_schema,
                 **_backend_kwargs(args),
@@ -183,12 +191,16 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
         return
     if args.command == "review-if-needed":
         payload = _read_json_input(args)
+        try:
+            working_directory = _reviewer_arguments(args)
+        except ValueError as exc:
+            _fail_input(str(exc))
         result = review_if_needed(
             payload,
             execute=args.execute,
             model=args.model or "",
             timeout_seconds=args.timeout_seconds,
-            working_directory=args.working_directory or "",
+            working_directory=working_directory or "",
             include_schema=args.include_schema,
             **_backend_kwargs(args),
         )
@@ -556,15 +568,27 @@ def _read_json_input(args: argparse.Namespace) -> dict[str, object]:
     return payload
 
 
+def _reviewer_arguments(args: argparse.Namespace) -> str | None:
+    """Check the reviewer options before anything is decided or started; return the real working directory.
+
+    Raises ``ValueError`` naming the offending command-line option.
+    """
+    validate_timeout_seconds(args.timeout_seconds, name="--timeout-seconds")
+    validate_model(args.model or "", name="--model")
+    return resolve_working_directory(args.working_directory, name="--working-directory")
+
+
 def _codex_exec_request_from_args(payload: dict[str, object], args: argparse.Namespace) -> CodexExecReviewRequest:
-    if args.timeout_seconds <= 0:
-        _fail_input("--timeout-seconds must be positive")
+    try:
+        working_directory = _reviewer_arguments(args)
+    except ValueError as exc:
+        _fail_input(str(exc))
     try:
         return CodexExecReviewRequest.from_mapping(
             payload,
             model=args.model or "",
             timeout_seconds=args.timeout_seconds,
-            working_directory=args.working_directory,
+            working_directory=working_directory,
             codex_binary=args.codex_binary,
             include_schema_in_prompt=args.include_schema,
             **_backend_kwargs(args),

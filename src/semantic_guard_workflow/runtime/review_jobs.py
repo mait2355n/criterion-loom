@@ -14,7 +14,8 @@ from .review import (
     run_codex_exec_review,
 )
 from semantic_guard_workflow.escalation import decide_escalation
-from .jobs import BackgroundJobStore, JobRuntimeConfig, utc_now
+from .backends import validate_reviewer_options
+from .jobs import DEFAULT_MAX_JOBS, DEFAULT_MAX_RUNNING_JOBS, BackgroundJobStore, JobRuntimeConfig, utc_now
 from .process import run_agent_process
 
 _DONE_STATES = {"completed", "failed", "timed_out", "input_error", "not_needed", "not_found"}
@@ -36,7 +37,7 @@ class ReviewJob:
 class ReviewJobStore(BackgroundJobStore):
     """In-process background jobs for MCP callers that need pollable review state."""
 
-    def __init__(self, max_jobs: int = 64) -> None:
+    def __init__(self, max_jobs: int = DEFAULT_MAX_JOBS, max_running: int = DEFAULT_MAX_RUNNING_JOBS) -> None:
         super().__init__(
             JobRuntimeConfig(
                 job_factory=ReviewJob,
@@ -50,6 +51,7 @@ class ReviewJobStore(BackgroundJobStore):
                 not_found_error="review job not found",
             ),
             max_jobs=max_jobs,
+            max_running=max_running,
         )
 
 
@@ -64,6 +66,11 @@ def start_review_if_needed_job(
     runner: Runner = run_agent_process,
     backend: str = "codex",
 ) -> dict[str, Any]:
+    try:
+        # Rejected before the escalation decision: a call that could never run must not look like "not needed".
+        validate_reviewer_options(model, timeout_seconds, working_directory)
+    except ValueError as exc:
+        return _input_error(str(exc))
     audit = _mapping(payload.get("deterministic_audit") or payload.get("audit_result"))
     phase = _string(payload.get("phase")) or _string(audit.get("phase"))
     decision = decide_escalation(
@@ -87,9 +94,9 @@ def start_review_if_needed_job(
             "process_finished": False,
             "review_received": False,
             "response_state": "not_needed",
-            "valid": True,
+            "valid": False,
             "errors": [],
-            "escalation": decision,
+            "escalation": _without_payload(decision),
             "review_result": None,
         }
 
@@ -104,32 +111,41 @@ def start_review_if_needed_job(
             backend=backend,
         )
     except ValueError as exc:
-        return {
-            "job_id": None,
-            "state": "input_error",
-            "done": True,
-            "running": False,
-            "process_finished": False,
-            "review_received": False,
-            "response_state": "input_error",
-            "valid": False,
-            "errors": [str(exc)],
-            "escalation": decision,
-            "review_result": {
-                "executed": False,
-                "execution_status": "input_error",
-                "valid": False,
-                "errors": [str(exc)],
-            },
-        }
+        return {**_input_error(str(exc)), "escalation": _without_payload(decision)}
 
     snapshot = store.start(
         request,
         metadata={"kind": "review_if_needed", "escalation": decision},
         runner=runner,
     )
-    snapshot["escalation"] = decision
+    snapshot["escalation"] = _without_payload(decision)
     return snapshot
+
+
+def _input_error(message: str) -> dict[str, Any]:
+    return {
+        "job_id": None,
+        "state": "input_error",
+        "done": True,
+        "running": False,
+        "process_finished": False,
+        "review_received": False,
+        "response_state": "input_error",
+        "valid": False,
+        "errors": [message],
+        "escalation": None,
+        "review_result": {
+            "executed": False,
+            "execution_status": "input_error",
+            "valid": False,
+            "errors": [message],
+        },
+    }
+
+
+def _without_payload(decision: Mapping[str, Any]) -> dict[str, Any]:
+    """The escalation decision minus the payload, which repeats the text the caller sent for review."""
+    return {key: value for key, value in decision.items() if key != "payload"}
 
 
 def _response_state(job: ReviewJob) -> str:
