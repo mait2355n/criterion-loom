@@ -2,14 +2,18 @@
 """Create or verify CI-internal source-to-distribution binding sidecars.
 
 The record binds one wheel and one source distribution to the exact clean Git
-commit and tree from which they were built.  It is an integrity and identity
-check inside one build context, not a signature or external provenance proof.
+commit and tree that were checked out when the record was made.  Each artifact
+must be a well-formed archive whose own metadata names this project and
+version, and its bytes must match the sidecar.  That is an integrity and
+identity check inside one build context.  It is not a signature, not external
+provenance, and not proof that these bytes were built from that commit.
 """
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import gzip
 import hashlib
 import json
 import os
@@ -17,8 +21,11 @@ from pathlib import Path
 import re
 import stat
 import subprocess
+import tarfile
 import tempfile
 import tomllib
+import zipfile
+import zlib
 from typing import Any, Mapping, Sequence
 
 
@@ -35,6 +42,8 @@ _SAFE_FILENAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+!-]*\Z")
 _LIMITATIONS = (
     "This record binds local artifact bytes to one clean tracked Git commit and tree; "
     "it is not a signature or external authenticity proof.",
+    "Each artifact is checked to be a well-formed archive whose metadata names the project and "
+    "version; the record does not prove that the bytes were built from the bound commit.",
     "Dependency provenance, SBOM, field validity, operational qualification, security "
     "certification, release approval, and human acceptance are outside this record.",
 )
@@ -194,6 +203,100 @@ def _validate_distribution_directory(dist_dir: Path) -> Path:
     return dist_dir.resolve(strict=True)
 
 
+_METADATA_NAME = re.compile(r"^Name:[ \t]*(?P<value>[^\r\n]+)", re.MULTILINE)
+_METADATA_VERSION = re.compile(r"^Version:[ \t]*(?P<value>[^\r\n]+)", re.MULTILINE)
+MAX_METADATA_BYTES = 1024 * 1024
+MAX_ARCHIVE_MEMBERS = 200_000
+MAX_EXPANDED_BYTES = 2 * 1024 * 1024 * 1024
+
+
+def _check_metadata(text: str, project: ProjectIdentity, *, filename: str) -> None:
+    header = text.split("\n\n", 1)[0]
+    name = _METADATA_NAME.search(header)
+    version = _METADATA_VERSION.search(header)
+    observed_name = re.sub(r"[-_.]+", "_", name["value"].strip()).lower() if name else ""
+    observed_version = version["value"].strip() if version else ""
+    if observed_name != project.normalized_name or observed_version != project.version:
+        raise BindingFailure(
+            "artifact_metadata_mismatch",
+            f"{filename} metadata does not name {project.name} {project.version}",
+            details={"name": observed_name, "version": observed_version},
+        )
+
+
+def _read_member_text(size: int, reader: Any, *, filename: str) -> str:
+    if size <= 0 or size > MAX_METADATA_BYTES:
+        raise BindingFailure(
+            "artifact_not_a_distribution",
+            f"{filename} metadata size must be within 1..{MAX_METADATA_BYTES} bytes",
+        )
+    try:
+        return reader().decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise BindingFailure("artifact_not_a_distribution", f"{filename} metadata is not UTF-8") from exc
+
+
+def _validate_wheel_archive(path: Path, project: ProjectIdentity) -> None:
+    filename = path.name
+    try:
+        with zipfile.ZipFile(path) as archive:
+            members = archive.infolist()
+            if len(members) > MAX_ARCHIVE_MEMBERS:
+                raise BindingFailure("artifact_not_a_distribution", f"{filename} has too many members")
+            damaged = archive.testzip()
+            if damaged is not None:
+                raise BindingFailure(
+                    "artifact_not_a_distribution", f"{filename} member {damaged!r} fails its checksum"
+                )
+            metadata = [item for item in members if re.fullmatch(r"[^/]+\.dist-info/METADATA", item.filename)]
+            wheel_files = [item for item in members if re.fullmatch(r"[^/]+\.dist-info/WHEEL", item.filename)]
+            if len(metadata) != 1 or len(wheel_files) != 1:
+                raise BindingFailure(
+                    "artifact_not_a_distribution",
+                    f"{filename} must hold exactly one dist-info METADATA and WHEEL file",
+                )
+            text = _read_member_text(
+                metadata[0].file_size, lambda: archive.read(metadata[0]), filename=filename
+            )
+    except (zipfile.BadZipFile, OSError, EOFError, NotImplementedError, RuntimeError) as exc:
+        raise BindingFailure(
+            "artifact_not_a_distribution", f"{filename} is not a readable wheel archive: {exc}"
+        ) from exc
+    _check_metadata(text, project, filename=filename)
+
+
+def _validate_sdist_archive(path: Path, project: ProjectIdentity) -> None:
+    filename = path.name
+    expected = f"{project.normalized_name}-{project.version}/PKG-INFO"
+    try:
+        # Read the whole gzip stream first: its checksum is checked only at the end,
+        # and a bounded read keeps a decompression bomb from filling the disk.
+        expanded = 0
+        with gzip.open(path, "rb") as stream:
+            while chunk := stream.read(1024 * 1024):
+                expanded += len(chunk)
+                if expanded > MAX_EXPANDED_BYTES:
+                    raise BindingFailure("artifact_not_a_distribution", f"{filename} expands beyond {MAX_EXPANDED_BYTES} bytes")
+        with tarfile.open(path, mode="r:gz") as archive:
+            members = archive.getmembers()
+            if len(members) > MAX_ARCHIVE_MEMBERS:
+                raise BindingFailure("artifact_not_a_distribution", f"{filename} has too many members")
+            info = [item for item in members if item.name == expected and item.isreg()]
+            if len(info) != 1:
+                raise BindingFailure(
+                    "artifact_not_a_distribution", f"{filename} must hold exactly one {expected}"
+                )
+            handle = archive.extractfile(info[0])
+            if handle is None:
+                raise BindingFailure("artifact_not_a_distribution", f"{filename} PKG-INFO is unreadable")
+            text = _read_member_text(info[0].size, handle.read, filename=filename)
+    except (tarfile.TarError, gzip.BadGzipFile, zlib.error, OSError, EOFError) as exc:
+        raise BindingFailure(
+            "artifact_not_a_distribution", f"{filename} is not a readable source distribution: {exc}"
+        ) from exc
+    _check_metadata(text, project, filename=filename)
+
+
 def _artifact_identity(path: Path, *, kind: str) -> ArtifactIdentity:
     filename = _validate_plain_filename(path.name)
     try:
@@ -261,15 +364,13 @@ def _discover_artifacts(dist_dir: Path, project: ProjectIdentity) -> tuple[Artif
             f"source distribution filename must be {expected_sdist}",
             details={"filename": sdist.name},
         )
-    return tuple(
-        sorted(
-            (
-                _artifact_identity(sdist, kind="sdist"),
-                _artifact_identity(wheel, kind="wheel"),
-            ),
-            key=lambda item: item.kind,
-        )
+    identities = (
+        _artifact_identity(sdist, kind="sdist"),
+        _artifact_identity(wheel, kind="wheel"),
     )
+    _validate_sdist_archive(sdist, project)
+    _validate_wheel_archive(wheel, project)
+    return tuple(sorted(identities, key=lambda item: item.kind))
 
 
 def _build_manifest(
@@ -513,6 +614,16 @@ def check_binding(
     }
 
 
+def _git_environment() -> dict[str, str]:
+    """The caller's environment without any ``GIT_*`` variable.
+
+    ``GIT_DIR``, ``GIT_WORK_TREE`` and ``GIT_INDEX_FILE`` would point git at a
+    different repository than the project root and bind the artifacts to that
+    repository's commit.
+    """
+    return {key: value for key, value in os.environ.items() if not key.upper().startswith("GIT_")}
+
+
 def _git_output(project_root: Path, *arguments: str) -> str:
     completed = subprocess.run(
         ["git", "-C", str(project_root), *arguments],
@@ -520,6 +631,8 @@ def _git_output(project_root: Path, *arguments: str) -> str:
         capture_output=True,
         check=False,
         timeout=15.0,
+        cwd=project_root,
+        env=_git_environment(),
     )
     if completed.returncode != 0:
         raise BindingFailure(
@@ -538,6 +651,18 @@ def _source_identity_from_clean_git(
     top_level = Path(_git_output(project_root, "rev-parse", "--show-toplevel")).resolve(strict=True)
     if top_level != project_root:
         raise BindingFailure("git_root_mismatch", "project root must equal the Git worktree root")
+    # ``skip-worktree`` and ``assume-unchanged`` hide edits from ``git status``.
+    hidden = [
+        entry[2:]
+        for entry in _git_output(project_root, "ls-files", "-v", "-z").split("\0")
+        if entry and (entry[0] == "S" or entry[0].islower())
+    ]
+    if hidden:
+        raise BindingFailure(
+            "git_worktree_changes_hidden",
+            "tracked files flagged skip-worktree or assume-unchanged hide edits from git status",
+            details={"files": hidden[:20]},
+        )
     status = _git_output(project_root, "status", "--porcelain=v1", "--untracked-files=all")
     if status:
         raise BindingFailure(
@@ -568,7 +693,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _json_print(value: Mapping[str, Any]) -> None:
-    print(json.dumps(value, ensure_ascii=False, sort_keys=True))
+    # ASCII-only JSON is the same value on every stdout encoding; a cp1252 pipe
+    # would otherwise raise UnicodeEncodeError and print no result at all.
+    print(json.dumps(value, ensure_ascii=True, sort_keys=True))
 
 
 def main(argv: Sequence[str] | None = None) -> int:

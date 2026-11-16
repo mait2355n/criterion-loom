@@ -10,13 +10,23 @@ def combine(*parts: str) -> str:
     return "\n".join(part for part in parts if part)
 
 
+def fold(text: str) -> str:
+    """Lower-case ``text`` without changing its length.
+
+    ``str.lower()`` turns U+0130 into two characters, which moves every index
+    found in the result away from the original text; U+0130 is the only such
+    character.
+    """
+    return text.replace("\u0130", "i").lower() if "\u0130" in text else text.lower()
+
+
 def has_any(text: str, needles: Iterable[str]) -> bool:
-    lower = text.lower()
+    lower = fold(text)
     return any(needle.lower() in lower for needle in needles)
 
 
 def first_match(text: str, needles: Iterable[str]) -> str:
-    lower = text.lower()
+    lower = fold(text)
     for needle in needles:
         index = lower.find(needle.lower())
         if index >= 0:
@@ -24,11 +34,21 @@ def first_match(text: str, needles: Iterable[str]) -> str:
     return ""
 
 
+_LINE_BREAKS = ("\n", "\r", "\u2028", "\u2029", "\x85")
+
+
+def _line_start(text: str, position: int) -> int:
+    return max(text.rfind(mark, 0, position) for mark in _LINE_BREAKS) + 1
+
+
+def _line_end(text: str, position: int) -> int:
+    found = [index for index in (text.find(mark, position) for mark in _LINE_BREAKS) if index >= 0]
+    return min(found) if found else len(text)
+
+
 def excerpt_around(text: str, start: int, end: int, limit: int = DEFAULT_SNIPPET_LIMIT) -> str:
-    line_start = text.rfind("\n", 0, start) + 1
-    line_end = text.find("\n", end)
-    if line_end < 0:
-        line_end = len(text)
+    line_start = _line_start(text, start)
+    line_end = _line_end(text, end)
     line = text[line_start:line_end].strip()
     if line:
         relative_start = max(0, start - line_start)

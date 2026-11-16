@@ -89,7 +89,7 @@ uv run --locked semantic-guard schema direction-binding-audit
 ## 配布物（wheel）の隔離検証
 
 正式な基準となるリポジトリのルートを作業ディレクトリとし、信頼済みのローカル
-作業木から `wheel` を一個だけ構築して、隔離仮想環境へ導入した配布実体を検証する。
+作業木から `wheel` と `sdist` を一個ずつ構築し、`wheel` を隔離仮想環境へ導入して配布実体を検証する。
 検証器は隣接する偽の `schemas/` と `validation/` を置いた上で、配布物内の25スキーマ、
 基幹MCPツール四件、追加のworkflow/candidate入口、ライフサイクル候補10件、工学規則候補11件とそのスキーマ、
 空オブジェクトを拒む運用成果スキーマを再現する。
@@ -102,7 +102,7 @@ uv run --locked python scripts/verify_packaged_contracts.py \
   --timeout-seconds 180
 ```
 
-`dist/` には対象 `wheel` 一個だけを置く。標準出力は機械可読 JSON 一個で、
+`dist/` には対象の `wheel` 一個と `sdist` 一個だけを置き、`--sdist` を省くことはできない。標準出力は機械可読 JSON 一個で、
 `status=pass` の時だけ終了コード `0`、入力、導入、資源上限、経路又は契約検証の不成立は
 非零となる。検証器は外部の Python、監査プログラム又は資源パスを引数で選ばせず、
 `wheel` ファイルの容量、展開量、全体の制限時間、子プロセスの CPU 使用量、出力量、生成ファイル量及び
@@ -310,7 +310,7 @@ uv run --locked python scripts/validate_verification_source.py
 
 旧版は、運用者が所有する外部ルートにある `vnext/migration/legacy-baseline-2026-07-17.json`
 の、項目を限定したファイルハッシュ値集合を照合してから別プロセスで実行する。現在の取得候補は
-155ファイルを照合するが、`capture_authority=pending_human_acceptance` であり、人間採択済みの
+154ファイルを照合するが、`capture_authority=pending_human_acceptance` であり、人間採択済みの
 正解基準ではない。リポジトリ内の `legacy/semantic-guard-v0.1.0/` は、公開用に修復した
 旧版資料及び実行ソースの保存場所であり、元のバイト列を示す正式な参照先は注釈付きタグ `v0.1.0` と
 コミット `e0a3dd39f17385b66f6361ade25eb44bed6e1ab3` にある。この保存ディレクトリ自体は、

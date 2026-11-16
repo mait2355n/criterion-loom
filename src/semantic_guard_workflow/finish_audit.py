@@ -6,6 +6,7 @@ from semantic_guard_workflow.audit_common import (
     BASIS,
     _BEHAVIOR_DECLARATIONS,
     _blocker,
+    _has_asserted_any,
     _has_behavior_evidence,
     _implemented_public_behavior,
     _result,
@@ -190,6 +191,44 @@ def _present_completion_assertion(clause: str, terms: tuple[str, ...]) -> bool:
     return not _UNRESOLVED_COMPLETION_VALUE.fullmatch(tail)
 
 
+# Names of a security check, and the surfaces such a check is about. A surface word
+# counts only in a clause that also states a result, so "認証処理を変更した" is not evidence.
+_SECURITY_EVIDENCE_TERMS = [
+    "secret scan", "dependency", "owasp", "nist", "安全", "セキュリティ", "手動確認",
+    "認可", "認証", "権限", "秘密情報", "機密", "脆弱性", "入力検証", "authz", "authn", "injection", "csrf", "xss",
+]
+# A statement of what was confirmed. A security word alone ("安全。", "dependency")
+# names a topic and reports nothing; "未実施" and "していない" report the opposite.
+_SECURITY_RESULT_STATEMENT = re.compile(
+    r"(?:確認|実施|実行|検証|検査|検討|レビュー|テスト|試験|点検|監査)(?:した|しました|済み|済)"
+    r"|スキャン(?:した|しました|済み|を実施)|問題(?:なし|はない|は見つからなかった|は検出されなかった)"
+    r"|(?:検出|指摘|脆弱性)(?:なし|0件|はなかった|は見つからなかった|されなかった)|0\s*件|と(?:確認|判断|判定)\s*$|通過|合格"
+    r"|\b(?:passed|clean|checked|verified|reviewed|scanned|audited|confirmed|ran)\b"
+    r"|\bno\s+(?:findings|issues|vulnerabilit(?:y|ies))\b|\b0\s+(?:findings|issues|vulnerabilities)\b",
+    re.IGNORECASE,
+)
+_SECURITY_CLAUSE_BOUNDARY = re.compile(r"[。\n；;]|(?<=[.!?])\s")
+
+
+_RESIDUAL_RISK_TERMS = [
+    "残リスク", "残存リスク", "残る危険", "残る懸念", "残る問題", "リスクなし", "懸念なし", "未解決", "未実行", "未確認",
+    "できなかった", "not run", "residual", "risk", "none",
+]
+
+
+def _has_security_evidence(text: str) -> bool:
+    for clause in _SECURITY_CLAUSE_BOUNDARY.split(text):
+        clause = clause.strip()
+        if not clause:
+            continue
+        match = find_field_assertion(clause, _SECURITY_EVIDENCE_TERMS)
+        if match is None or match.status != "present":
+            continue
+        if match.labelled or _SECURITY_RESULT_STATEMENT.search(clause):
+            return True
+    return False
+
+
 def finish_check(summary: str, evidence: str = "", context: str = "", strict: bool = True) -> dict[str, object]:
     summary = normalize_audit_text(summary)
     evidence = normalize_audit_text(evidence)
@@ -228,7 +267,7 @@ def finish_check(summary: str, evidence: str = "", context: str = "", strict: bo
         )
         missing.append("acceptance_evidence")
 
-    if _security_signal(combined) and not _has_any(combined, ["secret scan", "dependency", "owasp", "nist", "安全", "セキュリティ", "手動確認"]):
+    if _security_signal(combined) and not _has_security_evidence(combined):
         findings.append(
             Finding(
                 severity="major",
@@ -259,7 +298,7 @@ def finish_check(summary: str, evidence: str = "", context: str = "", strict: bo
         )
         missing.append("behavior_evidence")
 
-    if not _has_any(combined, ["残リスク", "未実行", "未確認", "できなかった", "not run", "residual", "risk", "none"]):
+    if not _has_asserted_any(combined, _RESIDUAL_RISK_TERMS, accept_none=True):
         findings.append(
             Finding(
                 severity="info",

@@ -24,6 +24,7 @@ import re
 from typing import Any, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .engineering_rule_governance import (
     CANDIDATE_AUTHORITY,
@@ -205,7 +206,7 @@ def _adapter_validator(definition: str) -> Draft202012Validator:
         "$ref": f"#/$defs/{definition}",
     }
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _schema_validate(value: Mapping[str, Any], definition: str, label: str) -> None:
@@ -395,7 +396,7 @@ def _validate_h1_candidate(document: Mapping[str, Any]) -> dict[str, Any]:
     schema = json.loads(schema_file.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
     failures = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(
             document
         ),
         key=lambda item: tuple(str(part) for part in item.absolute_path),

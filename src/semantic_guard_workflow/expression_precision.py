@@ -29,7 +29,13 @@ def expression_precision_findings(
     catalog: Mapping[str, Any],
     *,
     rule_severity: Callable[[Mapping[str, Any]], str],
+    context_lines: int = 0,
 ) -> tuple[list[Finding], dict[str, object]]:
+    """Findings and details for ``text``, which is the context (``context_lines`` lines) followed by the audited text.
+
+    ``line`` numbers the lines of that normalized, joined document. ``source`` and
+    ``source_line`` say which of the two the line belongs to and where in it.
+    """
     rules_by_id = {
         str(rule.get("id", "")): rule
         for rule in catalog.get("rules", [])
@@ -149,6 +155,12 @@ def expression_precision_findings(
     details["emitted_rule_ids"] = _unique_preserve_order(emitted_rule_ids)
     details["referent_resolutions"] = referent_resolutions
     details["operation_contracts"] = operation_contracts
+    for item in (*referent_resolutions, *operation_contracts):
+        line = item.get("line")
+        if isinstance(line, int):
+            in_context = line <= context_lines
+            item["source"] = "context" if in_context else "text"
+            item["source_line"] = line if in_context else line - context_lines
     return findings, details
 
 

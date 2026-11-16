@@ -5,8 +5,9 @@ them as the same string. Without this, full-width ASCII, decomposed kana
 (dakuten as a separate combining mark), zero-width characters, and ``\\r``
 line endings silently turn a satisfied rule into a gap or hide a real one.
 
-Normalization removes invisible format characters before NFKC, then unifies
-line terminators. It is idempotent. Findings quote the
+Normalization removes invisible format characters (every Unicode ``Cf``
+character, variation selectors, U+034F, U+180B-180F, and tag characters) before
+NFKC, then unifies line terminators. It is idempotent. Findings quote the
 normalized text, so a quoted excerpt may differ in compatibility forms or
 removed formatting (for example ``Ａ`` quoted as ``A``).
 """
@@ -15,11 +16,57 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from functools import cache
 
-# BOM / zero-width space, non-joiner, joiner, word joiner, soft hyphen, and the
-# bidirectional isolates/marks that editors insert invisibly.
-_INVISIBLE = re.compile("[﻿​‌‍⁠­‎‏‪-‮⁦-⁩]")
-_LINE_TERMINATORS = re.compile(r"\r\n|\r| | |\x85")
+# Code points that render as nothing yet split a word for a literal matcher, in
+# addition to every Unicode "Cf" (format) character: the combining grapheme
+# joiner, Mongolian free variation selectors, the variation selectors, and the
+# tag characters used for emoji flags (and for hidden text).
+_EXTRA_INVISIBLE = (
+    (0x034F, 0x034F),
+    (0x180B, 0x180F),
+    (0xFE00, 0xFE0F),
+    (0xE0000, 0xE007F),
+    (0xE0100, 0xE01EF),
+)
+# "Cf" occurs only in the BMP, plane 1, and the tag block; scanning these ranges
+# keeps the one-time build under a tenth of a second.
+_SCANNED = ((0x0000, 0x1FFFF), (0xE0000, 0xE01FF))
+_LINE_TERMINATORS = re.compile(r"\r\n|\r|\u2028|\u2029|\x85")
+
+
+@cache
+def _invisible_pattern() -> re.Pattern[str]:
+    """One character class over the Unicode ``Cf`` category plus the extras.
+
+    Built from ``unicodedata`` so it follows the interpreter's Unicode version;
+    it is the only definition of "invisible" in the package.
+    """
+    points = {
+        code
+        for low, high in _SCANNED
+        for code in range(low, high + 1)
+        if unicodedata.category(chr(code)) == "Cf"
+    }
+    for low, high in _EXTRA_INVISIBLE:
+        points.update(range(low, high + 1))
+    ordered = sorted(points)
+    spans: list[tuple[int, int]] = []
+    for code in ordered:
+        if spans and code == spans[-1][1] + 1:
+            spans[-1] = (spans[-1][0], code)
+        else:
+            spans.append((code, code))
+    body = "".join(
+        re.escape(chr(low)) if low == high else f"{re.escape(chr(low))}-{re.escape(chr(high))}"
+        for low, high in spans
+    )
+    return re.compile(f"[{body}]")
+
+
+def is_invisible_character(character: str) -> bool:
+    """Whether ``character`` is removed by :func:`normalize_audit_text`."""
+    return _invisible_pattern().fullmatch(character) is not None
 
 
 def normalize_audit_text(text: str) -> str:
@@ -28,7 +75,7 @@ def normalize_audit_text(text: str) -> str:
         return text
     # Remove formats first so they cannot keep a base and its combining mark
     # apart until a second normalization pass.
-    normalized = unicodedata.normalize("NFKC", _INVISIBLE.sub("", text))
+    normalized = unicodedata.normalize("NFKC", _invisible_pattern().sub("", text))
     return _LINE_TERMINATORS.sub("\n", normalized)
 
 
@@ -51,7 +98,7 @@ def normalization_source_ranges(text: str) -> list[tuple[int, int]]:
         ranges.extend([(start, end)] * len(normalized))
 
     for index, character in enumerate(text):
-        if _INVISIBLE.fullmatch(character):
+        if is_invisible_character(character):
             continue
         decomposition = unicodedata.normalize("NFKD", character)
         combining = bool(decomposition and unicodedata.combining(decomposition[0]))

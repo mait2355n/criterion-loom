@@ -7,8 +7,8 @@ from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.text_utils import first_match, strip_code_blocks, unique_nonempty
 
 FIELD_CANDIDATE_HINTS: dict[str, list[str]] = {
-    "objective": ["背景", "狙い", "到達点", "期待結果", "何をする"],
-    "purpose_trace": ["背景", "理由", "狙い", "課題", "困りごと"],
+    "objective": ["背景", "狙い", "ねらい", "ゴール", "到達点", "期待結果", "何をする"],
+    "purpose_trace": ["背景", "理由", "狙い", "ねらい", "課題", "困りごと"],
     "non_goals": ["除外", "非対象", "範囲外", "今回は", "やらないこと"],
     "non_requirements": ["除外", "範囲外", "今回は", "やらないこと"],
     "stakeholder_source": ["利用者", "受入者", "依頼元", "関係者", "誰のため"],

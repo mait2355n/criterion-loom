@@ -1,0 +1,20 @@
+{
+  "id": "REQ-NATURAL-SCOPE-SYNONYM-001",
+  "title": "'スコープ外' is a scope boundary just as '対象外' is",
+  "phase": "audit_request",
+  "kind": "requirement",
+  "text": "保守者は、旧形式の設定ファイルを壊さずに読み込めるようにしたい。目的は、移行の手間を減らすことである。画面表示は今回のスコープ外とする。読み込みに失敗した場合は、元のファイルを変更せずにエラーを返す。受入の条件は、旧形式の設定 20 件がすべて読み込めることである。検証は pytest で行い、結果を保存する。現時点で未確定の点はない。",
+  "strict": true,
+  "rationale": "The obligation is written as ordinary sentences, not as labelled fields, so a detector that only knows the field label would miss it.",
+  "labels": {
+    "forbidden_rules": [
+      "req.scope.non_goals_missing",
+      "req.uncertainty.unknowns_unstated",
+      "req.necessity.purpose_trace_missing"
+    ]
+  },
+  "expect": {
+    "phase": "audit_request",
+    "status": "warn"
+  }
+}

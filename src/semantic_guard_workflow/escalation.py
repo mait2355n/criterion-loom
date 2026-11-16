@@ -4,6 +4,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
+from semantic_guard_workflow.runtime.backends import validate_reviewer_options
 from semantic_guard_workflow.runtime.review import (
     DEFAULT_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS,
@@ -100,6 +101,12 @@ class EscalationDecision:
         }
 
 
+def _input_kind_entry(audit: Mapping[str, Any]) -> dict[str, str]:
+    details = audit.get("details")
+    kind = details.get("input_kind") if isinstance(details, Mapping) else None
+    return {"input_kind": kind} if isinstance(kind, str) and kind else {}
+
+
 def decide_escalation(
     *,
     candidate: str,
@@ -139,6 +146,7 @@ def decide_escalation(
             "unknowns": unknowns,
             "context": context,
             "phase": normalized_phase,
+            **_input_kind_entry(audit),
         },
     ).as_dict()
 
@@ -156,6 +164,14 @@ def review_if_needed(
     agent_binary: str = "",
     agent_command: Sequence[str] = (),
 ) -> dict[str, Any]:
+    try:
+        # Rejected before the escalation decision: a call that could never run must not look like "not needed".
+        validate_reviewer_options(model, timeout_seconds, working_directory)
+    except ValueError as exc:
+        return {
+            "escalation": None,
+            "review_result": {"executed": False, "execution_status": "input_error", "valid": False, "errors": [str(exc)]},
+        }
     audit = _mapping(payload.get("deterministic_audit") or payload.get("audit_result"))
     phase = _string(payload.get("phase")) or _string(audit.get("phase"))
     candidate = _string(payload.get("candidate"))

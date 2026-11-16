@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 
-from semantic_guard_workflow.assertion_context import find_field_assertion
+from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import build_result
 from semantic_guard_workflow.text_utils import (
@@ -46,11 +47,13 @@ AMBIGUOUS_TERMS = [
     "as needed",
 ]
 
-SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "しない", "やらない", "非要求", "非目標", "out of scope", "non-goal", "not"]
+SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "スコープ外", "範囲外", "しない", "やらない", "非要求", "非目標", "out of scope", "non-goal", "not"]
 
 CHANGE_CONTROL_TERMS = [
     "変更統制",
+    "変更管理",
     "change control",
+    "change management",
     "scope change",
     "範囲変更",
     "追加要求",
@@ -275,6 +278,21 @@ def _add_ambiguity_findings(text: str, findings: list[Finding]) -> None:
         )
 
 
+def _has_asserted_any(text: str, terms: Iterable[str], *, accept_none: bool = False) -> bool:
+    """Whether a term is present as a decision, not as an empty or postponed label.
+
+    ``_has_any`` answers "does the word occur"; a label with ``未定`` behind it
+    contains the word and states no decision. ``accept_none`` is for fields
+    where "nothing" (``なし``, ``該当なし``) is itself an answer.
+    """
+    match = find_field_assertion(text, list(terms), accept_none=accept_none)
+    return match is not None and match.status == "present"
+
+
+def _first_asserted(text: str, terms: Iterable[str], *, accept_none: bool = False) -> str:
+    return asserted_excerpt(text, list(terms), accept_none=accept_none)
+
+
 def _looks_multi_requirement(text: str) -> bool:
     separators = [" and ", " or ", "かつ", "または", "及び", "および"]
     return sum(text.lower().count(separator) for separator in separators) > 0 or text.count("、") >= 2
@@ -283,7 +301,7 @@ def _looks_multi_requirement(text: str) -> bool:
 def _is_bounded_work_package_request(text: str, combined: str) -> bool:
     if not _looks_multi_requirement(text):
         return False
-    has_package_language = _has_any(
+    has_package_language = _has_asserted_any(
         combined,
         [
             "作業パッケージ",
@@ -298,17 +316,25 @@ def _is_bounded_work_package_request(text: str, combined: str) -> bool:
             "順序",
         ],
     )
-    has_scope_control = _has_any(combined, SCOPE_BOUNDARY_TERMS)
-    has_validation = _has_any(combined, ["検証", "確認", "受入", "完了条件", "証拠", "test", "acceptance", "evidence"])
+    has_scope_control = _has_asserted_any(combined, SCOPE_BOUNDARY_TERMS)
+    has_validation = _has_asserted_any(combined, ["検証", "確認", "受入", "完了条件", "証拠", "test", "acceptance", "evidence"])
     return has_package_language and has_scope_control and has_validation
 
 
-def _has_bounded_broad_scope_controls(plan: str, combined: str) -> bool:
+# A broad rewrite is bounded only by controls that are stated, not merely named:
+# ``進め方: 後で決める`` names a work breakdown and decides nothing. ``しない`` alone is
+# no boundary (``検証はしない`` limits nothing), and the sequence is judged by the same
+# signal that raises ``plan.schedule.dependency_sequence_missing``, so the two can
+# never contradict each other.
+_BROAD_SCOPE_BOUNDARY_TERMS = ["対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "non-goal", "out of scope"]
+
+
+def _has_bounded_broad_scope_controls(plan: str, combined: str, *, dependency_sequence: str = "") -> bool:
     return (
-        _has_any(combined, ["作業分解", "作業パッケージ", "成果物", "ファイル別", "段階", "stage", "work package"])
-        and _has_any(combined, ["対象外", "非対象", "しない", "non-goal", "out of scope"])
-        and _has_any(combined, ["順序", "依存", "先に", "後で", "dependency", "sequence"])
-        and _has_any(combined, ["検証", "試験", "確認", "証拠", "受入", "test", "evidence"])
+        _has_asserted_any(combined, ["作業分解", "作業パッケージ", "成果物", "ファイル別", "段階", "stage", "work package"])
+        and _has_asserted_any(combined, _BROAD_SCOPE_BOUNDARY_TERMS)
+        and bool(dependency_sequence)
+        and _has_asserted_any(combined, ["検証", "試験", "確認", "証拠", "受入", "test", "evidence"])
         and not _has_any(plan, ["無制限", "全部書き換え", "unbounded"])
     )
 
@@ -322,7 +348,7 @@ def _classify_requirements(text: str) -> list[str]:
         "transition": ["移行", "変換", "導入", "migration", "transition"],
         "quality": ["性能", "安全", "保守", "可用", "速", "security", "performance", "maintain"],
         "operation": ["運用", "通知", "実行", "ログ", "監視", "backup", "schedule"],
-        "non_requirement": ["対象外", "しない", "非要求", "non-goal", "out of scope"],
+        "non_requirement": ["対象外", "スコープ外", "範囲外", "しない", "非要求", "non-goal", "out of scope"],
     }
     for label, needles in checks.items():
         if _has_any(text, needles):
@@ -330,9 +356,40 @@ def _classify_requirements(text: str) -> list[str]:
     return classifications or ["unclassified"]
 
 
+_SOLUTION_TOOLS = ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON", "YAML"]
+# Whole words (and their plural): ``client`` is not CLI, ``capital`` and ``rapid`` are not API.
+_SOLUTION_TOOL_PATTERN = re.compile(
+    r"(?<![A-Za-z0-9_])(?:" + "|".join(re.escape(tool) for tool in _SOLUTION_TOOLS) + r")s?(?![A-Za-z0-9_])",
+    re.IGNORECASE,
+)
+
+
+# A sentence that describes what the system already does is not a new requirement
+# (the rule's own exclusion: "入力が既存実装の説明であり、新しい要求ではない").
+_CURRENT_STATE_MARKERS = re.compile(
+    r"現行|現在|既存|現状|いまは|今は|従来|\b(?:currently|existing|at present|as-is|legacy)\b", re.IGNORECASE
+)
+_SENTENCE_BOUNDARY = re.compile(r"[。！？\n;；]|[.!?](?=\s|$)")
+
+
+def _prescriptive_tool_mentions(text: str) -> list[re.Match[str]]:
+    mentions: list[re.Match[str]] = []
+    for match in _SOLUTION_TOOL_PATTERN.finditer(text):
+        start = max((m.end() for m in _SENTENCE_BOUNDARY.finditer(text, 0, match.start())), default=0)
+        boundary = _SENTENCE_BOUNDARY.search(text, match.end())
+        sentence = text[start : boundary.start() if boundary else len(text)]
+        if not _CURRENT_STATE_MARKERS.search(sentence):
+            mentions.append(match)
+    return mentions
+
+
+def _first_solution_tool_mention(text: str) -> str:
+    mentions = _prescriptive_tool_mentions(text)
+    return _first_match(text[mentions[0].start():], [mentions[0].group(0)]) if mentions else ""
+
+
 def _has_solution_bias(text: str) -> bool:
-    tools = ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON", "YAML"]
-    return _has_any(text, tools) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因"])
+    return bool(_prescriptive_tool_mentions(text)) and not _has_any(text, ["なぜ", "理由", "because", "根拠", "必要", "原因", "要因"])
 
 
 def _tokens(text: str) -> set[str]:

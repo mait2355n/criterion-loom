@@ -2,10 +2,20 @@ from __future__ import annotations
 
 import re
 
-from semantic_guard_workflow.audit_common import BASIS, _blocker, _has_implementation_evidence, _normalize_input_kind, _result, _security_signal
+from semantic_guard_workflow.assertion_context import value_state
+from semantic_guard_workflow.audit_common import (
+    BASIS,
+    _blocker,
+    _has_asserted_any,
+    _has_implementation_evidence,
+    _normalize_input_kind,
+    _result,
+    _security_signal,
+)
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import (
+    fold,
     combine as _combine,
     compact_snippet as _compact_snippet,
     excerpt_around as _excerpt_around,
@@ -16,11 +26,15 @@ from semantic_guard_workflow.text_utils import (
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = True, input_kind: str = "diff-summary") -> dict[str, object]:
-    # The diff body is code and file names; only the prose around it is normalized.
+    # File identity (header lines, paths) is read from the caller's own text so a
+    # composed and a decomposed file name stay different files. Every lexical
+    # signal reads the normalized view, so spelling never decides a verdict.
     intent = normalize_audit_text(intent)
     context = normalize_audit_text(context)
+    signal_diff = normalize_audit_text(diff)
     input_kind = _normalize_input_kind(input_kind)
-    combined = _combine(diff, intent, context)
+    if input_kind != "diff-summary":
+        raise ValueError(f"audit_diff audits a diff summary, but the input kind is {input_kind!r}; use audit_request for it")
     findings: list[Finding] = []
     missing: list[str] = []
     changed_files = _changed_files(diff)
@@ -29,7 +43,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         findings.append(_blocker("evidence", "差分が空。", "unified diff または変更要約を渡す。", BASIS["implementation"]))
         missing.append("diff")
 
-    if not intent.strip():
+    if value_state(intent) != "decided":
         findings.append(
             Finding(
                 severity="major",
@@ -41,7 +55,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("intent")
 
-    security_evidence = _security_signal(diff)
+    security_evidence = _security_signal(signal_diff)
     if security_evidence:
         findings.append(
             Finding(
@@ -54,7 +68,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    implementation_signals = _implementation_change_signals(diff, changed_files)
+    implementation_signals = _implementation_change_signals(signal_diff, changed_files)
     _add_implementation_findings(implementation_signals, findings, missing, strict)
 
     source_changed = any(_is_source_file(path) for path in changed_files)
@@ -73,7 +87,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("test_obligation")
 
-    semantic_boundaries = _semantic_boundaries(diff)
+    semantic_boundaries = _semantic_boundaries(signal_diff)
     document_only_boundaries: list[dict[str, object]] = []
     reportable_boundaries: list[dict[str, str]] = []
     if semantic_boundaries:
@@ -106,7 +120,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    complexity_growth = _complexity_growth_signal(diff)
+    complexity_growth = _complexity_growth_signal(signal_diff)
     if complexity_growth:
         finding = (
             Finding(
@@ -494,31 +508,22 @@ def _failure_prone_operation_signal(text: str) -> str:
     return _first_regex_match(text, patterns)
 
 
+# ``try`` is not in ``entry`` or ``retry``, and a comment that promises handling later
+# ("# TODO: 例外処理は後で追加する") is not handling.
+_FAILURE_WHOLE_WORDS = re.compile(r"(?<![A-Za-z0-9_])(?:try|except|catch|timeout|fallback|schema)(?![A-Za-z0-9_])", re.IGNORECASE)
+_FAILURE_PREFIXED_WORDS = re.compile(
+    r"(?<![A-Za-z0-9])(?:validat(?:e|ion|or)|returncode|check=True|raise_for_status|FileNotFoundError|JSONDecodeError)",
+    re.IGNORECASE,
+)
+_FAILURE_JAPANESE_TERMS = ["失敗", "例外", "タイムアウト", "検証", "戻り値", "異常"]
+_COMMENT_LINE = re.compile(r"^\s*(?:#|//|/\*|\*|--|<!--|;)")
+
+
 def _has_failure_handling_evidence(text: str) -> bool:
-    return _has_any(
-        text,
-        [
-            "timeout",
-            "try",
-            "except",
-            "catch",
-            "fallback",
-            "returncode",
-            "check=True",
-            "raise_for_status",
-            "validate",
-            "validation",
-            "schema",
-            "FileNotFoundError",
-            "JSONDecodeError",
-            "失敗",
-            "例外",
-            "タイムアウト",
-            "検証",
-            "戻り値",
-            "異常",
-        ],
-    )
+    code = "\n".join(line for line in text.splitlines() if not _COMMENT_LINE.match(line))
+    if _FAILURE_WHOLE_WORDS.search(code) or _FAILURE_PREFIXED_WORDS.search(code):
+        return True
+    return _has_asserted_any(code, _FAILURE_JAPANESE_TERMS)
 
 
 def _operational_change_signal(text: str) -> str:
@@ -595,7 +600,7 @@ def _filename_content_scope_signals(diff: str, changed_files: list[str]) -> list
         filename_domains = _responsibility_domain_hits(" ".join(filename_tokens))
         if not filename_domains:
             continue
-        added_text = added_text_by_file.get(path, "")
+        added_text = normalize_audit_text(added_text_by_file.get(path, ""))
         if not added_text.strip():
             continue
         content_domains = _responsibility_domain_hits(added_text)
@@ -630,7 +635,7 @@ def _filename_content_scope_evidence(signal: dict[str, object]) -> str:
 
 
 def _filename_naming_scope_signals(diff: str, changed_files: list[str], intent: str, context: str) -> list[dict[str, object]]:
-    scope_management_present = _filename_scope_management_present(_combine(diff, intent, context))
+    scope_management_present = _filename_scope_management_present(_combine(normalize_audit_text(diff), intent, context))
     actions = _changed_file_actions(diff, changed_files)
     signals: list[dict[str, object]] = []
     for path in changed_files:
@@ -736,7 +741,7 @@ def _changed_file_actions(diff: str, changed_files: list[str]) -> dict[str, str]
         previous_line = line
 
     for line in diff.splitlines():
-        lowered = line.lower()
+        lowered = normalize_audit_text(line).lower()
         if not _line_can_list_changed_files(line):
             continue
         action = ""
@@ -922,7 +927,7 @@ def _semantic_boundaries(diff: str) -> list[dict[str, str]]:
 
 
 def _semantic_boundary_evidence(text: str, terms: list[str]) -> str:
-    lowered = text.lower()
+    lowered = fold(text)
     ignored_phrases = ["audit path", "document audit path", "code path", "path through"]
     for term in terms:
         term_lower = term.lower()
@@ -1040,7 +1045,7 @@ def _summary_changed_files(text: str) -> list[str]:
 
 
 def _line_can_list_changed_files(line: str) -> bool:
-    stripped = line.strip()
+    stripped = normalize_audit_text(line).strip()
     if not stripped:
         return False
     if re.match(r"^(?:uv|python|pytest|git|semantic-guard|codex)\b", stripped):
@@ -1059,9 +1064,25 @@ def _is_source_file(path: str) -> bool:
     return path.endswith((".py", ".js", ".ts", ".tsx", ".jsx", ".swift", ".go", ".rs", ".java", ".kt", ".c", ".cc", ".cpp", ".h"))
 
 
+_TEST_DIRECTORIES = frozenset({"test", "tests", "__tests__", "spec", "specs"})
+_TEST_DIRECTORY_SUFFIX = re.compile(r"[_-](?:tests?|specs?)$")
+_TEST_FILE_NAME = re.compile(
+    r"^(?:test_.+|.+_test\.[a-z0-9]+|(?:tests?|conftest)\.[a-z0-9]+|.+\.(?:test|spec)\.[a-z0-9]+|.+_spec\.[a-z0-9]+)$"
+)
+_TEST_CLASS_FILE_NAME = re.compile(r"^.*[a-z0-9](?:Test|Tests|Spec|IT)\.(?:java|kt|swift|cs|scala)$")
+
+
 def _is_test_file(path: str) -> bool:
-    lowered = path.lower()
-    return "/test" in lowered or "test_" in lowered or lowered.endswith((".spec.ts", ".test.ts", ".spec.js", ".test.js"))
+    """Whether ``path`` is a test file, judged by directory and file-name conventions.
+
+    A substring test would take ``latest_release.py`` and ``attest_signature.py``
+    for tests and let a source change pass without one.
+    """
+    segments = path.replace("\\", "/").split("/")
+    name = segments[-1]
+    if any(segment.lower() in _TEST_DIRECTORIES or _TEST_DIRECTORY_SUFFIX.search(segment.lower()) for segment in segments[:-1]):
+        return True
+    return bool(_TEST_FILE_NAME.match(name.lower()) or _TEST_CLASS_FILE_NAME.match(name))
 
 
 def _is_doc_file(path: str) -> bool:

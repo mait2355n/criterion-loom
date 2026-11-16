@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 from referencing import Registry, Resource
 
 from .audit.engine import audit_requirement_relations_vnext
@@ -1421,7 +1422,7 @@ def _validator() -> Draft202012Validator:
             root = schema
     if root is None:
         raise FileNotFoundError("assurance-claim-v1.schema.json is missing")
-    return Draft202012Validator(
+    return StrictDraft202012Validator(
         root,
         registry=Registry().with_resources(resources),
         format_checker=FormatChecker(),

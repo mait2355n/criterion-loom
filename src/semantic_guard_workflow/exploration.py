@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable
 
+from semantic_guard_workflow.text_utils import fold
 from semantic_guard_workflow.models import AuditResult, Finding
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
@@ -25,7 +26,7 @@ AUDIENCE_TERMS = [
     "maintainer",
 ]
 PROBLEM_TERMS = ["問題", "課題", "目的", "狙い", "意図", "価値", "なぜ", "problem", "purpose", "intent", "why", "value"]
-NON_GOAL_TERMS = ["対象外", "非目標", "非要求", "しない", "やらない", "out of scope", "non-goal", "not doing"]
+NON_GOAL_TERMS = ["対象外", "スコープ外", "範囲外", "非目標", "非要求", "しない", "やらない", "out of scope", "non-goal", "not doing"]
 WORKFLOW_TERMS = ["導線", "手順", "流れ", "ワークフロー", "シナリオ", "ユースケース", "workflow", "flow", "scenario", "use case"]
 ACCEPTANCE_TERMS = ["受入", "受入基準", "検証", "証拠", "証跡", "不合格", "acceptance", "verify", "evidence", "test"]
 UNCERTAINTY_TERMS = ["未確定", "未決", "仮説", "判断待ち", "保留", "不明", "unknown", "hypothesis", "pending", "tbd"]
@@ -504,7 +505,7 @@ def _combine(text: str, context: str = "") -> str:
 
 
 def _has_any(text: str, terms: Iterable[str]) -> bool:
-    lowered = text.lower()
+    lowered = fold(text)
     for term in terms:
         normalized = term.lower()
         if _is_ascii_word(normalized):

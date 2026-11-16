@@ -1,0 +1,21 @@
+{
+  "id": "FINISH-NATURAL-SECURITY-002",
+  "title": "A prose security change with a stated confirmation passes",
+  "phase": "finish_check",
+  "text": "認証処理の設定を変更した。設定読込の不具合を修正した。完了の条件は、旧形式の設定 20 件が読み込めること。残る危険はない。",
+  "evidence": "pytest を実行し、20 件すべてが成功したことを確認した。受入の条件も満たした。 認可の境界を手動で確認した。",
+  "strict": true,
+  "rationale": "The obligation is written as ordinary sentences, not as labelled fields, so a detector that only knows the field label would miss it.",
+  "labels": {
+    "forbidden_rules": [
+      "finish.evidence.tests_missing",
+      "finish.validation.acceptance_evidence_missing",
+      "finish.risk.residual_risk_missing",
+      "finish.security.evidence_missing"
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "pass"
+  }
+}

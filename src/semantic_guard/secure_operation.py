@@ -27,6 +27,7 @@ import json
 from typing import Any, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard.strict_schema import StrictDraft202012Validator
 
 from .schema_access import schema_path
 
@@ -265,7 +266,7 @@ def _schema_location(path: Iterable[Any]) -> str:
 def _validator() -> Draft202012Validator:
     schema = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def build_scope_entry(
