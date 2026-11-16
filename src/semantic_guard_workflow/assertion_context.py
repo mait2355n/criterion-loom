@@ -397,6 +397,18 @@ def find_field_assertion(text: str, terms: Iterable[str], *, accept_none: bool =
     return _match(text, *chosen) if chosen is not None else None
 
 
+def find_field_assertions(text: str, terms: Iterable[str]) -> list[AssertionMatch]:
+    """Return each occurrence using the shared decision-state classifier.
+
+    Completion checks can inspect independent receipts without weakening the
+    labelled-value precedence used by ``find_field_assertion``.
+    """
+    return [
+        _match(text, term, start, end, *_classify(text, term, start, end))
+        for term, start, end in _term_matches(text, terms)
+    ]
+
+
 def value_state(value: str, term: str = "") -> AssertionState:
     """Classify a whole free-text value (not a labelled field) into a decision state."""
     reason = _placeholder_reason(value, term)
@@ -765,5 +777,6 @@ __all__ = [
     "AssertionStatus",
     "asserted_excerpt",
     "find_field_assertion",
+    "find_field_assertions",
     "value_state",
 ]

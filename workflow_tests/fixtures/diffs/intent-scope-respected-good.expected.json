@@ -1,0 +1,26 @@
+{
+  "id": "DIFF-INTENT-SCOPE-GOOD-001",
+  "title": "A document-only diff under a document-only intent respects the scope limit",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/README.md b/README.md\n--- a/README.md\n+++ b/README.md\n@@ -1 +1 @@\n-Teh tool reads a diff.\n+The tool reads a diff.\n",
+  "intent": "READMEの誤字を修正する。コードは変更しない。",
+  "strict": true,
+  "rationale": "The limit is stated and kept: only a document changes. A stated limit alone must not produce a finding.",
+  "labels": {
+    "forbidden_rules": [
+      "diff.traceability.intent_scope_conflict",
+      "diff.test_obligation.tests_removed_or_disabled",
+      "diff.test_obligation.source_without_tests"
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "pass",
+    "missing": {
+      "excludes": [
+        "intent_scope_alignment"
+      ]
+    }
+  }
+}

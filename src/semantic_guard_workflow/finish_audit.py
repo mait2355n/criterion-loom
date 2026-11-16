@@ -12,10 +12,18 @@ from semantic_guard_workflow.audit_common import (
     _result,
     _security_signal,
 )
-from semantic_guard_workflow.assertion_context import find_field_assertion
+from semantic_guard_workflow.assertion_context import (
+    AssertionMatch,
+    find_field_assertion,
+    find_field_assertions,
+)
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
-from semantic_guard_workflow.text_utils import combine as _combine, has_any as _has_any
+from semantic_guard_workflow.text_utils import (
+    combine as _combine,
+    compact_snippet as _compact_snippet,
+    has_any as _has_any,
+)
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 
@@ -44,7 +52,10 @@ _COMPLETION_HEADINGS = {
     "verification": _VERIFICATION_DECLARATIONS,
     "acceptance": _ACCEPTANCE_DECLARATIONS,
     "criterion": ("受入基準", "受入条件", "完了条件", "acceptance criteria", "criteria"),
-    "risk": ("残リスク", "未確認事項", "未実行事項", "residual risk", "residual risks", "risk", "risks", "unknown", "unknowns"),
+    "risk": (
+        "残リスク", "残余リスク", "残存リスク", "未確認事項", "未実行事項",
+        "residual risk", "residual risks", "risk", "risks", "unknown", "unknowns",
+    ),
     "not_run_reason": ("未実行理由", "未実施理由", "未検証理由"),
     "behavior": _BEHAVIOR_DECLARATIONS,
 }
@@ -89,10 +100,144 @@ _NOT_RUN_REASON = re.compile(
     r"(?P<reason>.*)$",
     re.IGNORECASE,
 )
+# A trailing copula does not turn an unresolved value into a receipt:
+# 「未確認です」 is as unresolved as 「未確認」.
+_COMPLETION_COPULA = r"(?:です|だ|である|でした|だった|のまま(?:です|だ|である)?)?"
 _UNRESOLVED_COMPLETION_VALUE = re.compile(
     r"^(?:[:：はがもを]\s*)?(?:(?:is|are|was|were|has been|have been|has|have|had)\s+)?"
-    r"(?:未実行|未実施|未検証|未確認|未試験|unknown|not\s+(?:yet\s+)?"
-    r"(?:been\s+)?(?:run|executed|performed|verified|checked))$",
+    r"(?:(?:まだ|現時点では?|今回は)\s*)?"
+    r"(?:(?:未実行|未実施|未検証|未確認|未試験|未着手|未了|まだ|これから|スキップ|省略|見送り)"
+    + _COMPLETION_COPULA
+    + r"|unknown|skipped|omitted|deferred|not\s+done"
+    r"|not\s+(?:yet\s+)?(?:been\s+)?(?:run|executed|performed|verified|checked))$",
+    re.IGNORECASE,
+)
+# The matched term is itself the action noun (検証, 確認, 実行, テスト ...), so a
+# negated する-form directly after it denies the action instead of reporting it.
+_NEGATED_COMPLETION_PREDICATE = re.compile(
+    r"^(?:[はがもを]\s*)?(?:(?:まだ|現時点では?|今回は|一切|全く|何も)\s*)?"
+    r"(?:"
+    r"して(?:い)?(?:ない|ません|なかった|ませんでした)"
+    r"|し(?:ない|ません|なかった|ませんでした)"
+    r"|せず"
+    r"|されて(?:い)?(?:ない|ません)"
+    r"|でき(?:て(?:い)?)?(?:ない|ません|なかった|ませんでした)"
+    r"|行って(?:い)?(?:ない|ません)|行わ(?:ない|なかった|ず)|行えて(?:い)?(?:ない|ません)"
+    r"|(?:省略|スキップ|見送[りっ]|割愛)"
+    r")"
+)
+# ASCII word edges. Japanese text does not separate words with spaces, and to
+# ``\b`` a kana or kanji neighbour is a word character: 「CIが」 has no boundary
+# after ``CI``. These treat any non-ASCII neighbour as an edge.
+_W0 = r"(?<![A-Za-z0-9_])"
+_W1 = r"(?![A-Za-z0-9_])"
+_SKIPPED_ACTION_PREFIX = re.compile(
+    rf"(?:{_W0}(?:skipped|omitted|deferred)|{_W0}unable\s+to\s+(?:run|execute|perform))\s+"
+    r"(?:(?:all\s+)?(?:of\s+)?the\s+|all\s+|any\s+)?$",
+    re.IGNORECASE,
+)
+
+# --- reported failure -------------------------------------------------------
+# A completion claim cannot rest on a verification that is reported as failed.
+# Only result statements are read: a count above zero, or a perfective/ongoing
+# failure of a named verification activity. Conditionals (失敗した場合), failure
+# handling descriptions, attributive uses (失敗したテストを修正) and past states
+# (失敗していた) are not results and stay outside.
+_FAILURE_SUBJECT = re.compile(
+    r"テスト|試験|検証|確認|ビルド|受入|実行|スモーク|チェック|型検査|リント"
+    rf"|{_W0}(?:pytest|unittest|tests?|checks?|build|ci|lint|typecheck|type\s+check(?:ing)?|pipeline|suite"
+    rf"|smoke|execution|run|verification|validation){_W1}",
+    re.IGNORECASE,
+)
+_JA_FAILURE_UNIT = r"(?:件|個|本|ケース|項目|入力|テスト|試験)"
+_JA_FAILURE_WORD = r"(?:失敗|不合格|NG)"
+_JA_FAILURE_NOT_A_RESULT = r"(?!\s*(?:して(?:い)?た|で|の場合|以上|以下|まで|ごと|毎|を超))"
+# 「失敗3件でロックする」 is a threshold in a requirement, and 「失敗3回」 a retry
+# count; neither is a verification result. The unit is matched without
+# backtracking so the exclusion cannot be dodged by dropping it.
+_JA_COUNT_NOT_A_RESULT = r"(?!\s*(?:で|の場合|以上|以下|まで|ごと|毎|を超|回|秒|分|時間|日|%|％))"
+_JA_FAILURE_COUNT = re.compile(
+    rf"(?<!\d)(?P<before>\d+)\s*{_JA_FAILURE_UNIT}\s*"
+    rf"(?:の\s*(?:テスト|試験|ケース|項目)\s*)?(?:が|は|も)?\s*{_JA_FAILURE_WORD}{_JA_FAILURE_NOT_A_RESULT}"
+    rf"|{_JA_FAILURE_WORD}\s*(?:[:：=]|は|が)?\s*(?P<after>\d+)(?!\d)\s*"
+    rf"(?:{_JA_FAILURE_UNIT}{_JA_COUNT_NOT_A_RESULT}|(?!{_JA_FAILURE_UNIT}){_JA_COUNT_NOT_A_RESULT})"
+)
+_JA_FAILURE_RESULT = re.compile(
+    r"失敗(?:した|しました|して(?:い)?(?:る|ます)|しており|中)"
+    r"(?!\s*(?:場合|とき|時|際|ら|テスト|試験|ケース|項目|箇所|原因|理由|もの|こと|の))"
+    r"|(?:テスト|試験|検証|CI|ビルド|チェック)\s*(?:が|は|も|に)\s*(?:まだ\s*|一部\s*)?"
+    r"(?:通ら(?:ない|なかった|ず)|通って(?:い)?(?:ない|ません)|通りません(?:でした)?"
+    r"|落ち(?:た|ました|て(?:い)?(?:る|ます)))"
+)
+_UNMET_ACCEPTANCE = re.compile(
+    r"(?:受入(?:基準|条件)|完了条件)[^。.!?\n]{0,24}?"
+    r"(?:満た(?:して(?:い)?(?:ない|ません)|さない|しません|せて(?:い)?(?:ない|ません)|せなかった|せず)"
+    r"|未達|未充足)"
+    rf"|{_W0}acceptance\s+criteri(?:a|on)\s+(?:(?:is|are|was|were)\s+)?"
+    rf"(?:not\s+(?:yet\s+)?(?:met|satisfied)|unmet){_W1}",
+    re.IGNORECASE,
+)
+_EN_FAILURE_RESULT = re.compile(
+    rf"{_W0}(?:tests?|checks?|build|ci|pipeline|suite|lint|type\s*check(?:ing)?|verification|validation"
+    r"|execution|run|smoke(?:\s+test)?)\s+"
+    rf"(?:(?:has|have|is|are|still|also)\s+)*(?:failed|failing|fails){_W1}"
+    rf"|{_W0}(?:did|does|do)\s+not\s+pass{_W1}|{_W0}(?:is|are)\s+not\s+passing{_W1}",
+    re.IGNORECASE,
+)
+_EN_FAILURE_NEGATED_PREFIX = re.compile(
+    rf"{_W0}(?:no|none\s+of\s+the|zero|without\s+any)\s+$", re.IGNORECASE
+)
+# Runner output: an upper-case verdict at line start or in front of a test id.
+_RUNNER_FAILED_VERDICT = re.compile(
+    rf"(?:^|\n)\s*FAILED{_W1}|{_W0}FAILED\s+[\w./-]+(?:::|\.py{_W1}|\.js{_W1}|\.ts{_W1})"
+)
+_EN_COUNT_LABELS = r"(?:total|passed|failed|failures|errors|skipped)"
+_EN_NOT_A_TEST_COUNT = (
+    r"(?!\s*(?:attempts?|logins?|requests?|retries|tries|times?|payments?|jobs?|transactions?|messages?"
+    r"|ms|s|%)(?![A-Za-z]))"
+)
+_EN_LABEL_THEN_COUNT = re.compile(
+    rf"{_W0}(?P<label>{_EN_COUNT_LABELS})\s*[:=]?\s*(?P<count>\d+){_W1}{_EN_NOT_A_TEST_COUNT}",
+    re.IGNORECASE,
+)
+_EN_COUNT_THEN_LABEL = re.compile(
+    rf"(?<![A-Za-z0-9_.])(?P<count>\d+)\s+(?:(?:tests?|cases?|checks?|assertions?)\s+)?"
+    rf"(?P<label>{_EN_COUNT_LABELS}|failing|failure|error|errored){_W1}{_EN_NOT_A_TEST_COUNT}",
+    re.IGNORECASE,
+)
+_EN_FAILURE_LABELS = frozenset({"failed", "failing", "failure", "failures"})
+_EN_ERROR_LABELS = frozenset({"error", "errors", "errored"})
+# "3 errors" is a failure count only inside a runner summary; a validator that
+# returns three errors for an invalid input is the expected behaviour.
+_RUNNER_SUMMARY_CONTEXT = re.compile(rf"{_W0}(?:pytest|unittest|passed|failed){_W1}", re.IGNORECASE)
+_REVERIFIED_SUCCESS = re.compile(
+    r"(?:再実行|再試験|再検証|再テスト|再度の?(?:実行|試験|検証|テスト)|もう一度(?:実行|試験|検証))"
+    r"[^。.\n]{0,40}(?:成功|通過|合格|通っ|全件|passed|pass|green|OK)"
+    r"|(?:その後|現在は|今は|修正後(?:は|に)?)[^。.\n]{0,40}"
+    r"(?:成功|通過|合格|通っ(?:た|ている|ています)|passed|green)"
+    rf"|{_W0}(?:re-?ran|re-?run|rerun|after\s+(?:the\s+)?fix(?:es|ing)?|now){_W1}[^.\n]{{0,60}}"
+    rf"{_W0}(?:pass(?:ed|es|ing)?|green|succeed(?:ed|s)?){_W1}",
+    re.IGNORECASE,
+)
+
+# --- inspectable receipt ----------------------------------------------------
+# 「検証済み」 states that something was done. A receipt additionally names
+# what was run or what came out, so that someone else could check it.
+_VERIFICATION_RECEIPT = re.compile(
+    rf"{_W0}(?:pytest|unittest|tox|nox|jest|vitest|mocha|rspec|phpunit|ctest|junit|gtest|doctest"
+    rf"|playwright|cypress|semantic-guard){_W1}"
+    rf"|{_W0}(?:uv|npm|pnpm|yarn|go|cargo|swift|gradle|gradlew|mvn|make|dotnet|bazel|python3?|node|deno|bun"
+    r"|bundle|rake|pip|ruff|mypy|pyright|eslint|tsc|curl|git|docker|kubectl)\s+[A-Za-z0-9_./:-]"
+    r"|`[^`\n]+`"
+    r"|(?:^|\s)\$\s+\S+"
+    rf"|\d+\s*(?:passed|failed|tests?|cases?|assertions?|checks?|files?){_W1}"
+    r"|\d+\s*(?:件|項目|ケース|入力|回|個|本|ファイル|テスト|試験)"
+    rf"|{_W0}\d+\s*/\s*\d+{_W1}"
+    rf"|{_W0}(?:pass_rate|exit\s+(?:code|status)|returncode|stdout|stderr){_W1}|終了コード"
+    rf"|{_W0}(?:run|job|build)\s*#?\s*\d{{3,}}{_W1}"
+    rf"|[\w./-]+\.(?:log|json|jsonl|txt|xml|html|png|jpe?g|csv|md|ya?ml|out){_W1}"
+    r"|https?://\S+"
+    r"|ログ|スクリーンショット|実行結果|出力結果",
     re.IGNORECASE,
 )
 
@@ -182,13 +327,101 @@ def _declared_completion_presence(clause: str, terms: tuple[str, ...]) -> bool |
 
 
 def _present_completion_assertion(clause: str, terms: tuple[str, ...]) -> bool:
-    match = find_field_assertion(clause, terms)
-    if match is None or match.status != "present":
+    """One asserted occurrence is enough; a denied one cannot hide another."""
+    return any(_occurrence_is_asserted(clause, match) for match in find_field_assertions(clause, terms))
+
+
+def _occurrence_is_asserted(clause: str, match: AssertionMatch) -> bool:
+    if match.status != "present":
         return False
     if match.start > 0 and clause[match.start - 1] == "未":
         return False
+    if _SKIPPED_ACTION_PREFIX.search(clause[:match.start]):
+        return False
     tail = clause[match.end:].strip().rstrip(".")
-    return not _UNRESOLVED_COMPLETION_VALUE.fullmatch(tail)
+    if _UNRESOLVED_COMPLETION_VALUE.fullmatch(tail):
+        return False
+    return not _NEGATED_COMPLETION_PREDICATE.match(tail)
+
+
+def _reported_failure(text: str) -> str:
+    """Return the clause that reports a verification failure left unresolved.
+
+    Reads result statements in the summary and evidence only; the caller keeps
+    request context out, because the task itself may be "the tests fail".
+    A later clause that records a successful re-verification closes an earlier
+    failure. This is a bounded lexical reading, not a contradiction parser.
+    """
+    open_failure = ""
+    for clause in _completion_clauses(text):
+        failure_end = _last_failure_end(clause)
+        reverified = [match.start() for match in _REVERIFIED_SUCCESS.finditer(clause)]
+        if failure_end < 0:
+            if reverified:
+                open_failure = ""
+            continue
+        # 「3件失敗、修正して再実行し全件成功」 closes itself; the reverse order does not.
+        if any(start >= failure_end for start in reverified):
+            open_failure = ""
+            continue
+        open_failure = open_failure or clause
+    return open_failure
+
+
+def _last_failure_end(clause: str) -> int:
+    """Offset just past the last failure result in the clause, or -1."""
+    ends = [
+        match.end()
+        for match in _JA_FAILURE_COUNT.finditer(clause)
+        if int(match.group("before") or match.group("after")) > 0
+    ]
+    ends.extend(_english_failure_count_ends(clause))
+    ends.extend(match.end() for match in _RUNNER_FAILED_VERDICT.finditer(clause))
+    ends.extend(match.end() for match in _UNMET_ACCEPTANCE.finditer(clause))
+    if _FAILURE_SUBJECT.search(clause):
+        ends.extend(match.end() for match in _JA_FAILURE_RESULT.finditer(clause))
+        ends.extend(
+            match.end()
+            for match in _EN_FAILURE_RESULT.finditer(clause)
+            if not _EN_FAILURE_NEGATED_PREFIX.search(clause[:match.start()])
+        )
+    return max(ends, default=-1)
+
+
+def _english_failure_count_ends(clause: str) -> list[int]:
+    """Read a runner summary in whichever order it pairs counts with labels.
+
+    ``3 failed, 117 passed`` puts the count first; ``passed 6 failed 0`` puts
+    the label first. The order with more complete pairs decides which number
+    belongs to ``failed``.
+    """
+    label_first = list(_EN_LABEL_THEN_COUNT.finditer(clause))
+    count_first = list(_EN_COUNT_THEN_LABEL.finditer(clause))
+    pairs = label_first if len(label_first) > len(count_first) else count_first
+    in_runner_summary = bool(_RUNNER_SUMMARY_CONTEXT.search(clause))
+    ends: list[int] = []
+    for pair in pairs:
+        label = pair.group("label").lower()
+        counts_as_failure = label in _EN_FAILURE_LABELS or (label in _EN_ERROR_LABELS and in_runner_summary)
+        if counts_as_failure and int(pair.group("count")) > 0:
+            ends.append(pair.end())
+    return ends
+
+
+def _has_verification_receipt(text: str) -> bool:
+    """Is any verification statement backed by something another person could check?
+
+    A command or tool name, a count, an exit state, or the location of an
+    output qualifies. This checks that a receipt is named, not that it is true.
+    """
+    for clause in _completion_clauses(text):
+        if not clause or _RISK_LABEL.match(clause) or _ACCEPTANCE_CRITERION_LABEL.match(clause):
+            continue
+        if _NOT_RUN_REASON.search(clause) or not _VERIFICATION_RECEIPT.search(clause):
+            continue
+        if _present_completion_assertion(clause, _VERIFICATION_TERMS) or _has_behavior_evidence(clause):
+            return True
+    return False
 
 
 # Names of a security check, and the surfaces such a check is about. A surface word
@@ -211,7 +444,7 @@ _SECURITY_CLAUSE_BOUNDARY = re.compile(r"[。\n；;]|(?<=[.!?])\s")
 
 
 _RESIDUAL_RISK_TERMS = [
-    "残リスク", "残存リスク", "残る危険", "残る懸念", "残る問題", "リスクなし", "懸念なし", "未解決", "未実行", "未確認",
+    "残リスク", "残余リスク", "残存リスク", "残る危険", "残る懸念", "残る問題", "リスクなし", "懸念なし", "未解決", "未実行", "未確認",
     "できなかった", "not run", "residual", "risk", "none",
 ]
 
@@ -254,6 +487,35 @@ def finish_check(summary: str, evidence: str = "", context: str = "", strict: bo
             )
         )
         missing.append("tests_ran_or_reason")
+
+    # The request context may itself describe failing tests; only what the
+    # completion report and its evidence state as a result is read here.
+    reported_failure = _reported_failure(_combine(summary, evidence))
+    if reported_failure:
+        findings.append(
+            Finding(
+                severity="blocker" if strict else "major",
+                category="evidence",
+                basis=BASIS["implementation"],
+                finding="検証の失敗または受入基準の未達が報告されている。",
+                evidence=_compact_snippet(reported_failure),
+                suggested_fix="失敗を解消して再実行した結果を記録するか、完了主張を取り下げ、未解消の失敗を人間判断へ渡す。",
+                rule_id="finish.evidence.failure_reported",
+            )
+        )
+        missing.append("failure_resolution")
+    elif verification_present and not not_run_reason and not _has_verification_receipt(combined):
+        findings.append(
+            Finding(
+                severity="major" if strict else "minor",
+                category="evidence",
+                basis=BASIS["implementation"],
+                finding="検証の宣言はあるが、確かめられる実行記録が見えない。",
+                suggested_fix="実行したコマンド、件数、出力、保存先など、後から確かめられる記録を足す。",
+                rule_id="finish.evidence.receipt_missing",
+            )
+        )
+        missing.append("verification_receipt")
 
     if not acceptance_present:
         findings.append(

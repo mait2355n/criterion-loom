@@ -1186,6 +1186,38 @@ RULES: tuple[Rule, ...] = (
         remediation="試験を追加・更新するか、不要な理由と実行した確認を finish_check に残す。",
     ),
     Rule(
+        id="diff.test_obligation.tests_removed_or_disabled",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: software verification and regression control",
+            "SWEBOK: software testing and maintenance",
+            "ISO/IEC 25010: reliability and maintainability",
+        ),
+        concern="試験を削除または無効化して通過させた変更が、回帰確認を保ったものとして扱われること。",
+        applies_when=(
+            "差分が試験ファイルを削除している、試験定義を純減させている、または無条件の skip・xfail 標識を追加している。",
+            "意図または文脈が、その削除や無効化を述べていない。",
+        ),
+        does_not_apply_when=(
+            "意図または文脈が、試験の削除・無効化・置換・統合・移動を明示している。",
+            "意図が機能の削除を求めており、差分が対応する非試験ソースファイルの削除を含む。",
+            "削除された試験定義と同数以上の試験定義が同じ差分で追加されている（移動、改名、分割）。",
+            "skipIf などの条件付き実行制限、または skip 標識の削除である。",
+        ),
+        evidence_required=(
+            "削除・無効化の対象と理由",
+            "置き換える試験",
+            "削除を求めた要求または計画",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="試験の削除または無効化が、意図に示されないまま差分に含まれている。",
+        remediation="削除・無効化した試験を戻すか、置き換える試験を同じ差分に含める。意図した削除なら、対象と理由を intent に明記する。",
+    ),
+    Rule(
         id="diff.security.sensitive_surface_change",
         discipline="secure_development",
         phase="audit_diff",
@@ -1499,6 +1531,68 @@ RULES: tuple[Rule, ...] = (
         ),
         finding="検証証拠が見えない。",
         remediation="実行したコマンド、結果、または未実行理由を記録する。",
+    ),
+    Rule(
+        id="finish.evidence.failure_reported",
+        discipline="software_engineering",
+        phase="finish_check",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: verification and validation results",
+            "SWEBOK: software testing and quality assurance",
+            "ISO/IEC 25010: functional correctness evidence",
+        ),
+        concern="検証の失敗や受入基準の未達が報告されているのに、完了主張が受理されること。",
+        applies_when=(
+            "入力が完了報告である。",
+            "完了要約または証拠欄に、試験・検証・代表実行の失敗、0 を超える失敗件数、または受入基準の未達が結果として記録されている。",
+        ),
+        does_not_apply_when=(
+            "失敗件数が 0、または失敗が無いことの記録である。",
+            "失敗時の挙動や失敗処理の実装を説明しているだけで、検証結果の報告ではない。",
+            "失敗の記述より後に、再実行して成功した結果が記録されている。",
+            "失敗の記述が依頼文脈欄だけにあり、完了要約と証拠欄には無い。",
+        ),
+        evidence_required=(
+            "失敗の解消後に再実行した結果",
+            "未解消の失敗を既知事項として扱う判断主体と理由",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="検証の失敗または受入基準の未達が報告されている。",
+        remediation="失敗を解消して再実行した結果を記録するか、完了主張を取り下げ、未解消の失敗を人間判断へ渡す。",
+    ),
+    Rule(
+        id="finish.evidence.receipt_missing",
+        discipline="software_engineering",
+        phase="finish_check",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: verification evidence",
+            "SWEBOK: testing and quality assurance",
+            "ISO/IEC/IEEE 29148: verifiability of stated results",
+        ),
+        concern="検証したという宣言だけで、後から確かめられる記録なしに完了主張が受理されること。",
+        applies_when=(
+            "入力が完了報告である。",
+            "検証や試験を行った旨の記述はあるが、実行したコマンドや道具、件数、終了状態、出力や成果物の所在のいずれも見えない。",
+        ),
+        does_not_apply_when=(
+            "実行したコマンドや道具の名前、件数、終了状態、ログや成果物の所在のいずれかが記録されている。",
+            "検証を実行しなかった理由が記録されている。",
+            "検証の失敗が報告されており、失敗報告の規則が適用される。",
+        ),
+        evidence_required=(
+            "実行コマンド",
+            "件数や終了状態などの結果",
+            "ログまたは成果物の所在",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="major"),
+            SeverityPolicy(mode="relaxed", severity="minor"),
+        ),
+        finding="検証の宣言はあるが、確かめられる実行記録が見えない。",
+        remediation="実行したコマンド、件数、出力、保存先など、後から確かめられる記録を足す。",
     ),
     Rule(
         id="finish.implementation.behavior_evidence_missing",
@@ -2163,6 +2257,38 @@ RULES: tuple[Rule, ...] = (
         ),
         finding="変更意図が渡されていない。",
         remediation="要求または計画を `intent` として渡し、差分との対応を見る。",
+    ),
+    Rule(
+        id="diff.traceability.intent_scope_conflict",
+        discipline="software_engineering",
+        phase="audit_diff",
+        engineering_basis=(
+            "ISO/IEC/IEEE 12207: change traceability to requirements",
+            "SWEBOK: software configuration management, change control",
+            "ISO/IEC/IEEE 29148: requirement scope and constraints",
+        ),
+        concern="要求が明示的に除外した範囲まで変更した差分が、要求どおりの変更として扱われること。",
+        applies_when=(
+            "意図または文脈が、文書のみ、試験のみ、コードは変更しない、特定ファイルは変更しない、のいずれかの範囲制限を明示している。",
+            "差分が、その制限で除外されたファイルを変更している。",
+        ),
+        does_not_apply_when=(
+            "意図に範囲制限が無い。",
+            "制限の対象ファイルが差分に含まれない。",
+            "「〜以外は変更しない」のように例外を述べる節である。",
+            "「変更しないと動かない」のように条件を述べる節である。",
+        ),
+        evidence_required=(
+            "範囲制限の原文",
+            "制限に反する変更ファイル",
+            "範囲変更を認めた要求側の判断",
+        ),
+        severity_policy=(
+            SeverityPolicy(mode="strict", severity="blocker"),
+            SeverityPolicy(mode="relaxed", severity="major"),
+        ),
+        finding="意図が明示した変更範囲の制限に、差分が反している。",
+        remediation="制限に反する変更を差分から外すか、範囲の変更を要求側の判断として intent に反映する。",
     ),
     Rule(
         id="diff.documentation.update_missing",

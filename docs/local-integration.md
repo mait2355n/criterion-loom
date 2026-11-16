@@ -39,6 +39,16 @@ Verification method、Evidence）の要求本文を受け取るが、結果の�
 引数不正の終了値は `2`。workflowの監査結果は `phase / status / findings` などの
 旧系項目を持ち、基幹と候補の `schema_version` 付き結果へ自動変換しない。
 
+workflow の監査コマンドは、`status` が `warn` や `block` でも、結果の JSON を出力できれば
+既定で終了値 `0` を返す。スクリプトや CI で監査状態を終了値へ対応付ける場合は、
+`--fail-on warn` 又は `--fail-on block` を明示する。閾値に達すると、JSON を完全な形で
+標準出力へ出した後に、基幹と同じ終了値 `3` を返す。
+
+```sh
+uv run --locked semantic-guard workflow finish-check \
+  --file completion-evidence.txt --fail-on block
+```
+
 ## 資源と出所
 
 基幹は `semantic_guard`、workflowは `semantic_guard_workflow`、候補は

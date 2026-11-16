@@ -62,7 +62,11 @@ from semantic_guard_workflow.severity_profiles import PROFILE_NAMES, apply_sever
 from semantic_guard_workflow.traceability import build_trace_report
 
 
-def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workflow") -> None:
+# Same value as the canonical CLI: the audit ran and its status met --fail-on.
+EXIT_AUDIT_DISPOSITION = 3
+
+
+def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workflow") -> int | None:
     parser = argparse.ArgumentParser(prog=prog)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -268,8 +272,9 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
             non_exportable_context=args.non_exportable_context,
             strict=not args.no_strict,
         )
-        print(json.dumps(apply_severity_profile(result, args.profile), ensure_ascii=False, indent=2))
-        return
+        result = apply_severity_profile(result, args.profile)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return _disposition_exit(result, args.fail_on)
 
     text = _read_input(args)
     strict = not args.no_strict
@@ -318,6 +323,33 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     if args.command == "audit-request":
         result = apply_logical_trace_mode(result, args.logical_trace)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    return _disposition_exit(result, args.fail_on)
+
+
+def _disposition_exit(result: object, fail_on: str) -> int:
+    """Map the audit status to an exit code only when the caller asked for it.
+
+    The JSON has already been written. Without ``--fail-on`` a completed audit
+    exits 0 whatever its status, as before.
+    """
+    status = result.get("status") if isinstance(result, dict) else None
+    if fail_on == "warn" and status in {"warn", "block"}:
+        return EXIT_AUDIT_DISPOSITION
+    if fail_on == "block" and status == "block":
+        return EXIT_AUDIT_DISPOSITION
+    return 0
+
+
+def _add_fail_on(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--fail-on",
+        choices=("never", "warn", "block"),
+        default="never",
+        help=(
+            "Exit with code 3 after writing the JSON when the audit status meets this threshold. "
+            "Default: never (a completed audit exits 0 whatever its status)."
+        ),
+    )
 
 
 def _add_text_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -336,6 +368,7 @@ def _add_text_command(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     )
     parser.add_argument("--no-strict", action="store_true", help="Downgrade strict blockers where possible.")
     parser.add_argument("--profile", choices=PROFILE_NAMES, default="default", help="Severity profile to apply to findings.")
+    _add_fail_on(parser)
     if name == "audit-request":
         parser.add_argument(
             "--morphology",
@@ -395,6 +428,7 @@ def _add_artifact_membership_command(
         help="Downgrade missing or conflicted artifact-contract blockers where possible.",
     )
     parser.add_argument("--profile", choices=PROFILE_NAMES, default="default", help="Severity profile to apply to findings.")
+    _add_fail_on(parser)
 
 
 def _add_json_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -620,4 +654,4 @@ def _default_kind(command: str) -> str:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

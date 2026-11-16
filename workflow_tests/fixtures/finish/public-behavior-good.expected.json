@@ -12,7 +12,9 @@
       "finish.implementation.behavior_evidence_missing",
       "finish.validation.acceptance_evidence_missing",
       "finish.security.evidence_missing",
-      "finish.risk.residual_risk_missing"
+      "finish.risk.residual_risk_missing",
+      "finish.evidence.failure_reported",
+      "finish.evidence.receipt_missing"
     ]
   },
   "expect": {

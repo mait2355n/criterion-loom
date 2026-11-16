@@ -1,0 +1,30 @@
+{
+  "id": "DIFF-INTENT-SCOPE-001",
+  "title": "A code change under an intent that says code is not changed is flagged",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/app/core.py b/app/core.py\n--- a/app/core.py\n+++ b/app/core.py\n@@ -1,4 +1,4 @@\n def total(items):\n-    return sum(item.price for item in items)\n+    return sum(item.price * item.qty for item in items)\ndiff --git a/tests/test_core.py b/tests/test_core.py\n--- a/tests/test_core.py\n+++ b/tests/test_core.py\n@@ -4,3 +4,6 @@\n         self.assertEqual(total([Item(2, 1)]), 2)\n+\n+    def test_total_uses_quantity(self):\n+        self.assertEqual(total([Item(2, 3)]), 6)\n",
+  "intent": "READMEの誤字を修正する。コードは変更しない。",
+  "strict": true,
+  "rationale": "The intent states an explicit scope limit and the diff changes source files outside it. The same diff under an intent without the limit is not flagged.",
+  "labels": {
+    "expected_rules": [
+      "diff.traceability.intent_scope_conflict"
+    ],
+    "expected_findings": [
+      {
+        "category": "traceability",
+        "rule_id": "diff.traceability.intent_scope_conflict"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "intent_scope_alignment"
+      ]
+    }
+  }
+}
