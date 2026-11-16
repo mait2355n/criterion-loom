@@ -26,6 +26,13 @@ All notable repository and public-contract changes are recorded here. Package ve
 - Restricted line rotation and sentence splitting to structurally safe inputs, recording skipped transformations. Known drift must match the exact status and rule-set delta, so unrelated regressions cannot inherit an exception. These checks measure fixture stability and sensitivity, not accuracy on real documents.
 - Documented POSIX argument quoting for command templates on every OS, and the inherited limitation that timeout supervision does not stop a wrapper's entire descendant process tree.
 
+### Direction-binding audit: outside the registries is not a pass
+
+- A live successor selection that neither the direction-space registry nor the scalar-axis registry covers now returns `primary_rule_evaluation.state=indeterminate` and `workflow_disposition.status=warn` with reason code `successor_selection_outside_registry`. Before, `円卓で、Aの次の席は誰ですか？` or `Cの次に背が高い人は誰ですか？` produced no frame and returned `not_applicable` with `pass`, and `--fail-on warn` exited 0, which reads as "checked and fine".
+- The boundary uses the detectors' own source grammar (reference, `の`, `次`, a registered selection ending) and their exclusions (fenced code, quotation, examples, retired wording). Text without such a selection stays `not_applicable`. Context cannot supply the primary operation. No frame is invented and both summaries are unchanged.
+- The schema `semantic-guard-direction-binding-audit/v1` is unchanged: the shape (emitter `none`, state `indeterminate`, both summaries `not_applicable`) was already valid. Validation replays the boundary from the source text and rejects a relabelling in either direction. Payloads recorded by earlier `1.2.0.dev0` builds for such inputs no longer replay.
+- This states that the registries cannot evaluate the expression. It is not a gap finding and adds no language coverage: a selection whose order is evident from context is also `indeterminate`.
+
 ### Workflow audits no longer pass on wording alone
 
 These change workflow results for inputs that previously passed. Canonical v1 and candidate contracts are unchanged.

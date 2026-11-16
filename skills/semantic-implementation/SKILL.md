@@ -82,6 +82,7 @@ Use `audit-direction-binding` or `audit_direction_binding_tool` only for the clo
 - Keep morphology at `signal_only`; a token, lemma, or part of speech never asserts the direction.
 - Treat numeric projections as auxiliary `impact_evidence` only. They cannot change the primary rule, emitter, state, confidence, or workflow disposition.
 - Read `primary_rule_evaluation.state` as `satisfied`, `gap`, `conflict`, `indeterminate`, `not_applicable`, or `invalid`.
+- Read `indeterminate` with reason `successor_selection_outside_registry` as "a successor selection is present, but neither registry covers it". It is not a gap finding and not a pass; whether a direction is needed is for the requirement owner.
 - Read `workflow_disposition.status` separately as `pass`, `warn`, or `block`.
 - Treat an unconfigured, partial, failed, or invalid morphology execution as visible uncertainty, never as a direction finding or unconditional pass.
 - Never choose the direction for the caller and never treat workflow pass as human acceptance.
