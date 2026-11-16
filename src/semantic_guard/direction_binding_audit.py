@@ -33,6 +33,15 @@ from .public_contract import load_public_schema
 from .decision_frame_scales import all_comparison_terms
 from .request_decision_frame import (
     PRECONDITION_ORDER_DIRECTION_RULE_ID,
+    _candidate_is_nonbinding,
+    _clause_span,
+    _fenced_code_ranges,
+    _position_in_ranges,
+    _previous_non_ignorable,
+    _reference_before,
+    _selection_tail,
+    _space_token,
+    _token_surface,
     audit_precondition_sufficiency,
 )
 from .request_direction_binding import audit_direction_binding_sufficiency
@@ -314,6 +323,82 @@ def _surface_probe_summaries(
     return scalar, non_scalar
 
 
+OUTSIDE_REGISTRY_REASON = "successor_selection_outside_registry"
+_SUCCESSOR_TAIL_HEAD_RE = re.compile(r"^\s*(?:の|に)\s*")
+_SUCCESSOR_TAIL_PARTICLE_RE = re.compile(r"\s*(?:は|を)")
+_SUCCESSOR_TARGET_CHARACTERS = re.compile(r"[A-Za-z0-9_\-一-龥々〆ヵヶぁ-んァ-ヴー]{1,16}$")
+_MAX_SUCCESSOR_TAIL_BODY = 48
+
+
+def _tail_selects_a_successor(tail: str) -> bool:
+    """Does the text after ``次`` ask for, or tell to pick, the following item?
+
+    ``の席は誰ですか`` and ``に背が高い人は誰ですか`` do; ``の手順へ進む`` does
+    not. The registered selection endings decide, so this is the detectors'
+    own notion of a selection without their registry lookup.
+    """
+
+    head = _SUCCESSOR_TAIL_HEAD_RE.match(tail)
+    if head is None:
+        return False
+    rest = tail[head.end() :]
+    for particle in _SUCCESSOR_TAIL_PARTICLE_RE.finditer(rest):
+        before = rest[: particle.start()]
+        if not before or len(before) > _MAX_SUCCESSOR_TAIL_BODY:
+            continue
+        target_run = _SUCCESSOR_TARGET_CHARACTERS.search(before)
+        if target_run is None:
+            continue
+        run = target_run.group(0)
+        selection = rest[particle.start() :]
+        if any(_selection_tail(selection, run[-length:]) for length in range(1, len(run) + 1)):
+            return True
+    return False
+
+
+def _unregistered_successor_selection(source_text: str, source_region_end: int) -> bool:
+    """Is a live successor selection present that neither registry evaluates?
+
+    Both detectors start from the same source grammar: a reference, ``の``,
+    ``次`` and a selection ending, outside fenced code, quotation, examples and
+    retired wording. They then need a registered direction space or scalar
+    axis. When that lookup finds nothing they emit no frame, which used to read
+    as "not applicable". The expression still asks for "the next" of something
+    in an order this audit cannot name, so the honest state is indeterminate.
+
+    Only surface tokens are used, so validation can replay the answer from the
+    source text alone. Context cannot supply the primary operation.
+    """
+
+    tokens = _surface_probe_tokens(source_text)
+    significant = [token for token in tokens if not _space_token(token)]
+    fenced_ranges = _fenced_code_ranges(source_text)
+    for index, token in enumerate(significant):
+        if _token_surface(token) != "次" or int(token["end"]) > source_region_end:
+            continue
+        previous = _previous_non_ignorable(significant, index)
+        if previous is None or _token_surface(previous) != "の":
+            continue
+        if _position_in_ranges(int(token["start"]), fenced_ranges):
+            continue
+        start, end = _clause_span(source_text, int(previous["start"]), int(token["end"]))
+        clause = source_text[start:end]
+        reference = _reference_before(source_text, tokens, start, int(previous["start"]))
+        if reference is None:
+            continue
+        if _candidate_is_nonbinding(
+            source_text,
+            start,
+            end,
+            clause,
+            reference_start=int(reference["start"]),
+        ):
+            continue
+        if _tail_selects_a_successor(source_text[int(token["end"]) : end]):
+            return True
+    return False
+
+
 def _frames(summary: Mapping[str, Any]) -> list[Mapping[str, Any]]:
     value = summary.get("frames", [])
     if not isinstance(value, list):
@@ -560,6 +645,7 @@ def _primary_evaluation(
     execution_status: str,
     source_region_end: int | None = None,
     surface_probe: tuple[Mapping[str, Any], Mapping[str, Any]] | None = None,
+    unregistered_successor: bool = False,
 ) -> tuple[dict[str, Any], str]:
     scalar_frames = _frames(scalar)
     non_scalar_frames = _frames(non_scalar)
@@ -650,6 +736,10 @@ def _primary_evaluation(
         state, emitter, workflow = "indeterminate", "none", "warn"
         if not reasons:
             reasons.append("detector_summary_indeterminate")
+    elif unregistered_successor:
+        # Not covered is not the same as nothing to report.
+        state, emitter, workflow = "indeterminate", "none", "warn"
+        reasons = [*reasons, OUTSIDE_REGISTRY_REASON]
     else:
         state, emitter, workflow = "not_applicable", "none", "pass"
 
@@ -810,6 +900,7 @@ def audit_direction_binding(
         execution_status=execution_status,
         source_region_end=len(text),
         surface_probe=surface_probe,
+        unregistered_successor=_unregistered_successor_selection(source_text, len(text)),
     )
     public_execution_status = execution_status
     execution_diagnostics: list[str] = []
@@ -1143,12 +1234,14 @@ def validate_direction_binding_audit(
 
     shape_probe = _probe_for_validation(text, context, source_text, execution)
     surface_probe = shape_probe if raw_execution_status == "executed" else None
+    unregistered_successor = _unregistered_successor_selection(source_text, source_region_end)
     preliminary_evaluation, _ = _primary_evaluation(
         scalar,
         non_scalar,
         execution_status=raw_execution_status,
         source_region_end=source_region_end,
         surface_probe=surface_probe,
+        unregistered_successor=unregistered_successor,
     )
     projected_execution_diagnostics = (
         set(preliminary_evaluation["reason_codes"])
@@ -1213,6 +1306,7 @@ def validate_direction_binding_audit(
         execution_status=raw_execution_status,
         source_region_end=source_region_end,
         surface_probe=surface_probe,
+        unregistered_successor=unregistered_successor,
     )
     if evaluation != expected_evaluation:
         raise ValidationError("primary evaluation is not reproducible from summaries")

@@ -712,5 +712,161 @@ class DirectionBindingAuditTests(unittest.TestCase):
             Draft202012Validator(schema).validate(satisfied_warn)
 
 
+class OutsideRegistryTests(unittest.TestCase):
+    """A successor selection the registries cannot name is not "nothing to report".
+
+    The detectors emit a frame only for a registered direction space or scalar
+    axis. Before this boundary, any other "the next of X" question fell through
+    to ``not_applicable`` with workflow ``pass``, which a caller reads as
+    "checked and fine".
+    """
+
+    REASON = "successor_selection_outside_registry"
+
+    def audit(self, text: str, *, context: str = "") -> dict[str, object]:
+        return audit_direction_binding(
+            text,
+            context=context,
+            morphology_provider=CharacterMorphologyProvider(),
+            recorded_at=RECORDED_AT,
+        )
+
+    def assert_outside_registry(self, payload: dict[str, object]) -> None:
+        evaluation = payload["primary_rule_evaluation"]
+        self.assertEqual(evaluation["state"], "indeterminate")
+        self.assertEqual(evaluation["emitter"], "none")
+        self.assertEqual(evaluation["reason_codes"], [self.REASON])
+        self.assertTrue(evaluation["needs_human_decision"])
+        self.assertEqual(evaluation["basis_frame_ids"], [])
+        self.assertEqual(payload["workflow_disposition"]["status"], "warn")
+        self.assertEqual(payload["workflow_disposition"]["reason_codes"], [self.REASON])
+        # No frame is invented: both detector summaries stay as they were.
+        self.assertEqual(payload["decision_frame_summary"]["status"], "not_applicable")
+        self.assertEqual(payload["direction_binding_summary"]["status"], "not_applicable")
+        self.assertEqual(payload["decision_frame_summary"]["frames"], [])
+        self.assertEqual(payload["direction_binding_summary"]["frames"], [])
+
+    def test_unregistered_successor_selections_are_indeterminate_not_pass(self) -> None:
+        for text in (
+            "円卓で、Aの次の席は誰ですか？",
+            "Aの次の項目はどれですか？",
+            "左から右に並んだ一覧で、Aの次の項目はどれですか？",
+            "この5人の中で、Cの次に背が高い人は誰ですか？",
+            "Cの次に速いランナーは誰ですか？",
+            "Cの次に重要なタスクはどれですか？",
+            "この5社の中で、C社の次に売上が大きい会社はどこですか？",
+            "円卓で、Aの次の席を選んでください。",
+        ):
+            with self.subTest(text=text):
+                payload = self.audit(text)
+                self.assert_outside_registry(payload)
+                validate_direction_binding_audit(payload, text=text, context="")
+
+    def test_registered_expressions_keep_their_own_result(self) -> None:
+        for text, state, emitter in (
+            (NON_SCALAR_BOUND, "satisfied", "non_scalar"),
+            (NON_SCALAR_MISSING, "gap", "non_scalar"),
+            (SCALAR_BOUND, "satisfied", "scalar"),
+            (SCALAR_MISSING, "gap", "scalar"),
+        ):
+            with self.subTest(text=text):
+                evaluation = self.audit(text)["primary_rule_evaluation"]
+                self.assertEqual((evaluation["state"], evaluation["emitter"]), (state, emitter))
+                self.assertNotIn(self.REASON, evaluation["reason_codes"])
+
+    def test_text_without_a_live_successor_selection_stays_not_applicable(self) -> None:
+        for text in (
+            "目的: 要求を明確にする。",
+            "次のバージョンでは何が変わりますか？",
+            "次に、設定ファイルを開きます。",
+            "手順3の次の手順へ進む。",
+            "Aの次の項目を確認した。",
+            "「円卓で、Aの次の席は誰ですか？」という問いは旧版です。",
+            "例: 円卓で、Aの次の席は誰ですか？",
+            "> 円卓で、Aの次の席は誰ですか？",
+            "```\n円卓で、Aの次の席は誰ですか？\n```",
+            "The next item after A in the row is which?",
+        ):
+            with self.subTest(text=text):
+                payload = self.audit(text)
+                self.assertEqual(payload["primary_rule_evaluation"]["state"], "not_applicable")
+                self.assertEqual(payload["primary_rule_evaluation"]["reason_codes"], [])
+                self.assertEqual(payload["workflow_disposition"]["status"], "pass")
+
+    def test_context_cannot_supply_the_primary_operation(self) -> None:
+        in_context = self.audit("目的: 別件", context="円卓で、Aの次の席は誰ですか？")
+        self.assertEqual(in_context["primary_rule_evaluation"]["state"], "not_applicable")
+
+        in_text = self.audit("円卓で、Aの次の席は誰ですか？", context="候補は現在の表だけを使う。")
+        self.assert_outside_registry(in_text)
+        validate_direction_binding_audit(
+            in_text,
+            text="円卓で、Aの次の席は誰ですか？",
+            context="候補は現在の表だけを使う。",
+        )
+
+    def test_missing_morphology_keeps_its_own_reason(self) -> None:
+        payload = audit_direction_binding("円卓で、Aの次の席は誰ですか？", recorded_at=RECORDED_AT)
+        evaluation = payload["primary_rule_evaluation"]
+        self.assertEqual(evaluation["state"], "indeterminate")
+        self.assertEqual(evaluation["reason_codes"], ["morphology_not_configured"])
+
+    def test_validation_replays_the_boundary_from_the_source_text(self) -> None:
+        text = "円卓で、Aの次の席は誰ですか？"
+        payload = self.audit(text)
+
+        relabelled = deepcopy(payload)
+        relabelled["primary_rule_evaluation"]["state"] = "not_applicable"
+        relabelled["primary_rule_evaluation"]["needs_human_decision"] = False
+        relabelled["primary_rule_evaluation"]["reason_codes"] = []
+        relabelled["workflow_disposition"]["status"] = "pass"
+        relabelled["workflow_disposition"]["reason_codes"] = []
+        relabelled["audit_id"] = _audit_id(relabelled)
+        with self.assertRaisesRegex(ValidationError, "not reproducible"):
+            validate_direction_binding_audit(relabelled, text=text, context="")
+
+        plain = self.audit("目的: 要求を明確にする。")
+        forged = deepcopy(plain)
+        forged["primary_rule_evaluation"]["state"] = "indeterminate"
+        forged["primary_rule_evaluation"]["needs_human_decision"] = True
+        forged["primary_rule_evaluation"]["reason_codes"] = [self.REASON]
+        forged["workflow_disposition"]["status"] = "warn"
+        forged["workflow_disposition"]["reason_codes"] = [self.REASON]
+        forged["audit_id"] = _audit_id(forged)
+        with self.assertRaisesRegex(ValidationError, "not reproducible"):
+            validate_direction_binding_audit(forged, text="目的: 要求を明確にする。", context="")
+
+    def test_cli_fail_on_warn_no_longer_exits_zero_for_uncovered_expressions(self) -> None:
+        output = StringIO()
+        with (
+            patch("semantic_guard.cli.SudachiMorphologyProvider", CharacterMorphologyProvider),
+            redirect_stdout(output),
+        ):
+            status = cli_main(
+                (
+                    "audit-direction-binding",
+                    "--text", "円卓で、Aの次の席は誰ですか？",
+                    "--morphology", "sudachi",
+                    "--recorded-at", RECORDED_AT,
+                    "--fail-on", "warn",
+                )
+            )
+        payload = json.loads(output.getvalue())
+        self.assertEqual(status, 3)
+        self.assert_outside_registry(payload)
+
+    def test_mcp_service_reports_the_same_boundary(self) -> None:
+        with patch(
+            "semantic_guard.mcp_server.SudachiMorphologyProvider",
+            CharacterMorphologyProvider,
+        ):
+            payload = audit_direction_binding_service(
+                "円卓で、Aの次の席は誰ですか？",
+                morphology="sudachi",
+                recorded_at=RECORDED_AT,
+            )
+        self.assert_outside_registry(payload)
+
+
 if __name__ == "__main__":
     unittest.main()

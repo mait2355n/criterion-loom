@@ -83,7 +83,9 @@ uv run --locked semantic-guard schema direction-binding-audit
 ```
 
 形態素解析は `signal_only` で、数値の対応付けは補助証拠に限る。`morphology=none`、
-部分被覆、失敗又は契約不整合を方向拘束の成立へ置き換えない。方向監査は
+部分被覆、失敗又は契約不整合を方向拘束の成立へ置き換えない。登録済みの方向領域にも尺度軸にも
+当たらない後続選択（`円卓で、Aの次の席は誰ですか？` など）は、`not_applicable` ではなく
+`indeterminate`、`warn`、理由コード `successor_selection_outside_registry` で返す。方向監査は
 `semantic-guard-direction-binding-audit/v1` を返し、既存 `audit-result/v0` へ項目を追加しない。
 
 ## 配布物（wheel）の隔離検証

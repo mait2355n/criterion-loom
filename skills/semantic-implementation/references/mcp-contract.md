@@ -69,7 +69,7 @@ The primary operation frame must be wholly inside the `text` input region. `cont
 
 For strict replay in Python, pass the known `text` and `context` separately to `validate_direction_binding_audit`. Passing only their combined `source_text` checks source and self-declared region consistency, but cannot prove the original role boundary against relabeling.
 
-`morphology=none`, partial coverage, provider failure, or an invalid provider contract remains visible in `execution` and cannot be converted into a direction finding. The machine result never chooses a direction and keeps `acceptance_owner.acceptance_status=pending`.
+`morphology=none`, partial coverage, provider failure, or an invalid provider contract remains visible in `execution` and cannot be converted into a direction finding. A live successor selection that neither registry covers returns `indeterminate` and `warn` with reason code `successor_selection_outside_registry`; `not_applicable` is reserved for text without such a selection. The machine result never chooses a direction and keeps `acceptance_owner.acceptance_status=pending`.
 
 This is an independent additive contract. It does not add fields to `audit-result/v0`, change requirement-relation obligations, or make the direction result part of requirement assurance.
 
