@@ -18,6 +18,7 @@ import subprocess
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 
 PROFILE_VERSION = "semantic-guard-local-verification-profile/v3"
@@ -99,7 +100,7 @@ def _validate_schema(value: Mapping[str, Any], path: Path, contract: str) -> Non
             "schema_unavailable", f"{path}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),
     )
     if issues:
@@ -132,7 +133,7 @@ def _validate_schema_definition(
             "schema_unavailable", f"{path}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),
     )
     if issues:

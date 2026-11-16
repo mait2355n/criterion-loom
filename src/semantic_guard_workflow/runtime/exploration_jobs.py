@@ -10,7 +10,7 @@ from .exploration import (
     build_codex_exec_exploration_command,
     run_codex_exec_exploration,
 )
-from .jobs import BackgroundJobStore, JobRuntimeConfig, utc_now
+from .jobs import DEFAULT_MAX_JOBS, DEFAULT_MAX_RUNNING_JOBS, BackgroundJobStore, JobRuntimeConfig, utc_now
 
 _DONE_STATES = {"completed", "failed", "timed_out", "input_error", "not_found"}
 
@@ -31,7 +31,7 @@ class ExplorationJob:
 class ExplorationJobStore(BackgroundJobStore):
     """In-process background jobs for LLM exploration calls."""
 
-    def __init__(self, max_jobs: int = 64) -> None:
+    def __init__(self, max_jobs: int = DEFAULT_MAX_JOBS, max_running: int = DEFAULT_MAX_RUNNING_JOBS) -> None:
         super().__init__(
             JobRuntimeConfig(
                 job_factory=ExplorationJob,
@@ -45,6 +45,7 @@ class ExplorationJobStore(BackgroundJobStore):
                 not_found_error="exploration job not found",
             ),
             max_jobs=max_jobs,
+            max_running=max_running,
         )
 
 

@@ -1,11 +1,22 @@
 from __future__ import annotations
 
+import ast
 import re
 
-from semantic_guard_workflow.audit_common import BASIS, _blocker, _has_implementation_evidence, _normalize_input_kind, _result, _security_signal
+from semantic_guard_workflow.assertion_context import value_state
+from semantic_guard_workflow.audit_common import (
+    BASIS,
+    _blocker,
+    _has_asserted_any,
+    _has_implementation_evidence,
+    _normalize_input_kind,
+    _result,
+    _security_signal,
+)
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import (
+    fold,
     combine as _combine,
     compact_snippet as _compact_snippet,
     excerpt_around as _excerpt_around,
@@ -16,11 +27,15 @@ from semantic_guard_workflow.text_utils import (
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = True, input_kind: str = "diff-summary") -> dict[str, object]:
-    # The diff body is code and file names; only the prose around it is normalized.
+    # File identity (header lines, paths) is read from the caller's own text so a
+    # composed and a decomposed file name stay different files. Every lexical
+    # signal reads the normalized view, so spelling never decides a verdict.
     intent = normalize_audit_text(intent)
     context = normalize_audit_text(context)
+    signal_diff = normalize_audit_text(diff)
     input_kind = _normalize_input_kind(input_kind)
-    combined = _combine(diff, intent, context)
+    if input_kind != "diff-summary":
+        raise ValueError(f"audit_diff audits a diff summary, but the input kind is {input_kind!r}; use audit_request for it")
     findings: list[Finding] = []
     missing: list[str] = []
     changed_files = _changed_files(diff)
@@ -29,7 +44,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         findings.append(_blocker("evidence", "差分が空。", "unified diff または変更要約を渡す。", BASIS["implementation"]))
         missing.append("diff")
 
-    if not intent.strip():
+    if value_state(intent) != "decided":
         findings.append(
             Finding(
                 severity="major",
@@ -41,7 +56,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("intent")
 
-    security_evidence = _security_signal(diff)
+    security_evidence = _security_signal(signal_diff)
     if security_evidence:
         findings.append(
             Finding(
@@ -54,11 +69,18 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    implementation_signals = _implementation_change_signals(diff, changed_files)
+    implementation_signals = _implementation_change_signals(signal_diff, changed_files)
     _add_implementation_findings(implementation_signals, findings, missing, strict)
 
-    source_changed = any(_is_source_file(path) for path in changed_files)
-    test_changed = any(_is_test_file(path) for path in changed_files)
+    deleted_files = _deleted_files(diff, changed_files)
+    feature_removed = _declared_feature_removal(intent, context, deleted_files)
+    source_changed = any(_is_source_file(path) and not _is_test_file(path) for path in changed_files)
+    # Deleting a test file touches a test path but adds no regression check, so
+    # it cannot discharge the obligation that a source change creates. The one
+    # exception is a requested removal that deletes a source file with its tests.
+    test_changed = any(_is_test_file(path) and path not in deleted_files for path in changed_files) or (
+        feature_removed and any(_is_test_file(path) for path in deleted_files)
+    )
     if source_changed and not test_changed:
         findings.append(
             Finding(
@@ -73,7 +95,40 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
         )
         missing.append("test_obligation")
 
-    semantic_boundaries = _semantic_boundaries(diff)
+    test_reduction = _test_reduction_evidence(
+        diff, changed_files, deleted_files, intent, context, feature_removed=feature_removed
+    )
+    if test_reduction:
+        findings.append(
+            Finding(
+                severity="blocker" if strict else "major",
+                category="quality",
+                basis=BASIS["implementation"],
+                finding="試験の削除または無効化が、意図に示されないまま差分に含まれている。",
+                evidence=test_reduction,
+                suggested_fix="削除・無効化した試験を戻すか、置き換える試験を同じ差分に含める。意図した削除なら、対象と理由を intent に明記する。",
+                rule_id="diff.test_obligation.tests_removed_or_disabled",
+            )
+        )
+        missing.append("test_preservation")
+
+    scope_conflict = _intent_scope_conflict(intent, context, changed_files)
+    if scope_conflict:
+        findings.append(
+            Finding(
+                severity="blocker" if strict else "major",
+                category="traceability",
+                basis=BASIS["implementation"] + BASIS["requirements"],
+                finding="意図が明示した変更範囲の制限に、差分が反している。",
+                evidence=scope_conflict,
+                suggested_fix="制限に反する変更を差分から外すか、範囲の変更を要求側の判断として intent に反映する。",
+                needs_human_decision=True,
+                rule_id="diff.traceability.intent_scope_conflict",
+            )
+        )
+        missing.append("intent_scope_alignment")
+
+    semantic_boundaries = _semantic_boundaries(signal_diff)
     document_only_boundaries: list[dict[str, object]] = []
     reportable_boundaries: list[dict[str, str]] = []
     if semantic_boundaries:
@@ -106,7 +161,7 @@ def audit_diff(diff: str, intent: str = "", context: str = "", strict: bool = Tr
             )
         )
 
-    complexity_growth = _complexity_growth_signal(diff)
+    complexity_growth = _complexity_growth_signal(signal_diff)
     if complexity_growth:
         finding = (
             Finding(
@@ -494,31 +549,22 @@ def _failure_prone_operation_signal(text: str) -> str:
     return _first_regex_match(text, patterns)
 
 
+# ``try`` is not in ``entry`` or ``retry``, and a comment that promises handling later
+# ("# TODO: 例外処理は後で追加する") is not handling.
+_FAILURE_WHOLE_WORDS = re.compile(r"(?<![A-Za-z0-9_])(?:try|except|catch|timeout|fallback|schema)(?![A-Za-z0-9_])", re.IGNORECASE)
+_FAILURE_PREFIXED_WORDS = re.compile(
+    r"(?<![A-Za-z0-9])(?:validat(?:e|ion|or)|returncode|check=True|raise_for_status|FileNotFoundError|JSONDecodeError)",
+    re.IGNORECASE,
+)
+_FAILURE_JAPANESE_TERMS = ["失敗", "例外", "タイムアウト", "検証", "戻り値", "異常"]
+_COMMENT_LINE = re.compile(r"^\s*(?:#|//|/\*|\*|--|<!--|;)")
+
+
 def _has_failure_handling_evidence(text: str) -> bool:
-    return _has_any(
-        text,
-        [
-            "timeout",
-            "try",
-            "except",
-            "catch",
-            "fallback",
-            "returncode",
-            "check=True",
-            "raise_for_status",
-            "validate",
-            "validation",
-            "schema",
-            "FileNotFoundError",
-            "JSONDecodeError",
-            "失敗",
-            "例外",
-            "タイムアウト",
-            "検証",
-            "戻り値",
-            "異常",
-        ],
-    )
+    code = "\n".join(line for line in text.splitlines() if not _COMMENT_LINE.match(line))
+    if _FAILURE_WHOLE_WORDS.search(code) or _FAILURE_PREFIXED_WORDS.search(code):
+        return True
+    return _has_asserted_any(code, _FAILURE_JAPANESE_TERMS)
 
 
 def _operational_change_signal(text: str) -> str:
@@ -595,7 +641,7 @@ def _filename_content_scope_signals(diff: str, changed_files: list[str]) -> list
         filename_domains = _responsibility_domain_hits(" ".join(filename_tokens))
         if not filename_domains:
             continue
-        added_text = added_text_by_file.get(path, "")
+        added_text = normalize_audit_text(added_text_by_file.get(path, ""))
         if not added_text.strip():
             continue
         content_domains = _responsibility_domain_hits(added_text)
@@ -630,7 +676,7 @@ def _filename_content_scope_evidence(signal: dict[str, object]) -> str:
 
 
 def _filename_naming_scope_signals(diff: str, changed_files: list[str], intent: str, context: str) -> list[dict[str, object]]:
-    scope_management_present = _filename_scope_management_present(_combine(diff, intent, context))
+    scope_management_present = _filename_scope_management_present(_combine(normalize_audit_text(diff), intent, context))
     actions = _changed_file_actions(diff, changed_files)
     signals: list[dict[str, object]] = []
     for path in changed_files:
@@ -708,6 +754,280 @@ def _filename_scope_management_present(text: str) -> bool:
     )
 
 
+# ASCII word edges: next to kana or kanji, ``\b`` sees no boundary.
+_W0 = r"(?<![A-Za-z0-9_])"
+_W1 = r"(?![A-Za-z0-9_])"
+
+_TEST_DEFINITION = re.compile(
+    r"^\s*(?:async\s+)?def\s+test\w*\s*\("
+    r"|^\s*(?:it|test|describe|context|specify)(?:\.each\([^)]*\))?\s*\(\s*['\"`]"
+    r"|^\s*func\s+[Tt]est\w*\s*\("
+    r"|^\s*@Test(?![A-Za-z0-9_])|^\s*#\[(?:\w+::)?test\]"
+    r"|^\s*TEST(?:_F|_P)?\s*\("
+)
+# Unconditional disabling only. A platform guard such as ``skipIf`` narrows
+# where a test runs; it does not remove the check from the suite.
+_TEST_DISABLE_MARKER = re.compile(
+    r"@(?:unittest\.)?skip\s*\(|@pytest\.mark\.skip(?![A-Za-z0-9_])|@pytest\.mark\.xfail(?![A-Za-z0-9_])"
+    r"|@(?:unittest\.)?expectedFailure(?![A-Za-z0-9_])"
+    rf"|{_W0}(?:it|test|describe|context)\.(?:skip|todo)\s*\(|{_W0}(?:xit|xtest|xdescribe)\s*\("
+    r"|@Disabled(?![A-Za-z0-9_])|@Ignore(?![A-Za-z0-9_])|#\[ignore\]"
+)
+
+
+def _unconditional_test_disable(line: str) -> bool:
+    for match in _TEST_DISABLE_MARKER.finditer(line):
+        if match.group() == "@pytest.mark.xfail":
+            try:
+                expression = ast.parse(line[match.start() + 1:].strip(), mode="eval").body
+            except (SyntaxError, ValueError, RecursionError):
+                # A partial decorator is not enough to establish a condition.
+                return True
+            if isinstance(expression, ast.Call):
+                condition = expression.args[0] if expression.args else next(
+                    (keyword.value for keyword in expression.keywords if keyword.arg == "condition"), None
+                )
+                if condition is not None and not (
+                    isinstance(condition, ast.Constant) and condition.value is True
+                ):
+                    continue
+        return True
+    return False
+
+
+_TEST_WORD = rf"(?:テスト|試験|{_W0}(?:tests?|testing|specs?){_W1})"
+_TEST_REDUCTION_ACTION = (
+    r"(?:削除|廃止|撤去|除去|無効化|スキップ|統合|集約|置き換え|置換|移動|分割|パラメータ化"
+    rf"|{_W0}(?:remov|delet|drop|disabl|skip|consolidat|merg|replac|mov|split|parametri[sz])\w*)"
+)
+# Within one sentence: a full stop inside a file name does not end it.
+_SAME_SENTENCE = r"(?:(?!。|\.\s|\n).){0,60}?"
+_TEST_REDUCTION_DECLARED = re.compile(
+    rf"{_TEST_WORD}{_SAME_SENTENCE}{_TEST_REDUCTION_ACTION}|{_TEST_REDUCTION_ACTION}{_SAME_SENTENCE}{_TEST_WORD}",
+    re.IGNORECASE,
+)
+_REMOVAL_INTENT = re.compile(
+    rf"削除|廃止|撤去|取り除|{_W0}(?:remov|delet|drop|deprecat|retir)\w*", re.IGNORECASE
+)
+_TEST_REDUCTION_ACTION_PATTERN = re.compile(_TEST_REDUCTION_ACTION, re.IGNORECASE)
+_REDUCTION_DENIED_PREFIX = re.compile(
+    rf"{_W0}(?:not|never|no|without|avoid|don't|doesn't|mustn't|shouldn't|won't)\s+"
+    r"(?:(?:to|be|being|any|the|tests?|test)\s+)*$",
+    re.IGNORECASE,
+)
+_REDUCTION_DENIED_SUFFIX = re.compile(
+    r"^\s*(?:は|を|も)?\s*(?:しない|しません|せず|されない|されません|行わない|行いません|禁止|不可|予定(?:は)?なし)"
+    rf"|^\s+(?:(?:is|are)\s+)?(?:not\s+(?:allowed|permitted)|prohibited|forbidden){_W1}",
+    re.IGNORECASE,
+)
+
+
+def _asserted_reduction_action(text: str, pattern: re.Pattern[str]) -> bool:
+    """A forbidden removal is not a declaration authorizing removal."""
+    return any(
+        not _REDUCTION_DENIED_PREFIX.search(text[:match.start()])
+        and not _REDUCTION_DENIED_SUFFIX.match(text[match.end():])
+        for match in pattern.finditer(text)
+    )
+
+
+def _declared_test_reduction(text: str) -> bool:
+    for clause in re.split(r"[。！？!?；;\n]+|(?<=[.])\s+", text):
+        if _TEST_REDUCTION_DECLARED.search(clause) and _asserted_reduction_action(clause, _TEST_REDUCTION_ACTION_PATTERN):
+            return True
+    return False
+
+
+_DELETION_SUMMARY_TERMS = ("delete", "deleted", "remove", "removed", "削除", "撤去")
+_ADDITION_SUMMARY_TERMS = ("add", "added", "create", "created", "new", "追加", "新規", "作成")
+
+_NOT_A_CONDITION = r"(?!と|限り|場合|なら)"
+_DOCS_ONLY_INTENT = re.compile(
+    r"(?:文書|ドキュメント|README|説明文|コメント)\s*(?:の(?:修正|更新|変更)?\s*)?(?:のみ|だけ)"
+    r"|(?:コード|実装|ソース)(?:は|を|に|には)?\s*(?:一切\s*)?(?:変更|修正|編集|更新)?(?:は|を)?\s*"
+    rf"(?:しない|せず|加えない|触らない|手を入れない|変えない){_NOT_A_CONDITION}"
+    rf"|{_W0}(?:docs?|documentation|readme)[- ]only{_W1}"
+    rf"|{_W0}only\s+(?:the\s+)?(?:docs?|documentation|readme|comments?){_W1}"
+    rf"|{_W0}no\s+(?:code|source|implementation)\s+changes?{_W1}"
+    rf"|{_W0}(?:do(?:es)?\s+not|don't|must\s+not|without)\s+(?:chang(?:e|ing)|modify(?:ing)?|touch(?:ing)?|edit(?:ing)?)"
+    rf"\s+(?:the\s+|any\s+)?(?:code|source|implementation){_W1}",
+    re.IGNORECASE,
+)
+_TESTS_ONLY_INTENT = re.compile(
+    r"(?:テスト|試験)\s*(?:の(?:追加|修正|更新|変更)?\s*)?(?:のみ|だけ)"
+    rf"|{_W0}tests?[- ]only{_W1}|{_W0}only\s+(?:add|change|update|modify)s?\s+(?:the\s+)?tests?{_W1}",
+    re.IGNORECASE,
+)
+_PATH_PROHIBITED_AFTER = (
+    r"\s*(?:は|を|には|も)?\s*(?:(?:変更|修正|編集|更新|削除)(?:は|を)?\s*)?"
+    rf"(?:しない|せず|加えない|触らない|手を入れない|変えない|対象外|非対象|据え置){_NOT_A_CONDITION}"
+)
+_PATH_PROHIBITED_BEFORE = (
+    rf"{_W0}(?:do(?:es)?\s+not|don't|must\s+not|should\s+not|never)\s+(?:change|modify|touch|edit|update|delete|remove)"
+    r"\s+(?:the\s+)?(?:file\s+)?"
+)
+_PATH_KEPT_AFTER = rf"\s+(?:unchanged|untouched|as\s+is|out\s+of\s+scope){_W1}"
+_SCOPE_EXCEPTION = re.compile(
+    rf"以外|を除[いき]|{_W0}(?:except|other\s+than|apart\s+from|besides){_W1}", re.IGNORECASE
+)
+_SCOPE_LIMIT_DENIED_AFTER = re.compile(
+    r"^\s*(?:の(?:変更|修正|更新))?(?:では(?:ない|なく)|じゃ(?:ない|なく))"
+)
+_SCOPE_LIMIT_DENIED_BEFORE = re.compile(rf"{_W0}not\s+(?:an?\s+)?$", re.IGNORECASE)
+
+
+def _asserted_scope_limit(pattern: re.Pattern[str], text: str) -> re.Match[str] | None:
+    return next(
+        (
+            match for match in pattern.finditer(text)
+            if not _SCOPE_LIMIT_DENIED_AFTER.match(text[match.end():])
+            and not _SCOPE_LIMIT_DENIED_BEFORE.search(text[:match.start()])
+        ),
+        None,
+    )
+
+
+def _deleted_files(diff: str, changed_files: list[str]) -> list[str]:
+    """Files the diff removes, from headers or from a prose change summary."""
+    lines = diff.splitlines()
+    deleted: list[str] = []
+    current_path = ""
+    previous_line = ""
+    has_headers = False
+    for line in lines:
+        if line.startswith("diff --git "):
+            has_headers = True
+            current_path = _changed_file_path_from_header(line)
+        elif line.startswith(("+++ ", "*** ")):
+            has_headers = True
+        if line.startswith("deleted file mode ") and current_path:
+            deleted.append(current_path)
+        elif line.startswith("+++ /dev/null") and previous_line.startswith("--- a/"):
+            deleted.append(_clean_changed_file_candidate(previous_line[4:]))
+        elif line.startswith("*** Delete File: "):
+            deleted.append(_clean_changed_file_candidate(line.removeprefix("*** Delete File: ").strip()))
+        previous_line = line
+
+    if not has_headers:
+        # A summary line that both adds and removes cannot be attributed per path.
+        for line in lines:
+            lowered = line.lower()
+            if not _line_can_list_changed_files(line) or not _has_any(lowered, _DELETION_SUMMARY_TERMS):
+                continue
+            if _has_any(lowered, _ADDITION_SUMMARY_TERMS):
+                continue
+            for match in SUMMARY_FILE_PATH_PATTERN.finditer(line):
+                path = _clean_changed_file_candidate(match.group(0))
+                if path in changed_files:
+                    deleted.append(path)
+    return _unique_nonempty(deleted)
+
+
+def _declared_feature_removal(intent: str, context: str, deleted_files: list[str]) -> bool:
+    """A requested removal that deletes a source file takes that file's tests with it."""
+    deleted_sources = [path for path in deleted_files if _is_source_file(path) and not _is_test_file(path)]
+    return bool(deleted_sources) and _asserted_reduction_action(_combine(intent, context), _REMOVAL_INTENT)
+
+
+def _test_reduction_evidence(
+    diff: str,
+    changed_files: list[str],
+    deleted_files: list[str],
+    intent: str,
+    context: str,
+    *,
+    feature_removed: bool,
+) -> str:
+    """Describe tests that the diff removes or switches off without saying so.
+
+    Moving, renaming or splitting tests keeps the number of definitions; only a
+    net loss counts. A declared test change in the intent, or the removal of a
+    feature together with its source file, accounts for the deletion.
+    """
+    removed = added = enabled = 0
+    disabled: list[str] = []
+    current_path = ""
+    for line in diff.splitlines():
+        path = _changed_file_path_from_header(line)
+        if path:
+            current_path = path
+            continue
+        if not current_path or not _is_test_file(current_path):
+            continue
+        if line.startswith("-") and not line.startswith("---"):
+            removed_body = normalize_audit_text(line[1:])
+            removed += bool(_TEST_DEFINITION.match(removed_body))
+            enabled += _unconditional_test_disable(removed_body)
+        elif line.startswith("+") and not line.startswith("+++"):
+            added_body = normalize_audit_text(line[1:])
+            added += bool(_TEST_DEFINITION.match(added_body))
+            if _unconditional_test_disable(added_body):
+                disabled.append(f"{current_path}: {line[1:].strip()}")
+
+    requested = _combine(intent, context)
+    if _declared_test_reduction(requested):
+        return ""
+
+    deleted_tests = [path for path in deleted_files if _is_test_file(path)]
+    actions = _changed_file_actions(diff, changed_files)
+    tests_added = added > 0 or any(
+        _is_test_file(path) and actions.get(path) in {"added", "renamed"} for path in changed_files
+    )
+
+    evidence: list[str] = []
+    if not feature_removed:
+        if deleted_tests and not tests_added:
+            evidence.append("試験ファイルの削除: " + ", ".join(deleted_tests[:5]))
+        if removed > added:
+            evidence.append(f"試験定義の純減: 削除 {removed} 件 / 追加 {added} 件")
+    if len(disabled) > enabled:
+        evidence.append("無効化標識の追加: " + "; ".join(disabled[:3]))
+    return _compact_snippet("; ".join(evidence)) if evidence else ""
+
+
+def _intent_scope_conflict(intent: str, context: str, changed_files: list[str]) -> str:
+    """Report changed files that an explicit scope limit in the intent excludes.
+
+    Only stated limits are read: documents only, tests only, no code change, or
+    a named file that must stay as it is. Whether the diff does what the intent
+    asks is not decided here.
+    """
+    requested = _combine(intent, context)
+    if not requested.strip() or not changed_files:
+        return ""
+    sources = [path for path in changed_files if _is_source_file(path)]
+    conflicts: list[str] = []
+
+    docs_only = _asserted_scope_limit(_DOCS_ONLY_INTENT, requested)
+    if docs_only and sources:
+        conflicts.append(f"「{docs_only.group(0).strip()}」に対しコードの変更: {', '.join(sources[:5])}")
+    tests_only = _asserted_scope_limit(_TESTS_ONLY_INTENT, requested)
+    non_test_sources = [path for path in sources if not _is_test_file(path)]
+    if tests_only and non_test_sources:
+        conflicts.append(f"「{tests_only.group(0).strip()}」に対し試験以外の変更: {', '.join(non_test_sources[:5])}")
+
+    kept: list[str] = []
+    for clause in re.split(r"[。！？!?；;\n]+|(?<=[.])\s+", requested):
+        if not clause.strip() or _SCOPE_EXCEPTION.search(clause):
+            continue
+        for path in changed_files:
+            names = {path, path.rsplit("/", 1)[-1]}
+            if any(_named_file_is_kept(clause, name) for name in names if len(name) >= 4):
+                kept.append(path)
+    if kept:
+        conflicts.append("変更しないと明示されたファイルの変更: " + ", ".join(_unique_nonempty(kept)[:5]))
+    return _compact_snippet("; ".join(conflicts)) if conflicts else ""
+
+
+def _named_file_is_kept(clause: str, name: str) -> bool:
+    escaped = rf"(?<![A-Za-z0-9_./-]){re.escape(name)}(?![A-Za-z0-9_/-])`?"
+    return bool(
+        re.search(escaped + _PATH_PROHIBITED_AFTER, clause, re.IGNORECASE)
+        or re.search(_PATH_PROHIBITED_BEFORE + "`?" + escaped, clause, re.IGNORECASE)
+        or re.search(escaped + _PATH_KEPT_AFTER, clause, re.IGNORECASE)
+    )
+
+
 def _changed_file_actions(diff: str, changed_files: list[str]) -> dict[str, str]:
     actions: dict[str, str] = {}
     current_path = ""
@@ -736,7 +1056,7 @@ def _changed_file_actions(diff: str, changed_files: list[str]) -> dict[str, str]
         previous_line = line
 
     for line in diff.splitlines():
-        lowered = line.lower()
+        lowered = normalize_audit_text(line).lower()
         if not _line_can_list_changed_files(line):
             continue
         action = ""
@@ -922,7 +1242,7 @@ def _semantic_boundaries(diff: str) -> list[dict[str, str]]:
 
 
 def _semantic_boundary_evidence(text: str, terms: list[str]) -> str:
-    lowered = text.lower()
+    lowered = fold(text)
     ignored_phrases = ["audit path", "document audit path", "code path", "path through"]
     for term in terms:
         term_lower = term.lower()
@@ -1040,7 +1360,7 @@ def _summary_changed_files(text: str) -> list[str]:
 
 
 def _line_can_list_changed_files(line: str) -> bool:
-    stripped = line.strip()
+    stripped = normalize_audit_text(line).strip()
     if not stripped:
         return False
     if re.match(r"^(?:uv|python|pytest|git|semantic-guard|codex)\b", stripped):
@@ -1059,9 +1379,25 @@ def _is_source_file(path: str) -> bool:
     return path.endswith((".py", ".js", ".ts", ".tsx", ".jsx", ".swift", ".go", ".rs", ".java", ".kt", ".c", ".cc", ".cpp", ".h"))
 
 
+_TEST_DIRECTORIES = frozenset({"test", "tests", "__tests__", "spec", "specs"})
+_TEST_DIRECTORY_SUFFIX = re.compile(r"[_-](?:tests?|specs?)$")
+_TEST_FILE_NAME = re.compile(
+    r"^(?:test_.+|.+_test\.[a-z0-9]+|(?:tests?|conftest)\.[a-z0-9]+|.+\.(?:test|spec)\.[a-z0-9]+|.+_spec\.[a-z0-9]+)$"
+)
+_TEST_CLASS_FILE_NAME = re.compile(r"^.*[a-z0-9](?:Test|Tests|Spec|IT)\.(?:java|kt|swift|cs|scala)$")
+
+
 def _is_test_file(path: str) -> bool:
-    lowered = path.lower()
-    return "/test" in lowered or "test_" in lowered or lowered.endswith((".spec.ts", ".test.ts", ".spec.js", ".test.js"))
+    """Whether ``path`` is a test file, judged by directory and file-name conventions.
+
+    A substring test would take ``latest_release.py`` and ``attest_signature.py``
+    for tests and let a source change pass without one.
+    """
+    segments = path.replace("\\", "/").split("/")
+    name = segments[-1]
+    if any(segment.lower() in _TEST_DIRECTORIES or _TEST_DIRECTORY_SUFFIX.search(segment.lower()) for segment in segments[:-1]):
+        return True
+    return bool(_TEST_FILE_NAME.match(name.lower()) or _TEST_CLASS_FILE_NAME.match(name))
 
 
 def _is_doc_file(path: str) -> bool:

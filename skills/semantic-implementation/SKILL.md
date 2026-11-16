@@ -20,7 +20,10 @@ are expected. Do not invoke external LLM jobs merely because a server is connect
 When an isolated reviewer is wanted, choose its agent per call: `--backend codex` (default)
 or `--backend claude`, also available as `backend` on the MCP tools. `--backend command` runs
 an operator-supplied template and is CLI-only. Every backend is validated against the same
-schema, nothing runs without `--execute`, and the result records which `backend` answered.
+schema, and the result records which `backend` answered. The CLI and the synchronous MCP
+tools run nothing without `--execute` / `execute=true`. The asynchronous `*_start_tool` MCP
+tools have no such switch and start the reviewer as soon as they are called, so calling one
+is consent to send the material to that agent.
 See [the integration guide](../../docs/local-integration.md). Existing deployed
 clients are not changed automatically.
 
@@ -82,6 +85,7 @@ Use `audit-direction-binding` or `audit_direction_binding_tool` only for the clo
 - Keep morphology at `signal_only`; a token, lemma, or part of speech never asserts the direction.
 - Treat numeric projections as auxiliary `impact_evidence` only. They cannot change the primary rule, emitter, state, confidence, or workflow disposition.
 - Read `primary_rule_evaluation.state` as `satisfied`, `gap`, `conflict`, `indeterminate`, `not_applicable`, or `invalid`.
+- Read `indeterminate` with reason `successor_selection_outside_registry` as "a successor selection is present, but neither registry covers it". It is not a gap finding and not a pass; whether a direction is needed is for the requirement owner.
 - Read `workflow_disposition.status` separately as `pass`, `warn`, or `block`.
 - Treat an unconfigured, partial, failed, or invalid morphology execution as visible uncertainty, never as a direction finding or unconditional pass.
 - Never choose the direction for the caller and never treat workflow pass as human acceptance.

@@ -20,7 +20,9 @@
       "diff.implementation.complexity_growth",
       "diff.implementation.filename_content_overbreadth",
       "diff.implementation.filename_scope_underspecified",
-      "diff.meaning.identity_boundary_change"
+      "diff.meaning.identity_boundary_change",
+      "diff.test_obligation.tests_removed_or_disabled",
+      "diff.traceability.intent_scope_conflict"
     ]
   },
   "expect": {

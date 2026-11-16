@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import bisect
 import re
 
-from semantic_guard_workflow.assertion_context import asserted_excerpt as _asserted_excerpt
+from semantic_guard_workflow.assertion_context import asserted_excerpt as _asserted_excerpt, find_field_assertion
 from semantic_guard_workflow.text_utils import first_match as _first_match, has_any as _has_any
 
 STAKEHOLDER_SOURCE_TERMS = [
@@ -62,48 +63,106 @@ def _quality_requirement_signal(text: str) -> str:
     return _first_match(text, terms)
 
 
-# A comparator counts only next to a number. A bare ``>`` or ``<`` is also a
-# quote marker, an arrow, an HTML tag, or a generic, and must not satisfy a
-# measurable-constraint obligation.
+# A quantity counts only as a number with a unit, a number bound by 以内/以上/以下/
+# 未満/超, or a rate. A bare 以内 ("それ以上の議論は不要"), 分/件/回 ("3分野",
+# "5件の画面", "1回押す"), and a ``>`` or ``<`` that is a quote marker, an arrow, an
+# HTML tag or a generic must not satisfy a measurable-constraint obligation: a
+# comparator counts only when no word, arrow or tag character precedes it and a
+# number follows. The number is anchored at its start so a long run of digits is
+# scanned once.
+_NUMBER = r"(?<![\d.,])\d+(?:[.,]\d+)*"
+_UNIT = (
+    r"(?:milliseconds?|millis|msec|ms|microseconds?|μs|ns|seconds?|secs?|sec|s|minutes?|mins?|min|hours?|hrs?|days?"
+    r"|kib|mib|gib|tib|kb|mb|gb|tb|pb|bytes?|kbps|mbps|gbps|ミリ秒|マイクロ秒|秒|分間|時間|日間|週間|[かカヶケ]月|バイト|%|％)"
+)
 _QUALITY_CONSTRAINT_RE = re.compile(
-    r"\d+(?:\.\d+)?\s*(?:milliseconds?|msec|ms|seconds?|secs?|sec|s|minutes?|min|kib|mib|gib|kb|mb|gb|秒|分|件|回|%)(?![a-z])"
-    r"|(?<![a-z0-9])p9[059](?![0-9])"
-    r"|[<>≤≥]=?\s*\d"
-    r"|\d\s*[<>≤≥]"
-    r"|以内|以上|以下|未満",
+    rf"{_NUMBER}\s*{_UNIT}(?![a-z])"
+    rf"|{_NUMBER}\s*[^\W\d_]{{0,8}}\s*(?:以内|以上|以下|未満|超)"
+    rf"|{_NUMBER}\s*(?:rps|qps|tps|req/s|requests?/s|件/(?:秒|分)|回/(?:秒|分)|/s|/sec|/min|per\s+(?:second|minute))(?![a-z])"
+    rf"|(?<![\w<>=\-/])[≤≥≦≧]\s*{_NUMBER}"
+    rf"|(?<![\w<>=\-/])[<>]=?\s*{_NUMBER}"
+    r"|(?<![a-z0-9])p9[059](?![0-9])",
     re.IGNORECASE,
 )
+_MAX_CONSTRAINT_SCAN = 200_000
+_QUALITY_CONSTRAINT_TERMS = [
+    "threshold",
+    "metric",
+    "measure",
+    "measurement",
+    "acceptance",
+    "criteria",
+    "benchmark",
+    "slo",
+    "sla",
+    "閾値",
+    "指標",
+    "測定",
+    "計測",
+    "受入",
+    "受入基準",
+    "完了条件",
+    "完了基準",
+    "completion criteria",
+    "definition of done",
+    "許容",
+    "基準",
+    "ベンチ",
+]
+
+
+# A sentence that rejects, withdraws or dates a figure does not state a constraint:
+# ``閾値: 300ms は却下された``, ``300ms 以内（旧案）``, ``It was 300ms previously``.
+_HISTORICAL_CLAUSE = re.compile(
+    r"却下|旧案|廃止|取り下げ|取下げ|不採用|撤回|取りやめ|取り止め|見送(?:り|る|った)|以前の|従来の|過去の|旧(?:版|仕様|基準|閾値|値)"
+    r"|\b(?:rejected|deprecated|obsolete|withdrawn|dropped|previously|formerly|no\s+longer|superseded)\b",
+    re.IGNORECASE,
+)
+# A comparison may state the replacement in the same sentence as the old value.
+# Only the part after an explicit transition can escape the historical marker;
+# the old figure in ``旧仕様の5秒から300ms以内へ短縮する`` stays historical.
+_CURRENT_CONSTRAINT_TRANSITION = re.compile(
+    r"から|新(?:しい|たな|規の|仕様|基準|閾値|上限|目標)|今回の"
+    r"|\b(?:but|instead|now|new)\b",
+    re.IGNORECASE,
+)
+# ``300ms 以内にはしない``: the figure is named only to say it is not a requirement.
+_NEGATED_FIGURE = re.compile(
+    r"[ \t]*(?:以内|以上|以下|未満|超)?[ \t]*(?:に|と|を)?(?:は)?[ \t]*(?:しない|しません|ならない|でない|ではない|設けない|定めない|求めない|不要)"
+)
+_SENTENCE_BREAK = re.compile(r"[。！？!?；;\n]|\.(?=\s|$)")
+# Containers that do not assert: a fenced code block, and Markdown quote markers (also
+# after a list marker, so ``- > 5つの画面`` is read like ``> 5つの画面``).
+_FENCED_CODE = re.compile(r"(?ms)^[ \t]*(`{3,}|~{3,})[^\n]*\n.*?(?:^[ \t]*\1[^\n]*$|\Z)")
+_QUOTE_PREFIX = re.compile(r"(?m)^[ \t]*(?:(?:[-*+]|\d+[.)])[ \t]+)*(?:>(?!=)[ \t]*)+")
 
 
 def _has_quality_constraint_evidence(text: str) -> bool:
-    # Leading Markdown quote markers are containers, including before a digit.
-    # Keep >= intact and retain comparisons and quantities inside the quote.
-    content = re.sub(r"(?m)^[ \t]*(?:>(?!=)[ \t]*)+", "", text)
-    if _QUALITY_CONSTRAINT_RE.search(content):
-        return True
-    return _has_any(
-        content,
-        [
-            "threshold",
-            "metric",
-            "measure",
-            "measurement",
-            "acceptance",
-            "criteria",
-            "benchmark",
-            "slo",
-            "sla",
-            "閾値",
-            "指標",
-            "測定",
-            "計測",
-            "受入",
-            "受入基準",
-            "許容",
-            "基準",
-            "ベンチ",
-        ],
-    )
+    content = _QUOTE_PREFIX.sub("", _FENCED_CODE.sub("", text[:_MAX_CONSTRAINT_SCAN]))
+    ends = [match.end() for match in _SENTENCE_BREAK.finditer(content)]
+    stated: dict[int, tuple[list[int], list[bool]]] = {}
+
+    def sentence_states_it(position: int) -> bool:
+        index = bisect.bisect_right(ends, position)
+        if index not in stated:
+            begin = ends[index - 1] if index else 0
+            end = ends[index] if index < len(ends) else len(content)
+            if _HISTORICAL_CLAUSE.search(content, begin, end) is None:
+                stated[index] = ([begin], [True])
+            else:
+                starts = [begin, *(match.end() for match in _CURRENT_CONSTRAINT_TRANSITION.finditer(content, begin, end))]
+                stops = [*starts[1:], end]
+                states = [False, *(_HISTORICAL_CLAUSE.search(content, start, stop) is None for start, stop in zip(starts[1:], stops[1:]))]
+                stated[index] = (starts, states)
+        starts, states = stated[index]
+        return states[bisect.bisect_right(starts, position) - 1]
+
+    for match in _QUALITY_CONSTRAINT_RE.finditer(content):
+        if sentence_states_it(match.start()) and _NEGATED_FIGURE.match(content, match.end()) is None:
+            return True
+    # The words name a constraint only where one is stated: ``受入基準: 未定`` does not.
+    found = find_field_assertion(content, _QUALITY_CONSTRAINT_TERMS)
+    return found is not None and found.status == "present" and sentence_states_it(found.start)
 
 
 def _has_priority_evidence(text: str) -> bool:
@@ -465,9 +524,21 @@ def _precondition_or_trigger_signal(text: str) -> str:
             "保存時",
             "受信時",
             "発火",
-            "条件",
         ],
-    )
+    ) or _generic_condition(text)
+
+
+# ``条件`` names a precondition on its own, but not as the end of a label that says when the
+# work is done, accepted or rejected: ``完了条件`` and ``不合格条件`` are outcomes.
+_OUTCOME_CONDITION = re.compile(r"(?:完了|合格|不合格|却下|終了|停止|受入|受け入れ|採用|達成|成功|失敗|中止|打切り|打ち切り)条件")
+
+
+def _generic_condition(text: str) -> str:
+    from semantic_guard_workflow.text_utils import excerpt_around
+
+    masked = _OUTCOME_CONDITION.sub(lambda match: "\0" * len(match.group()), text)
+    position = masked.find("条件")
+    return excerpt_around(text, position, position + 2) if position >= 0 else ""
 
 
 def _expected_result_signal(text: str) -> str:
@@ -483,6 +554,7 @@ def _expected_result_signal(text: str) -> str:
             "error",
             "state",
             "期待結果",
+            "期待される結果",
             "期待状態",
             "返る",
             "返す",

@@ -1,0 +1,31 @@
+{
+  "id": "FINISH-FAILURE-REPORTED-001",
+  "title": "A completion claim whose own report says the tests failed is blocked",
+  "phase": "finish_check",
+  "text": "実装は完了しました。受入基準の検証でテストが3件失敗しました。残リスク: 失敗3件。",
+  "strict": true,
+  "rationale": "Verification and acceptance words are present, but the reported result is a failure. Presence of the words must not turn a failed verification into a passing completion.",
+  "labels": {
+    "expected_rules": [
+      "finish.evidence.failure_reported"
+    ],
+    "forbidden_rules": [
+      "finish.evidence.receipt_missing"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "finish.evidence.failure_reported"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "failure_resolution"
+      ]
+    }
+  }
+}

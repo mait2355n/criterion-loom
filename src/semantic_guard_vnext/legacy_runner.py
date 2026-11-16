@@ -10,6 +10,7 @@ import subprocess
 from typing import Any
 
 from jsonschema import Draft202012Validator
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 
 MAX_REQUIREMENT_INPUT_BYTES = 262_144
@@ -426,7 +427,7 @@ def _validate_legacy_result(
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
         errors = sorted(
-            Draft202012Validator(schema).iter_errors(raw),
+            StrictDraft202012Validator(schema).iter_errors(raw),
             key=lambda error: tuple(str(part) for part in error.absolute_path),
         )
     except (OSError, ValueError) as exc:

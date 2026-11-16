@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import re
 
+from semantic_guard_workflow.assertion_context import find_field_assertion
 from semantic_guard_workflow.audit_common import (
     BASIS,
     CHANGE_CONTROL_TERMS,
     SCOPE_BOUNDARY_TERMS,
     _has_any,
+    _first_asserted,
+    _has_asserted_any,
     _has_bounded_broad_scope_controls,
     _has_overlap,
     _normalize_input_kind,
@@ -14,6 +17,7 @@ from semantic_guard_workflow.audit_common import (
     _suppression_trace,
     _tokens,
 )
+from semantic_guard_workflow.matching import STRONG_FIELD_ALIASES
 from semantic_guard_workflow.field_detection import field_match_diagnostic as _field_match_diagnostic, missing_field_finding as _missing_field_finding
 from semantic_guard_workflow.models import Finding
 from semantic_guard_workflow.problem_signals import (
@@ -23,7 +27,7 @@ from semantic_guard_workflow.problem_signals import (
     _side_effect_transfer_evidence_signal,
 )
 from semantic_guard_workflow.result_builder import next_actions as _next_actions, score_from_findings as _score_from_findings
-from semantic_guard_workflow.text_utils import combine as _combine, first_match as _first_match
+from semantic_guard_workflow.text_utils import combine as _combine, excerpt_around as _excerpt_around, first_match as _first_match, fold
 from semantic_guard_workflow.text_normalization import normalize_audit_text
 
 MINIMALITY_EXPANSION_TERMS = [
@@ -453,6 +457,9 @@ NEGATABLE_HUMAN_QUESTION_NECESSITY_TERMS = {
 
 # Required-field gaps without a dedicated detector map to the catalog rule that
 # owns the field. Rollback and validation set their own rule below.
+# Fields for which "nothing" is an answer: ``未確定: なし`` and ``依存: なし`` state a
+# decision, while ``検証: なし`` states that there is no verification plan.
+_ACCEPT_NONE_FIELDS = frozenset({"non_goals", "unknowns_or_decisions", "risks", "dependencies"})
 _REQUIRED_FIELD_RULE_IDS = {
     "objective": "plan.objective.purpose_missing",
     "non_goals": "plan.scope.non_goals_missing",
@@ -471,15 +478,19 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
     request = normalize_audit_text(request)
     context = normalize_audit_text(context)
     input_kind = _normalize_input_kind(input_kind)
+    if input_kind != "plan":
+        # The plan rules exclude requirements, documents and diffs; running them on one
+        # would report a missing plan field for every line of a requirement.
+        raise ValueError(f"audit_plan audits a plan, but the input kind is {input_kind!r}; use audit_request for it")
     combined = _combine(plan, request, context)
     findings: list[Finding] = []
     missing: list[str] = []
     required = {
         # "成果物" (deliverables) contains "成果" (outcome); only forms that cannot be the
         # deliverables label count as an objective.
-        "objective": ["目的", "目標", "狙い", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
-        "non_goals": ["対象外", "非対象", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
-        "deliverables": ["成果物", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
+        "objective": ["目的", "目標", "狙い", "ねらい", "ゴール", "意図", "objective", "goal", "成果:", "成果は", "成果を", "期待成果", "何を達成"],
+        "non_goals": ["対象外", "非対象", "スコープ外", "範囲外", "非目標", "非要求", "しない", "やらない", "含めない", "non-goal", "out of scope"],
+        "deliverables": ["成果物", "アウトプット", "納品物", "出力", "変更物", "deliverable", "ファイル", "artifact"],
         "work_breakdown": ["手順", "段取り", "作業分解", "作業項目", "実施手順", "step", "作業", "実装", "検証", "文書"],
         "dependencies": ["依存", "前提", "順序", "先行", "先に", "dependency", "prerequisite"],
         "risks": ["危険", "リスク", "懸念", "失敗条件", "risk", "失敗", "障害", "副作用"],
@@ -491,19 +502,38 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
     }
     critical = {"objective", "non_goals", "verification_plan", "validation_plan", "completion_evidence"}
     advisory = {"unknowns_or_decisions"}
-    planning_structure = _planning_structure_profile(combined)
+    planning_structure = _planning_structure_profile(plan, combined)
     planning_signals: dict[str, str] = {}
     non_emitted_rules: list[dict[str, object]] = []
 
     for field, patterns in required.items():
         diagnostic = _field_match_diagnostic(combined, field, patterns)
-        if not _has_any(combined, patterns) and diagnostic.match_status != "matched":
+        # A label is not a decision: when the field's words occur, the value
+        # behind them must be one. Only a field whose words are absent can
+        # still be recognized through an alias.
+        terms = [*patterns, *STRONG_FIELD_ALIASES.get(field, [])]
+        accept_none = field in _ACCEPT_NONE_FIELDS
+        own_statement = find_field_assertion(plan, terms, accept_none=accept_none)
+        if own_statement is not None and own_statement.labelled:
+            # The plan states the field itself, so that statement decides. The
+            # request and the context only fill a field the plan does not state:
+            # their vocabulary must not cancel the plan's own postponement.
+            satisfied = own_statement.status == "present"
+        elif _has_any(combined, terms):
+            satisfied = _has_asserted_any(combined, terms, accept_none=accept_none)
+        else:
+            satisfied = diagnostic.match_status == "matched"
+        if not satisfied:
             missing.append(field)
             severity = "blocker" if strict and field in critical else "minor" if field in advisory else "major"
             finding_text = f"計画に `{field}` が見えない。"
             category = "planning"
             rule_id = _REQUIRED_FIELD_RULE_IDS.get(field, "")
-            suggested_fix = f"`{field}` を計画へ足す。該当なしなら、該当なしと明示する。"
+            suggested_fix = (
+                f"`{field}` を計画へ足す。無いことが答えなら、無いと明示する。"
+                if field in _ACCEPT_NONE_FIELDS
+                else f"`{field}` を計画へ足す。決められないなら、未決として未確定欄に書く。"
+            )
             if field == "rollback_or_recovery":
                 rule_id = "plan.risk.rollback_missing"
                 finding_text = "計画に復旧またはrollback経路が見えない。"
@@ -545,7 +575,7 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
 
     if _has_any(plan, ["全部", "全体", "全面", "まとめて", "rewrite all", "refactor all"]):
         broad_scope_evidence = _first_match(plan, ["全部", "全体", "全面", "まとめて", "rewrite all", "refactor all"])
-        if _has_bounded_broad_scope_controls(plan, combined):
+        if _has_bounded_broad_scope_controls(plan, combined, dependency_sequence=planning_structure["dependency_sequence"]):
             non_emitted_rules.append(
                 _suppression_trace(
                     phase="audit_plan",
@@ -586,15 +616,40 @@ def audit_plan(plan: str, request: str = "", context: str = "", strict: bool = T
 
 
 
-def _planning_structure_profile(text: str) -> dict[str, str]:
+def _planning_structure_profile(plan: str, combined: str) -> dict[str, str]:
+    """Structure signals, judged on the plan's own statement before the request and context are read.
+
+    The request and the context only fill a signal the plan does not state. A plan that
+    states it as undecided (``順序は後で決める``) keeps it undecided: a sentence in the
+    request or an old note in the context must not decide it for the plan.
+    """
     return {
-        "work_package_decomposition": _work_package_decomposition_signal(text),
-        "dependency_sequence": _dependency_sequence_signal(text),
-        "estimation_or_resource_basis": _estimation_or_resource_signal(text),
-        "risk_response": _risk_response_signal(text),
-        "control_baseline": _control_baseline_signal(text),
-        "decision_gate": _decision_gate_signal(text),
+        "work_package_decomposition": _plan_first(plan, combined, _WORK_PACKAGE_TERMS),
+        "dependency_sequence": _dependency_sequence_for(plan, combined),
+        "estimation_or_resource_basis": _plan_first(plan, combined, _ESTIMATION_TERMS),
+        "risk_response": _plan_first(plan, combined, _RISK_RESPONSE_TERMS),
+        "control_baseline": _plan_first(plan, combined, _CONTROL_BASELINE_TERMS),
+        "decision_gate": _plan_first(plan, combined, _DECISION_GATE_TERMS),
     }
+
+
+def _plan_first(plan: str, combined: str, terms: list[str]) -> str:
+    from semantic_guard_workflow.assertion_context import find_field_assertion
+
+    own = _first_asserted(plan, terms)
+    if own:
+        return own
+    stated = find_field_assertion(plan, terms)
+    if stated is not None and stated.labelled:
+        return ""
+    return _first_asserted(combined, terms)
+
+
+def _dependency_sequence_for(plan: str, combined: str) -> str:
+    own, deferred = _dependency_sequence_scan(plan)
+    if own or deferred or plan == combined:
+        return own
+    return _dependency_sequence_scan(combined)[0]
 
 
 def _planning_quality_signals(plan: str, combined: str, structure: dict[str, str]) -> dict[str, str]:
@@ -633,7 +688,7 @@ def _planning_quality_signals(plan: str, combined: str, structure: dict[str, str
         signals["progress_control"] = _first_match(plan, ["手順", "段取り", "工程", "step", "作業", "実装", "検証"])
 
     if _requires_control_baseline(plan) and not structure["control_baseline"]:
-        signals["control_baseline"] = _first_match(plan, ["確認点", "進捗", "工程", "手順", "検証", "証拠"])
+        signals["control_baseline"] = _first_match(plan, ["確認点", "進捗", "工程", "手順", "検証", "証拠", "証跡"])
 
     change_scope = _change_control_scope_signal(plan)
     if change_scope and not _has_change_control(combined):
@@ -958,190 +1013,285 @@ def _add_planning_quality_findings(
         missing.append("auto_execution_range")
 
 
+_WORK_PACKAGE_TERMS = [
+        "WBS",
+        "PBS",
+        "work breakdown",
+        "work package",
+        "product breakdown",
+        "作業分解構成",
+        "作業分解",
+        "作業パッケージ",
+        "成果物分解",
+        "機能別",
+        "ファイル別",
+        "モジュール別",
+        "担当別",
+        "component",
+]
+
+
 def _work_package_decomposition_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "WBS",
-            "PBS",
-            "work breakdown",
-            "work package",
-            "product breakdown",
-            "作業分解構成",
-            "作業分解",
-            "作業パッケージ",
-            "成果物分解",
-            "機能別",
-            "ファイル別",
-            "モジュール別",
-            "担当別",
-            "component",
-        ],
-    )
+    return _first_asserted(text, _WORK_PACKAGE_TERMS)
+
+
+# ``先に`` and ``後で`` are not terms: ``期限は後で決める`` defers a decision and
+# ``先に述べた通り`` refers back to text, so neither states an order. An order is
+# recognized by the construct that relates two steps, or by a sequence label.
+_SEQUENCE_TERMS = (
+    "dependency sequence",
+    "predecessor",
+    "successor",
+    "critical path",
+    "after",
+    "before",
+    "parallel",
+    "blocked by",
+    "順序",
+    "実施順",
+    "実行順",
+    "着手順",
+    "先行",
+    "後続",
+    "前後関係",
+    "依存関係",
+    "並行",
+    "直列",
+    "ブロッカー",
+)
+# Labels that introduce a value without being a sequence word on their own:
+# ``依存: AをBより先に`` is an order statement, ``外部依存なし`` is not.
+_SEQUENCE_LABELS = _SEQUENCE_TERMS + ("依存順序", "依存")
+_SEQUENCE_RELATION = re.compile(
+    r"(?:その)?(?P<term>" + "|".join(re.escape(term) for term in sorted(_SEQUENCE_LABELS, key=len, reverse=True))
+    + r")(?:については|は|が|を|[:：])\s*(?P<value>\S.*)",
+    re.DOTALL,
+)
+_ORDER_CONSTRUCT = re.compile(
+    "|".join(
+        (
+            r"(?:の|た|だ)(?:後|あと)(?:で|に|は)",
+            r"その後",
+            r"先に(?!述べ|記し|記載|示し|挙げ|触れ|説明|書い|言及|申し上げ|お伝え)",
+            r"(?<![以午事])前(?:に|で)",
+            r"[てで]から",
+            r"次に",
+            r"(?<!決まり)(?<!決め)(?<!決定)(?<!確定)(?<!定まり)(?<!判明)次第(?!です|だ)",
+            r"→|⇒|->|=>",
+            r"\bthen\b",
+            r"\bdepends?\s+on\b",
+            r"\bfollowed\s+by\b",
+        )
+    ),
+    re.IGNORECASE,
+)
+_MARKDOWN_PREFIX = re.compile(r"[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\d+[.)][ \t]+)*")
 
 
 def _dependency_sequence_signal(text: str) -> str:
-    from semantic_guard_workflow.assertion_context import asserted_excerpt, find_field_assertion
+    return _dependency_sequence_scan(text)[0]
 
-    terms = (
-        "dependency sequence",
-        "predecessor",
-        "successor",
-        "critical path",
-        "after",
-        "before",
-        "parallel",
-        "blocked by",
-        "順序",
-        "先に",
-        "後で",
-        "先行",
-        "後続",
-        "前後関係",
-        "依存関係",
-        "並行",
-        "直列",
-        "ブロッカー",
-    )
-    relation = re.compile(
-        r"^\s*(?:その)?(?P<term>" + "|".join(re.escape(term) for term in terms)
-        + r")(?:については|は|が|を|[:：])\s*(?P<value>.+?)\s*$"
-    )
+
+def _dependency_sequence_scan(text: str) -> tuple[str, bool]:
+    """``(evidence, deferred)``: the order the text states, and whether it states the order as undecided.
+
+    A clause that defers the order is masked with spaces of the same length, so the
+    evidence stays a contiguous piece of ``text``. When the order is stated more than
+    once with a label, the last statement is the one that stands: a later
+    ``順序: 後で決める`` or ``順序は撤回する`` retracts an earlier concrete order. The
+    statements are not compared with each other, so two contradictory concrete
+    orders still count as an order.
+    """
     clauses = re.split(r"([。！？!?；;\n]|\.(?=\s|$))", text)
+    construct_clause = -1
+    masked: set[int] = set()
+    last_statement = ""  # "", "concrete" or "deferred": the last labelled statement of the order
     for index in range(0, len(clauses), 2):
         # Use the same Markdown prefix forms as deliverable fields for the
         # decision only; retained clauses keep their original evidence text.
-        decision_clause = re.sub(
-            r"^[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{1,6}[ \t]+|\d+[.)][ \t]+)*",
-            "",
-            clauses[index],
-        )
-        match = relation.fullmatch(decision_clause)
+        clause = clauses[index]
+        prefix = _MARKDOWN_PREFIX.match(clause)
+        decision_clause = clause[prefix.end() if prefix else 0:].strip()
+        match = _SEQUENCE_RELATION.match(decision_clause)
+        direct_statement = match is not None
         if match is not None:
             term, value = match["term"], match["value"]
-        elif _first_match(decision_clause, terms):
-            term, value = "順序", decision_clause.strip()
+        elif (found := _first_sequence_term(decision_clause)) is not None:
+            term, value = "順序", _value_after_term(decision_clause, *found)
+            direct_statement = _SEQUENCE_RELATION.match(decision_clause, found[0]) is not None
         else:
+            if construct_clause < 0 and _ORDER_CONSTRUCT.search(decision_clause):
+                construct_clause = index
             continue
         # Reuse the placeholder classifier on the whole value. Additional
         # concrete content prevents a placeholder match and stays intact.
         assertion = find_field_assertion(f"{term}: {value}", (term,))
         if assertion is not None and assertion.reason == "deferred_placeholder":
-            clauses[index] = ""
-    return asserted_excerpt("".join(clauses), terms)
+            masked.add(index)
+            last_statement = "deferred"
+            if direct_statement:
+                # A later explicit retraction also invalidates an earlier
+                # unlabelled construct (``A→B。順序: 未定``).
+                construct_clause = -1
+        else:
+            last_statement = "concrete"
+            if match is not None and term not in _SEQUENCE_TERMS and construct_clause < 0:
+                # A bare label such as ``依存`` only counts through its value.
+                if _ORDER_CONSTRUCT.search(value):
+                    construct_clause = index
+    deferred = bool(masked)
+    view = "".join(" " * len(clause) if index in masked else clause for index, clause in enumerate(clauses))
+
+    starts = [0]
+    for clause in clauses[:-1]:
+        starts.append(starts[-1] + len(clause))
+
+    def clause_text(index: int) -> str:
+        """The sentence as written: its Markdown marker, its words and its own terminator."""
+        begin = starts[index]
+        stop = clauses[index + 1] if index + 1 < len(clauses) and clauses[index + 1].strip() else ""
+        line_start = text.rfind("\n", 0, begin) + 1
+        words_start = begin + len(clauses[index]) - len(clauses[index].lstrip())
+        if _MARKDOWN_PREFIX.fullmatch(text[line_start:words_start]):
+            begin = line_start
+        return text[begin : starts[index] + len(clauses[index]) + len(stop)].strip()
+
+    if last_statement != "deferred":
+        found = find_field_assertion(view, _SEQUENCE_TERMS)
+        if found is not None and found.status == "present":
+            index = max(i for i in range(0, len(clauses), 2) if starts[i] <= found.start)
+            return clause_text(index), deferred
+    if construct_clause < 0 or construct_clause in masked:
+        return "", deferred
+    return clause_text(construct_clause), deferred
+
+
+def _first_sequence_term(clause: str) -> tuple[int, str] | None:
+    """The first sequence word in ``clause`` as ``(position, word)``; ``fold`` keeps positions aligned."""
+    folded = fold(clause)
+    hits = [(folded.find(fold(term)), -len(term), term) for term in _SEQUENCE_TERMS if fold(term) in folded]
+    if not hits:
+        return None
+    position, _, term = min(hits)
+    return position, term
+
+
+def _value_after_term(clause: str, position: int, term: str) -> str:
+    """What the clause says after the sequence word: ``改訂: 順序は撤回し、後で決める`` gives ``撤回し、後で決める``."""
+    rest = re.sub(r"^(?:については|には|では|は|が|を|も|[:：])\s*", "", clause[position + len(term):].strip())
+    return rest or clause
+
+
+_ESTIMATION_TERMS = [
+        "estimate",
+        "duration",
+        "effort",
+        "cost",
+        "budget",
+        "resource",
+        "capacity",
+        "owner",
+        "assignee",
+        "見積",
+        "工数",
+        "所要時間",
+        "期間",
+        "期限",
+        "予算",
+        "費用",
+        "資源",
+        "容量",
+        "担当",
+        "担当者",
+        "追加依存なし",
+        "一作業単位",
+]
 
 
 def _estimation_or_resource_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "estimate",
-            "duration",
-            "effort",
-            "cost",
-            "budget",
-            "resource",
-            "capacity",
-            "owner",
-            "assignee",
-            "見積",
-            "工数",
-            "所要時間",
-            "期間",
-            "期限",
-            "予算",
-            "費用",
-            "資源",
-            "容量",
-            "担当",
-            "担当者",
-            "追加依存なし",
-            "一作業単位",
-        ],
-    )
+    return _first_asserted(text, _ESTIMATION_TERMS)
+
+
+_RISK_RESPONSE_TERMS = [
+        "mitigation",
+        "contingency",
+        "fallback",
+        "workaround",
+        "response",
+        "risk owner",
+        "probability",
+        "impact",
+        "対策",
+        "対応",
+        "緩和",
+        "低減",
+        "回避",
+        "代替",
+        "退避",
+        "再検証",
+        "再試行",
+        "検知",
+        "影響度",
+        "発生確率",
+        "リスク責任者",
+        "抑える",
+]
 
 
 def _risk_response_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "mitigation",
-            "contingency",
-            "fallback",
-            "workaround",
-            "response",
-            "risk owner",
-            "probability",
-            "impact",
-            "対策",
-            "対応",
-            "緩和",
-            "低減",
-            "回避",
-            "代替",
-            "退避",
-            "再検証",
-            "再試行",
-            "検知",
-            "保留",
-            "影響度",
-            "発生確率",
-            "責任者",
-            "抑える",
-        ],
-    )
+    return _first_asserted(text, _RISK_RESPONSE_TERMS)
+
+
+_CONTROL_BASELINE_TERMS = [
+        "baseline",
+        "scope baseline",
+        "schedule baseline",
+        "cost baseline",
+        "earned value",
+        "EVM",
+        "metric",
+        "measure",
+        "milestone",
+        "基準線",
+        "scope 基準",
+        "schedule 基準",
+        "測定",
+        "計測",
+        "指標",
+        "閾値",
+        "判定基準",
+        "完了基準",
+        "進捗基準",
+        "節目条件",
+]
 
 
 def _control_baseline_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "baseline",
-            "scope baseline",
-            "schedule baseline",
-            "cost baseline",
-            "earned value",
-            "EVM",
-            "metric",
-            "measure",
-            "milestone",
-            "基準線",
-            "scope 基準",
-            "schedule 基準",
-            "測定",
-            "計測",
-            "指標",
-            "閾値",
-            "判定基準",
-            "完了基準",
-            "進捗基準",
-            "節目条件",
-        ],
-    )
+    return _first_asserted(text, _CONTROL_BASELINE_TERMS)
+
+
+_DECISION_GATE_TERMS = [
+        "go/no-go",
+        "gate",
+        "approval",
+        "hold point",
+        "stop condition",
+        "release gate",
+        "決定点",
+        "判断点",
+        "判断ゲート",
+        "承認",
+        "停止条件",
+        "中止条件",
+        "保留条件",
+        "継続判断",
+        "公開判定",
+        "移行判定",
+]
 
 
 def _decision_gate_signal(text: str) -> str:
-    return _first_match(
-        text,
-        [
-            "go/no-go",
-            "gate",
-            "approval",
-            "hold point",
-            "stop condition",
-            "release gate",
-            "決定点",
-            "判断点",
-            "判断ゲート",
-            "承認",
-            "停止条件",
-            "中止条件",
-            "保留条件",
-            "継続判断",
-            "公開判定",
-            "移行判定",
-        ],
-    )
+    return _first_asserted(text, _DECISION_GATE_TERMS)
 
 
 def _requires_work_package_decomposition(plan: str) -> bool:
@@ -1203,7 +1353,7 @@ def _idempotency_gap_signal(plan: str, combined: str) -> str:
     if duplicate_concern and _has_any(duplicate_concern, IDEMPOTENCY_DEFERRED_TERMS):
         return duplicate_concern
 
-    if _has_any(combined, IDEMPOTENCY_STRONG_EVIDENCE_TERMS):
+    if _has_asserted_any(combined, IDEMPOTENCY_STRONG_EVIDENCE_TERMS):
         return ""
     if not (duplicate_concern or _has_any(plan, IDEMPOTENCY_EFFECT_TERMS)):
         return ""
@@ -1216,13 +1366,13 @@ def _release_provenance_gap_signal(plan: str, combined: str) -> str:
         return ""
     if _has_any(combined, RELEASE_NOT_APPLICABLE_TERMS):
         return ""
-    if _has_any(combined, RELEASE_PROVENANCE_EVIDENCE_TERMS):
+    if _has_asserted_any(combined, RELEASE_PROVENANCE_EVIDENCE_TERMS):
         return ""
     return trigger
 
 
 def _requires_control_baseline(plan: str) -> bool:
-    return _plan_has_multiple_steps(plan) and _has_any(plan, ["確認点", "進捗", "状態", "報告", "検証", "証拠", "工程"])
+    return _plan_has_multiple_steps(plan) and _has_any(plan, ["確認点", "進捗", "状態", "報告", "検証", "証拠", "証跡", "工程"])
 
 
 def _requires_decision_gate(plan: str) -> bool:
@@ -1262,13 +1412,20 @@ def _deliverable_clause(plan: str) -> str:
     labels = "|".join(re.escape(term) for term in _DELIVERABLE_TERMS)
     labelled = re.search(
         rf"(?:^|[。\n;；]|(?<=\.)[ \t]+)[ \t]*(?:(?:>[ \t]*)|[-*+][ \t]+|\#{{1,6}}[ \t]+|\d+[.)][ \t]+)*"
-        rf"(?:{labels})[ \t]*[:：][ \t]*(?P<value>[^。\n]*)",
+        rf"(?:{labels})[ \t]*[:：][ \t]*(?P<value>[^。\n;；]*)",
         plan,
         re.IGNORECASE,
     )
+    heading = re.search(rf"(?:^|\n)[ \t]*\#{{1,6}}[ \t]+(?:{labels})[ \t]*(?=\n|$)", plan, re.IGNORECASE)
+    if labelled is None and heading is not None:
+        return _list_items_after(plan, heading.end())
     if labelled is not None:
-        return labelled.group("value")
-    lowered = plan.lower()
+        value = labelled.group("value")
+        if value.strip():
+            return value
+        # ``成果物:`` with the items on the following list lines.
+        return _list_items_after(plan, labelled.end())
+    lowered = fold(plan)
     hits = [(lowered.find(term), term) for term in _DELIVERABLE_TERMS if term in lowered]
     if not hits:
         return ""
@@ -1276,11 +1433,23 @@ def _deliverable_clause(plan: str) -> str:
     return re.split(r"[。\n]", plan[index + len(term) :], maxsplit=1)[0]
 
 
+def _list_items_after(plan: str, position: int) -> str:
+    items: list[str] = []
+    for line in plan[position:].lstrip("\n").split("\n"):
+        bullet = re.match(r"^[ \t]*(?:[-*+]|\d+[.)])[ \t]+(?P<item>.+?)[ \t]*$", line)
+        if bullet is None:
+            break
+        items.append(bullet.group("item"))
+    return "、".join(items)
+
+
 def _deliverable_item_count(plan: str) -> int:
     clause = _deliverable_clause(plan)
     if not clause.strip():
         return 0
-    return len([part for part in re.split(r"[、,，/／]+|\s+and\s+|\s+と\s+", clause) if part.strip()])
+    # A slash inside a token is a path (``src/app.py``); only a spaced or full-width
+    # slash separates two deliverables.
+    return len([part for part in re.split(r"[、,，／]+|\s+/\s+|\s+and\s+|\s+と\s+", clause) if part.strip()])
 
 
 VALIDATION_OWNER_TERMS = [
@@ -1292,6 +1461,7 @@ VALIDATION_OWNER_TERMS = [
     "user",
     "owner",
     "判断主体",
+    "責任者",
     "受入者",
     "承認者",
     "査読者",
@@ -1303,7 +1473,7 @@ VALIDATION_OWNER_TERMS = [
 
 
 def _has_validation_owner(text: str) -> bool:
-    return _has_any(text, VALIDATION_OWNER_TERMS)
+    return _has_asserted_any(text, VALIDATION_OWNER_TERMS)
 
 
 def _plan_has_multiple_steps(plan: str) -> bool:
@@ -1314,7 +1484,7 @@ def _plan_has_multiple_steps(plan: str) -> bool:
 
 
 def _has_progress_control(text: str) -> bool:
-    return _has_any(
+    return _has_asserted_any(
         text,
         [
             "checkpoint",
@@ -1357,4 +1527,4 @@ def _change_control_scope_signal(plan: str) -> str:
 
 
 def _has_change_control(text: str) -> bool:
-    return _has_any(text, CHANGE_CONTROL_TERMS)
+    return _has_asserted_any(text, CHANGE_CONTROL_TERMS)

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import subprocess
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from .backends import BACKEND_CODEX, build_request_command, resolve_model, validate_backend
+from .backends import BACKEND_CODEX, build_request_command, normalize_request
 from .codex_exec import (
     DEFAULT_CODEX_MODEL,
     DEFAULT_TIMEOUT_SECONDS,
@@ -16,6 +15,7 @@ from .codex_exec import (
     parse_json_object,
     run_codex_exec_runtime,
 )
+from .process import run_agent_process
 from semantic_guard_workflow.llm_review import (
     CandidateGapReviewInput,
     build_candidate_gap_review_prompt,
@@ -37,8 +37,7 @@ class CodexExecReviewRequest:
     agent_command: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        validate_backend(self.backend, self.agent_command)
-        object.__setattr__(self, "model", resolve_model(self.backend, self.model))
+        normalize_request(self)
 
     @classmethod
     def from_mapping(
@@ -119,7 +118,7 @@ def run_codex_exec_review(
     request: CodexExecReviewRequest,
     *,
     execute: bool = False,
-    runner: Runner = subprocess.run,
+    runner: Runner = run_agent_process,
 ) -> CodexExecReviewResult:
     command = build_codex_exec_command(request)
     runtime_result = run_codex_exec_runtime(

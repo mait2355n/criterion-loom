@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .environment_governance import (
     DecisionEvidenceVerifier,
@@ -48,7 +49,7 @@ def _validate_snapshot_schema(value: Mapping[str, Any]) -> None:
             "schema_unavailable", f"{_SNAPSHOT_SCHEMA}: {exc}"
         ) from exc
     issues = sorted(
-        Draft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
+        StrictDraft202012Validator(schema, format_checker=FormatChecker()).iter_errors(value),
         key=lambda issue: tuple(str(part) for part in issue.absolute_path),
     )
     if issues:

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .schema_access import schema_path
 
@@ -167,7 +168,7 @@ def lifecycle_profile_registry_schema() -> dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def _schema_validator() -> Draft202012Validator:
-    return Draft202012Validator(
+    return StrictDraft202012Validator(
         lifecycle_profile_registry_schema(), format_checker=FormatChecker()
     )
 

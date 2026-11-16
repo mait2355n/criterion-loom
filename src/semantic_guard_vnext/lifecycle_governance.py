@@ -14,6 +14,7 @@ import json
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .schema_access import schema_path
 
@@ -117,7 +118,7 @@ def _validator(definition: str) -> Draft202012Validator:
         "$ref": f"#/$defs/{definition}",
     }
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _schema_validate(value: Mapping[str, Any], definition: str, contract: str) -> None:

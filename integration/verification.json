@@ -166,5 +166,5 @@
     "workflow-migration.json",
     "candidate-migration.json"
   ],
-  "observation_stage": "Pre-publication local integration snapshot observed on 2026-10-01; later CI and merge results are separate observations."
+  "observation_stage": "Pre-publication local integration snapshot observed on 2026-10-01; later CI and merge results are separate observations. Test counts and hashes here describe that snapshot only; they do not cover later changes to the workflow detectors, the field-sample intake, the reviewer runtime or the distribution binding."
 }

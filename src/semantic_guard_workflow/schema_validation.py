@@ -5,6 +5,8 @@ from typing import Any
 
 from jsonschema import Draft202012Validator, ValidationError, validators
 
+from semantic_guard_workflow.strict_schema import StrictDraft202012Validator
+
 
 def _nonblank_min_length(validator: Any, minimum: int, instance: object, schema: dict) -> Any:
     yield from Draft202012Validator.VALIDATORS["minLength"](validator, minimum, instance, schema)
@@ -14,7 +16,7 @@ def _nonblank_min_length(validator: Any, minimum: int, instance: object, schema:
         yield ValidationError("must be a non-empty string")
 
 
-_ReviewSchemaValidator = validators.extend(Draft202012Validator, {"minLength": _nonblank_min_length})
+_ReviewSchemaValidator = validators.extend(StrictDraft202012Validator, {"minLength": _nonblank_min_length})
 
 
 def _review_schema_errors(

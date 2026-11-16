@@ -1,0 +1,32 @@
+{
+  "id": "FINISH-RECEIPT-MISSING-001",
+  "title": "A bare statement that verification was done is not a receipt",
+  "phase": "finish_check",
+  "text": "完了。受入基準は満たしました。検証済み。残リスクなし。",
+  "strict": true,
+  "rationale": "The report says verification happened but names no command, count, exit state, or output location that another person could check. Completion must not be accepted from assertion alone.",
+  "labels": {
+    "expected_rules": [
+      "finish.evidence.receipt_missing"
+    ],
+    "forbidden_rules": [
+      "finish.evidence.tests_missing",
+      "finish.evidence.failure_reported"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "finish.evidence.receipt_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "warn",
+    "missing": {
+      "includes": [
+        "verification_receipt"
+      ]
+    }
+  }
+}

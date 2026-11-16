@@ -1,0 +1,27 @@
+{
+  "id": "FINISH-FAILURE-RESOLVED-GOOD-001",
+  "title": "A failure followed by a recorded successful re-run, zero-failure counts, and failure-handling descriptions do not block",
+  "phase": "finish_check",
+  "text": "失敗時は退避済み状態へ戻す処理を追加した。テストが3件失敗していた問題も修正した。残リスク: なし。",
+  "evidence": "検証証拠: 最初の実行は pytest 3 failed。原因を修正し再実行して pytest 120 passed, 0 failed。受入証拠: REQ-1 の期待値と120件の結果が一致。",
+  "strict": true,
+  "rationale": "Failure handling as a feature, a past failure state, a zero count, and a failure closed by a later recorded re-verification are not open failures.",
+  "labels": {
+    "forbidden_rules": [
+      "finish.evidence.failure_reported",
+      "finish.evidence.receipt_missing",
+      "finish.evidence.tests_missing",
+      "finish.validation.acceptance_evidence_missing"
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "pass",
+    "missing": {
+      "excludes": [
+        "failure_resolution",
+        "verification_receipt"
+      ]
+    }
+  }
+}

@@ -13,15 +13,23 @@ from semantic_guard_workflow.mcp_server import finish_check_tool
 SUMMARY = "CLI出力を実装した。残リスク: 実機未確認。"
 OTHER_EVIDENCE = "検証証拠: pytest 8 passed。受入証拠: 要求と結果の対応表を確認済み。"
 BEHAVIOR_RULE = "finish.implementation.behavior_evidence_missing"
+FAILURE_RULE = "finish.evidence.failure_reported"
 
 
 class BehaviorEvidenceTests(unittest.TestCase):
-    def assert_behavior(self, text: str, *, present: bool) -> dict[str, object]:
+    def assert_behavior(self, text: str, *, present: bool, failure: bool = False) -> dict[str, object]:
+        """Presence of a receipt and the outcome it reports are separate questions.
+
+        ``present`` is about the behavior-evidence rule only. ``failure`` says the
+        receipt reports a failed verification, which blocks the completion claim.
+        """
         result = finish_check(SUMMARY, evidence=OTHER_EVIDENCE + text)
         self.assertEqual("behavior_evidence" not in result["missing"], present, text)
         rules = {item["rule_id"] for item in result["findings"] if "rule_id" in item}
         self.assertEqual(BEHAVIOR_RULE not in rules, present, text)
-        self.assertEqual(result["status"], "pass" if present else "warn", text)
+        self.assertEqual(FAILURE_RULE in rules, failure, text)
+        expected_status = "block" if failure else ("pass" if present else "warn")
+        self.assertEqual(result["status"], expected_status, text)
         return result
 
     def test_reported_packaged_cli_mcp_receipt_is_recognized(self) -> None:
@@ -47,10 +55,20 @@ class BehaviorEvidenceTests(unittest.TestCase):
                 self.assert_behavior(receipt, present=True)
 
     def test_failed_execution_is_still_execution_evidence(self) -> None:
+        # A failed run proves that an execution happened, so the behavior rule
+        # stays quiet. It does not make the completion claim acceptable.
         for receipt in (
             "CLI実行は失敗した。",
             "MCP stdio各7入力失敗。",
             "representative execution failed with returncode 1.",
+        ):
+            with self.subTest(receipt=receipt):
+                self.assert_behavior(receipt, present=True, failure=True)
+
+    def test_an_error_response_is_an_output_not_a_reported_test_failure(self) -> None:
+        # The exercised path may be the error path; an HTTP 500 or an empty
+        # output is what the run returned, not a verdict on the verification.
+        for receipt in (
             "API request returned HTTP 500.",
             "CLI returned no JSON output.",
         ):
@@ -120,12 +138,14 @@ class BehaviorEvidenceTests(unittest.TestCase):
     def test_implementation_success_is_distinct_from_execution_success(self) -> None:
         for receipt in (
             "CLI実装に成功。", "CLIの実装は失敗した。", "MCPの改修に成功した。",
-            "CLI implementation completed.", "CLI build passed.", "MCP build failed.",
+            "CLI implementation completed.", "CLI build passed.",
         ):
             with self.subTest(receipt=receipt):
                 self.assert_behavior(receipt, present=False)
+        # A failed build is no execution receipt, and it is a reported failure.
+        self.assert_behavior("MCP build failed.", present=False, failure=True)
         self.assert_behavior("CLI実行に成功した。", present=True)
-        self.assert_behavior("MCP実行は失敗した。", present=True)
+        self.assert_behavior("MCP実行は失敗した。", present=True, failure=True)
         self.assert_behavior(
             "CLI implementation completed; representative CLI execution returned JSON.", present=True,
         )

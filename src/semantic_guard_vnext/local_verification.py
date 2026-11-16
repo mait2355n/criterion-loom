@@ -26,6 +26,7 @@ import time
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
+from semantic_guard_vnext.strict_schema import StrictDraft202012Validator
 
 from .state_assessment import build_subject_manifest, validate_subject_manifest
 
@@ -159,7 +160,7 @@ def load_json(path: Path) -> dict[str, Any]:
 def _schema_validator(path: Path) -> Draft202012Validator:
     schema = load_json(path)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema, format_checker=FormatChecker())
+    return StrictDraft202012Validator(schema, format_checker=FormatChecker())
 
 
 def _validate_with_schema(

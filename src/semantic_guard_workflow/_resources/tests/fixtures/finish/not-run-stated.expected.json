@@ -1,0 +1,38 @@
+{
+  "id": "FINISH-NOT-RUN-STATED-001",
+  "title": "Saying the tests were not run and acceptance is unconfirmed is not completion evidence",
+  "phase": "finish_check",
+  "text": "実装しましたが、テストは実行していません。受入基準は未確認です。残リスク: 全体が未検証。",
+  "strict": true,
+  "rationale": "A negated predicate after the action noun (実行していません) and an unresolved value with a copula (未確認です) deny the evidence; the nouns alone must not satisfy the check.",
+  "labels": {
+    "expected_rules": [
+      "finish.evidence.tests_missing",
+      "finish.validation.acceptance_evidence_missing"
+    ],
+    "forbidden_rules": [
+      "finish.evidence.receipt_missing",
+      "finish.evidence.failure_reported"
+    ],
+    "expected_findings": [
+      {
+        "category": "evidence",
+        "rule_id": "finish.evidence.tests_missing"
+      },
+      {
+        "category": "validation",
+        "rule_id": "finish.validation.acceptance_evidence_missing"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "finish_check",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "tests_ran_or_reason",
+        "acceptance_evidence"
+      ]
+    }
+  }
+}

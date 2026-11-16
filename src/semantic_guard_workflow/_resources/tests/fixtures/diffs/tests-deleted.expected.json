@@ -1,0 +1,36 @@
+{
+  "id": "DIFF-TESTS-REMOVED-001",
+  "title": "Deleting the test file does not discharge the test obligation of a source change",
+  "phase": "audit_diff",
+  "kind": "diff-summary",
+  "text": "diff --git a/app/core.py b/app/core.py\n--- a/app/core.py\n+++ b/app/core.py\n@@ -1,4 +1,4 @@\n def total(items):\n-    return sum(item.price for item in items)\n+    return sum(item.price * item.qty for item in items)\ndiff --git a/tests/test_core.py b/tests/test_core.py\ndeleted file mode 100644\n--- a/tests/test_core.py\n+++ /dev/null\n@@ -1,4 +0,0 @@\n-import unittest\n-class T(unittest.TestCase):\n-    def test_total(self):\n-        self.assertEqual(total([Item(2, 1)]), 2)\n",
+  "intent": "合計金額の計算に数量を反映する。",
+  "strict": true,
+  "rationale": "A deleted test file touches a test path but adds no regression check. It must not silence the source-without-tests finding, and the undeclared removal is a finding of its own.",
+  "labels": {
+    "expected_rules": [
+      "diff.test_obligation.source_without_tests",
+      "diff.test_obligation.tests_removed_or_disabled"
+    ],
+    "expected_findings": [
+      {
+        "category": "quality",
+        "rule_id": "diff.test_obligation.source_without_tests"
+      },
+      {
+        "category": "quality",
+        "rule_id": "diff.test_obligation.tests_removed_or_disabled"
+      }
+    ]
+  },
+  "expect": {
+    "phase": "audit_diff",
+    "status": "block",
+    "missing": {
+      "includes": [
+        "test_obligation",
+        "test_preservation"
+      ]
+    }
+  }
+}

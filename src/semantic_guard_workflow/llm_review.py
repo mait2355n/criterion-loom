@@ -7,7 +7,7 @@ from typing import Any, Mapping
 
 from semantic_guard_workflow.resources import resource_path
 from semantic_guard_workflow.schema_validation import _review_schema_errors
-from semantic_guard_workflow.rules import get_rule, rules_for_phase
+from semantic_guard_workflow.rules import RULES_BY_ID, get_rule, rules_for_phase
 
 SCHEMA_VERSION = "candidate-gap-review/v2"
 REVIEW_STATUSES = {"no_supplement_needed", "needs_supplement", "blocked_by_missing_context"}
@@ -105,7 +105,9 @@ class CandidateGapReviewInput:
         candidate = _required_string(payload, "candidate")
         related_rules = payload.get("related_rules")
         if related_rules is None:
-            related_rules = _rules_from_ids_or_phase(payload.get("rule_ids", ()), payload.get("phase", ""))
+            related_rules = _rules_from_ids_or_phase(
+                payload.get("rule_ids", ()), payload.get("phase", ""), _input_kind(payload)
+            )
         return cls(
             candidate=candidate,
             request=_optional_string(payload, "request"),
@@ -164,6 +166,7 @@ def build_candidate_gap_review_prompt(review_input: CandidateGapReviewInput, *, 
         "- 見逃し、薄い前提、検証不足、受入不足、対象外不足、証拠不足は `missing_aspects` に書く。",
         "- phase_guidance の `knowledge_area`, `engineering_basis`, `inspect` を使い、段階に応じた工学知識で候補を見る。",
         "- related_rules がある場合は、各ruleの concern, applies_when, does_not_apply_when, evidence_required, severity_policy, finding, remediation を項目ごとに見て `rule_item_reviews` に書く。",
+        "- does_not_apply_when は助言であり、決定論的な検出器がすべてを強制しているとは限らない。除外に当たるかは候補の文面で確かめ、当たる場合は `possible_counter_conditions` に書く。",
         "- 補うべき文、条件、証拠、計画項目は `supplement_proposals` に書く。",
         "- 人間判断が必要な点だけ `human_decision_needed` に書く。",
         "- これは最終人間監査へ至る途中監査であり、人の最終評価用に不足と補填候補を整える。",
@@ -253,12 +256,36 @@ def _tuple_of_mappings(value: Any, key: str) -> tuple[Mapping[str, Any], ...]:
     return tuple(result)
 
 
-def _rules_from_ids_or_phase(rule_ids: Any, phase: Any) -> tuple[Mapping[str, Any], ...]:
+def _input_kind(payload: Mapping[str, Any]) -> str:
+    """The kind of input the audited text was: an explicit field, else the audit's own record."""
+    explicit = payload.get("input_kind")
+    if isinstance(explicit, str) and explicit.strip():
+        return explicit.strip()
+    for key in ("deterministic_audit", "audit_result"):
+        audit = payload.get(key)
+        details = audit.get("details") if isinstance(audit, Mapping) else None
+        kind = details.get("input_kind") if isinstance(details, Mapping) else None
+        if isinstance(kind, str) and kind.strip():
+            return kind.strip()
+    return ""
+
+
+def _rules_from_ids_or_phase(rule_ids: Any, phase: Any, input_kind: str = "") -> tuple[Mapping[str, Any], ...]:
     if not rule_ids:
         normalized_phase = str(phase or "").strip().replace("-", "_")
         if not normalized_phase:
             return ()
-        return tuple(rule.as_dict() for rule in rules_for_phase(normalized_phase))  # type: ignore[arg-type]
+        rules = rules_for_phase(normalized_phase)  # type: ignore[arg-type]
+        # ``audit_request`` also audits documents. A requirement review must not be
+        # handed the document-structure rules, nor a document review the requirement
+        # rules, which would only add prompt text the reviewer cannot apply.
+        if normalized_phase == "audit_request":
+            document = input_kind == "document"
+            rules = tuple(rule for rule in rules if rule.id.startswith("doc.") == document)
+        return tuple(rule.as_dict() for rule in rules)
     if not isinstance(rule_ids, list | tuple):
         raise ValueError("`rule_ids` must be an array")
+    unknown = [str(rule_id) for rule_id in rule_ids if str(rule_id) not in RULES_BY_ID]
+    if unknown:
+        raise ValueError(f"unknown rule id(s): {', '.join(sorted(set(unknown)))}")
     return tuple(get_rule(str(rule_id)).as_dict() for rule_id in rule_ids)

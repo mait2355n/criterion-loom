@@ -9,7 +9,7 @@ uv run --locked semantic-guard schema audit-result
 uv run --locked semantic-guard schema direction-binding-audit
 ```
 
-The 1.1.0 source contract has four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contains 24 names. Former 0.1.0 commands are available only in the publication-repaired legacy archive and are not aliases of the v1 implementation; the archive manifest identifies the original Git anchor. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
+The 1.1.0 source contract has four CLI commands—`audit-requirement`, `audit-direction-binding`, `shadow-compare`, and `schema`—and four matching MCP tools. Its closed schema registry contains 24 names; the 1.2.0.dev0 integration adds `field-sample-intake`, for 25. Former 0.1.0 commands are available only in the publication-repaired legacy archive and are not aliases of the v1 implementation; the archive manifest identifies the original Git anchor. A selected local 1.1.0 wheel and sdist have passed the packaged-contract checks summarized in `docs/implementation-status.md`; still verify the exact installed artifact because that result does not identify every build or published package.
 
 ## Asking for help
 

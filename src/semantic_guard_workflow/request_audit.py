@@ -7,6 +7,9 @@ from semantic_guard_workflow.audit_common import (
     _blocker,
     _classify_requirements,
     _has_solution_bias,
+    _first_asserted,
+    _first_solution_tool_mention,
+    _has_asserted_any,
     _is_bounded_work_package_request,
     _looks_multi_requirement,
     _normalize_input_kind,
@@ -53,7 +56,7 @@ from semantic_guard_workflow.result_builder import next_actions as _next_actions
 from semantic_guard_workflow.result_builder import score_from_findings as _score_from_findings
 from semantic_guard_workflow.text_utils import combine as _combine
 from semantic_guard_workflow.text_utils import first_match as _first_match
-from semantic_guard_workflow.text_utils import has_any as _has_any
+
 from semantic_guard_workflow.text_normalization import normalization_source_ranges, normalize_audit_text
 
 
@@ -74,6 +77,68 @@ def _relation_evidence_excerpt(check: dict[str, object], role: str) -> str:
         if isinstance(excerpt, str) and excerpt.strip():
             return excerpt.strip()
     return ""
+
+
+def _relation_summary_in_source_coordinates(
+    summary: dict[str, object],
+    *,
+    text: str,
+    context: str,
+    source_text: str,
+    source_context: str,
+    source_ranges: dict[str, list[tuple[int, int]]],
+) -> dict[str, object]:
+    """Return ``summary`` with its evidence spans moved to the caller's text.
+
+    The relation audit ran on the normalized text and context, whose combined
+    input is ``text + "\n" + context``. Published spans must index the caller's
+    own combined input, so each endpoint is mapped back through
+    ``normalization_source_ranges`` and re-based onto the original layout.
+    """
+    separator = "\n" if text and context else ""
+    normalized_context_start = len(text) + len(separator)
+    source_separator = "\n" if source_text and source_context else ""
+    source_context_start = len(source_text) + len(source_separator)
+    source_combined = f"{source_text}{source_separator}{source_context}"
+
+    def locate(position: int, *, end: bool) -> int | None:
+        if position < len(text):
+            ranges, local, base = source_ranges.get("request"), position, 0
+        elif position >= normalized_context_start:
+            ranges, local, base = source_ranges.get("context"), position - normalized_context_start, source_context_start
+        else:
+            return len(source_text) + (1 if end else 0)
+        if ranges is None:
+            return base + local + (1 if end else 0)
+        if not 0 <= local < len(ranges):
+            return None
+        return base + ranges[local][1 if end else 0]
+
+    def remap(span: object) -> object:
+        if not isinstance(span, dict):
+            return span
+        start, end = span.get("start"), span.get("end")
+        if not isinstance(start, int) or not isinstance(end, int) or not 0 <= start < end:
+            return span
+        mapped = dict(span)
+        new_start, new_end = locate(start, end=False), locate(end - 1, end=True)
+        if new_start is None or new_end is None or not new_start < new_end <= len(source_combined):
+            mapped.pop("start", None)
+            mapped.pop("end", None)
+            return mapped
+        mapped["start"], mapped["end"] = new_start, new_end
+        mapped["excerpt"] = source_combined[new_start:new_end][:240]
+        return mapped
+
+    checks = summary.get("checks")
+    if not isinstance(checks, list):
+        return summary
+    remapped_checks: list[object] = []
+    for check in checks:
+        if isinstance(check, dict) and isinstance(check.get("evidence_spans"), list):
+            check = {**check, "evidence_spans": [remap(span) for span in check["evidence_spans"]]}
+        remapped_checks.append(check)
+    return {**summary, "checks": remapped_checks}
 
 
 def _add_requirement_relation_result(
@@ -577,8 +642,9 @@ def audit_request(
         requirement_profile=requirement_profile,
         requirement_structure=structure_profile,
     )
-    # Facts are determined from normalized spelling, but all published source
-    # spans and excerpts retain the caller's original coordinate system.
+    # Facts are determined from normalized spelling. Spans and excerpts of facts that cite
+    # the request or the context are published in the caller's coordinates; a fact that cites
+    # a derived view (``requirement_profile``) has no span and quotes the normalized text.
     from semantic_guard_workflow.text_utils import excerpt_around
 
     source_bodies = {"request": source_text, "context": source_context}
@@ -588,19 +654,62 @@ def audit_request(
         for name, body in source_bodies.items()
         if body != normalized_bodies[name]
     }
+    # Facts that cite the request or the context carry spans and excerpts in the caller's
+    # coordinates, in the same one-line form whether or not normalization changed the text.
+    # Facts that cite a derived view (``requirement_profile``) have no span and keep the
+    # normalized excerpt the profile was read from.
     for fact in logical_trace.facts:
         for span in fact.evidence:
+            body = source_bodies.get(span.source)
+            if body is None or span.start is None or span.end is None:
+                continue
             ranges = source_ranges.get(span.source)
-            if ranges is not None and span.start is not None and span.end is not None:
-                if 0 <= span.start < span.end <= len(ranges):
-                    span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
-                    span.excerpt = excerpt_around(source_bodies[span.source], span.start, span.end)
-    relation_audit = audit_requirement_relations(
-        source_text,
-        context=source_context,
-        morphology_provider=morphology_provider,
-    )
-    relation_summary = relation_audit.public_summary()
+            if ranges is not None:
+                if not 0 <= span.start < span.end <= len(ranges):
+                    continue
+                span.start, span.end = ranges[span.start][0], ranges[span.end - 1][1]
+            span.excerpt = excerpt_around(body, span.start, span.end)
+    # The relation audit compares labelled fields, so it must see the same
+    # spelling the lexical detectors do: an invisible character inside a label
+    # otherwise turns a closed record into an unknown one and a warning into a
+    # pass. Without a morphology provider it therefore runs on the normalized
+    # text and its spans are mapped back to the caller's coordinates. A provider
+    # binds its analysis to the exact input, so that run keeps the caller's text
+    # for the bound summaries, while the verdict still comes from a provider-less
+    # run on the normalized text. The decision frame and the direction binding of a
+    # provider run are therefore read from the caller's text, which a BOM or an
+    # invisible character inside a word can change (a known limit).
+    view_changed = text != source_text or context != source_context
+
+    def normalized_relation_summary() -> dict[str, object]:
+        return _relation_summary_in_source_coordinates(
+            audit_requirement_relations(text, context=context).public_summary(),
+            text=text,
+            context=context,
+            source_text=source_text,
+            source_context=source_context,
+            source_ranges=source_ranges,
+        )
+
+    if morphology_provider is None and view_changed:
+        relation_audit = audit_requirement_relations(text, context=context)
+        relation_summary = _relation_summary_in_source_coordinates(
+            relation_audit.public_summary(),
+            text=text,
+            context=context,
+            source_text=source_text,
+            source_context=source_context,
+            source_ranges=source_ranges,
+        )
+        relation_decision = relation_summary
+    else:
+        relation_audit = audit_requirement_relations(
+            source_text,
+            context=source_context,
+            morphology_provider=morphology_provider,
+        )
+        relation_summary = relation_audit.public_summary()
+        relation_decision = normalized_relation_summary() if view_changed else relation_summary
     decision_frame_summary = (
         audit_precondition_sufficiency(relation_audit.ir)
         if morphology_provider is not None
@@ -676,8 +785,8 @@ def audit_request(
         findings.append(finding)
         missing.append("verification_or_acceptance")
 
-    purpose_terms = ["目的", "狙い", "意図", "価値", "意義", "理由", "why", "purpose", "value", "benefit"]
-    if not _has_any(combined, purpose_terms):
+    purpose_terms = ["目的", "狙い", "ねらい", "ゴール", "意図", "価値", "意義", "理由", "why", "purpose", "value", "benefit"]
+    if not _has_asserted_any(combined, purpose_terms):
         findings.append(
             _missing_field_finding(
                 field="purpose_trace",
@@ -699,12 +808,12 @@ def audit_request(
                 category="solution_bias",
                 basis=BASIS["requirements"],
                 finding="要求が実装方式を固定している可能性がある。",
-                evidence=_first_match(text, ["SQLite", "PostgreSQL", "React", "Swift", "Python", "CLI", "MCP", "API", "JSON"]),
+                evidence=_first_solution_tool_mention(text),
                 suggested_fix="方式が意味上必要なら根拠を書く。単なる案なら仕様案へ分離する。",
             )
         )
 
-    if not _has_any(combined, SCOPE_BOUNDARY_TERMS):
+    if not _has_asserted_any(combined, SCOPE_BOUNDARY_TERMS, accept_none=True):
         findings.append(
             _missing_field_finding(
                 field="non_requirements",
@@ -725,13 +834,13 @@ def audit_request(
                 rule_id="req.scope.non_goals_missing",
                 emission_status="satisfied",
                 reason="explicit_scope_boundary_satisfies_rule",
-                evidence=_first_match(combined, SCOPE_BOUNDARY_TERMS),
+                evidence=_first_asserted(combined, SCOPE_BOUNDARY_TERMS, accept_none=True),
                 source="required_field.non_requirements",
             )
         )
 
     unknown_terms = ["未確定", "未決", "不明", "判断待ち", "仮説", "保留", "unknown", "tbd", "pending"]
-    if not _has_any(combined, unknown_terms):
+    if not _has_asserted_any(combined, unknown_terms, accept_none=True):
         findings.append(
             _missing_field_finding(
                 field="unknowns",
@@ -759,7 +868,7 @@ def audit_request(
     )
 
     _add_requirement_relation_result(
-        relation_summary,
+        relation_decision,
         findings,
         non_emitted_rules,
         strict=strict,

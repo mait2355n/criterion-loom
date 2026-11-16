@@ -14,7 +14,14 @@ from semantic_guard_workflow.acceptance_review import (
     validate_acceptance_review_bundle,
 )
 from semantic_guard_workflow.artifact_membership import audit_artifact_membership
-from semantic_guard_workflow.runtime.backends import BACKEND_CODEX, BACKENDS, COMMAND_PLACEHOLDERS
+from semantic_guard_workflow.runtime.backends import (
+    BACKEND_CODEX,
+    BACKENDS,
+    COMMAND_PLACEHOLDERS,
+    resolve_working_directory,
+    validate_model,
+    validate_timeout_seconds,
+)
 from semantic_guard_workflow.runtime.exploration import (
     DEFAULT_TIMEOUT_SECONDS as DEFAULT_EXPLORATION_TIMEOUT_SECONDS,
     CodexExecExplorationRequest,
@@ -55,7 +62,11 @@ from semantic_guard_workflow.severity_profiles import PROFILE_NAMES, apply_sever
 from semantic_guard_workflow.traceability import build_trace_report
 
 
-def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workflow") -> None:
+# Same value as the canonical CLI: the audit ran and its status met --fail-on.
+EXIT_AUDIT_DISPOSITION = 3
+
+
+def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workflow") -> int | None:
     parser = argparse.ArgumentParser(prog=prog)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -144,11 +155,12 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
             "known_sources": args.known_sources or "",
         }
         try:
+            working_directory = _reviewer_arguments(args)
             request = CodexExecExplorationRequest.from_mapping(
                 payload,
                 model=args.model or "",
                 timeout_seconds=args.timeout_seconds,
-                working_directory=args.working_directory,
+                working_directory=working_directory,
                 codex_binary=args.codex_binary,
                 include_schema_in_prompt=args.include_schema,
                 **_backend_kwargs(args),
@@ -183,12 +195,16 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
         return
     if args.command == "review-if-needed":
         payload = _read_json_input(args)
+        try:
+            working_directory = _reviewer_arguments(args)
+        except ValueError as exc:
+            _fail_input(str(exc))
         result = review_if_needed(
             payload,
             execute=args.execute,
             model=args.model or "",
             timeout_seconds=args.timeout_seconds,
-            working_directory=args.working_directory or "",
+            working_directory=working_directory or "",
             include_schema=args.include_schema,
             **_backend_kwargs(args),
         )
@@ -206,6 +222,10 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     if args.command == "evaluate-fixtures":
         result = evaluate_fixture_tree(args.path, include_passed=args.include_passed)
         print(json.dumps(result, ensure_ascii=False, indent=2))
+        if not result["total"]:
+            # A tree with nothing to replay (a wrong path, an emptied directory) is not a pass.
+            print(f"semantic-guard: error: no *.expected.json fixtures under {args.path}", file=sys.stderr)
+            raise SystemExit(1)
         if result["failed"]:
             raise SystemExit(1)
         return
@@ -252,8 +272,9 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
             non_exportable_context=args.non_exportable_context,
             strict=not args.no_strict,
         )
-        print(json.dumps(apply_severity_profile(result, args.profile), ensure_ascii=False, indent=2))
-        return
+        result = apply_severity_profile(result, args.profile)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return _disposition_exit(result, args.fail_on)
 
     text = _read_input(args)
     strict = not args.no_strict
@@ -279,12 +300,18 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     elif args.command == "audit-decision-state":
         result = audit_decision_state(text, context=args.context or "", strict=strict, input_kind=kind)
     elif args.command == "audit-plan":
-        result = audit_plan(text, request=args.request or "", context=args.context or "", strict=strict, input_kind=kind)
+        try:
+            result = audit_plan(text, request=args.request or "", context=args.context or "", strict=strict, input_kind=kind)
+        except ValueError as exc:
+            _fail_input(f"{exc} (--kind {kind})")
     elif args.command == "audit-diff":
         stdin_intent = ""
         if args.intent is None and args.text is None and args.file is None:
             text, stdin_intent = _extract_audit_diff_metadata(text)
-        result = audit_diff(text, intent=args.intent or stdin_intent or "", context=args.context or "", strict=strict, input_kind=kind)
+        try:
+            result = audit_diff(text, intent=args.intent or stdin_intent or "", context=args.context or "", strict=strict, input_kind=kind)
+        except ValueError as exc:
+            _fail_input(f"{exc} (--kind {kind})")
     elif args.command == "finish-check":
         result = finish_check(text, evidence=args.evidence or "", context=args.context or "", strict=strict)
     elif args.command == "audit-conventions":
@@ -296,6 +323,33 @@ def main(argv: Sequence[str] | None = None, *, prog: str = "semantic-guard-workf
     if args.command == "audit-request":
         result = apply_logical_trace_mode(result, args.logical_trace)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    return _disposition_exit(result, args.fail_on)
+
+
+def _disposition_exit(result: object, fail_on: str) -> int:
+    """Map the audit status to an exit code only when the caller asked for it.
+
+    The JSON has already been written. Without ``--fail-on`` a completed audit
+    exits 0 whatever its status, as before.
+    """
+    status = result.get("status") if isinstance(result, dict) else None
+    if fail_on == "warn" and status in {"warn", "block"}:
+        return EXIT_AUDIT_DISPOSITION
+    if fail_on == "block" and status == "block":
+        return EXIT_AUDIT_DISPOSITION
+    return 0
+
+
+def _add_fail_on(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--fail-on",
+        choices=("never", "warn", "block"),
+        default="never",
+        help=(
+            "Exit with code 3 after writing the JSON when the audit status meets this threshold. "
+            "Default: never (a completed audit exits 0 whatever its status)."
+        ),
+    )
 
 
 def _add_text_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -314,6 +368,7 @@ def _add_text_command(subparsers: argparse._SubParsersAction[argparse.ArgumentPa
     )
     parser.add_argument("--no-strict", action="store_true", help="Downgrade strict blockers where possible.")
     parser.add_argument("--profile", choices=PROFILE_NAMES, default="default", help="Severity profile to apply to findings.")
+    _add_fail_on(parser)
     if name == "audit-request":
         parser.add_argument(
             "--morphology",
@@ -373,6 +428,7 @@ def _add_artifact_membership_command(
         help="Downgrade missing or conflicted artifact-contract blockers where possible.",
     )
     parser.add_argument("--profile", choices=PROFILE_NAMES, default="default", help="Severity profile to apply to findings.")
+    _add_fail_on(parser)
 
 
 def _add_json_command(subparsers: argparse._SubParsersAction[argparse.ArgumentParser], name: str) -> None:
@@ -556,15 +612,27 @@ def _read_json_input(args: argparse.Namespace) -> dict[str, object]:
     return payload
 
 
+def _reviewer_arguments(args: argparse.Namespace) -> str | None:
+    """Check the reviewer options before anything is decided or started; return the real working directory.
+
+    Raises ``ValueError`` naming the offending command-line option.
+    """
+    validate_timeout_seconds(args.timeout_seconds, name="--timeout-seconds")
+    validate_model(args.model or "", name="--model")
+    return resolve_working_directory(args.working_directory, name="--working-directory")
+
+
 def _codex_exec_request_from_args(payload: dict[str, object], args: argparse.Namespace) -> CodexExecReviewRequest:
-    if args.timeout_seconds <= 0:
-        _fail_input("--timeout-seconds must be positive")
+    try:
+        working_directory = _reviewer_arguments(args)
+    except ValueError as exc:
+        _fail_input(str(exc))
     try:
         return CodexExecReviewRequest.from_mapping(
             payload,
             model=args.model or "",
             timeout_seconds=args.timeout_seconds,
-            working_directory=args.working_directory,
+            working_directory=working_directory,
             codex_binary=args.codex_binary,
             include_schema_in_prompt=args.include_schema,
             **_backend_kwargs(args),
@@ -586,4 +654,4 @@ def _default_kind(command: str) -> str:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

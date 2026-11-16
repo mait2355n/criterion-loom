@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal, Mapping
 
+from semantic_guard_workflow.text_utils import fold
 from semantic_guard_workflow.assertion_context import AssertionMatch, find_field_assertion
 
 FactStatus = Literal["present", "absent", "candidate", "rejected", "unknown", "conflict"]
@@ -1404,7 +1405,7 @@ def _assertion_sensitive_text_fact(
 
 def _first_evidence_span(*, text: str, context: str, terms: tuple[str, ...]) -> EvidenceSpan | None:
     for source, body in (("request", text), ("context", context)):
-        lower = body.lower()
+        lower = fold(body)
         for term in terms:
             index = lower.find(term.lower())
             if index < 0:
