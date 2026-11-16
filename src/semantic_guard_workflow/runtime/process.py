@@ -107,9 +107,13 @@ def run_agent_process(
                 output=stdout.text(encoding, errors),
                 stderr=stderr.text(encoding, errors),
             ) from None
-        # The direct child is done. A descendant that still holds a pipe is left
-        # over from the reviewer, not part of its answer: stop it and keep what was read.
-        if not _drain(readers):
+        # The direct child is done. POSIX descendants belong to our private
+        # group even when they closed their output pipes, so stop the group
+        # before draining its final answer. Windows retains its pipe-based cleanup.
+        if os.name == "posix":
+            _kill_process_tree(process)
+            _drain(readers)
+        elif not _drain(readers):
             _kill_process_tree(process)
             _drain(readers)
     finally:

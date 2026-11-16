@@ -369,6 +369,15 @@ _SOLUTION_TOOL_PATTERN = re.compile(
 _CURRENT_STATE_MARKERS = re.compile(
     r"現行|現在|既存|現状|いまは|今は|従来|\b(?:currently|existing|at present|as-is|legacy)\b", re.IGNORECASE
 )
+# The current system can be the object of a new prescription. A current-state
+# word does not turn ``現行の画面をReactで全面改修する`` into an implementation report.
+_PRESCRIPTIVE_CHANGE = re.compile(
+    r"(?:改修|刷新|変更|移行|実装|採用|導入|構築|開発)(?:する|したい|すべき|せよ|してください)"
+    r"|置き換え(?:る|たい|てください)|作り直(?:す|したい|してください)"
+    r"|\b(?:will|shall|must|should|need to|want to|plan to)\s+(?:replace|rewrite|refactor|migrate|implement|adopt|use|build)\b"
+    r"|^\s*(?:replace|rewrite|refactor|migrate|implement|adopt|use|build)\b",
+    re.IGNORECASE,
+)
 _SENTENCE_BOUNDARY = re.compile(r"[。！？\n;；]|[.!?](?=\s|$)")
 
 
@@ -378,7 +387,7 @@ def _prescriptive_tool_mentions(text: str) -> list[re.Match[str]]:
         start = max((m.end() for m in _SENTENCE_BOUNDARY.finditer(text, 0, match.start())), default=0)
         boundary = _SENTENCE_BOUNDARY.search(text, match.end())
         sentence = text[start : boundary.start() if boundary else len(text)]
-        if not _CURRENT_STATE_MARKERS.search(sentence):
+        if not _CURRENT_STATE_MARKERS.search(sentence) or _PRESCRIPTIVE_CHANGE.search(sentence):
             mentions.append(match)
     return mentions
 

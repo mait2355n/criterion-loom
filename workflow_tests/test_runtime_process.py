@@ -135,6 +135,25 @@ class ProcessGroupTests(unittest.TestCase):
 
         self.assertEqual(completed.stdout.strip(), "True")
 
+    def test_finished_agent_stops_a_descendant_that_closed_all_pipes(self) -> None:
+        script = (
+            "import subprocess, sys\n"
+            "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(3)'], "
+            "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n"
+            "print(child.pid, flush=True)\n"
+        )
+        completed = run_agent_process([sys.executable, "-c", script], input="", timeout=10)
+        pid = int(completed.stdout.strip())
+        try:
+            self.assertEqual(completed.returncode, 0)
+            self.assertTrue(
+                _wait_until_stopped(pid, seconds=0.5),
+                "a descendant with closed pipes survived the finished agent",
+            )
+        finally:
+            # A failing pre-fix run also leaves no long-lived fake behind.
+            _wait_until_stopped(pid, seconds=4)
+
 
 class RunAgentProcessTests(unittest.TestCase):
     def test_captures_text_and_exit_status(self) -> None:

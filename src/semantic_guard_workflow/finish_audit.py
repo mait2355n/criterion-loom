@@ -36,7 +36,7 @@ _VERIFICATION_TERMS = (
 )
 _ACCEPTANCE_TERMS = (
     "受入条件と証拠の対応", "受入基準と証拠の対応", "受入証拠", "受入条件",
-    "受入基準", "受入", "完了条件", "acceptance evidence", "acceptance criteria",
+    "受入基準", "合格基準", "受け入れ基準", "受入", "完了条件", "acceptance evidence", "acceptance criteria",
     "verification evidence", "test evidence", "test results", "test result",
     "acceptance", "criteria", "evidence", "証拠", "結果",
 )
@@ -46,12 +46,13 @@ _VERIFICATION_DECLARATIONS = (
     "verification", "testing", "tests", "test", "検証", "確認", "試験", "テスト",
 )
 _ACCEPTANCE_DECLARATIONS = (
-    "受入条件と証拠の対応", "受入基準と証拠の対応", "受入証拠", "acceptance evidence",
+    "受入条件と証拠の対応", "受入基準と証拠の対応", "合格基準と証拠の対応", "受け入れ基準と証拠の対応",
+    "受入証拠", "acceptance evidence",
 )
 _COMPLETION_HEADINGS = {
     "verification": _VERIFICATION_DECLARATIONS,
     "acceptance": _ACCEPTANCE_DECLARATIONS,
-    "criterion": ("受入基準", "受入条件", "完了条件", "acceptance criteria", "criteria"),
+    "criterion": ("受入基準", "合格基準", "受け入れ基準", "受入条件", "完了条件", "acceptance criteria", "criteria"),
     "risk": (
         "残リスク", "残余リスク", "残存リスク", "未確認事項", "未実行事項",
         "residual risk", "residual risks", "risk", "risks", "unknown", "unknowns",
@@ -170,7 +171,7 @@ _JA_FAILURE_RESULT = re.compile(
     r"|落ち(?:た|ました|て(?:い)?(?:る|ます)))"
 )
 _UNMET_ACCEPTANCE = re.compile(
-    r"(?:受入(?:基準|条件)|完了条件)[^。.!?\n]{0,24}?"
+    r"(?:受入(?:基準|条件)|合格基準|受け入れ基準|完了条件)[^。.!?\n]{0,24}?"
     r"(?:満た(?:して(?:い)?(?:ない|ません)|さない|しません|せて(?:い)?(?:ない|ません)|せなかった|せず)"
     r"|未達|未充足)"
     rf"|{_W0}acceptance\s+criteri(?:a|on)\s+(?:(?:is|are|was|were)\s+)?"
@@ -212,13 +213,51 @@ _EN_ERROR_LABELS = frozenset({"error", "errors", "errored"})
 _RUNNER_SUMMARY_CONTEXT = re.compile(rf"{_W0}(?:pytest|unittest|passed|failed){_W1}", re.IGNORECASE)
 _REVERIFIED_SUCCESS = re.compile(
     r"(?:再実行|再試験|再検証|再テスト|再度の?(?:実行|試験|検証|テスト)|もう一度(?:実行|試験|検証))"
-    r"[^。.\n]{0,40}(?:成功|通過|合格|通っ|全件|passed|pass|green|OK)"
+    r"[^。.\n]{0,40}(?P<recheck_result>成功|通過|合格|通っ(?:た|ている|ています)|passed|pass|green|OK)"
     r"|(?:その後|現在は|今は|修正後(?:は|に)?)[^。.\n]{0,40}"
-    r"(?:成功|通過|合格|通っ(?:た|ている|ています)|passed|green)"
+    r"(?P<later_result>成功|通過|合格|通っ(?:た|ている|ています)|passed|green)"
     rf"|{_W0}(?:re-?ran|re-?run|rerun|after\s+(?:the\s+)?fix(?:es|ing)?|now){_W1}[^.\n]{{0,60}}"
-    rf"{_W0}(?:pass(?:ed|es|ing)?|green|succeed(?:ed|s)?){_W1}",
+    rf"{_W0}(?P<english_result>pass(?:ed|es|ing)?|green|succeed(?:ed|s)?){_W1}",
     re.IGNORECASE,
 )
+_UNASSERTED_SUCCESS_PREFIX = re.compile(
+    rf"{_W0}(?:not|never|no|without|will|would|should|could|may|might|cannot|can't|didn't|hasn't|haven't|isn't|wasn't|won't)\s+"
+    r"(?:(?:yet|have|has|been|be|successfully|able|to)\s+)*$",
+    re.IGNORECASE,
+)
+_CONDITIONAL_SUCCESS_PREFIX = re.compile(rf"{_W0}(?:if|unless|when|until){_W1}", re.IGNORECASE)
+_UNASSERTED_SUCCESS_SUFFIX = re.compile(
+    r"^(?:ら|場合|とき|時|し(?:たら|ても|た場合|たとき|た時)|す(?:れば|る(?:場合|とき|時|予定|見込み))"
+    r"|(?:した)?(?:か|のか)|(?:は|が|を)?\s*(?:未確認|未検証|未定|不明|予定|見込み)"
+    r"|して(?:おらず|いない|いません)|(?:では|じゃ|とは)(?:ない|なかった|ありません|言えない)"
+    r"|を(?:目指|予定))"
+    rf"|^\s*(?:(?:is|was|has\s+been)\s+)?(?:not\s+(?:confirmed|verified)|unknown|unverified|pending){_W1}",
+    re.IGNORECASE,
+)
+
+
+def _reverified_success_starts(clause: str) -> list[int]:
+    """Only an asserted successful result may close a reported failure."""
+    starts: list[int] = []
+    for match in _REVERIFIED_SUCCESS.finditer(clause):
+        # The expression ends at the success word. Inspect its predicate and
+        # nearby English modal/conditional rather than accepting that word alone.
+        outcome_start = next(
+            match.start(name)
+            for name in ("recheck_result", "later_result", "english_result")
+            if match.group(name) is not None
+        )
+        prefix = clause[:outcome_start]
+        tail = clause[match.end():].strip()
+        if (
+            _UNASSERTED_SUCCESS_PREFIX.search(prefix)
+            or _CONDITIONAL_SUCCESS_PREFIX.search(prefix)
+            or _NEGATED_COMPLETION_PREDICATE.match(tail)
+            or _UNASSERTED_SUCCESS_SUFFIX.search(tail)
+        ):
+            continue
+        starts.append(match.start())
+    return starts
 
 # --- inspectable receipt ----------------------------------------------------
 # 「検証済み」 states that something was done. A receipt additionally names
@@ -327,8 +366,10 @@ def _declared_completion_presence(clause: str, terms: tuple[str, ...]) -> bool |
 
 
 def _present_completion_assertion(clause: str, terms: tuple[str, ...]) -> bool:
-    """One asserted occurrence is enough; a denied one cannot hide another."""
-    return any(_occurrence_is_asserted(clause, match) for match in find_field_assertions(clause, terms))
+    """Preserve field-value precedence while retaining independent receipts."""
+    matches = find_field_assertions(clause, terms)
+    labelled = [match for match in matches if match.labelled]
+    return any(_occurrence_is_asserted(clause, match) for match in labelled or matches)
 
 
 def _occurrence_is_asserted(clause: str, match: AssertionMatch) -> bool:
@@ -355,7 +396,7 @@ def _reported_failure(text: str) -> str:
     open_failure = ""
     for clause in _completion_clauses(text):
         failure_end = _last_failure_end(clause)
-        reverified = [match.start() for match in _REVERIFIED_SUCCESS.finditer(clause)]
+        reverified = _reverified_success_starts(clause)
         if failure_end < 0:
             if reverified:
                 open_failure = ""
@@ -440,7 +481,9 @@ _SECURITY_RESULT_STATEMENT = re.compile(
     r"|\bno\s+(?:findings|issues|vulnerabilit(?:y|ies))\b|\b0\s+(?:findings|issues|vulnerabilities)\b",
     re.IGNORECASE,
 )
-_SECURITY_CLAUSE_BOUNDARY = re.compile(r"[。\n；;]|(?<=[.!?])\s")
+_SECURITY_CLAUSE_BOUNDARY = re.compile(
+    r"[。\n；;,、]|(?<=[.!?])\s|(?<=ない)が|(?<=ません)が|\bbut\b", re.IGNORECASE
+)
 
 
 _RESIDUAL_RISK_TERMS = [
@@ -457,7 +500,7 @@ def _has_security_evidence(text: str) -> bool:
         match = find_field_assertion(clause, _SECURITY_EVIDENCE_TERMS)
         if match is None or match.status != "present":
             continue
-        if match.labelled or _SECURITY_RESULT_STATEMENT.search(clause):
+        if _SECURITY_RESULT_STATEMENT.search(clause):
             return True
     return False
 

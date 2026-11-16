@@ -878,6 +878,9 @@ def _extra_integrity_errors(bundle: Mapping[str, Any]) -> list[dict[str, str]]:
     # References are opaque identifiers. An e-mail address, URL or file path is a
     # sign that a person or a private location was written into the record.
     for location, value in _walk_strings(bundle):
+        # The schema defines these entries as free prose, not reference identifiers.
+        if location.startswith("$.limitations."):
+            continue
         if location.endswith(("_digest", ".value")) or ".digest." in location:
             continue
         if _NON_OPAQUE_REFERENCE.search(value):

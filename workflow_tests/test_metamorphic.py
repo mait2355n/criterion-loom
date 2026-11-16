@@ -403,7 +403,7 @@ class RuleCoverageTests(unittest.TestCase):
         report = evaluate_sensitivity()
 
         self.assertGreaterEqual(report["asserted_rule_count"], metamorphic.MINIMUM_ASSERTED_RULES)
-        self.assertEqual(report["catalog_rule_count"], 73)
+        self.assertEqual(report["catalog_rule_count"], 77)
         catalog = {rule.id for rule in metamorphic.RULES}
         self.assertTrue(set(report["asserted_rules"]) <= catalog)
 

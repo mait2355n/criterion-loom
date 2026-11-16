@@ -64,6 +64,14 @@ class PlanDecisionStateTests(unittest.TestCase):
                 with self.subTest(field=field, value=value):
                     self.assertIn(field, minimal(**{argument: value})["missing"])
 
+    def test_a_concrete_verification_action_can_wait_for_approval_or_a_decision(self) -> None:
+        for value in ("承認後、pytest を実行する", "承認後に pytest を実行する", "決定次第 pytest を実行する"):
+            with self.subTest(value=value):
+                self.assertNotIn("verification_plan", minimal(verification=f"検証: {value}。")["missing"])
+        for value in ("承認後に決める", "承認後、検討する", "決定次第検討する"):
+            with self.subTest(value=value):
+                self.assertIn("verification_plan", minimal(verification=f"検証: {value}。")["missing"])
+
     def test_nothing_is_an_answer_only_where_nothing_is_a_real_answer(self) -> None:
         for value in ("対象外: なし。", "対象外: 該当なし。"):
             with self.subTest(value=value):

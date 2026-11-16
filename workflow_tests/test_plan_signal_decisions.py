@@ -14,6 +14,23 @@ def structure(extra: str) -> dict[str, str]:
 
 
 class PlanSignalDecisionTests(unittest.TestCase):
+    def test_an_explicit_order_retraction_cancels_an_earlier_unlabelled_order(self) -> None:
+        for concrete in ("A→B。", "Aの後でBを行う。"):
+            for deferred in ("順序: 未定。", "順序は後で決める。", "改訂: 順序は撤回し、後で決める。"):
+                with self.subTest(concrete=concrete, deferred=deferred):
+                    plan = BASE.replace("順序: 先に調査、次に実装。", concrete + "\n" + deferred)
+                    result = audit_plan(plan)
+                    self.assertEqual(result["details"]["planning_structure"]["dependency_sequence"], "")
+                    self.assertIn("dependency_sequence", result["missing"])
+
+    def test_a_later_concrete_order_and_a_deferred_detail_keep_their_meaning(self) -> None:
+        for sequence in ("順序: 未定。\nA→B。", "A→B。順序の詳細は後で決める。"):
+            with self.subTest(sequence=sequence):
+                plan = BASE.replace("順序: 先に調査、次に実装。", sequence)
+                result = audit_plan(plan)
+                self.assertNotIn("dependency_sequence", result["missing"])
+                self.assertEqual(result["details"]["planning_structure"]["dependency_sequence"], "A→B。")
+
     def test_a_stated_risk_response_counts(self) -> None:
         for line in ("対策: 部分適用で抑える。", "緩和: 段階的に切り替える。", "Mitigation: roll out by stage."):
             with self.subTest(line=line):

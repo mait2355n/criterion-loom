@@ -5,6 +5,7 @@ from __future__ import annotations
 import unittest
 
 from semantic_guard_workflow.plan_audit import audit_plan
+from semantic_guard_workflow.request_audit import audit_request
 
 BROAD = "plan.scope.broad_scope_unbounded"
 SEQUENCE = "plan.schedule.dependency_sequence_missing"
@@ -81,6 +82,30 @@ class BroadScopeGuardrailTests(unittest.TestCase):
                 with self.subTest(label=label, placeholder=placeholder):
                     emitted, suppressed = outcome(plan)
                     self.assertFalse(SEQUENCE in emitted and BROAD in suppressed)
+
+
+class CurrentSystemChangeRequestTests(unittest.TestCase):
+    RULE = "req.solution.implementation_fixed"
+
+    def test_the_current_system_can_be_the_object_of_a_new_implementation_choice(self) -> None:
+        for request in (
+            "現行の画面をReactで全面改修する。",
+            "現在の処理をPythonへ置き換える。",
+            "Replace the existing UI with React.",
+            "The existing UI must use React.",
+        ):
+            with self.subTest(request=request):
+                self.assertIn(self.RULE, {finding.get("rule_id") for finding in audit_request(request)["findings"]})
+
+    def test_existing_implementation_descriptions_stay_excluded(self) -> None:
+        for description in (
+            "現行はPythonで動いている。",
+            "現在はReactで画面を表示する。",
+            "現行はReactで実装されている。",
+            "The existing UI is implemented in React.",
+        ):
+            with self.subTest(description=description):
+                self.assertNotIn(self.RULE, {finding.get("rule_id") for finding in audit_request(description)["findings"]})
 
 
 if __name__ == "__main__":

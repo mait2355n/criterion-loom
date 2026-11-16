@@ -118,6 +118,14 @@ _HISTORICAL_CLAUSE = re.compile(
     r"|\b(?:rejected|deprecated|obsolete|withdrawn|dropped|previously|formerly|no\s+longer|superseded)\b",
     re.IGNORECASE,
 )
+# A comparison may state the replacement in the same sentence as the old value.
+# Only the part after an explicit transition can escape the historical marker;
+# the old figure in ``旧仕様の5秒から300ms以内へ短縮する`` stays historical.
+_CURRENT_CONSTRAINT_TRANSITION = re.compile(
+    r"から|新(?:しい|たな|規の|仕様|基準|閾値|上限|目標)|今回の"
+    r"|\b(?:but|instead|now|new)\b",
+    re.IGNORECASE,
+)
 # ``300ms 以内にはしない``: the figure is named only to say it is not a requirement.
 _NEGATED_FIGURE = re.compile(
     r"[ \t]*(?:以内|以上|以下|未満|超)?[ \t]*(?:に|と|を)?(?:は)?[ \t]*(?:しない|しません|ならない|でない|ではない|設けない|定めない|求めない|不要)"
@@ -132,15 +140,22 @@ _QUOTE_PREFIX = re.compile(r"(?m)^[ \t]*(?:(?:[-*+]|\d+[.)])[ \t]+)*(?:>(?!=)[ \
 def _has_quality_constraint_evidence(text: str) -> bool:
     content = _QUOTE_PREFIX.sub("", _FENCED_CODE.sub("", text[:_MAX_CONSTRAINT_SCAN]))
     ends = [match.end() for match in _SENTENCE_BREAK.finditer(content)]
-    stated: dict[int, bool] = {}
+    stated: dict[int, tuple[list[int], list[bool]]] = {}
 
     def sentence_states_it(position: int) -> bool:
         index = bisect.bisect_right(ends, position)
         if index not in stated:
             begin = ends[index - 1] if index else 0
             end = ends[index] if index < len(ends) else len(content)
-            stated[index] = _HISTORICAL_CLAUSE.search(content, begin, end) is None
-        return stated[index]
+            if _HISTORICAL_CLAUSE.search(content, begin, end) is None:
+                stated[index] = ([begin], [True])
+            else:
+                starts = [begin, *(match.end() for match in _CURRENT_CONSTRAINT_TRANSITION.finditer(content, begin, end))]
+                stops = [*starts[1:], end]
+                states = [False, *(_HISTORICAL_CLAUSE.search(content, start, stop) is None for start, stop in zip(starts[1:], stops[1:]))]
+                stated[index] = (starts, states)
+        starts, states = stated[index]
+        return states[bisect.bisect_right(starts, position) - 1]
 
     for match in _QUALITY_CONSTRAINT_RE.finditer(content):
         if sentence_states_it(match.start()) and _NEGATED_FIGURE.match(content, match.end()) is None:

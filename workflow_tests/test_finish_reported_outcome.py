@@ -74,6 +74,17 @@ class DeniedVerificationTests(unittest.TestCase):
         self.assertEqual(result["status"], "pass")
         self.assertEqual(result["missing"], [])
 
+    def test_a_deferred_evidence_field_is_not_rescued_by_a_passing_tool_mention(self) -> None:
+        for statement in (
+            "検証証拠: 未定、pytest などのテスト手順を確認する。",
+            "検証証拠: 後で決める、pytest のテスト手順を読む。",
+            "検証: 未定、pytest テストの説明を追加した。",
+        ):
+            with self.subTest(statement=statement):
+                result = finish_check(CLOSED_SUMMARY, evidence=statement + "受入証拠: 対応表を確認済み。")
+                self.assertIn(TESTS_RULE, _rules(result))
+                self.assertEqual(result["status"], "block")
+
     def test_residual_risk_synonyms_are_recognized_as_a_risk_statement(self) -> None:
         for label in ("残余リスク", "残存リスク"):
             with self.subTest(label=label):
@@ -174,6 +185,29 @@ class ReportedFailureTests(unittest.TestCase):
             with self.subTest(evidence=evidence):
                 self.assert_failure(summary, evidence, reported=True)
 
+    def test_an_unasserted_rerun_does_not_close_a_recorded_failure(self) -> None:
+        for rerun in (
+            "再実行は成功していない。",
+            "再実行は成功していません。",
+            "再実行は成功しておらず、未解消。",
+            "再実行は成功ではなかった。",
+            "再実行しても通っていない。",
+            "再実行が通ったら完了とする。",
+            "再実行が成功したら完了とする。",
+            "再実行に成功した場合に受け入れる。",
+            "再実行は全件未確認。",
+            "再実行は成功したか未確認。",
+            "再実行の成功は未確認。",
+            "再実行は成功する予定。",
+            "Rerun never passed.",
+            "If the rerun passes, accept it.",
+            "The rerun will pass after a fix.",
+            "Whether the rerun passed is unverified.",
+            "The rerun cannot pass.",
+        ):
+            with self.subTest(rerun=rerun):
+                self.assert_failure(CLOSED_SUMMARY, "検証証拠: pytest 3 failed。" + rerun + "受入証拠: 対応表を確認済み。", reported=True)
+
     def test_failures_described_only_in_the_request_context_are_not_the_report(self) -> None:
         result = self.assert_failure(
             "修正した。残リスク: なし。",
@@ -191,6 +225,13 @@ class ReportedFailureTests(unittest.TestCase):
 
 
 class DeclarationWithoutReceiptTests(unittest.TestCase):
+    def test_acceptance_synonyms_keep_the_same_evidence_obligations(self) -> None:
+        for term in ("受入基準", "合格基準", "受け入れ基準"):
+            with self.subTest(term=term):
+                result = finish_check(f"完了。{term}は満たしました。検証済み。残リスクなし。")
+                self.assertEqual(_rules(result), {RECEIPT_RULE})
+                self.assertEqual(result["missing"], ["verification_receipt"])
+
     def test_bare_declarations_warn_instead_of_passing(self) -> None:
         for summary in (
             "完了。受入基準は満たしました。検証済み。残リスクなし。",
@@ -259,7 +300,22 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertIn(FAILURE_RULE, _rules(result))
 
     def test_mcp_service_uses_the_same_boundary(self) -> None:
-        result = finish_check_tool(summary=self.SUMMARY, evidence=self.EVIDENCE)
+        for evidence in (self.EVIDENCE, self.EVIDENCE + "。再実行は成功していない。"):
+            with self.subTest(evidence=evidence):
+                result = finish_check_tool(summary=self.SUMMARY, evidence=evidence)
+                self.assertEqual(result["status"], "block")
+                self.assertIn(FAILURE_RULE, _rules(result))
+
+    def test_cli_threshold_keeps_a_failure_open_after_an_unasserted_rerun(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, "-m", "semantic_guard_workflow.cli", "finish-check",
+             "--text", self.SUMMARY, "--evidence", self.EVIDENCE + "。再実行は成功していない。",
+             "--fail-on", "block"],
+            capture_output=True, text=True, check=False,
+            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+        )
+        self.assertEqual(completed.returncode, 3, completed.stderr)
+        result = json.loads(completed.stdout)
         self.assertEqual(result["status"], "block")
         self.assertIn(FAILURE_RULE, _rules(result))
 

@@ -120,6 +120,9 @@ class TestReductionTests(unittest.TestCase):
             "    @pytest.mark.skip",
             '    @pytest.mark.skip(reason="flaky")',
             "    @pytest.mark.xfail",
+            '    @pytest.mark.xfail(reason="flaky", strict=True)',
+            "    @pytest.mark.xfail(True)",
+            "    @pytest.mark.xfail(condition=True)",
             "    @unittest.expectedFailure",
             "    it.skip('adds', () => {",
             "    xit('adds', () => {",
@@ -137,6 +140,10 @@ class TestReductionTests(unittest.TestCase):
             _test_file_change('    @unittest.skipIf(sys.platform == "win32", "posix only")'),
             _test_file_change('    @unittest.skipUnless(shutil.which("git"), "needs git")'),
             _test_file_change('    @pytest.mark.skipif(sys.version_info < (3, 12), reason="3.12+")'),
+            _test_file_change('    @pytest.mark.xfail(sys.platform == "win32", reason="known issue")'),
+            _test_file_change('    @pytest.mark.xfail(condition=sys.platform == "win32", reason="known issue")'),
+            _test_file_change('    @pytest.mark.xfail(reason="known issue", condition=sys.platform == "win32")'),
+            _test_file_change("    @pytest.mark.xfail(False)"),
             _test_file_change('    @unittest.skip("flaky")', added=False),
         )
         for diff in cases:
@@ -199,6 +206,30 @@ class TestReductionTests(unittest.TestCase):
 
         silent = audit_diff(DELETED_FEATURE, intent="エクスポートを整理する。")
         self.assertIn(REDUCTION_RULE, _rules(silent))
+
+    def test_a_denied_test_reduction_does_not_authorize_removing_or_disabling_tests(self) -> None:
+        for declaration in (
+            "テストは削除しない。",
+            "テストを無効化しない。",
+            "テストの削除は行わない。",
+            "Do not delete tests.",
+            "Tests must not be removed.",
+            "Test removal is prohibited.",
+            "Do not skip tests.",
+        ):
+            for diff in (DELETED_TEST, _test_file_change('    @unittest.skip("flaky")')):
+                with self.subTest(declaration=declaration, diff=diff):
+                    result = audit_diff(diff, intent=declaration)
+                    self.assertIn(REDUCTION_RULE, _rules(result))
+                    self.assertEqual(result["status"], "block")
+
+    def test_a_denied_feature_removal_does_not_exempt_deleted_tests(self) -> None:
+        for intent in ("旧エクスポート機能は削除しない。", "Do not remove the legacy export feature."):
+            with self.subTest(intent=intent):
+                result = audit_diff(DELETED_FEATURE, intent=intent)
+                self.assertIn(REDUCTION_RULE, _rules(result))
+                self.assertIn(NO_TESTS_RULE, _rules(result))
+                self.assertEqual(result["status"], "block")
 
     def test_a_prose_summary_that_lists_a_deleted_test_is_read(self) -> None:
         summary = "変更ファイル:\n- 更新: app/core.py\n- 削除: tests/test_core.py\n"

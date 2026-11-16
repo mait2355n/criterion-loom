@@ -103,7 +103,8 @@ _DEFERRAL_TAIL = (
 )
 _DEFERRED_CONDITIONAL = re.compile(
     rf"^{_QUALIFIERS}(?:(?:決まり|決定|確定|定まり|判明|合意|承認)(?:次第|したら|すれば|後|し次第)"
-    rf"|[^。！？!?；;\n]{{0,40}}?(?<![最以])(?:後|あと)(?:に|で|には|では)?\s*{_DECISION_ACT}{_DEFERRAL_TAIL}$)",
+    rf"(?:には|では|に|で)?[ \t、,，]*(?:{_DECISION_ACT}{_DEFERRAL_TAIL})?"
+    rf"|[^。！？!?；;\n]{{0,40}}?(?<![最以])(?:後|あと)(?:に|で|には|では)?\s*{_DECISION_ACT}{_DEFERRAL_TAIL})$",
     re.IGNORECASE,
 )
 _DEFERRED_VALUE = re.compile(

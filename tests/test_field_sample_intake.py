@@ -1115,6 +1115,44 @@ class FieldSampleIntakeReferenceIntegrityTests(unittest.TestCase):
     def test_opaque_references_with_ordinary_punctuation_are_accepted(self) -> None:
         self.assertNotIn("reference_not_opaque", self._codes(_intake()))
 
+    def test_free_prose_limitations_accept_an_ellipsis_after_rebinding_the_bundle(self) -> None:
+        bundle = deepcopy(_intake())
+        bundle["limitations"].append("Human review remains pending...")
+        bundle["bundle_digest"] = digest_value(
+            {key: value for key, value in bundle.items() if key != "bundle_digest"}
+        )
+
+        self.assertEqual(validate_field_sample_intake(bundle), bundle)
+
+    def test_an_identifier_still_rejects_path_punctuation_after_rebinding_the_bundle(self) -> None:
+        bundle = deepcopy(_intake())
+        bundle["intake_id"] = "field-intake.pending..review"
+        bundle["bundle_digest"] = digest_value(
+            {key: value for key, value in bundle.items() if key != "bundle_digest"}
+        )
+
+        errors = field_sample_intake_errors(bundle)
+
+        self.assertEqual(
+            [(item["code"], item["location"]) for item in errors],
+            [("reference_not_opaque", "$.intake_id")],
+        )
+
+    def test_a_reference_still_rejects_path_punctuation_with_valid_digests(self) -> None:
+        candidate = deepcopy(_candidate(1))
+        candidate["origin_ref"] = "origin.pending..review"
+        candidate["candidate_digest"] = digest_value(
+            {key: value for key, value in candidate.items() if key != "candidate_digest"}
+        )
+        bundle = _intake(candidates=[candidate, _candidate(2)])
+
+        errors = field_sample_intake_errors(bundle)
+
+        self.assertEqual(
+            [(item["code"], item["location"]) for item in errors],
+            [("reference_not_opaque", "$.candidates.0.origin_ref")],
+        )
+
     def test_an_exposure_record_cannot_name_a_candidate_that_declares_no_exposure(self) -> None:
         other = _candidate(2)
         record = {

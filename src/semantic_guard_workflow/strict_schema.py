@@ -15,7 +15,7 @@ depends on another; a test keeps the copies identical.
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from datetime import datetime
 from functools import lru_cache
 from typing import Any
@@ -69,8 +69,43 @@ def _pattern(validator: Any, pattern: str, instance: Any, schema: Any) -> Iterat
 
 StrictDraft202012Validator = validators.extend(Draft202012Validator, {"pattern": _pattern})
 
+_standard_evolve = StrictDraft202012Validator.evolve
+_DRAFT_2020_12 = frozenset({
+    Draft202012Validator.META_SCHEMA["$id"],
+    Draft202012Validator.META_SCHEMA["$id"] + "#",
+})
+
+
+def _strict_evolve(self: Any, **changes: Any) -> Any:
+    """Keep our pattern checker when a referenced schema declares draft 2020-12.
+
+    jsonschema's normal evolution selects the globally registered validator for
+    a declared dialect, losing locally extended keywords. Let it carry the
+    resolver and other options forward first, then retain this local class for
+    the known dialect only. Other and unknown dialects keep its normal behavior;
+    the global validator registry and the supplied schemas remain untouched.
+    """
+    evolved = _standard_evolve(self, **changes)
+    schema = evolved.schema
+    if (
+        type(evolved) is Draft202012Validator
+        and isinstance(schema, Mapping)
+        and schema.get("$schema") in _DRAFT_2020_12
+    ):
+        return self.__class__(
+            schema=schema,
+            resolver=evolved._ref_resolver,
+            format_checker=evolved.format_checker,
+            registry=evolved._registry,
+            _resolver=evolved._resolver,
+        )
+    return evolved
+
+
+StrictDraft202012Validator.evolve = _strict_evolve
+
 _DATE_TIME = re.compile(
-    r"[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:[Zz]|[+-][0-9]{2}:[0-9]{2})"
+    r"[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:[Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])"
 )
 
 

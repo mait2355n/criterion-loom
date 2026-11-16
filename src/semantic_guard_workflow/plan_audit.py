@@ -1113,10 +1113,12 @@ def _dependency_sequence_scan(text: str) -> tuple[str, bool]:
         prefix = _MARKDOWN_PREFIX.match(clause)
         decision_clause = clause[prefix.end() if prefix else 0:].strip()
         match = _SEQUENCE_RELATION.match(decision_clause)
+        direct_statement = match is not None
         if match is not None:
             term, value = match["term"], match["value"]
         elif (found := _first_sequence_term(decision_clause)) is not None:
             term, value = "順序", _value_after_term(decision_clause, *found)
+            direct_statement = _SEQUENCE_RELATION.match(decision_clause, found[0]) is not None
         else:
             if construct_clause < 0 and _ORDER_CONSTRUCT.search(decision_clause):
                 construct_clause = index
@@ -1127,6 +1129,10 @@ def _dependency_sequence_scan(text: str) -> tuple[str, bool]:
         if assertion is not None and assertion.reason == "deferred_placeholder":
             masked.add(index)
             last_statement = "deferred"
+            if direct_statement:
+                # A later explicit retraction also invalidates an earlier
+                # unlabelled construct (``A→B。順序: 未定``).
+                construct_clause = -1
         else:
             last_statement = "concrete"
             if match is not None and term not in _SEQUENCE_TERMS and construct_clause < 0:

@@ -243,6 +243,10 @@ def _validate_wheel_archive(path: Path, project: ProjectIdentity) -> None:
             members = archive.infolist()
             if len(members) > MAX_ARCHIVE_MEMBERS:
                 raise BindingFailure("artifact_not_a_distribution", f"{filename} has too many members")
+            if sum(item.file_size for item in members) > MAX_EXPANDED_BYTES:
+                raise BindingFailure(
+                    "artifact_not_a_distribution", f"{filename} expands beyond {MAX_EXPANDED_BYTES} bytes"
+                )
             damaged = archive.testzip()
             if damaged is not None:
                 raise BindingFailure(

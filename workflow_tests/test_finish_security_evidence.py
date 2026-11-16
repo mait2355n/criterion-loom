@@ -30,6 +30,9 @@ class FinishSecurityEvidenceTests(unittest.TestCase):
             "セキュリティ確認は後で行う。",
             "secret scan: 実施しない",
             "OWASP: TBD",
+            "認証: ログイン画面を変更した。",
+            "認証を確認していないが、pytestは合格。",
+            "認証は未確認、pytestは合格。",
         ):
             with self.subTest(extra=extra):
                 self.assertTrue(security_findings(extra))
@@ -43,6 +46,7 @@ class FinishSecurityEvidenceTests(unittest.TestCase):
             "依存の安全性を確認した。",
             "Dependency scan: no findings",
             "セキュリティ試験で機密情報の表示が0件と確認。",
+            "認証の拒否条件を確認した。",
         ):
             with self.subTest(extra=extra):
                 self.assertFalse(security_findings(extra))

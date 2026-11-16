@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import re
 
 from semantic_guard_workflow.assertion_context import value_state
@@ -772,6 +773,28 @@ _TEST_DISABLE_MARKER = re.compile(
     rf"|{_W0}(?:it|test|describe|context)\.(?:skip|todo)\s*\(|{_W0}(?:xit|xtest|xdescribe)\s*\("
     r"|@Disabled(?![A-Za-z0-9_])|@Ignore(?![A-Za-z0-9_])|#\[ignore\]"
 )
+
+
+def _unconditional_test_disable(line: str) -> bool:
+    for match in _TEST_DISABLE_MARKER.finditer(line):
+        if match.group() == "@pytest.mark.xfail":
+            try:
+                expression = ast.parse(line[match.start() + 1:].strip(), mode="eval").body
+            except (SyntaxError, ValueError, RecursionError):
+                # A partial decorator is not enough to establish a condition.
+                return True
+            if isinstance(expression, ast.Call):
+                condition = expression.args[0] if expression.args else next(
+                    (keyword.value for keyword in expression.keywords if keyword.arg == "condition"), None
+                )
+                if condition is not None and not (
+                    isinstance(condition, ast.Constant) and condition.value is True
+                ):
+                    continue
+        return True
+    return False
+
+
 _TEST_WORD = rf"(?:テスト|試験|{_W0}(?:tests?|testing|specs?){_W1})"
 _TEST_REDUCTION_ACTION = (
     r"(?:削除|廃止|撤去|除去|無効化|スキップ|統合|集約|置き換え|置換|移動|分割|パラメータ化"
@@ -786,6 +809,35 @@ _TEST_REDUCTION_DECLARED = re.compile(
 _REMOVAL_INTENT = re.compile(
     rf"削除|廃止|撤去|取り除|{_W0}(?:remov|delet|drop|deprecat|retir)\w*", re.IGNORECASE
 )
+_TEST_REDUCTION_ACTION_PATTERN = re.compile(_TEST_REDUCTION_ACTION, re.IGNORECASE)
+_REDUCTION_DENIED_PREFIX = re.compile(
+    rf"{_W0}(?:not|never|no|without|avoid|don't|doesn't|mustn't|shouldn't|won't)\s+"
+    r"(?:(?:to|be|being|any|the|tests?|test)\s+)*$",
+    re.IGNORECASE,
+)
+_REDUCTION_DENIED_SUFFIX = re.compile(
+    r"^\s*(?:は|を|も)?\s*(?:しない|しません|せず|されない|されません|行わない|行いません|禁止|不可|予定(?:は)?なし)"
+    rf"|^\s+(?:(?:is|are)\s+)?(?:not\s+(?:allowed|permitted)|prohibited|forbidden){_W1}",
+    re.IGNORECASE,
+)
+
+
+def _asserted_reduction_action(text: str, pattern: re.Pattern[str]) -> bool:
+    """A forbidden removal is not a declaration authorizing removal."""
+    return any(
+        not _REDUCTION_DENIED_PREFIX.search(text[:match.start()])
+        and not _REDUCTION_DENIED_SUFFIX.match(text[match.end():])
+        for match in pattern.finditer(text)
+    )
+
+
+def _declared_test_reduction(text: str) -> bool:
+    for clause in re.split(r"[。！？!?；;\n]+|(?<=[.])\s+", text):
+        if _TEST_REDUCTION_DECLARED.search(clause) and _asserted_reduction_action(clause, _TEST_REDUCTION_ACTION_PATTERN):
+            return True
+    return False
+
+
 _DELETION_SUMMARY_TERMS = ("delete", "deleted", "remove", "removed", "削除", "撤去")
 _ADDITION_SUMMARY_TERMS = ("add", "added", "create", "created", "new", "追加", "新規", "作成")
 
@@ -818,6 +870,21 @@ _PATH_KEPT_AFTER = rf"\s+(?:unchanged|untouched|as\s+is|out\s+of\s+scope){_W1}"
 _SCOPE_EXCEPTION = re.compile(
     rf"以外|を除[いき]|{_W0}(?:except|other\s+than|apart\s+from|besides){_W1}", re.IGNORECASE
 )
+_SCOPE_LIMIT_DENIED_AFTER = re.compile(
+    r"^\s*(?:の(?:変更|修正|更新))?(?:では(?:ない|なく)|じゃ(?:ない|なく))"
+)
+_SCOPE_LIMIT_DENIED_BEFORE = re.compile(rf"{_W0}not\s+(?:an?\s+)?$", re.IGNORECASE)
+
+
+def _asserted_scope_limit(pattern: re.Pattern[str], text: str) -> re.Match[str] | None:
+    return next(
+        (
+            match for match in pattern.finditer(text)
+            if not _SCOPE_LIMIT_DENIED_AFTER.match(text[match.end():])
+            and not _SCOPE_LIMIT_DENIED_BEFORE.search(text[:match.start()])
+        ),
+        None,
+    )
 
 
 def _deleted_files(diff: str, changed_files: list[str]) -> list[str]:
@@ -859,7 +926,7 @@ def _deleted_files(diff: str, changed_files: list[str]) -> list[str]:
 def _declared_feature_removal(intent: str, context: str, deleted_files: list[str]) -> bool:
     """A requested removal that deletes a source file takes that file's tests with it."""
     deleted_sources = [path for path in deleted_files if _is_source_file(path) and not _is_test_file(path)]
-    return bool(deleted_sources) and bool(_REMOVAL_INTENT.search(_combine(intent, context)))
+    return bool(deleted_sources) and _asserted_reduction_action(_combine(intent, context), _REMOVAL_INTENT)
 
 
 def _test_reduction_evidence(
@@ -890,15 +957,15 @@ def _test_reduction_evidence(
         if line.startswith("-") and not line.startswith("---"):
             removed_body = normalize_audit_text(line[1:])
             removed += bool(_TEST_DEFINITION.match(removed_body))
-            enabled += bool(_TEST_DISABLE_MARKER.search(removed_body))
+            enabled += _unconditional_test_disable(removed_body)
         elif line.startswith("+") and not line.startswith("+++"):
             added_body = normalize_audit_text(line[1:])
             added += bool(_TEST_DEFINITION.match(added_body))
-            if _TEST_DISABLE_MARKER.search(added_body):
+            if _unconditional_test_disable(added_body):
                 disabled.append(f"{current_path}: {line[1:].strip()}")
 
     requested = _combine(intent, context)
-    if _TEST_REDUCTION_DECLARED.search(requested):
+    if _declared_test_reduction(requested):
         return ""
 
     deleted_tests = [path for path in deleted_files if _is_test_file(path)]
@@ -931,10 +998,10 @@ def _intent_scope_conflict(intent: str, context: str, changed_files: list[str]) 
     sources = [path for path in changed_files if _is_source_file(path)]
     conflicts: list[str] = []
 
-    docs_only = _DOCS_ONLY_INTENT.search(requested)
+    docs_only = _asserted_scope_limit(_DOCS_ONLY_INTENT, requested)
     if docs_only and sources:
         conflicts.append(f"「{docs_only.group(0).strip()}」に対しコードの変更: {', '.join(sources[:5])}")
-    tests_only = _TESTS_ONLY_INTENT.search(requested)
+    tests_only = _asserted_scope_limit(_TESTS_ONLY_INTENT, requested)
     non_test_sources = [path for path in sources if not _is_test_file(path)]
     if tests_only and non_test_sources:
         conflicts.append(f"「{tests_only.group(0).strip()}」に対し試験以外の変更: {', '.join(non_test_sources[:5])}")

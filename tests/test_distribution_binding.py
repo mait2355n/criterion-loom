@@ -90,6 +90,26 @@ def create_fixture_binding(root: Path, dist: Path) -> dict[str, object]:
 
 
 class DistributionBindingTests(unittest.TestCase):
+    def test_a_compressed_wheel_over_the_expanded_budget_is_rejected_before_testzip(self) -> None:
+        budget = 1024 * 1024
+        with tempfile.TemporaryDirectory() as directory:
+            wheel = Path(directory) / WHEEL_NAME
+            with zipfile.ZipFile(wheel, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr("semantic_guard-1.2.0.dev0.dist-info/METADATA", "Name: semantic-guard\nVersion: 1.2.0.dev0\n")
+                archive.writestr("semantic_guard-1.2.0.dev0.dist-info/WHEEL", "Wheel-Version: 1.0\n")
+                archive.writestr("semantic_guard/payload", b"\0" * budget)
+            self.assertLess(wheel.stat().st_size, budget)
+            with (
+                mock.patch.object(binding, "MAX_EXPANDED_BYTES", budget),
+                mock.patch.object(binding.zipfile.ZipFile, "testzip", side_effect=AssertionError("expanded before budget check")) as testzip,
+                self.assertRaises(binding.BindingFailure) as raised,
+            ):
+                binding._validate_wheel_archive(
+                    wheel, binding.ProjectIdentity("semantic-guard", "1.2.0.dev0", "semantic_guard")
+                )
+            self.assertEqual(raised.exception.code, "artifact_not_a_distribution")
+            testzip.assert_not_called()
+
     def test_create_and_check_match_an_independent_fixed_bytes_oracle(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

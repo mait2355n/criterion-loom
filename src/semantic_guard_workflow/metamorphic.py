@@ -869,10 +869,9 @@ ABLATION_DOCUMENTS: tuple[AblationDocument, ...] = (
                 expected_rules=("finish.validation.acceptance_evidence_missing",),
             ),
             "残リスク": ("finish.risk.residual_risk_missing",),
-            "受入証拠": Silent(
-                "the completion criterion also reads as acceptance",
-                also_remove=("完了条件",),
-                expected_rules=("finish.validation.acceptance_evidence_missing",),
+            "受入証拠": Raises(
+                rules=("finish.evidence.receipt_missing",),
+                missing=("verification_receipt",),
             ),
             "代表実行": Silent(
                 "the acceptance receipt also records the command run",

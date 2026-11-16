@@ -45,6 +45,24 @@ class QualityConstraintTests(unittest.TestCase):
         self.assertTrue(has_constraint("旧案の 300ms は却下した。新しい上限は 200ms 以内とする。"))
         self.assertFalse(has_constraint("旧案の 300ms は却下した。\n新しい上限は未定。"))
 
+    def test_a_historical_comparison_keeps_only_the_current_constraint(self) -> None:
+        for text in (
+            "旧仕様の5秒から300ms以内へ短縮する。",
+            "以前の上限は撤回し、新しい閾値は200ms以内にする。",
+            "The 500ms limit was rejected, but the new limit is 200ms.",
+        ):
+            with self.subTest(text=text):
+                self.assertTrue(has_constraint(text))
+                result = audit_request("目的: 検索を速くする。" + text)
+                self.assertNotIn(RULE, {finding.get("rule_id") for finding in result["findings"]})
+        for text in (
+            "旧仕様の5秒から短縮するが、新しい上限は未定。",
+            "以前の上限200msは撤回し、新しい閾値は未定。",
+            "旧仕様の5秒から300ms以内への変更は却下した。",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(has_constraint(text))
+
     def test_many_sentences_are_judged_linearly(self) -> None:
         for text in ("却下 1s。" * 30_000, "300ms 以内にはしない。" * 20_000, "x " * 100_000 + "500ms"):
             with self.subTest(prefix=text[:8]):

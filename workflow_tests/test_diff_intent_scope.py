@@ -123,6 +123,19 @@ class IntentScopeTests(unittest.TestCase):
             with self.subTest(intent=intent):
                 self.assertNotIn(SCOPE_RULE, _rules(audit_diff(SOURCE_AND_TEST, intent=intent)))
 
+    def test_negated_only_declarations_are_not_scope_limits(self) -> None:
+        for intent in (
+            "ドキュメントのみの変更ではない。コードとテストを修正する。",
+            "テストのみではなく本体も直す。",
+            "文書だけの修正ではなくコードも直す。",
+            "This is not a docs-only change; update source and tests.",
+            "Not only tests change; update source too.",
+        ):
+            with self.subTest(intent=intent):
+                result = audit_diff(SOURCE_AND_TEST, intent=intent)
+                self.assertNotIn(SCOPE_RULE, _rules(result))
+                self.assertNotEqual(result["status"], "block")
+
     def test_relaxed_mode_downgrades_to_major(self) -> None:
         result = audit_diff(SOURCE_AND_TEST, intent="Docs-only change.", strict=False)
         finding = next(item for item in result["findings"] if item.get("rule_id") == SCOPE_RULE)
